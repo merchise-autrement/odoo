@@ -128,6 +128,7 @@ setup(
     packages=find_packages(),
     package_dir={'%s' % lib_name: 'openerp'},
     include_package_data=True,
+    zip_safe=False,
     install_requires=[
         'babel >= 1.0',
         'decorator',
