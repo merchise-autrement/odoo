@@ -89,8 +89,8 @@ tar -xf openerp.tar
 mv addons/* openerp/addons/
 
 # Rewrite the version
-sed -i "s/FINAL, 0/FINAL, \"-$STAMP-$RELEASE\"/" openerp/release.py
-sed -i "s/, ALPHA,[^)]*/, ALPHA, '-$STAMP-$RELEASE'/" openerp/release.py
+sed -i "s/FINAL, 0/FINAL, \"-$STAMP+$RELEASE\"/" openerp/release.py
+sed -i "s/, ALPHA,[^)]*/, ALPHA, '-$STAMP+$RELEASE'/" openerp/release.py
 
 python setup.py --quiet sdist -d "$TMPDIR/pkg"
 
