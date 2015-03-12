@@ -7,7 +7,7 @@
 #
 # Usage:
 #
-#    ./builddist.sh [BRANCH] [VERSION]
+#    ./builddist.sh [--pep440] [BRANCH] [VERSION]
 #
 # The default for BRANCH is "7.0".  If BRANCH is set but VERSION is not, it
 # defaults to the part of BRANCH after the first "-" which starts with a
@@ -35,6 +35,13 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
+
+if [ "$1" = "--pep440" ]; then
+    USEPEP440="1"
+    shift
+else
+    USEPEP440=""
+fi
 
 if [ -z "$1" ]; then
     BRANCH=`git branch | grep ^* | cut -b3-`
@@ -76,7 +83,11 @@ fi
 
 RELEASE=`git log $BRANCH -1 --pretty=%h`
 COMMITER_DATE=`git log $BRANCH -1 --pretty=%cd --date=iso`
-STAMP=`date --date="$COMMITER_DATE" +"%Y%m%d-%H%M%S"`
+if [ -z $USEPEP440 ]; then
+    STAMP=`date --date="$COMMITER_DATE" +"%Y%m%d-%H%M%S"`
+else
+    STAMP=`date --date="$COMMITER_DATE" +"%Y%m%d.%H%M%S"`
+fi
 
 TMPDIR=`python -c "import tempfile; print tempfile.mkdtemp(prefix='odoo-')"`
 mkdir "$TMPDIR/src"
@@ -89,8 +100,13 @@ tar -xf openerp.tar
 mv addons/* openerp/addons/
 
 # Rewrite the version
-sed -i "s/FINAL, 0/FINAL, \"-$STAMP+$RELEASE\"/" openerp/release.py
-sed -i "s/, ALPHA,[^)]*/, ALPHA, '-$STAMP+$RELEASE'/" openerp/release.py
+if [ -z $USEPEP440 ]; then
+    sed -i "s/FINAL, 0/FINAL, \"-$STAMP-$RELEASE\"/" openerp/release.py
+    sed -i "s/, ALPHA,[^)]*/, ALPHA, '-$STAMP-$RELEASE'/" openerp/release.py
+else
+    sed -i "s/FINAL, 0/FINAL, \".$STAMP+$RELEASE\"/" openerp/release.py
+    sed -i "s/, ALPHA,[^)]*/, ALPHA, '.$STAMP+$RELEASE'/" openerp/release.py
+fi
 
 python setup.py --quiet sdist -d "$TMPDIR/pkg"
 
