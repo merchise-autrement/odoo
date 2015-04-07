@@ -7,7 +7,7 @@
 #
 # Usage:
 #
-#    ./builddist.sh [--pep440] [BRANCH] [VERSION]
+#    ./builddist.sh [--no-pep440] [BRANCH] [VERSION]
 #
 # The default for BRANCH is "7.0".  If BRANCH is set but VERSION is not, it
 # defaults to the part of BRANCH after the first "-" which starts with a
@@ -36,11 +36,11 @@
 # IN THE SOFTWARE.
 
 
-if [ "$1" = "--pep440" ]; then
-    USEPEP440="1"
+if [ "$1" = "--no-pep440" ]; then
+    USEPEP440=""
     shift
 else
-    USEPEP440=""
+    USEPEP440="1"
 fi
 
 if [ -z "$1" ]; then
