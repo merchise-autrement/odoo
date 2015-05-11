@@ -187,15 +187,23 @@ class ir_cron(osv.osv):
                     active=bool(numbercall)
                 )
                 if result and isinstance(result, dict):
-                    cron_values.update({key: value
-                                        for key, value in result.items()
-                                        if key in self._columns})
-                query = ("UPDATE ir_cron SET %s WHERE id=%%s" %
-                         ', '.join(['%s=%%s' % field_name
-                                    for field_name in cron_values.keys()]))
-                cron_cr.execute(query, cron_values.values() + [job['id']])
+                    cron_values.update({
+                        key: value
+                        for key, value in result.items()
+                        if key in self._columns
+                    })
+                # Use dict.items() to make guarantees about the proper
+                # matching of keys and values in the update query.
+                cron_values = list(cron_values.items())
+                cols = ['%s=%%s' % col for col, _val in cron_values]
+                query = (
+                    "UPDATE ir_cron SET %s WHERE id=%%s" % ', '.join(cols)
+                )
+                cron_cr.execute(
+                    query,
+                    [val for _, val in cron_values] + [job['id']]
+                )
                 self.invalidate_cache(job_cr, SUPERUSER_ID)
-
         finally:
             job_cr.commit()
             cron_cr.commit()
