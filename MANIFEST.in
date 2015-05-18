@@ -27,5 +27,6 @@ recursive-include openerp *.xsl
 recursive-include openerp *.xml
 recursive-include openerp *.yml
 recursive-include openerp **/test/* **/tests/*
+recursive-include openerp *.mp3 *.ogg
 recursive-exclude * *.py[co]
 recursive-exclude * *.hg*
