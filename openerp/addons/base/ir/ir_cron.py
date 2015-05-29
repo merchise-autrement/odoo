@@ -123,6 +123,7 @@ class ir_cron(osv.osv):
         :param method_name: name of the method to call when this job is processed.
         :param args: arguments of the method (without the usual self, cr, uid).
         :param job_id: job id.
+        :return the called method return values.
         """
         try:
             args = str2tuple(args)
@@ -157,6 +158,9 @@ class ir_cron(osv.osv):
         :param job: job to be run (as a dictionary).
         :param cron_cr: cursor holding lock on the cron job row, to use to update the next exec date,
             must not be committed/rolled back!
+
+            If self._callback call return a dict used it to update the
+            executed cron.
         """
         try:
             with api.Environment.manage():
