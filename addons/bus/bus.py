@@ -141,7 +141,7 @@ class ImDispatch(object):
     def start(self):
         if openerp.evented:
             # gevent mode
-            import gevent
+            import gevent.event
             self.Event = gevent.event.Event
             gevent.spawn(self.run)
         elif openerp.multi_process:
