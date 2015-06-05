@@ -36,4 +36,6 @@ import mail_group_menu
 import update
 import controllers
 
+from . import xopgi  # noqa
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
