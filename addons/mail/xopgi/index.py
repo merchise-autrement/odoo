@@ -127,9 +127,9 @@ class MailThreadIndex(AbstractModel):
         query = '''
             SELECT name, res_id
             FROM ir_model_data
-            WHERE model=%s AND res_id IN %s
+            WHERE model=%s AND res_id IN %s AND module=%s
         '''
-        cr.execute(query, (self._name, tuple(ids)))
+        cr.execute(query, (self._name, tuple(ids), MODULE_NAME))
         return {res_id: name for name, res_id in cr.fetchall()}
 
     def _ensure_index(self, cr, uid, resid, context=None):
