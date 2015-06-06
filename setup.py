@@ -104,6 +104,9 @@ def py2exe_options():
                         'xlwt',
                         'xml', 'xml.dom',
                         'yaml',
+
+                        # Merchise
+                        'xoutil',
                     ],
                     'excludes': ['Tkconstants', 'Tkinter', 'tcl'],
                 }
@@ -164,6 +167,9 @@ setup(
         'vobject',
         'werkzeug',
         'xlwt',
+
+        # Merchise
+        'xoutil',
     ],
     extras_require={
         'SSL': ['pyopenssl'],
