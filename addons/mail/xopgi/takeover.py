@@ -46,8 +46,8 @@ class mail_thread(AbstractModel):
             )
         return True
 
-    def _merge_attachments(self, cr, uid, target_thread_id, previous_threads,
-                           context=None):
+    def _merge_attachments(self, cr, uid, target_thread_id,
+                           previous_thread_ids, context=None):
         'Transfer the attachments from previous_threads to target_thread.'
         def _get_attachments(thread_id):
             attachments = attach_obj.search(
@@ -58,8 +58,8 @@ class mail_thread(AbstractModel):
             return attachments
         attach_obj = self.pool.get('ir.attachment')
         ids = []
-        for thread in previous_threads:
-            ids.extend(_get_attachments(thread.id))
+        for thread_id in previous_thread_ids:
+            ids.extend(_get_attachments(thread_id))
         if ids:
             attach_obj.write(
                 cr, uid,
@@ -86,7 +86,7 @@ class mail_thread(AbstractModel):
         previous_thread = self.browse(cr, uid, previous_ids, context=context)
         self._merge_history(cr, uid, target_thread_id, previous_thread,
                             context=context)
-        self._merge_attachments(cr, uid, target_thread_id, previous_thread,
+        self._merge_attachments(cr, uid, target_thread_id, previous_ids,
                                 context=context)
         self._merge_index(cr, uid, target_thread_id, previous_ids,
                           context=context)
