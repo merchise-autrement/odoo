@@ -73,12 +73,21 @@ class mail_thread(AbstractModel):
                           context=None):
         '''Take over messages belonging to previous threads into another.
 
+        This should be used only to merge objects and:
+
+        - Have the whole history from original objects merged in the target.
+
+        - Have all attachments from original objects merged in the target.
+
+        - Update the mail reference index so that references pointing to the
+          original objects are properly redirected to the target.
+
         '''
-        # TODO: Verify what happens when Odoo receives a reply to a previous
-        # thread and document it.
         previous_thread = self.browse(cr, uid, previous_ids, context=context)
         self._merge_history(cr, uid, target_thread_id, previous_thread,
                             context=context)
         self._merge_attachments(cr, uid, target_thread_id, previous_thread,
                                 context=context)
+        self._merge_index(cr, uid, target_thread_id, previous_ids,
+                          context=context)
         return True

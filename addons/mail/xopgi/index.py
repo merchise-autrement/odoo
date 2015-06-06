@@ -101,16 +101,33 @@ class MailThreadIndex(AbstractModel):
                                      store=False)
     )
 
-    def _merge_index(self, cr, uid, target_thread_id, previous_threads,
-                     context=None):
-        'Make the index belong to the target thread id'
-        query = '''
-            UPDATE ir_model_data SET res_id=%s
-            WHERE res_id in %s AND module=%s AND model=%s
+    def _merge_index(self, cr, uid, target_thread_id, previous_threads_ids,
+                     samedomain=True, context=None):
+        '''Make the index from previous threads point to another target thread.
+
+        Useful when merging several threads into a single one.
+
+        If `samedomain` is True all previous threads should belong to the same
+        model of the target thread (self).  Threads from other models won't be
+        merged in the index.
+
         '''
-        cr.execute(query, (
-            target_thread_id, tuple(previous_threads), MODULE_NAME, self._name
-        ))
+        assert self._name != 'mail.thread'
+        params = dict(target=target_thread_id,
+                      module=MODULE_NAME,
+                      previous=tuple(previous_threads_ids))
+        sets = 'res_id=%(target)s'
+        if samedomain:
+            domain = ' AND model=%(model)s'
+            params.update(model=self._name)
+        else:
+            domain = ''
+        query_template = '''
+            UPDATE ir_model_data SET %(sets)s
+            WHERE res_id in %%(previous)s AND module=%%(module)s %(domain)s
+        '''
+        query = query_template % dict(sets=sets, domain=domain)
+        cr.execute(query, params)
 
     def _message_by_index(self, cr, uid, threadindex, context=None):
         '''Return the message that matches the X-Thread-Index.'''
