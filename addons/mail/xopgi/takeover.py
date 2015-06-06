@@ -83,8 +83,8 @@ class mail_thread(AbstractModel):
           original objects are properly redirected to the target.
 
         '''
-        previous_thread = self.browse(cr, uid, previous_ids, context=context)
-        self._merge_history(cr, uid, target_thread_id, previous_thread,
+        previous_threads = self.browse(cr, uid, previous_ids, context=context)
+        self._merge_history(cr, uid, target_thread_id, previous_threads,
                             context=context)
         self._merge_attachments(cr, uid, target_thread_id, previous_ids,
                                 context=context)
