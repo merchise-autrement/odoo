@@ -129,7 +129,7 @@ class MailThreadIndex(AbstractModel):
         query = query_template % dict(sets=sets, domain=domain)
         cr.execute(query, params)
 
-    def _message_by_index(self, cr, uid, threadindex, context=None):
+    def _thread_by_index(self, cr, uid, threadindex, context=None):
         '''Return the message that matches the X-Thread-Index.'''
         imd = self.pool['ir.model.data']
         name = '%s.%s' % (MODULE_NAME, threadindex)
@@ -153,7 +153,7 @@ class MailThreadIndex(AbstractModel):
         thread = self.browse(cr, uid, resid, context=context)
         if not thread.thread_index:
             imd = self.pool['ir.model.data']
-            search = lambda r: self._message_by_index(
+            search = lambda r: self._thread_by_index(
                 cr, uid, r, context=context
             )
             reference = generate_reference(search)
