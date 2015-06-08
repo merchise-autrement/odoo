@@ -201,9 +201,10 @@ class MailMessage(Model):
     def _get_thread_index(self, cr, uid, ids, fields, arg, context=None):
         result = dict.fromkeys(ids, None)
         for message in self.browse(cr, SUPERUSER_ID, ids, context=context):
-            model = self.pool[message.model]
-            record = model.browse(cr, SUPERUSER_ID, message.res_id)
-            result[message.id] = record.thread_index
+            if message.model:
+                model = self.pool[message.model]
+                record = model.browse(cr, SUPERUSER_ID, message.res_id)
+                result[message.id] = record.thread_index
         return result
 
     _columns = dict(
