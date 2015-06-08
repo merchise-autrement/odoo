@@ -26,6 +26,12 @@ import mail_followers
 import mail_message
 import mail_mail
 import mail_thread
+
+# Needed at this point cause mail_group and other objects are injected with
+# mail.thread behaviour when imported below.
+from . import xopgi  # noqa
+
+
 import mail_group
 import res_partner
 import res_users
@@ -35,7 +41,5 @@ import res_config
 import mail_group_menu
 import update
 import controllers
-
-from . import xopgi  # noqa
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
