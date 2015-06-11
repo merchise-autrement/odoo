@@ -155,21 +155,26 @@ class MailThreadIndex(AbstractModel):
         cr.execute(query, (self._name, tuple(ids), MODULE_NAME))
         return {res_id: name for name, res_id in cr.fetchall()}
 
-    def _ensure_index(self, cr, uid, resid, context=None):
-        thread = self.browse(cr, uid, resid, context=context)
-        if not thread.thread_index:
-            imd = self.pool['ir.model.data']
-            search = lambda r: self._thread_by_index(
-                cr, uid, r, context=context
-            )
-            reference = generate_reference(search)
-            if reference:
-                imd.create(
-                    cr, uid,
-                    dict(name=reference, model=self._name, res_id=resid,
-                         noupdate=True, module=MODULE_NAME),
-                    context=context
+    def _ensure_index(self, cr, uid, ids, context=None):
+        if isinstance(ids, (int, long)):
+            ids = [ids]
+        for thread in self.browse(cr, uid, ids, context=context):
+            if not thread.thread_index:
+                imd = self.pool['ir.model.data']
+                search = lambda r: self._thread_by_index(
+                    cr, uid, r, context=context
                 )
+                reference = generate_reference(search)
+                if reference:
+                    imd.create(
+                        cr, uid,
+                        dict(name=reference,
+                             model=self._name,
+                             res_id=thread.id,
+                             noupdate=True,
+                             module=MODULE_NAME),
+                        context=context
+                    )
 
     def create(self, cr, uid, values, context=None):
         resid = super(MailThreadIndex, self).create(
