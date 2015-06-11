@@ -135,6 +135,12 @@ class MailThreadIndex(AbstractModel):
         name = '%s.%s' % (MODULE_NAME, threadindex)
         return imd.xmlid_to_object(cr, uid, name)
 
+    def _threadref_by_index(self, cr, uid, threadindex, context=None):
+        '''Return the (model, res_id) thread that matches X-Thread-Index.'''
+        imd = self.pool['ir.model.data']
+        name = '%s.%s' % (MODULE_NAME, threadindex)
+        return imd.xmlid_to_res_model_res_id(cr, uid, name)
+
     def _message_index(self, cr, uid, ids, context=None):
         '''Return a valid X-Thread-Index for the message.
 
