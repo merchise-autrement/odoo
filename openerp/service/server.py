@@ -560,7 +560,7 @@ class PreforkServer(CommonServer):
         if config['xmlrpc']:
             while len(self.workers_http) < self.population:
                 self.worker_spawn(WorkerHTTP, self.workers_http)
-            if not self.long_polling_pid:
+            if not self.long_polling_pid and config.get('spawn_longpolling'):
                 self.long_polling_spawn()
         while len(self.workers_cron) < config['max_cron_threads']:
             self.worker_spawn(WorkerCron, self.workers_cron)
