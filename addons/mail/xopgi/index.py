@@ -34,7 +34,8 @@ from xoeuf.osv.orm import get_modelname
 # DONE LIGHTLY.
 
 
-def generate_reference(search, maxtries=4):
+# TODO: Move this to xoutil ?
+def generate_reference(search, maxtries=4, start=1):
     '''Generates an unused reference.
 
     :param search: A search callback to check if a candidate reference is
@@ -42,6 +43,9 @@ def generate_reference(search, maxtries=4):
 
     :param maxtries:  How many times to try to find a reference.  Zero means
                       until one is found.  Be careful!
+
+    :param start: The minimum length for seeding.  This actually means how
+                  many *more* UUIDs to generate at the very least.
 
     References will contain only digits and letters.
 
@@ -59,11 +63,13 @@ def generate_reference(search, maxtries=4):
 
     import uuid
     ref, tries = None, 0
+    if start < 1 or maxtries < 1:
+        raise ValueError("Both 'start' and 'maxtries' must be at least 1")
     while not ref and (not maxtries or tries < maxtries):
         # This assumes you call create within a transaction, so we loop until
         # we find a non-used ref.  You need then to make sure the table where
         # the look up is made in a locked table or so.
-        args = tuple(uuid.uuid4() for _ in range(tries + 1))
+        args = tuple(uuid.uuid4() for _ in range(start + tries))
         ref = encoder(*args)
         if search(ref):
             ref = None
