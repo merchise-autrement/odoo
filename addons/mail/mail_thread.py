@@ -369,8 +369,15 @@ class mail_thread(osv.AbstractModel):
             context = {}
 
         if context.get('tracking_disable'):
-            return super(mail_thread, self).create(
+            thread_id = super(mail_thread, self).create(
                 cr, uid, values, context=context)
+            # merchise: Ensure to have the unique index before trying to
+            # create notifications, so that those notification have the proper
+            # thread index.
+            if thread_id:
+                self._ensure_index(cr, uid, thread_id, context=context)
+            return thread_id
+
 
         # subscribe uid unless asked not to
         if not context.get('mail_create_nosubscribe'):
@@ -379,6 +386,12 @@ class mail_thread(osv.AbstractModel):
             message_follower_ids.append([4, pid])
             values['message_follower_ids'] = message_follower_ids
         thread_id = super(mail_thread, self).create(cr, uid, values, context=context)
+
+        # merchise: Ensure to have the unique index before trying to create
+        # notifications, so that those notification have the proper thread
+        # index.
+        if thread_id:
+            self._ensure_index(cr, uid, thread_id, context=context)
 
         # automatic logging unless asked not to (mainly for various testing purpose)
         if not context.get('mail_create_nolog'):
@@ -829,7 +842,7 @@ class mail_thread(osv.AbstractModel):
         # Private message: should not contain any thread_id
         if not model and thread_id:
             if assert_model:
-                if thread_id: 
+                if thread_id:
                     raise ValueError('Routing: posting a message without model should be with a null res_id (private message), received %s.' % thread_id)
             _warn('posting a message without model should be with a null res_id (private message), received %s resetting thread_id' % thread_id)
             thread_id = 0
@@ -2023,13 +2036,13 @@ class mail_thread(osv.AbstractModel):
         :param new_res_id : the new res_id of the mail.message
         :param new_model : the name of the new model of the mail.message
 
-        Example :   self.pool.get("crm.lead").message_change_thread(self, cr, uid, 2, 4, "project.issue", context) 
+        Example :   self.pool.get("crm.lead").message_change_thread(self, cr, uid, 2, 4, "project.issue", context)
                     will transfert thread of the lead (id=2) to the issue (id=4)
         """
 
         # get the sbtype id of the comment Message
         subtype_res_id = self.pool.get('ir.model.data').xmlid_to_res_id(cr, uid, 'mail.mt_comment', raise_if_not_found=True)
-        
+
         # get the ids of the comment and none-comment of the thread
         message_obj = self.pool.get('mail.message')
         msg_ids_comment = message_obj.search(cr, uid, [
@@ -2040,9 +2053,9 @@ class mail_thread(osv.AbstractModel):
                     ('model', '=', self._name),
                     ('res_id', '=', id),
                     ('subtype_id', '!=', subtype_res_id)], context=context)
-        
+
         # update the messages
         message_obj.write(cr, uid, msg_ids_comment, {"res_id" : new_res_id, "model" : new_model}, context=context)
         message_obj.write(cr, uid, msg_ids_not_comment, {"res_id" : new_res_id, "model" : new_model, "subtype_id" : None}, context=context)
-        
+
         return True

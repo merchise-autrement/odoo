@@ -182,14 +182,6 @@ class MailThreadIndex(AbstractModel):
                         context=context
                     )
 
-    def create(self, cr, uid, values, context=None):
-        resid = super(MailThreadIndex, self).create(
-            cr, uid, values, context=context
-        )
-        if resid:
-            self._ensure_index(cr, uid, resid, context=context)
-        return resid
-
     def unlink(self, cr, uid, ids, context=None):
         from xoutil.types import is_collection
         imd = self.pool['ir.model.data']
