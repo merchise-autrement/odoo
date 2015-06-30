@@ -184,14 +184,11 @@ class Controller(openerp.http.Controller):
     def poll(self, channels, last, options=None):
         if options is None:
             options = {}
-        try:
-            if not dispatch:
-                raise Exception("bus.Bus unavailable")
-            if [c for c in channels if not isinstance(c, basestring)]:
-                print channels
-                raise Exception("bus.Bus only string channels are allowed.")
-            return self._poll(request.db, channels, last, options)
-        except:
-            _logger.exception("bus.Bus unavailable")
+        if not dispatch:
+            raise Exception("bus.Bus unavailable")
+        if [c for c in channels if not isinstance(c, basestring)]:
+            print channels
+            raise Exception("bus.Bus only string channels are allowed.")
+        return self._poll(request.db, channels, last, options)
 
 # vim:et:
