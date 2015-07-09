@@ -382,6 +382,8 @@ class GeventServer(CommonServer):
         self.httpd = None
 
     def watch_parent(self, beat=4):
+        # WARN: This won't be of any help if I start the gevent process
+        # myself.  See the "spawn_longpolling" configuration option.
         import gevent
         ppid = os.getppid()
         while True:
