@@ -289,7 +289,7 @@ class im_chat_presence(osv.Model):
         cr.commit()
         # notify if the status has changed
         if send_notification:
-            self.pool['bus.bus'].sendone(cr, uid, (cr.dbname,'im_chat.presence'), {'id': uid, 'im_status': vals['status']})
+            self.pool['bus.bus'].sendone(cr, uid, (cr.dbname, 'im_chat.presence'), {'id': uid, 'im_status': vals['status']})
         # gc : disconnect the users having a too old last_poll. 1 on 100 chance to do it.
         if random.random() < 0.01:
             self.check_users_disconnection(cr, uid, context=context)
@@ -390,7 +390,7 @@ class Controller(openerp.addons.bus.bus.Controller):
             ## since there is not enought cursors for everyone. Now, when a user open his list of users, an RPC call is made to update his user status list.
             ##channels.append((request.db,'im_chat.presence'))
             # channel to receive message
-            channels.append((request.db,'im_chat.session', request.uid))
+            channels.append((request.db, 'im_chat.session', request.uid))
         return super(Controller, self)._poll(dbname, channels, last, options)
 
     @openerp.http.route('/im_chat/init', type="json", auth="none")
