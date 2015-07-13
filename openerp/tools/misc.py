@@ -52,7 +52,7 @@ except ImportError:
 
 from config import config
 from cache import *
-from .parse_version import parse_version 
+from .parse_version import parse_version
 
 import openerp
 # get_encodings, ustr and exception_to_unicode were originally from tools.misc.
@@ -142,7 +142,7 @@ def file_open(name, mode="r", subdir='addons', pathinfo=False):
     """Open a file from the OpenERP root, using a subdir folder.
 
     Example::
-    
+
     >>> file_open('hr/report/timesheer.xsl')
     >>> file_open('addons/hr/report/timesheet.xsl')
     >>> file_open('../../base/report/rml_template.xsl', subdir='addons/hr/report', pathinfo=True)
@@ -282,7 +282,7 @@ def flatten(list):
 
 def reverse_enumerate(l):
     """Like enumerate but in the other sens
-    
+
     Usage::
     >>> a = ['a', 'b', 'c']
     >>> it = reverse_enumerate(a)
@@ -448,9 +448,9 @@ class UpdateableDict(local):
 
 class currency(float):
     """ Deprecate
-    
+
     .. warning::
-    
+
     Don't use ! Use res.currency.round()
     """
 
@@ -1005,6 +1005,7 @@ if __name__ == '__main__':
     import doctest
     doctest.testmod()
 
+
 class upload_data_thread(threading.Thread):
     def __init__(self, email, data, type):
         self.args = [('email',email),('type',type),('data',data)]
@@ -1023,6 +1024,7 @@ def upload_data(email, data, type='SURVEY'):
     a = upload_data_thread(email, data, type)
     a.start()
     return True
+
 
 def get_and_group_by_field(cr, uid, obj, ids, field, context=None):
     """ Read the values of ``field´´ for the given ``ids´´ and group ids by value.
@@ -1077,7 +1079,7 @@ class unquote(str):
         return self
 
 class UnquoteEvalContext(defaultdict):
-    """Defaultdict-based evaluation context that returns 
+    """Defaultdict-based evaluation context that returns
        an ``unquote`` string for any missing name used during
        the evaluation.
        Mostly useful for evaluating OpenERP domains/contexts that
