@@ -118,7 +118,7 @@ class configmanager(object):
         self.has_ssl = _check_ssl()
 
         self._LOGLEVELS = dict([
-            (getattr(loglevels, 'LOG_%s' % x), getattr(logging, x)) 
+            (getattr(loglevels, 'LOG_%s' % x), getattr(logging, x))
             for x in ('CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG', 'NOTSET')
         ])
 
@@ -677,6 +677,9 @@ class configmanager(object):
 
     def __getitem__(self, key):
         return self.options[key]
+
+    def setdefault(self, key, default):
+        return self.options.setdefault(key, default)
 
     @property
     def addons_data_dir(self):
