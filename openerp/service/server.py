@@ -24,9 +24,11 @@ if os.name == 'posix':
     import fcntl
     import resource
     import psutil
+    from os import WEXITSTATUS
 else:
     # Windows shim
     signal.SIGHUP = -1
+    WEXITSTATUS = lambda st: (st & 0xff00) >> 8
 
 # Optional process names for workers
 try:
@@ -508,7 +510,7 @@ class PreforkServer(CommonServer):
         try:
             os.kill(pid, sig)
         except OSError, e:
-            if e.errno == errno.ESRCH:
+            if e.errno == errno.ESRCH:  # No such process
                 self.worker_pop(pid)
 
     def process_signals(self):
@@ -534,14 +536,15 @@ class PreforkServer(CommonServer):
                 self.population -= 1
 
     def process_zombie(self):
-        # reap dead workers
+        # reap dead workers.  See manual page for waitpid(2) to learn about
+        # zombie processes and why this is needed.
         while 1:
             try:
                 wpid, status = os.waitpid(-1, os.WNOHANG)
                 if not wpid:
                     break
-                if (status >> 8) == 3:
-                    msg = "Critial worker error (%s)"
+                if WEXITSTATUS(status) == 3:
+                    msg = "Critical worker error (%s)"
                     _logger.critical(msg, wpid)
                     raise Exception(msg % wpid)
                 self.worker_pop(wpid)
@@ -673,6 +676,11 @@ class Worker(object):
         self.watchdog_pipe = multi.pipe_new()
         # Can be set to None if no watchdog is desired.
         self.watchdog_timeout = multi.timeout
+        #  XXX: The worker is instantiated before forking, so the parent's pid
+        #  (ppid) is actually the running process.  This attribute will be
+        #  "inherited" by children processes.  Notice both parent and children
+        #  keep their "unique view" of the Worker instance.  For instance, the
+        #  pid attribute is set by both processes after the fork.
         self.ppid = os.getpid()
         self.pid = None
         self.alive = True
@@ -688,6 +696,7 @@ class Worker(object):
         os.close(self.watchdog_pipe[1])
 
     def signal_handler(self, sig, frame):
+        # Handles SIGINT (Ctrl-C).  This will make the worker quit nicely.
         self.alive = False
 
     def sleep(self):
@@ -698,7 +707,7 @@ class Worker(object):
                 raise
 
     def process_limit(self):
-        # If our parent changed sucide
+        # If our parent changed suicide
         if self.ppid != os.getppid():
             _logger.info("Worker (%s) Parent changed", self.pid)
             self.alive = False
@@ -734,14 +743,16 @@ class Worker(object):
         self.pid = os.getpid()
         self.setproctitle()
         _logger.info("Worker %s (%s) alive", self.__class__.__name__, self.pid)
-        # Reseed the random number generator
+        # Reseed the random number generator, so that it diverts from parent
+        # and siblings.
         random.seed()
-        # Prevent fd inherientence close_on_exec
+        # Prevent fd inheritance close_on_exec
         flags = fcntl.fcntl(self.multi.socket, fcntl.F_GETFD) | fcntl.FD_CLOEXEC
         fcntl.fcntl(self.multi.socket, fcntl.F_SETFD, flags)
         # reset blocking status
         self.multi.socket.setblocking(0)
-        signal.signal(signal.SIGINT, self.signal_handler)
+        signal.signal(signal.SIGINT, self.signal_handler)  # Ctrl-C
+        # Do the default action for SIGTERM and SIGCHLD.  man page signal(7)
         signal.signal(signal.SIGTERM, signal.SIG_DFL)
         signal.signal(signal.SIGCHLD, signal.SIG_DFL)
 
