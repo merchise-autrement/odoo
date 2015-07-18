@@ -689,7 +689,9 @@ class Worker(object):
         self.request_count = 0
 
     def setproctitle(self, title=""):
-        setproctitle('openerp: %s %s %s' % (self.__class__.__name__, self.pid, title))
+        setproctitle('[%s] openerp: %s %s %s' % (
+            sys.argv[0], self.__class__.__name__, self.pid, title
+        ))
 
     def close(self):
         os.close(self.watchdog_pipe[0])
