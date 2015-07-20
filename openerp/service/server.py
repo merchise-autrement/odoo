@@ -594,8 +594,19 @@ class PreforkServer(CommonServer):
 
     def start(self):
         # wakeup pipe, python doesnt throw EINTR when a syscall is interrupted
-        # by a signal simulating a pseudo SA_RESTART. We write to a pipe in the
-        # signal handler to overcome this behaviour
+        # by a signal simulating a pseudo SA_RESTART. We write to a pipe in
+        # the signal handler to overcome this behaviour.
+        #
+        # merchise: The previous means: The select in `sleep` could block
+        # forever if actually interrupted (EINTR) and the signal handler does
+        # not "break" the loop.
+        #
+        # So, inside the signal handler we send a single byte into the pipe,
+        # so that the select in `sleep` does not block forever if it was
+        # interrupted halfway.
+        #
+        # Useful reference: http://250bpm.com/blog:12
+        #
         self.pipe = self.pipe_new()
         # set signal handlers
         signal.signal(signal.SIGINT, self.signal_handler)
