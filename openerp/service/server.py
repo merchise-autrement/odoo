@@ -19,6 +19,8 @@ import unittest2
 
 import werkzeug.serving
 
+_signals = {getattr(signal, name): name for name in dir(signal) if name.startswith('SIG')}
+
 if os.name == 'posix':
     # Unix only for workers
     import fcntl
@@ -466,6 +468,7 @@ class PreforkServer(CommonServer):
                 raise
 
     def signal_handler(self, sig, frame):
+        _logger.debug('%s sent to the server', _signals.get(sig, 'UNK'))
         if len(self.queue) < 5 or sig == signal.SIGCHLD:
             self.queue.append(sig)
             self.pipe_ping(self.pipe)
@@ -709,6 +712,7 @@ class Worker(object):
         os.close(self.watchdog_pipe[1])
 
     def signal_handler(self, sig, frame):
+        _logger.debug('%s sent to the worker', _signals.get(sig, 'UNK'))
         # Handles SIGINT (Ctrl-C).  This will make the worker quit nicely.
         self.alive = False
 
