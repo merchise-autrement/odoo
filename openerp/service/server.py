@@ -491,7 +491,8 @@ class PreforkServer(CommonServer):
     def long_polling_spawn(self):
         nargs = stripped_sys_argv()
         cmd = nargs[0]
-        cmd = os.path.join(os.path.dirname(cmd), "openerp-gevent")
+        command_name = config.get('longpolling_script', 'openerp-gevent')
+        cmd = os.path.join(os.path.dirname(cmd), command_name)
         nargs[0] = cmd
         popen = subprocess.Popen([sys.executable] + nargs)
         self.long_polling_pid = popen.pid
