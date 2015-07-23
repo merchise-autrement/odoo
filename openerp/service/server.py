@@ -494,6 +494,7 @@ class PreforkServer(CommonServer):
         command_name = config.get('longpolling_script', 'openerp-gevent')
         cmd = os.path.join(os.path.dirname(cmd), command_name)
         nargs[0] = cmd
+        _logger.info('Spawning longpolling server %s', cmd)
         popen = subprocess.Popen([sys.executable] + nargs)
         self.long_polling_pid = popen.pid
 
