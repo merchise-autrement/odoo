@@ -18,6 +18,7 @@ import sys
 import time
 import urllib2
 import zlib
+import mimetypes
 from xml.etree import ElementTree
 from cStringIO import StringIO
 
@@ -1069,6 +1070,35 @@ class Binary(http.Controller):
     def placeholder(self, image='placeholder.png'):
         addons_path = http.addons_manifest['web']['addons_path']
         return open(os.path.join(addons_path, 'web', 'static', 'src', 'img', image), 'rb').read()
+
+    @http.route('/web/binary/fetch/<filename>', type='http', auth='public')
+    @serialize_exception
+    def fetch(self, model, field, id=None, filename_field='filename',
+              filename=None, **kw):
+        # TODO: Generalize and make both fetch and saveas use the same code.
+        if not filename:
+            from werkzeug.exceptions import BadRequest
+            return BadRequest()
+        if not id:
+            return request.not_found()
+        Model = request.registry[model]
+        cr, uid, context = request.cr, request.uid, request.context
+        fields = [field]
+        if filename_field:
+            fields.append(filename_field)
+        res = Model.read(cr, uid, [int(id)], fields, context=context)[0]
+        filecontent = base64.b64decode(res.get(field) or '')
+        if not filecontent:
+            return request.not_found()
+        else:
+            ctype, _ = mimetypes.guess_type(filename)
+            if not ctype:
+                ctype = 'application/octet-stream'
+            return request.make_response(
+                filecontent,
+                [('Content-Type', ctype)]
+            )
+        return request.not_found()
 
     @http.route('/web/binary/saveas', type='http', auth="public")
     @serialize_exception
