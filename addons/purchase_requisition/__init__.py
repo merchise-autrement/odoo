@@ -18,6 +18,7 @@
 #
 ##############################################################################
 
-import purchase_requisition
-import wizard
+from . import purchase_requisition  # noqa
+from . import xhg_autrement  # noqa
+from . import wizard  # noqa
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
