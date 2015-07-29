@@ -12,7 +12,7 @@ openerp.mail = function (session) {
      * ------------------------------------------------------------
      * ChatterUtils
      * ------------------------------------------------------------
-     * 
+     *
      * This class holds a few tools method for Chatter.
      * Some regular expressions not used anymore, kept because I want to
      * - (^|\s)@((\w|@|\.)*): @login@log.log
@@ -77,10 +77,10 @@ openerp.mail = function (session) {
         get_text2html: function (text) {
             return text
                 .replace(/((?:https?|ftp):\/\/[\S]+)/g,'<a href="$1">$1</a> ')
-                .replace(/[\n\r]/g,'<br/>')                
+                .replace(/[\n\r]/g,'<br/>')
         },
 
-        /* Returns the complete domain with "&" 
+        /* Returns the complete domain with "&"
          * TDE note: please add some comments to explain how/why
          */
         expand_domain: function (domain) {
@@ -121,7 +121,7 @@ openerp.mail = function (session) {
      * ------------------------------------------------------------
      * MessageCommon
      * ------------------------------------------------------------
-     * 
+     *
      * Common base for expandables, chatter messages and composer. It manages
      * the various variables common to those models.
      */
@@ -133,7 +133,7 @@ openerp.mail = function (session) {
      * FIXME: this comment was moved as is from the ThreadMessage Init as
      * part of a refactoring. Check that it is still correct
      * ------------------------------------------------------------
-     * This widget handles the display of a messages in a thread. 
+     * This widget handles the display of a messages in a thread.
      * Displays a record and performs some formatting on the record :
      * - record.date: formatting according to the user timezone
      * - record.timerelative: relative time givein by timeago lib
@@ -147,7 +147,7 @@ openerp.mail = function (session) {
      * - - sub message (parent_id = root message)
      * - - - sub thread
      */
-        
+
         init: function (parent, datasets, options) {
             this._super(parent, options);
 
@@ -335,13 +335,13 @@ openerp.mail = function (session) {
      * ------------------------------------------------------------
      * ComposeMessage widget
      * ------------------------------------------------------------
-     * 
+     *
      * This widget handles the display of a form to compose a new message.
      * This form is a mail.compose.message form_view.
      * On first time : display a compact textarea that is not the compose form.
      * When the user focuses the textarea, the compose message is instantiated.
      */
-    
+
     mail.ThreadComposeMessage = mail.MessageCommon.extend({
         template: 'mail.compose_message',
 
@@ -431,8 +431,8 @@ openerp.mail = function (session) {
                 this.display_attachments();
             }
         },
-        
-        /* when the file is uploaded 
+
+        /* when the file is uploaded
         */
         on_attachment_loaded: function (event, result) {
 
@@ -611,7 +611,7 @@ openerp.mail = function (session) {
                     var partner_id = partner_info.partner_id;
                     var parsed_email = mail.ChatterUtils.parse_email(partner_name);
 
-                    var pop = new session.web.form.FormOpenPopup(this);                    
+                    var pop = new session.web.form.FormOpenPopup(this);
                     pop.show_element(
                         'res.partner',
                         partner_id,
@@ -655,7 +655,7 @@ openerp.mail = function (session) {
                     });
                 });
             });
-            
+
             return check_done;
         },
 
@@ -697,7 +697,7 @@ openerp.mail = function (session) {
                 values['subtype'] = false;
             }
             else {
-                values['subtype'] = 'mail.mt_comment';   
+                values['subtype'] = 'mail.mt_comment';
             }
             this.parent_thread.ds_thread._model.call('message_post', [this.context.default_res_id], values).done(function (message_id) {
                 var thread = self.parent_thread;
@@ -850,7 +850,7 @@ openerp.mail = function (session) {
             this.nb_messages = datasets.nb_messages;
             this.flag_used = false;
         },
-        
+
         start: function () {
             this._super.apply(this, arguments);
             this.bind_events();
@@ -908,7 +908,7 @@ openerp.mail = function (session) {
 
     mail.ThreadMessage = mail.MessageCommon.extend({
         template: 'mail.thread.message',
-        
+
         start: function () {
             this._super.apply(this, arguments);
             this.bind_events();
@@ -953,7 +953,7 @@ openerp.mail = function (session) {
                 res_id: this.res_id,
             };
             this.thread.ds_thread.call("message_redirect_action", {context: this.context}).then(function(action){
-                self.do_action(action); 
+                self.do_action(action);
             });
         },
 
@@ -1014,7 +1014,7 @@ openerp.mail = function (session) {
             /*insert thread in parent message*/
             this.thread.insertAfter(this.$el);
         },
-        
+
         /**
          * Fade out the message and his child thread.
          * Then this object is destroyed.
@@ -1036,7 +1036,7 @@ openerp.mail = function (session) {
         on_message_delete: function (event) {
             event.stopPropagation();
             if (! confirm(_t("Do you really want to delete this message?"))) { return false; }
-            
+
             this.animated_destroy(150);
             // delete this message and his childs
             var ids = [this.id].concat( this.get_child_ids() );
@@ -1212,7 +1212,7 @@ openerp.mail = function (session) {
             this.options = options.options;
             this.options.root_thread = (options.options.root_thread != undefined ? options.options.root_thread : this);
             this.options.show_compose_message = this.options.show_compose_message && !this.thread_level;
-            
+
             // record options and data
             this.parent_message= parent.thread!= undefined ? parent : false ;
 
@@ -1239,7 +1239,7 @@ openerp.mail = function (session) {
             this.ds_message = new session.web.DataSetSearch(this, 'mail.message');
             this.render_mutex = new $.Mutex();
         },
-        
+
         start: function () {
             this._super.apply(this, arguments);
             this.bind_events();
@@ -1267,7 +1267,7 @@ openerp.mail = function (session) {
          * then the on_expandable function is launch
         */
         on_scroll: function () {
-            var expandables = 
+            var expandables =
             _.each( _.filter(this.messages, function (val) {return val.max_limit && !val.parent_id;}), function (val) {
                 var pos = val.$el.position();
                 if (pos.top) {
@@ -1293,9 +1293,9 @@ openerp.mail = function (session) {
          *show all the partner list of this parent message
         */
         on_show_recipients: function () {
-            var p=$(this).parent(); 
-            p.find('.oe_more_hidden, .oe_hidden').show(); 
-            p.find('.oe_more').hide(); 
+            var p=$(this).parent();
+            p.find('.oe_more_hidden, .oe_hidden').show();
+            p.find('.oe_more').hide();
             return false;
         },
 
@@ -1303,9 +1303,9 @@ openerp.mail = function (session) {
          *hide a part of the partner list of this parent message
         */
         on_hide_recipients: function () {
-            var p=$(this).parent(); 
-            p.find('.oe_more_hidden, .oe_hidden').hide(); 
-            p.find('.oe_more').show(); 
+            var p=$(this).parent();
+            p.find('.oe_more_hidden, .oe_hidden').hide();
+            p.find('.oe_more').show();
             return false;
         },
 
@@ -1424,13 +1424,13 @@ openerp.mail = function (session) {
                     // ids force to read
                     ids === false ? undefined : ids && ids.slice(0, this.options.fetch_limit),
                     // domain + additional
-                    (replace_domain ? replace_domain : this.domain), 
+                    (replace_domain ? replace_domain : this.domain),
                     // ids allready loaded
-                    (this.id ? [this.id].concat( this.get_child_ids() ) : this.get_child_ids()), 
+                    (this.id ? [this.id].concat( this.get_child_ids() ) : this.get_child_ids()),
                     // option for sending in flat mode by server
-                    this.options.flat_mode, 
+                    this.options.flat_mode,
                     // context + additional
-                    (replace_context ? replace_context : this.context), 
+                    (replace_context ? replace_context : this.context),
                     // parent_id
                     this.context.default_parent_id || undefined,
                     this.options.fetch_limit,
@@ -1518,7 +1518,7 @@ openerp.mail = function (session) {
 
             return message
         },
-        
+
         /**
          *get the parent thread of the messages.
          * Each message is send to his parent object (or parent thread flat mode) for creating the object message.
@@ -1529,7 +1529,7 @@ openerp.mail = function (session) {
             var dom_insert_after = typeof dom_insert_after == 'object' ? dom_insert_after : false;
             _(records).each(function (record) {
                 var thread = self.browse_thread({
-                    'id': record.parent_id, 
+                    'id': record.parent_id,
                     'default_return_top_thread':true
                 });
                 // create object and attach to the thread object
@@ -1596,7 +1596,7 @@ openerp.mail = function (session) {
                 // concat preview expandable message and this message to this dom
                 msg_up.domain = mail.ChatterUtils.expand_domain( msg_up.domain );
                 msg_up.domain = ['|'].concat( msg_up.domain ).concat( message_dom );
-                
+
                 msg_up.nb_messages++;
 
                 msg_up.reinit();
@@ -1605,12 +1605,12 @@ openerp.mail = function (session) {
                 // concat next expandable message and this message to this dom
                 msg_down.domain = mail.ChatterUtils.expand_domain( msg_down.domain );
                 msg_down.domain = ['|'].concat( msg_down.domain ).concat( message_dom );
-                
+
                 // it's maybe a message expandable for the max limit read message
                 if ( !msg_down.max_limit ) {
                     msg_down.nb_messages++;
                 }
-                
+
                 msg_down.reinit();
 
             } else {
@@ -1713,7 +1713,7 @@ openerp.mail = function (session) {
             this._super.apply(this, arguments);
             this.message_render();
         },
-        
+
         /**
         * create an object "related_menu"
         * contains the menu widget and the sub menu related of this wall
@@ -1732,7 +1732,7 @@ openerp.mail = function (session) {
 
         /**
          *Create the root thread and display this object in the DOM.
-         * Call the no_message method then c all the message_fetch method 
+         * Call the no_message method then c all the message_fetch method
          * of this root thread to display the messages.
          */
         message_render: function (search) {
@@ -1846,7 +1846,7 @@ openerp.mail = function (session) {
      * ------------------------------------------------------------
      * Aside Widget
      * ------------------------------------------------------------
-     * 
+     *
      * This widget handles the display of a sidebar on the Wall. Its main use
      * is to display group and employees suggestion (if hr is installed).
      */
@@ -1930,7 +1930,7 @@ openerp.mail = function (session) {
             var ds_msg = new session.web.DataSetSearch(this, 'mail.message');
             this.searchview = new session.web.SearchView(this, ds_msg, false, defaults || {}, false);
             this.searchview.on('search_data', this, this.do_searchview_search);
-            this.searchview.appendTo(this.$('.oe_view_manager_view_search'), 
+            this.searchview.appendTo(this.$('.oe_view_manager_view_search'),
                                    this.$('.oe_searchview_drawer_container'));
             if (this.searchview.has_defaults) {
                 this.searchview.ready.then(this.searchview.do_search);
@@ -2000,7 +2000,7 @@ openerp.mail = function (session) {
      * ------------------------------------------------------------
      * Sub-widgets loading
      * ------------------------------------------------------------
-     * 
+     *
      * Load here widgets that could depend on widgets defined in mail.js
      */
 
