@@ -17,6 +17,10 @@ import simplejson
 import sys
 import time
 import urllib2
+try:
+    import urlparse
+except ImportError:
+    from urllib import parse as urlparse  # Py3k
 import zlib
 import mimetypes
 from xml.etree import ElementTree
@@ -25,6 +29,7 @@ from cStringIO import StringIO
 import babel.messages.pofile
 import werkzeug.utils
 import werkzeug.wrappers
+import werkzeug.utils
 try:
     import xlwt
 except ImportError:
@@ -1073,32 +1078,39 @@ class Binary(http.Controller):
 
     @http.route('/web/binary/fetch/<filename>', type='http', auth='public')
     @serialize_exception
-    def fetch(self, model, field, id=None, filename_field='filename',
-              filename=None, **kw):
+    def fetch(self, id, filename=None, **kw):
         # TODO: Generalize and make both fetch and saveas use the same code.
         if not filename:
             from werkzeug.exceptions import BadRequest
             return BadRequest()
         if not id:
             return request.not_found()
-        Model = request.registry[model]
+        Model = request.registry['ir.attachment']
         cr, uid, context = request.cr, request.uid, request.context
-        fields = [field]
-        if filename_field:
-            fields.append(filename_field)
-        res = Model.read(cr, uid, [int(id)], fields, context=context)[0]
-        filecontent = base64.b64decode(res.get(field) or '')
-        if not filecontent:
-            return request.not_found()
-        else:
-            ctype, _ = mimetypes.guess_type(filename)
-            if not ctype:
-                ctype = 'application/octet-stream'
-            return request.make_response(
-                filecontent,
-                [('Content-Type', ctype)]
+        res = Model.read(cr, uid, [int(id)], ['filename', 'store_fname'],
+                         context=context)[0]
+        media_prefix = openerp.tools.config.get('static_server_prefix')
+        if res['store_fname'] and media_prefix:
+            location = urlparse.urljoin(
+                media_prefix,
+                os.path.join(cr.dbname, res['store_fname'])
             )
-        return request.not_found()
+            return werkzeug.utils.redirect(location)
+        else:
+            res = Model.read(cr, uid, [int(id)], ['filename', 'datas'],
+                             context=context)[0]
+            filecontent = base64.b64decode(res.get('datas') or '')
+            if not filecontent:
+                return request.not_found()
+            else:
+                ctype, _ = mimetypes.guess_type(filename)
+                if not ctype:
+                    ctype = 'application/octet-stream'
+                return request.make_response(
+                    filecontent,
+                    [('Content-Type', ctype)]
+                )
+            return request.not_found()
 
     @http.route('/web/binary/saveas', type='http', auth="public")
     @serialize_exception
