@@ -47,8 +47,8 @@ openerp.mail = function (session) {
             return session.url('/web/binary/fetch/' + filename, {
                 'model': 'ir.attachment',
                 'id': attachment_id,
-		'field': 'datas',
-		'filename_field': 'name'
+                'field': 'datas',
+                'filename_field': 'name'
             });
         },
 
@@ -447,8 +447,8 @@ openerp.mail = function (session) {
                             'name': result.name,
                             'filename': result.filename,
                             'url': mail.ChatterUtils.get_attachment_url(
-				this.session, this.id, result.id,
-				result.filename)
+                                this.session, this.id, result.id,
+                                result.filename)
                         };
                     }
                 }
@@ -2009,3 +2009,7 @@ openerp.mail = function (session) {
     openerp.mail.suggestions(session, mail);        // import suggestion.js (suggestion widget)
 
 };
+
+// Local Variables:
+// indent-tabs-mode: nil
+// End:
