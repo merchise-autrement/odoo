@@ -19,15 +19,16 @@
 #
 ##############################################################################
 
-import purchase
-import partner
-import stock
-import wizard
-import report
-import stock
-import company
-import edi
-import res_config
+from . import purchase  # noqa
+from . import xhg_autrement  # noqa
+from . import partner  # noqa
+from . import stock  # noqa
+from . import wizard  # noqa
+from . import report  # noqa
+from . import stock  # noqa
+from . import company  # noqa
+from . import edi  # noqa
+from . import res_config  # noqa
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 
