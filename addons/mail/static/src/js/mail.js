@@ -44,7 +44,7 @@ openerp.mail = function (session) {
 
         /* Get the url of an attachment {'id': id} */
         get_attachment_url: function (session, message_id, attachment_id, filename) {
-            return session.url('/web/binary/fetch/' + filename, {
+            return session.url('/web/binary/fetch/' + encodeURIComponent(filename), {
                 'model': 'ir.attachment',
                 'id': attachment_id,
                 'field': 'datas',
