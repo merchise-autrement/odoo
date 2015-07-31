@@ -1077,7 +1077,6 @@ class Binary(http.Controller):
         return open(os.path.join(addons_path, 'web', 'static', 'src', 'img', image), 'rb').read()
 
     @http.route('/web/binary/fetch/<filename>', type='http', auth='public')
-    @serialize_exception
     def fetch(self, id, filename=None, **kw):
         # TODO: Generalize and make both fetch and saveas use the same code.
         if not filename:
