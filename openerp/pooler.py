@@ -36,7 +36,7 @@ def get_db_and_pool(db_name, force_demo=False, status=None, update_module=False)
     import inspect
     assert openerp.conf.deprecation.openerp_pooler
     _logger.warning('openerp.pooler.get_db_and_pool() is deprecated.',
-                    extra=dict(stack=inspect.stack()))
+                    extra=dict(runtime_stack=inspect.stack()))
     registry = RegistryManager.get(db_name, force_demo, status, update_module)
     return registry._db, registry
 
