@@ -1088,13 +1088,29 @@ class Binary(http.Controller):
         cr, uid, context = request.cr, request.uid, request.context
         res = Model.read(cr, uid, [int(id)], ['filename', 'store_fname'],
                          context=context)[0]
-        media_prefix = openerp.tools.config.get('static_server_prefix')
-        if res['store_fname'] and media_prefix:
+        media_prefix = openerp.tools.config.get('media_prefix')
+        proxied = openerp.tools.config['proxy_mode'] \
+                  and 'HTTP_X_FORWARDED_HOST' in request.httprequest.environ
+        if res['store_fname'] and media_prefix and proxied:
+            if not media_prefix.endswith('/'):
+                media_prefix += '/'  # urljoin needs this
             location = urlparse.urljoin(
                 media_prefix,
                 os.path.join(cr.dbname, res['store_fname'])
             )
-            return werkzeug.utils.redirect(location)
+            response = werkzeug.utils.redirect(location)
+            # The following MAY cause a properly configured nginx to serve the
+            # file directly.  If you don't know this works in your nginx
+            # server, simply avoid the `media_prefix` configuration option.
+            #
+            # WARNING: You must ensure you're server has read access to the
+            # file.
+            ctype, _ = mimetypes.guess_type(filename)
+            if not ctype:
+                ctype = 'application/octet-stream'
+            response.headers['Content-Type'] = ctype
+            response.headers['X-Accel-Redirect'] = location
+            return response
         else:
             res = Model.read(cr, uid, [int(id)], ['filename', 'datas'],
                              context=context)[0]
