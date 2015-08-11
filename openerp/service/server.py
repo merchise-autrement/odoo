@@ -17,6 +17,12 @@ import threading
 import time
 import unittest2
 
+try:
+    from cProfile import Profile
+except ImportError:
+    from profile import Profile
+from pstats import Stats
+
 import werkzeug.serving
 
 _signals = {getattr(signal, name): name for name in dir(signal) if name.startswith('SIG')}
@@ -686,8 +692,9 @@ class PreforkServer(CommonServer):
 
 class Worker(object):
     """ Workers """
-    def __init__(self, multi):
+    def __init__(self, multi, profile=False):
         self.multi = multi
+        self.profile = profile
         self.watchdog_time = time.time()
         self.watchdog_pipe = multi.pipe_new()
         # Can be set to None if no watchdog is desired.
@@ -705,8 +712,9 @@ class Worker(object):
         self.request_count = 0
 
     def setproctitle(self, title=""):
-        setproctitle('[%s] openerp: %s %s %s' % (
-            sys.argv[0], self.__class__.__name__, self.pid, title
+        setproctitle('[%s%s] openerp: %s %s %s' % (
+            sys.argv[0], ('*' if self.profile else ''),
+            self.__class__.__name__, self.pid, title
         ))
 
     def close(self):
@@ -716,7 +724,10 @@ class Worker(object):
     def signal_handler(self, sig, frame):
         _logger.debug('%s sent to the worker', _signals.get(sig, 'UNK'))
         # Handles SIGINT (Ctrl-C).  This will make the worker quit nicely.
-        self.alive = False
+        self.alive = (sig != signal.SIGINT)
+        if sig == signal.SIGUSR2:
+            _logger.debug('Profile %s -> %s', self.profile, not self.profile)
+            self.profile = not self.profile
 
     def sleep(self):
         try:
@@ -759,6 +770,7 @@ class Worker(object):
         pass
 
     def start(self):
+        self.profiler = Profile(builtins=False)
         self.pid = os.getpid()
         self.setproctitle()
         _logger.info("Worker %s (%s) alive", self.__class__.__name__, self.pid)
@@ -774,17 +786,36 @@ class Worker(object):
         # Do the default action for SIGTERM and SIGCHLD.  man page signal(7)
         signal.signal(signal.SIGTERM, signal.SIG_DFL)
         signal.signal(signal.SIGCHLD, signal.SIG_DFL)
+        signal.signal(signal.SIGUSR2, self.signal_handler)
 
     def stop(self):
         pass
 
     def run(self):
+        profile = self.profile
         try:
             self.start()
             while self.alive:
                 self.process_limit()
                 self.multi.pipe_ping(self.watchdog_pipe)
                 self.sleep()
+                if self.profile and not profile:
+                    # NOT TRACING ---> TRACING
+                    _logger.debug('Activating profiling...')
+                    self.setproctitle()
+                    profile = self.profile
+                    self.profiler.enable()
+
+                if not self.profile and profile:
+                    _logger.debug('Dumping profiling information...')
+                    # TRACING ---> NOT TRACING
+                    self.profiler.create_stats()
+                    with open('/tmp/odoo.stats%d.txt' % self.pid, 'w') as st:
+                        st = Stats(self.profiler, stream=st).sort_stats('cumulative')
+                        st.print_stats()
+                    self.setproctitle()
+                    profile = self.profile
+
                 self.process_work()
             _logger.info("Worker (%s) exiting. request_count: %s, registry count: %s.",
                          self.pid, self.request_count,
