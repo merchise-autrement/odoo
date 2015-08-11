@@ -38,6 +38,9 @@ else:
     signal.SIGHUP = -1
     WEXITSTATUS = lambda st: (st & 0xff00) >> 8
 
+# The max amount of time a profiler can be active.
+FIVE_MINUTES = 300  # seconds
+
 # Optional process names for workers
 try:
     from setproctitle import setproctitle
@@ -793,18 +796,24 @@ class Worker(object):
 
     def run(self):
         profile = self.profile
+        age = time.time()
         try:
             self.start()
             while self.alive:
                 self.process_limit()
                 self.multi.pipe_ping(self.watchdog_pipe)
                 self.sleep()
+                if self.profile and (time.time() - age) > FIVE_MINUTES:
+                    _logger.warn('Forcing profile dump cause it was active'
+                                 'more than 5 minutes')
+                    self.profile = False
                 if self.profile and not profile:
                     # NOT TRACING ---> TRACING
                     _logger.debug('Activating profiling...')
                     self.setproctitle()
                     profile = self.profile
                     self.profiler.enable()
+                    age = time.time()
 
                 if not self.profile and profile:
                     _logger.debug('Dumping profiling information...')
