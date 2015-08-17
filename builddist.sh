@@ -101,10 +101,10 @@ mv addons/* openerp/addons/
 
 # Rewrite the version
 if [ -z $USEPEP440 ]; then
-    sed -i "s/FINAL, 0/FINAL, \"-$STAMP-$RELEASE\"/" openerp/release.py
+    sed -i "s/FINAL, STAMP/FINAL, \"-$STAMP-$RELEASE\"/" openerp/release.py
     sed -i "s/, ALPHA,[^)]*/, ALPHA, '-$STAMP-$RELEASE'/" openerp/release.py
 else
-    sed -i "s/FINAL, 0/FINAL, \".$STAMP+$RELEASE\"/" openerp/release.py
+    sed -i "s/FINAL, STAMP/FINAL, \".$STAMP+$RELEASE\"/" openerp/release.py
     sed -i "s/, ALPHA,[^)]*/, ALPHA, '.$STAMP+$RELEASE'/" openerp/release.py
 fi
 
