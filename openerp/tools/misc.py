@@ -826,6 +826,16 @@ DEFAULT_SERVER_DATETIME_FORMAT = "%s %s" % (
     DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_TIME_FORMAT)
 
+# The following format time by leaving seconds to 00.  This is useful in
+# applications where sub-minute timings are not really useful (e.g Instant
+# Messaging).
+DEFAULT_SERVER_TIME_FORMAT_IN_MINUTES = '%H:%M:00'
+DEFAULT_SERVER_DATETIME_FORMAT_IN_MINUTES = '%s %s' % (
+    DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_TIME_FORMAT_IN_MINUTES
+)
+
+
 # Python's strftime supports only the format directives
 # that are available on the platform's libc, so in order to
 # be cross-platform we map to the directives required by

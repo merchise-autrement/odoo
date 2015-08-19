@@ -12,16 +12,20 @@ import openerp
 from openerp.http import request
 from openerp.osv import osv, fields
 from openerp.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
+from openerp.tools.misc import \
+    DEFAULT_SERVER_DATETIME_FORMAT_IN_MINUTES as _FORMAT_IN_MINUTES
 from openerp.addons.bus.bus import TIMEOUT
 
 _logger = logging.getLogger(__name__)
 
 DISCONNECTION_TIMER = TIMEOUT + 5
-AWAY_TIMER = 600 # 10 minutes
+AWAY_TIMER = 600  # 10 minutes
+AWAY_DELTA = datetime.timedelta(seconds=AWAY_TIMER)
 
-#----------------------------------------------------------
+
+# ---------------------------------------------------------
 # Models
-#----------------------------------------------------------
+# ---------------------------------------------------------
 class im_chat_conversation_state(osv.Model):
     """ Adds a state on the m2m between user and session.  """
     _name = 'im_chat.conversation_state'
@@ -170,8 +174,8 @@ class im_chat_message(osv.Model):
             ago and the session_info for open or folded window
         """
         # get the message since the AWAY_TIMER
-        threshold = datetime.datetime.now() - datetime.timedelta(seconds=AWAY_TIMER)
-        threshold = threshold.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        threshold = datetime.datetime.now() - AWAY_DELTA
+        threshold = threshold.strftime(_FORMAT_IN_MINUTES)
         domain = [('to_id.user_ids', 'in', [uid]), ('create_date','>',threshold)]
 
         # get the message since the last poll of the user
@@ -179,7 +183,7 @@ class im_chat_message(osv.Model):
         if presence_ids:
             presence = self.pool['im_chat.presence'].browse(cr, uid, presence_ids, context=context)[0]
             threshold = presence.last_poll
-            domain.append(('create_date','>',threshold))
+            domain.append(('create_date', '>', threshold))
         messages = self.search_read(cr, uid, domain, ['from_id','to_id','create_date','type','message'], order='id asc', context=context)
 
         # get the session of the messages and the not-closed ones
@@ -263,9 +267,10 @@ class im_chat_presence(osv.Model):
         presences = self.browse(cr, uid, presence_ids, context=context)
         # set the default values
         send_notification = True
+        polltime = time.strftime(_FORMAT_IN_MINUTES)
         vals = {
-            'last_poll': time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-            'status' : presences and presences[0].status or 'offline'
+            'last_poll': polltime,
+            'status': presences and presences[0].status or 'offline'
         }
         # update the user or a create a new one
         if not presences:
@@ -273,16 +278,17 @@ class im_chat_presence(osv.Model):
             vals['user_id'] = uid
             self.create(cr, uid, vals, context=context)
         else:
+            NOW = datetime.datetime.now()
             if presence:
-                vals['last_presence'] = time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+                vals['last_presence'] = polltime
                 vals['status'] = 'online'
             else:
-                threshold = datetime.datetime.now() - datetime.timedelta(seconds=AWAY_TIMER)
+                threshold = NOW - AWAY_DELTA
                 if datetime.datetime.strptime(presences[0].last_presence, DEFAULT_SERVER_DATETIME_FORMAT) < threshold:
                     vals['status'] = 'away'
             send_notification = presences[0].status != vals['status']
             # write only if the last_poll is passed TIMEOUT, or if the status has changed
-            delta = datetime.datetime.now() - datetime.datetime.strptime(presences[0].last_poll, DEFAULT_SERVER_DATETIME_FORMAT)
+            delta = NOW - datetime.datetime.strptime(presences[0].last_poll, DEFAULT_SERVER_DATETIME_FORMAT)
             if (delta > datetime.timedelta(seconds=TIMEOUT) or send_notification):
                 self.write(cr, uid, presence_ids, vals, context=context)
         # avoid TransactionRollbackError
