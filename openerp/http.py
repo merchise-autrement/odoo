@@ -77,6 +77,14 @@ def replace_request_password(args):
         args[2] = '*'
     return tuple(args)
 
+
+class AuthenticationError(Exception):
+    pass
+
+class SessionExpiredException(Exception):
+    pass
+
+
 # don't trigger debugger for those exceptions, they carry user-facing warnings
 # and indications, they're not necessarily indicative of anything being
 # *broken*
@@ -84,7 +92,9 @@ NO_POSTMORTEM = (openerp.osv.orm.except_orm,
                  openerp.exceptions.AccessError,
                  openerp.exceptions.AccessDenied,
                  openerp.exceptions.Warning,
-                 openerp.exceptions.RedirectWarning)
+                 openerp.exceptions.RedirectWarning,
+                 AuthenticationError,
+                 SessionExpiredException)
 def dispatch_rpc(service_name, method, params):
     """ Handle a RPC call.
 
@@ -858,15 +868,10 @@ def routing_map(modules, nodb_only, converters=None):
                             routing_map.add(werkzeug.routing.Rule(url, endpoint=endpoint, methods=routing['methods'], **kw))
     return routing_map
 
-#----------------------------------------------------------
+
+# ---------------------------------------------------------
 # HTTP Sessions
-#----------------------------------------------------------
-class AuthenticationError(Exception):
-    pass
-
-class SessionExpiredException(Exception):
-    pass
-
+# ---------------------------------------------------------
 class Service(object):
     """
         .. deprecated:: 8.0
@@ -881,6 +886,7 @@ class Service(object):
             result = dispatch_rpc(self.service_name, method, args)
             return result
         return proxy_method
+
 
 class Model(object):
     """
