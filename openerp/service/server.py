@@ -560,7 +560,7 @@ class PreforkServer(CommonServer):
                 if WEXITSTATUS(status) == 3:
                     msg = "Critical worker error (%s)"
                     _logger.critical(msg, wpid)
-                    raise Exception(msg % wpid)
+                    raise RuntimeError(msg % wpid)
                 self.worker_pop(wpid)
             except OSError, e:
                 if e.errno == errno.ECHILD:
@@ -762,9 +762,11 @@ class Worker(object):
         r = resource.getrusage(resource.RUSAGE_SELF)
         cpu_time = r.ru_utime + r.ru_stime
         def time_expired(n, stack):
-            _logger.info('Worker (%d) CPU time limit (%s) reached.', self.pid, config['limit_time_cpu'])
-            # We dont suicide in such case
-            raise Exception('CPU time limit exceeded.')
+            _logger.info('Worker (%d) CPU time limit (%s) reached.', self.pid,
+                         config['limit_time_cpu'])
+            # We dont suicide in such case, this will raise the exception at
+            # the point of the
+            raise RuntimeError('CPU time limit exceeded.')
         signal.signal(signal.SIGXCPU, time_expired)
         soft, hard = resource.getrlimit(resource.RLIMIT_CPU)
         resource.setrlimit(resource.RLIMIT_CPU, (cpu_time + config['limit_time_cpu'], hard))
