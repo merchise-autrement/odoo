@@ -41,7 +41,7 @@ def decode(text):
         text = decode_header(text.replace('\r', ''))
         # The joining space will not be needed as of Python 3.3
         # See https://hg.python.org/cpython/rev/8c03fe231877
-        return ' '.join([tools.ustr(x[0], x[1]) for x in text])
+        return ' '.join(tools.ustr(x[0], x[1]) for x in text)
 
 class MLStripper(HTMLParser):
     def __init__(self):
