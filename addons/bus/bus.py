@@ -16,6 +16,8 @@ from openerp.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
 _logger = logging.getLogger(__name__)
 
 TIMEOUT = 50
+TIMEOUT_DELTA = datetime.timedelta(seconds=TIMEOUT)
+
 
 #----------------------------------------------------------
 # Bus

@@ -59,3 +59,8 @@
     bus.bus = new bus.Bus();
     return bus;
 })();
+
+
+// Local Variables:
+// indent-tabs-mode: nil
+// End:

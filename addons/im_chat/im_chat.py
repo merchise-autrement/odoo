@@ -14,11 +14,13 @@ from openerp.osv import osv, fields
 from openerp.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
 from openerp.tools.misc import \
     DEFAULT_SERVER_DATETIME_FORMAT_IN_MINUTES as _FORMAT_IN_MINUTES
-from openerp.addons.bus.bus import TIMEOUT
+from openerp.addons.bus.bus import TIMEOUT, TIMEOUT_DELTA
 
 _logger = logging.getLogger(__name__)
 
 DISCONNECTION_TIMER = TIMEOUT + 5
+DISCONNECTION = datetime.timedelta(seconds=DISCONNECTION_TIMER)
+
 AWAY_TIMER = 600  # 10 minutes
 AWAY_DELTA = datetime.timedelta(seconds=AWAY_TIMER)
 
@@ -263,6 +265,7 @@ class im_chat_presence(osv.Model):
 
     def update(self, cr, uid, presence=True, context=None):
         """ register the poll, and change its im status if necessary. It also notify the Bus if the status has changed. """
+        from xoeuf.tools import str2dt
         presence_ids = self.search(cr, uid, [('user_id', '=', uid)], context=context)
         presences = self.browse(cr, uid, presence_ids, context=context)
         # set the default values
@@ -278,18 +281,18 @@ class im_chat_presence(osv.Model):
             vals['user_id'] = uid
             self.create(cr, uid, vals, context=context)
         else:
-            NOW = datetime.datetime.now()
+            now = datetime.datetime.now()
             if presence:
                 vals['last_presence'] = polltime
                 vals['status'] = 'online'
             else:
-                threshold = NOW - AWAY_DELTA
-                if datetime.datetime.strptime(presences[0].last_presence, DEFAULT_SERVER_DATETIME_FORMAT) < threshold:
+                threshold = now - AWAY_DELTA
+                if str2dt(presences[0].last_presence) < threshold:
                     vals['status'] = 'away'
             send_notification = presences[0].status != vals['status']
             # write only if the last_poll is passed TIMEOUT, or if the status has changed
-            delta = NOW - datetime.datetime.strptime(presences[0].last_poll, DEFAULT_SERVER_DATETIME_FORMAT)
-            if (delta > datetime.timedelta(seconds=TIMEOUT) or send_notification):
+            delta = now - str2dt(presences[0].last_poll)
+            if (delta > TIMEOUT_DELTA or send_notification):
                 self.write(cr, uid, presence_ids, vals, context=context)
         # avoid TransactionRollbackError
         cr.commit()
@@ -303,13 +306,14 @@ class im_chat_presence(osv.Model):
 
     def check_users_disconnection(self, cr, uid, context=None):
         """ disconnect the users having a too old last_poll """
-        dt = (datetime.datetime.now() - datetime.timedelta(0, DISCONNECTION_TIMER)).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-        presence_ids = self.search(cr, uid, [('last_poll', '<', dt), ('status' , '!=', 'offline')], context=context)
+        from xoeuf.tools import dt2str
+        dt = dt2str(datetime.datetime.now() - DISCONNECTION)
+        presence_ids = self.search(cr, uid, [('last_poll', '<', dt), ('status', '!=', 'offline')], context=context)
         self.write(cr, uid, presence_ids, {'status': 'offline'}, context=context)
         presences = self.browse(cr, uid, presence_ids, context=context)
         notifications = []
         for presence in presences:
-            notifications.append([(cr.dbname,'im_chat.presence'), {'id': presence.user_id.id, 'im_status': presence.status}])
+            notifications.append([(cr.dbname, 'im_chat.presence'), {'id': presence.user_id.id, 'im_status': presence.status}])
         self.pool['bus.bus'].sendmany(cr, uid, notifications)
         return True
 

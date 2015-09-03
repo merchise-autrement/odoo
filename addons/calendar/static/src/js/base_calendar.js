@@ -4,8 +4,10 @@ openerp.calendar = function(instance) {
     var QWeb = instance.web.qweb;
 
     instance.calendar = {};
-    
-function reload_favorite_list(result) {
+
+    var FIVE_MINUTES = 5*60*1000;  // In ms for setTimeout.
+
+    function reload_favorite_list(result) {
         var self = current = result;
         if (result.view) {
             self = result.view;
@@ -48,7 +50,7 @@ function reload_favorite_list(result) {
                     });
                     self.all_filters = sidebar_items;
                     self.now_filter_ids = $.map(self.all_filters, function(o) { return o.value; });
-                    
+
                     self.sidebar.filter.events_loaded(self.all_filters);
                     self.sidebar.filter.set_filters();
                     self.sidebar.filter.set_distroy_filters();
@@ -101,7 +103,7 @@ function reload_favorite_list(result) {
                 },
             });
             this.ir_model_m2o.insertAfter($('div.oe_calendar_filter'));
-            this.ir_model_m2o.on('change:value', self, function() { 
+            this.ir_model_m2o.on('change:value', self, function() {
                 self.add_filter();
             });
         },
@@ -133,7 +135,7 @@ function reload_favorite_list(result) {
     });
 
     instance.web.WebClient = instance.web.WebClient.extend({
-        
+
 
         get_notif_box: function(me) {
             return $(me).closest(".ui-notify-message-style");
@@ -150,7 +152,7 @@ function reload_favorite_list(result) {
                                 res.title = QWeb.render('notify_title', {'title': res.title, 'id' : res.event_id});
                                 res.message += QWeb.render("notify_footer");
                                 a = self.do_notify(res.title,res.message,true);
-                                
+
                                 $(".link2event").on('click', function() {
                                     self.rpc("/web/action/load", {
                                         action_id: "calendar.action_calendar_event_notify",
@@ -188,21 +190,21 @@ function reload_favorite_list(result) {
             self.get_next_notif();
             self.intervalNotif = setInterval(function(){
                 self.get_next_notif();
-            }, 5 * 60 * 1000 );
+            }, FIVE_MINUTES );
         },
-        
-        //Override the show_application of addons/web/static/src/js/chrome.js       
+
+        //Override the show_application of addons/web/static/src/js/chrome.js
         show_application: function() {
             this._super();
             this.check_notifications();
         },
-        //Override addons/web/static/src/js/chrome.js       
+        //Override addons/web/static/src/js/chrome.js
         on_logout: function() {
             this._super();
             clearInterval(self.intervalNotif);
         },
     });
-    
+
 
     instance.calendar.invitation = instance.web.Widget.extend({
 
@@ -230,7 +232,7 @@ function reload_favorite_list(result) {
             var action_url = '';
 
             action_url = _.str.sprintf('/web?db=%s#id=%s&view_type=form&model=calendar.event', db, meeting_id);
-            
+
             var reload_page = function(){
                 return location.replace(action_url);
             };
@@ -275,10 +277,5 @@ function reload_favorite_list(result) {
             new instance.calendar.invitation(null,db,action,id,view,attendee_data).appendTo($("body").addClass('openerp'));
         });
     };
-    
-    
-    
-    
-   
-};
 
+};
