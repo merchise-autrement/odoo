@@ -35,7 +35,7 @@ from xoeuf.osv.orm import get_modelname
 
 
 # TODO: Move this to xoutil ?
-def generate_reference(search, maxtries=4, start=1):
+def generate_reference(search, maxtries=4, start=1, lower=False):
     '''Generates an unused reference.
 
     :param search: A search callback to check if a candidate reference is
@@ -48,12 +48,16 @@ def generate_reference(search, maxtries=4, start=1):
                   many *more* UUIDs to generate at the very least.  This must
                   be at least 1.
 
+    :param lower: If False, references will contain both upper and lower case
+                  letters regarding them as different.  If True only lower
+                  case letter will be used.
+
     References will contain only digits and letters.
 
     '''
-    _TABLE = ("0123456789"
-              "abcdefghijklmnopqrstuvwxyz"
-              "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    _TABLE = "0123456789abcdefghijklmnopqrstuvwxyz"
+    if not lower:
+        _TABLE += "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
     def encoder(*uuids):
         from xoutil.bases import int2str
