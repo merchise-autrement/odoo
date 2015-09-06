@@ -1,7 +1,58 @@
 (function() {
     var bus = openerp.bus = {};
+    // TODO: These don't really belong here...
 
+    // A deferred that resolves after a given `time` in milliseconds.
+    var elapsed = function(time) {
+        var res = $.Deferred();
+        var id = setTimeout(function(){
+            clearTimeout(id);
+            res.resolve();
+        }, time);
+        return res.promise();
+    }
+
+    // whichever(...promises); returns a promise that will be resolved
+    // whenever any of its arguments resolves.
+    var whichever = function() {
+        var res = $.Deferred();
+        var defs = Array.prototype.slice.apply(arguments);
+        defs.forEach(function (fn) {
+          fn.done(function(){ res.resolve(fn); })
+            .fail(function(){ res.reject(fn); });
+        });
+        return res.promise();
+    }
+
+    // Return a promise that will be resolved when the page becomes visible.
+    var page_visible = function() {
+        var res = $.Deferred();
+        var check_hidden = function(){
+            // The !! serves the purpose of both having the value of `hidden`
+            // and detecting if that value is present at all (older browsers
+            // don't have it).  If the browser supports the visibility API
+            // we'll get the true value of `hidden`, if not, we'll get false
+            // as if the page is always visible.
+            var hidden = !!document.hidden;
+            if (!hidden){
+                res.resolve();
+                $(document).off('visibilitychange', check_hidden);
+            }
+            return hidden;
+        }
+        var hidden = check_hidden();
+        if (hidden)
+            $(document).on('visibilitychange', check_hidden);
+        return res.promise();
+    }
+
+
+    bus.HIDDEN_DELAY = 4000;
     bus.ERROR_DELAY = 10000;
+
+    var rolldice = function() {
+        return Math.floor((Math.random()*20)+1)*1000;
+    }
 
     bus.Bus = openerp.Widget.extend({
         init: function(){
@@ -27,16 +78,27 @@
             var self = this;
             self.activated = true;
             var data = {'channels': self.channels, 'last': self.last, 'options' : self.options};
-            openerp.session.rpc('/longpolling/poll', data, {shadow : true}).then(function(result) {
+            var poll = _.bind(self.poll, self);
+            openerp.session.rpc(
+                '/longpolling/poll',
+                data, {shadow : true}
+            ).then(function(result) {
                 _.each(result, _.bind(self.on_notification, self));
                 if(!self.stop){
-                    self.poll();
+                    // Poll when either HIDDEN_DELAY has passed or the page
+                    // becomes visible, if the page is already visible the
+                    // poll will be done immediately.
+                    var timer = elapsed(bus.HIDDEN_DELAY + rolldice());
+                    var visible = page_visible();
+                    whichever(timer, visible).done(function(){
+                        poll();
+                    });
                 }
             }, function(unused, e) {
                 // no error popup if request is interrupted or fails for any reason
                 e.preventDefault();
                 // random delay to avoid massive longpolling
-                setTimeout(_.bind(self.poll, self), bus.ERROR_DELAY + (Math.floor((Math.random()*20)+1)*1000));
+                setTimeout(poll, bus.ERROR_DELAY + rolldice());
             });
         },
         on_notification: function(notification) {
