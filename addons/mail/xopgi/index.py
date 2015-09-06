@@ -41,11 +41,12 @@ def generate_reference(search, maxtries=4, start=1):
     :param search: A search callback to check if a candidate reference is
                    taken.
 
-    :param maxtries:  How many times to try to find a reference.  Zero means
-                      until one is found.  Be careful!
+    :param maxtries:  How many times to try to find a reference.  This must be
+                      at least 1.
 
     :param start: The minimum length for seeding.  This actually means how
-                  many *more* UUIDs to generate at the very least.
+                  many *more* UUIDs to generate at the very least.  This must
+                  be at least 1.
 
     References will contain only digits and letters.
 
