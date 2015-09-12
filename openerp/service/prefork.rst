@@ -123,6 +123,11 @@ on-the-fly, but in my tests it does not work::
 
   kill -TTOU `cat var/run/xoeuf.pid`
 
+Sending the SIGUSR2 signal to a worker process will make to start collecting
+profiling data (see the Python profile module).  Sending it again will stop
+the profiling and save the data in ``/tmp/odoo.stats<PID>.txt``.  In any case
+the profiling will stop after 5 minutes after activation.
+
 
 Sketch
 ------
