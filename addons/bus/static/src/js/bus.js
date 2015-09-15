@@ -1,28 +1,5 @@
 (function() {
     var bus = openerp.bus = {};
-    // TODO: These don't really belong here...
-
-    // A deferred that resolves after a given `time` in milliseconds.
-    var elapsed = function(time) {
-        var res = $.Deferred();
-        var id = setTimeout(function(){
-            clearTimeout(id);
-            res.resolve();
-        }, time);
-        return res.promise();
-    }
-
-    // whichever(...promises); returns a promise that will be resolved
-    // whenever any of its arguments resolves.
-    var whichever = function() {
-        var res = $.Deferred();
-        var defs = Array.prototype.slice.apply(arguments);
-        defs.forEach(function (fn) {
-          fn.done(function(){ res.resolve(fn); })
-            .fail(function(){ res.reject(fn); });
-        });
-        return res.promise();
-    }
 
     // Return a promise that will be resolved when the page becomes visible.
     var page_visible = function() {
@@ -88,9 +65,9 @@
                     // Poll when either HIDDEN_DELAY has passed or the page
                     // becomes visible, if the page is already visible the
                     // poll will be done immediately.
-                    var timer = elapsed(bus.HIDDEN_DELAY + rolldice());
+                    var timer = $.elapsed(bus.HIDDEN_DELAY + rolldice());
                     var visible = page_visible();
-                    whichever(timer, visible).done(function(){
+                    $.whichever(timer, visible).done(function(){
                         poll();
                     });
                 }

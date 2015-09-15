@@ -615,6 +615,29 @@ $.async_when = function() {
         return old_async_when.apply(this, arguments);
 };
 
+// A deferred that resolves after a given `time` in milliseconds.
+$.elapsed = function(time) {
+    var res = $.Deferred();
+    var id = setTimeout(function(){
+        clearTimeout(id);
+        res.resolve();
+    }, time);
+    return res.promise();
+}
+
+// $.whichever(...promises); returns a promise that will be resolved
+// whenever any of its arguments resolves.
+$.whichever = function() {
+    var res = $.Deferred();
+    var defs = Array.prototype.slice.apply(arguments);
+    defs.forEach(function (fn) {
+      $.when(fn).done(function(){ res.resolve(fn); })
+                .fail(function(){ res.reject(fn); });
+    });
+    return res.promise();
+}
+
+
 /** Setup default session */
 instance.session = new instance.web.Session();
 
