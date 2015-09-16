@@ -654,7 +654,7 @@ openerp.Widget = openerp.Class.extend(openerp.PropertiesMixin, {
      * Method called after rendering. Mostly used to bind actions, perform asynchronous
      * calls, etc...
      *
-     * By convention, this method should return an object that can be passed to $.when() 
+     * By convention, this method should return an object that can be passed to $.when()
      * to inform the caller when this widget has been initialized.
      *
      * @returns {jQuery.Deferred or any}
@@ -1004,12 +1004,12 @@ openerp.Session = openerp.Class.extend(openerp.PropertiesMixin, {
     },
     /**
     @constructs openerp.Session
-    
+
     @param parent The parent of the newly created object.
     @param {String} origin Url of the OpenERP server to contact with this session object
     or `null` if the server to contact is the origin server.
     @param {Dict} options A dictionary that can contain the following options:
-        
+
         * "override_session": Default to false. If true, the current session object will
           not try to re-use a previously created session id stored in a cookie.
         * "session_id": Default to null. If specified, the specified session_id will be used
@@ -1180,7 +1180,7 @@ openerp.Session = openerp.Class.extend(openerp.PropertiesMixin, {
             qs = "?" + qs;
         var prefix = _.any(['http://', 'https://', '//'], function(el) {
             return path.length >= el.length && path.slice(0, el.length) === el;
-        }) ? '' : this.prefix; 
+        }) ? '' : this.prefix;
         return prefix + path + qs;
     },
     model: function(model_name) {
@@ -1194,7 +1194,7 @@ openerp.Model = openerp.Class.extend({
 
     @constructs instance.Model
     @extends instance.Class
-    
+
     @param {openerp.Session} [session] The session object used to communicate with
     the server.
     @param {String} model_name name of the OpenERP model this object is bound to
@@ -1359,10 +1359,10 @@ openerp.Mutex = openerp.Class.extend({
 /**
  * Converts a string to a Date javascript object using OpenERP's
  * datetime string format (exemple: '2011-12-01 15:12:35.832').
- * 
+ *
  * The time zone is assumed to be UTC (standard for OpenERP 6.1)
  * and will be converted to the browser's time zone.
- * 
+ *
  * @param {String} str A string representing a datetime.
  * @returns {Date}
  */
@@ -1393,11 +1393,11 @@ openerp.str_to_datetime = function(str) {
 /**
  * Converts a string to a Date javascript object using OpenERP's
  * date string format (exemple: '2011-12-01').
- * 
+ *
  * As a date is not subject to time zones, we assume it should be
  * represented as a Date javascript object at 00:00:00 in the
  * time zone of the browser.
- * 
+ *
  * @param {String} str A string representing a date.
  * @returns {Date}
  */
@@ -1423,11 +1423,11 @@ openerp.str_to_date = function(str) {
 /**
  * Converts a string to a Date javascript object using OpenERP's
  * time string format (exemple: '15:12:35').
- * 
+ *
  * The OpenERP times are supposed to always be naive times. We assume it is
  * represented using a javascript Date with a date 1 of January 1970 and a
  * time corresponding to the meant time in the browser's time zone.
- * 
+ *
  * @param {String} str A string representing a time.
  * @returns {Date}
  */
@@ -1472,10 +1472,10 @@ var rpad = function(str, size) {
 /**
  * Converts a Date javascript object to a string using OpenERP's
  * datetime string format (exemple: '2011-12-01 15:12:35').
- * 
+ *
  * The time zone of the Date object is assumed to be the one of the
  * browser and it will be converted to UTC (standard for OpenERP 6.1).
- * 
+ *
  * @param {Date} obj
  * @returns {String} A string representing a datetime.
  */
@@ -1491,11 +1491,11 @@ openerp.datetime_to_str = function(obj) {
 /**
  * Converts a Date javascript object to a string using OpenERP's
  * date string format (exemple: '2011-12-01').
- * 
+ *
  * As a date is not subject to time zones, we assume it should be
  * represented as a Date javascript object at 00:00:00 in the
  * time zone of the browser.
- * 
+ *
  * @param {Date} obj
  * @returns {String} A string representing a date.
  */
@@ -1510,11 +1510,11 @@ openerp.date_to_str = function(obj) {
 /**
  * Converts a Date javascript object to a string using OpenERP's
  * time string format (exemple: '15:12:35').
- * 
+ *
  * The OpenERP times are supposed to always be naive times. We assume it is
  * represented using a javascript Date with a date 1 of January 1970 and a
  * time corresponding to the meant time in the browser's time zone.
- * 
+ *
  * @param {Date} obj
  * @returns {String} A string representing a time.
  */

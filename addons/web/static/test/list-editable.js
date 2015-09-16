@@ -187,7 +187,7 @@ openerp.testing.section('list.edition', {
             return [];
         });
         mock('demo:search_read', function (args) {
-            // args[0][0] = ["id", "=", 42] 
+            // args[0][0] = ["id", "=", 42]
             // args[0][0] = 42
             var id = args[0][0][2];
             if (id in records) {

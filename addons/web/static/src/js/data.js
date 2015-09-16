@@ -22,7 +22,7 @@ instance.web.serialize_sort = function (criterion) {
 };
 
 /**
- * Reverse of the serialize_sort function: convert an array of SQL-like sort 
+ * Reverse of the serialize_sort function: convert an array of SQL-like sort
  * descriptors into a list of fields prefixed with '-' if necessary.
  */
  instance.web.deserialize_sort = function (criterion) {
@@ -198,7 +198,7 @@ instance.web.Query = instance.web.Class.extend({
      * Creates a new query with the provided parameter lazy replacing the current
      * query's own.
      *
-     * @param {Boolean} lazy indicates if the read_group should return only the 
+     * @param {Boolean} lazy indicates if the read_group should return only the
      * first level of groupby records, or should return the records grouped by
      * all levels at once (so, it makes only 1 db request).
      * @returns {openerp.web.Query}
@@ -269,11 +269,11 @@ instance.web.QueryGroup = instance.web.Class.extend({
         var group_size = fixed_group[count_key] || fixed_group.__count || 0;
         var leaf_group = fixed_group.__context.group_by.length === 0;
 
-        var value = (grouping_fields.length === 1) 
+        var value = (grouping_fields.length === 1)
                 ? fixed_group[grouping_fields[0]]
                 : _.map(grouping_fields, function (field) { return fixed_group[field]; });
-        var grouped_on = (grouping_fields.length === 1) 
-                ? grouping_fields[0] 
+        var grouped_on = (grouping_fields.length === 1)
+                ? grouping_fields[0]
                 : grouping_fields;
         this.attributes = {
             folded: !!(fixed_group.__fold),
@@ -304,7 +304,7 @@ instance.web.Model.include({
 
     @constructs instance.web.Model
     @extends instance.web.Class
-    
+
     @param {openerp.web.Session} [session] The session object used to communicate with
     the server.
     @param {String} model_name name of the OpenERP model this object is bound to
@@ -492,7 +492,7 @@ instance.web.DataSet =  instance.web.Class.extend(instance.web.PropertiesMixin, 
     read_ids: function (ids, fields, options) {
         if (_.isEmpty(ids))
             return $.Deferred().resolve([]);
-            
+
         options = options || {};
         var method = 'read';
         var ids_arg = ids;
@@ -645,7 +645,7 @@ instance.web.DataSet =  instance.web.Class.extend(instance.web.PropertiesMixin, 
         return this._model.call('name_get', [ids], {context: this.get_context()});
     },
     /**
-     * 
+     *
      * @param {String} name name to perform a search for/on
      * @param {Array} [domain=[]] filters for the objects returned, OpenERP domain
      * @param {String} [operator='ilike'] matching operator to use with the provided name value
@@ -700,7 +700,7 @@ instance.web.DataSet =  instance.web.Class.extend(instance.web.PropertiesMixin, 
         return undefined;
     },
     /**
-     * Set the sort criteria on the dataset.  
+     * Set the sort criteria on the dataset.
      *
      * @param {Array} fields_list: list of fields order descriptors, as used by
      * Odoo's ORM (such as 'name desc', 'product_id', 'order_date asc')
@@ -958,7 +958,7 @@ instance.web.BufferedDataSet = instance.web.DataSetStatic.extend({
             // sorting an array where all items are considered equal is a worst-case that
             // will randomize the array with an unstable sort! Therefore we must avoid
             // sorting if there are no sort_fields (i.e. all items are considered equal)
-            // See also: http://ecma262-5.com/ELS5_Section_15.htm#Section_15.4.4.11 
+            // See also: http://ecma262-5.com/ELS5_Section_15.htm#Section_15.4.4.11
             //           http://code.google.com/p/v8/issues/detail?id=90
             if (sort_fields.length) {
                 records.sort(function (a, b) {
@@ -1191,12 +1191,12 @@ instance.web.DropMisordered = instance.web.Class.extend({
 });
 
 instance.web.SimpleIndexedDB = instance.web.Class.extend({
-    /** 
-     * A simple wrapper around IndexedDB that provides an asynchronous 
-     * localStorage-like Key-Value api that persists between browser 
+    /**
+     * A simple wrapper around IndexedDB that provides an asynchronous
+     * localStorage-like Key-Value api that persists between browser
      * restarts.
      *
-     * It will not work if the browser doesn't support a recent version 
+     * It will not work if the browser doesn't support a recent version
      * of IndexedDB, and it may fail if the user refuses db access.
      *
      * All instances of SimpleIndexedDB will by default refer to the same
@@ -1237,8 +1237,8 @@ instance.web.SimpleIndexedDB = instance.web.Class.extend({
     },
 
     /**
-     * returns true if the browser supports the necessary IndexedDB API 
-     * (but doesn't tell if the db can be created, check ready() for that) 
+     * returns true if the browser supports the necessary IndexedDB API
+     * (but doesn't tell if the db can be created, check ready() for that)
      */
     isSupportedByBrowser: function(){
         return this.indexedDB && this.indexedDB.open;
@@ -1255,7 +1255,7 @@ instance.web.SimpleIndexedDB = instance.web.Class.extend({
 
     /**
      * fetches the value associated to 'key' in the db. if the key doesn't
-     * exists, it returns undefined. The returned value is provided as a 
+     * exists, it returns undefined. The returned value is provided as a
      * deferred, or as the first parameter of the optional 'done' callback.
      */
     getItem: function(key,done,failed){
@@ -1272,7 +1272,7 @@ instance.web.SimpleIndexedDB = instance.web.Class.extend({
                     def.resolve(request.result ? request.result.value : undefined);
                 };
 
-                request.onerror = function(event){ 
+                request.onerror = function(event){
                     def.reject(event.target.error);
                 };
             },function(){
@@ -1281,7 +1281,7 @@ instance.web.SimpleIndexedDB = instance.web.Class.extend({
 
         return def.promise();
     },
-    
+
     /**
      * Associates a value to 'key' in the db, overwriting previous value if
      * necessary. Contrary to localStorage, the value is not limited to strings and
@@ -1303,7 +1303,7 @@ instance.web.SimpleIndexedDB = instance.web.Class.extend({
                     def.resolve();
                 };
 
-                request.onerror = function(event){ 
+                request.onerror = function(event){
                     def.reject(event.target.error);
                 };
             },function(){
@@ -1314,7 +1314,7 @@ instance.web.SimpleIndexedDB = instance.web.Class.extend({
     },
 
     /**
-     * Removes the value associated with 'key' from the db. 
+     * Removes the value associated with 'key' from the db.
      */
     removeItem: function(key,done,failed){
         var self = this;
@@ -1330,7 +1330,7 @@ instance.web.SimpleIndexedDB = instance.web.Class.extend({
                     def.resolve();
                 };
 
-                request.onerror = function(event){ 
+                request.onerror = function(event){
                     def.reject(event.target.error);
                 };
             },function(){
