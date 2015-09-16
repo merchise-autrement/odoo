@@ -39,6 +39,7 @@
             this.channels = [];
             this.last = 0;
             this.stop = false;
+            this.backoff = 1;
         },
         start_polling: function(){
             if(!this.activated){
@@ -60,6 +61,7 @@
                 '/longpolling/poll',
                 data, {shadow : true}
             ).then(function(result) {
+                self.backoff = 1;
                 _.each(result, _.bind(self.on_notification, self));
                 if(!self.stop){
                     // Poll when either HIDDEN_DELAY has passed or the page
@@ -75,7 +77,9 @@
                 // no error popup if request is interrupted or fails for any reason
                 e.preventDefault();
                 // random delay to avoid massive longpolling
-                setTimeout(poll, bus.ERROR_DELAY + rolldice());
+                setTimeout(poll, bus.ERROR_DELAY * self.backoff + rolldice());
+                if (self.backoff < 5)
+                    self.backoff = self.backoff * 2
             });
         },
         on_notification: function(notification) {
