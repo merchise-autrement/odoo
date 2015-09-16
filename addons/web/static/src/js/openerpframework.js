@@ -1341,6 +1341,23 @@ openerp.qweb.default_dict = {
     '_t' : openerp._t
 };
 
+
+// Mutex allows to serialize actions.
+//
+// Useful you must ensure asynchronous actions are not performed concurrently.
+//
+// Usage:
+//
+//     var m = new $.Mutex();
+//     m.exec(action1).then(callback);
+//     m.exec(action2).then(callback2);
+//
+// In this example, `action2` won't be called until `action1` finishes.
+//
+// Notice you must not start the action yourself.
+//
+// Actions are executed in the same order they are placed in the Mutex.
+//
 openerp.Mutex = openerp.Class.extend({
     init: function() {
         this.def = $.Deferred().resolve();
