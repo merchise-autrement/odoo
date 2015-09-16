@@ -1354,7 +1354,8 @@ openerp.qweb.default_dict = {
 //
 // In this example, `action2` won't be called until `action1` finishes.
 //
-// Notice you must not start the action yourself.
+// Notice you must not start (by accidentally calling the `action`) the action
+// yourself.
 //
 // Actions are executed in the same order they are placed in the Mutex.
 //
