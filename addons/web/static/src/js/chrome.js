@@ -1051,9 +1051,6 @@ instance.web.UserMenu =  instance.web.Widget.extend({
         };
         this.update_promise = this.update_promise.then(fct, fct);
     },
-    on_menu_help: function() {
-        window.open('http://help.odoo.com', '_blank');
-    },
     on_menu_logout: function() {
         this.trigger('user_logout');
     },
@@ -1063,28 +1060,6 @@ instance.web.UserMenu =  instance.web.Widget.extend({
             self.rpc("/web/action/load", { action_id: "base.action_res_users_my" }).done(function(result) {
                 result.res_id = instance.session.uid;
                 self.getParent().action_manager.do_action(result);
-            });
-        }
-    },
-    on_menu_account: function() {
-        var self = this;
-        if (!this.getParent().has_uncommitted_changes()) {
-            var P = new instance.web.Model('ir.config_parameter');
-            P.call('get_param', ['database.uuid']).then(function(dbuuid) {
-                var state = {
-                            'd': instance.session.db,
-                            'u': window.location.protocol + '//' + window.location.host,
-                        };
-                var params = {
-                    response_type: 'token',
-                    client_id: dbuuid || '',
-                    state: JSON.stringify(state),
-                    scope: 'userinfo',
-                };
-                instance.web.redirect('https://accounts.odoo.com/oauth2/auth?'+$.param(params));
-            }).fail(function(result, ev){
-                ev.preventDefault();
-                instance.web.redirect('https://accounts.odoo.com/account');
             });
         }
     },
