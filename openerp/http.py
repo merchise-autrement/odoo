@@ -58,6 +58,43 @@ rpc_response = logging.getLogger(__name__ + '.rpc.response')
 # 1 week cache for statics as advised by Google Page Speed
 STATIC_CACHE = 60 * 60 * 24 * 7
 
+
+class _AccelMixin(object):
+    '''A mixin for classes with an :attr:`~BaseResponse.environ` attribute
+    that tests for SPDY/HTTP2 proxies/accelerators.
+
+    '''
+    spdy_version = werkzeug.utils.environ_property(
+        'HTTP_X_SPDY_VERSION', '',
+        doc='''The provided negotiated version of SPDY.
+
+        Proxies or accelerators should be configured to provide
+        this header when using SPDY.
+
+        ''')
+
+    http2_proto = werkzeug.utils.environ_property(
+        'HTTP_X_HTTP2_PROTO', '',
+        doc='''The provided negotiated protocol for HTTP/2 connections.
+
+        Proxies or accelerator should be configured to provide this header
+        when using HTTP/2.
+
+        ''')
+
+    @werkzeug.utils.cached_property
+    def is_spdy(self):
+        return bool(self.spdy_version)
+
+    @werkzeug.utils.cached_property
+    def is_http2(self):
+        return bool(self.http2_proto)
+
+
+class WerkzeugOdooRequest(werkzeug.wrappers.Request, _AccelMixin):
+    pass
+
+
 #----------------------------------------------------------
 # RequestHandler
 #----------------------------------------------------------
@@ -1434,7 +1471,7 @@ class Root(object):
         Performs the actual WSGI dispatching for the application.
         """
         try:
-            httprequest = werkzeug.wrappers.Request(environ)
+            httprequest = WerkzeugOdooRequest(environ)
             httprequest.app = self
 
             explicit_session = self.setup_session(httprequest)

@@ -446,19 +446,29 @@ class QWeb(orm.AbstractModel):
         return self.render(cr, uid, template, d)
 
     def render_tag_call_assets(self, element, template_attributes, generated_attributes, qwebcontext):
-        """ This special 't-call' tag can be used in order to aggregate/minify javascript and css assets"""
-        if len(element):
-            # An asset bundle is rendered in two differents contexts (when genereting html and
-            # when generating the bundle itself) so they must be qwebcontext free
-            # even '0' variable is forbidden
-            template = qwebcontext.get('__template__')
-            raise QWebException("t-call-assets cannot contain children nodes", template=template)
-        xmlid = template_attributes['call-assets']
-        cr, uid, context = [getattr(qwebcontext, attr) for attr in ('cr', 'uid', 'context')]
-        bundle = AssetsBundle(xmlid, cr=cr, uid=uid, context=context, registry=self.pool)
-        css = self.get_attr_bool(template_attributes.get('css'), default=True)
-        js = self.get_attr_bool(template_attributes.get('js'), default=True)
-        return bundle.to_html(css=css, js=js, debug=bool(qwebcontext.get('debug')))
+        """This special 't-call' tag can be used in order to aggregate/minify javascript and css assets.
+
+        When deployed proxied via a HTTP/2 or SPDY accelerator (e.g NGINX), this may behave as 't-call', i.e no bundling nor minification is
+        performed.
+
+        """
+        request = getattr(qwebcontext.get('request'), 'httprequest', None)
+        if request and (request.is_spdy or request.is_http2):
+            template_attributes['call'] = template_attributes.pop('call-assets')
+            return self.render_tag_call(element, template_attributes, generated_attributes, qwebcontext)
+        else:
+            if len(element):
+                # An asset bundle is rendered in two differents contexts (when genereting html and
+                # when generating the bundle itself) so they must be qwebcontext free
+                # even '0' variable is forbidden
+                template = qwebcontext.get('__template__')
+                raise QWebException("t-call-assets cannot contain children nodes", template=template)
+            xmlid = template_attributes['call-assets']
+            cr, uid, context = [getattr(qwebcontext, attr) for attr in ('cr', 'uid', 'context')]
+            bundle = AssetsBundle(xmlid, cr=cr, uid=uid, context=context, registry=self.pool)
+            css = self.get_attr_bool(template_attributes.get('css'), default=True)
+            js = self.get_attr_bool(template_attributes.get('js'), default=True)
+            return bundle.to_html(css=css, js=js, debug=bool(qwebcontext.get('debug')))
 
     def render_tag_set(self, element, template_attributes, generated_attributes, qwebcontext):
         if "value" in template_attributes:
