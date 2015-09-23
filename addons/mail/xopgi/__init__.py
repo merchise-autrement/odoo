@@ -21,6 +21,6 @@ class MailThreadName(Model):
         if name_field in vals:
             for thread in self:
                 name = getattr(thread, name_field)
-                if name:
+                if name and thread.message_ids:
                     thread.message_ids[THREAD_ROOT].record_name = name
         return res
