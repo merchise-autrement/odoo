@@ -106,6 +106,8 @@ def py2exe_options():
                         'yaml',
 
                         # Merchise
+                        'celery',
+                        'redis', 'rb'
                         'xoutil',
                     ],
                     'excludes': ['Tkconstants', 'Tkinter', 'tcl'],
@@ -169,6 +171,8 @@ setup(
         'xlwt',
 
         # Merchise
+        'celery',
+        'redis', 'rb',
         'xoutil',
     ],
     extras_require={
