@@ -33,7 +33,7 @@ class except_orm(Exception):
     def __init__(self, name, value):
         self.name = name
         self.value = value
-        self.args = (name, value)
+        super(except_orm, self).__init__(name, value)
 
 class Warning(Exception):
     pass
@@ -53,6 +53,7 @@ class AccessDenied(Exception):
     def __init__(self):
         super(AccessDenied, self).__init__('Access denied.')
         self.traceback = ('', '', '')
+        super(AccessDenied, self).__init__()
 
 class AccessError(except_orm):
     """ Access rights error. """
@@ -81,5 +82,6 @@ class DeferredException(Exception):
     def __init__(self, msg, tb):
         self.message = msg
         self.traceback = tb
+        super(DeferredException, self).__init__(msg, tb)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
