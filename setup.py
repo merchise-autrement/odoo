@@ -107,6 +107,7 @@ def py2exe_options():
 
                         # Merchise
                         'celery',
+                        'flower',
                         'redis', 'rb'
                         'xoutil',
                     ],
@@ -172,6 +173,7 @@ setup(
 
         # Merchise
         'celery',
+        'flower',
         'redis', 'rb',
         'xoutil',
     ],
