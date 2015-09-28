@@ -1346,8 +1346,8 @@ class mail_thread(osv.AbstractModel):
                         body, tools.ustr(payload, encoding, errors='replace'),
                         preserve=True
                     )
-                # *) Anything else that it's not multipart -> attachment
-                elif not part.is_multipart():
+                # *) Anything else that it's not multipart -> attachment unless inlined.
+                elif not part.is_multipart() or not part.get('content-disposition', '').strip().startswith('inline'):
                     attachments.append((filename or 'attachment', part.get_payload(decode=True)))
         return body, attachments
 
