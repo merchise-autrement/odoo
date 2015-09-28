@@ -973,17 +973,17 @@ class CeleryWorker(Worker):
 
 class DefaultCeleryWorker(CeleryWorker):
     queues = 'default,high'
-    concurrency = config.get('celery.default_workers', 1)
+    concurrency = int(config.get('celery.default_workers', 1))
 
 
 class HighPriorityCeleryWorker(CeleryWorker):
     queues = 'high'
-    concurrency = config.get('celery.highpri_workers', 2)
+    concurrency = int(config.get('celery.highpri_workers', 2))
 
 
 class LowPriorityCeleryWorker(CeleryWorker):
     queues = 'low,high'
-    concurrency = config.get('celery.lowpri_workers', 1)
+    concurrency = int(config.get('celery.lowpri_workers', 1))
 
 
 
