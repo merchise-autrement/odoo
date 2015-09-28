@@ -111,26 +111,32 @@ class ImDispatch(object):
         return notifications
 
     def loop(self):
-        """ Dispatch postgres notifications to the relevant polling threads/greenlets """
+        """Dispatch postgres notifications to the relevant polling threads/greenlets"""
+        def on_db_notification(conn):
+            def callback(*a, **kw):
+                conn.poll()
+                channels = []
+                while conn.notifies:
+                    channels.extend(json.loads(conn.notifies.pop().payload))
+                # dispatch to local threads/greenlets
+                events = set()
+                for c in channels:
+                    events.update(self.channels.pop(hashable(c), []))
+                for e in events:
+                    e.set()
+            return callback
+
         _logger.info("Bus.loop listen imbus on db postgres")
+        from kombu.async.hub import Hub
+
         with openerp.sql_db.db_connect('postgres').cursor() as cr:
             conn = cr._cnx
             cr.execute("listen imbus")
-            cr.commit();
-            while True:
-                if select.select([conn], [], [], TIMEOUT) == ([],[],[]):
-                    pass
-                else:
-                    conn.poll()
-                    channels = []
-                    while conn.notifies:
-                        channels.extend(json.loads(conn.notifies.pop().payload))
-                    # dispatch to local threads/greenlets
-                    events = set()
-                    for c in channels:
-                        events.update(self.channels.pop(hashable(c),[]))
-                    for e in events:
-                        e.set()
+            cr.commit()
+
+            hub = Hub()
+            hub.add_reader(conn, on_db_notification(conn))
+            hub.run_forever()
 
     def run(self):
         while True:
