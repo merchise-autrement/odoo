@@ -409,12 +409,6 @@ class GeventServer(CommonServer):
                 return
             gevent.sleep(beat)
 
-    def watch_celery_events(self):
-        from kombu import Connection, Consumer
-        from openerp.celeryapp import Configuration as c
-        with Connection(c.BROKER_URL) as conn:
-            pass
-
     def start(self):
         import gevent
         from gevent.wsgi import WSGIServer
@@ -424,7 +418,6 @@ class GeventServer(CommonServer):
             signal.signal(signal.SIGUSR1, log_ormcache_stats)
 
         gevent.spawn(self.watch_parent)
-        gevent.spawn(self.watch_celery_events)
         self.httpd = WSGIServer((self.interface, self.port), self.app)
         _logger.info('Evented Service (longpolling) running on %s:%s', self.interface, self.port)
         try:
