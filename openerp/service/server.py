@@ -586,12 +586,24 @@ class PreforkServer(CommonServer):
         while len(self.workers_cron) < config['max_cron_threads']:
             self.worker_spawn(WorkerCron, self.workers_cron)
         if not len(self.celery_workers):
-            if DefaultCeleryWorker.concurrency:
-                self.worker_spawn(DefaultCeleryWorker, self.celery_workers)
-            if HighPriorityCeleryWorker.concurrency:
-                self.worker_spawn(HighPriorityCeleryWorker, self.celery_workers)
-            if LowPriorityCeleryWorker.concurrency:
-                self.worker_spawn(LowPriorityCeleryWorker, self.celery_workers)
+            concurrency = int(config.get('celery.default_workers', 1))
+            if concurrency:
+                self.worker_spawn(
+                    DefaultCeleryWorker, self.celery_workers,
+                    concurrency=concurrency
+                )
+            concurrency = int(config.get('celery.highpri_workers', 2))
+            if concurrency:
+                self.worker_spawn(
+                    HighPriorityCeleryWorker, self.celery_workers,
+                    concurrency=concurrency
+                )
+            concurrency = int(config.get('celery.lowpri_workers', 1))
+            if concurrency:
+                self.worker_spawn(
+                    LowPriorityCeleryWorker, self.celery_workers,
+                    concurrency=concurrency
+                )
         # Avoid celery workers to be checked for a ping.  TODO:  Make the beat
         # of workers be replicated to the Odoo parent server.
         for pid in self.celery_workers:
@@ -948,9 +960,10 @@ class WorkerCron(Worker):
 
 class CeleryWorker(Worker):
     # Bridges the Odoo preforking server with the Celery Worker.
-    def __init__(self, server, profile=False):
+    def __init__(self, server, profile=False, concurrency=None):
         from openerp.celeryapp import app
         self.app = app
+        self.concurrency = concurrency
         super(CeleryWorker, self).__init__(server, profile=profile)
 
     def run(self):
@@ -973,23 +986,19 @@ class CeleryWorker(Worker):
 
 class DefaultCeleryWorker(CeleryWorker):
     queues = 'default,high'
-    concurrency = int(config.get('celery.default_workers', 1))
 
 
 class HighPriorityCeleryWorker(CeleryWorker):
     queues = 'high'
-    concurrency = int(config.get('celery.highpri_workers', 2))
 
 
 class LowPriorityCeleryWorker(CeleryWorker):
     queues = 'low,high'
-    concurrency = int(config.get('celery.lowpri_workers', 1))
 
 
-
-#----------------------------------------------------------
+# ---------------------------------------------------------
 # start/stop public api
-#----------------------------------------------------------
+# ---------------------------------------------------------
 
 server = None
 
