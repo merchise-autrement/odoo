@@ -25,6 +25,9 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
+from xoutil import logger  # noqa
+from xoutil.context import context
+
 from kombu import Exchange, Queue
 
 import celery.exceptions
@@ -43,13 +46,11 @@ PG_CONCURRENCY_ERRORS_TO_RETRY = (
 )
 
 
-from xoutil.context import context
-
-
+# A context for jobs.  All jobs will be executed in this context.
 CELERY_JOB = object()
 
 
-class DefaultConfiguration(object):
+class Configuration(object):
     BROKER_URL = config.get('celery.broker', 'redis://localhost/9')
     CELERY_RESULT_BACKEND = config.get('celery.backend', BROKER_URL)
 
@@ -66,7 +67,7 @@ class DefaultConfiguration(object):
         Queue('high', Exchange('high'), routing_key='high'),
         Queue('low', Exchange('low'), routing_key='low'),
     )
-    CELERY_CREATE_MISSING_QUEUES = False
+    CELERY_CREATE_MISSING_QUEUES = True
 
     CELERYD_TASK_TIME_LIMIT = 600  # 10 minutes
     CELERYD_TASK_SOFT_TIME_LIMIT = 540  # 9 minutes
@@ -77,7 +78,7 @@ class DefaultConfiguration(object):
 
 
 app = _CeleryApp(__name__)
-app.config_from_object(DefaultConfiguration)
+app.config_from_object(Configuration)
 
 
 # Since a model method may be altered in several addons, we funnel all calls to

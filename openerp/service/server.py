@@ -388,6 +388,7 @@ class ThreadedServer(CommonServer):
     def reload(self):
         os.kill(self.pid, signal.SIGHUP)
 
+
 class GeventServer(CommonServer):
     def __init__(self, app):
         super(GeventServer, self).__init__(app)
@@ -408,6 +409,12 @@ class GeventServer(CommonServer):
                 return
             gevent.sleep(beat)
 
+    def watch_celery_events(self):
+        from kombu import Connection, Consumer
+        from openerp.celeryapp import Configuration as c
+        with Connection(c.BROKER_URL) as conn:
+            pass
+
     def start(self):
         import gevent
         from gevent.wsgi import WSGIServer
@@ -417,6 +424,7 @@ class GeventServer(CommonServer):
             signal.signal(signal.SIGUSR1, log_ormcache_stats)
 
         gevent.spawn(self.watch_parent)
+        gevent.spawn(self.watch_celery_events)
         self.httpd = WSGIServer((self.interface, self.port), self.app)
         _logger.info('Evented Service (longpolling) running on %s:%s', self.interface, self.port)
         try:
@@ -433,6 +441,7 @@ class GeventServer(CommonServer):
     def run(self, preload, stop):
         self.start()
         self.stop()
+
 
 class PreforkServer(CommonServer):
     """ Multiprocessing inspired by (g)unicorn.
@@ -974,6 +983,7 @@ class CeleryWorker(Worker):
             app=self.app,
             queues=self.queues,
             concurrency=self.concurrency,
+            hostname=self.hostname,
         )
         controller.start()
 
@@ -982,6 +992,12 @@ class CeleryWorker(Worker):
         if not self.alive:
             _logger.debug('Raising KeyboardInterrupt inside the celery worker')
             raise KeyboardInterrupt
+
+    @property
+    def hostname(self):
+        import socket
+        queue = self.queues.split(',')[0]
+        return queue + '.' + socket.gethostname()
 
 
 class DefaultCeleryWorker(CeleryWorker):
