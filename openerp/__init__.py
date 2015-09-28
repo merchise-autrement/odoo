@@ -83,6 +83,7 @@ import service
 import sql_db
 import tools
 import workflow
+from . import celeryapp
 
 #----------------------------------------------------------
 # Model classes, fields, api decorators, and translations
