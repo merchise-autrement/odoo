@@ -454,6 +454,7 @@ class PreforkServer(CommonServer):
         self.workers_http = {}
         self.workers_cron = {}
         self.workers = {}
+        self.celery_workers = {}
         self.generation = 0
         self.queue = []
         self.long_polling_pid = None
@@ -484,9 +485,9 @@ class PreforkServer(CommonServer):
         else:
             _logger.warn("Dropping signal: %s", sig)
 
-    def worker_spawn(self, klass, workers_registry):
+    def worker_spawn(self, klass, workers_registry, *args, **kwargs):
         self.generation += 1
-        worker = klass(self)
+        worker = klass(self, *args, **kwargs)
         pid = os.fork()
         if pid != 0:
             worker.pid = pid
@@ -515,6 +516,7 @@ class PreforkServer(CommonServer):
             try:
                 self.workers_http.pop(pid, None)
                 self.workers_cron.pop(pid, None)
+                self.celery_workers.pop(pid, None)
                 u = self.workers.pop(pid)
                 u.close()
             except OSError:
@@ -583,6 +585,17 @@ class PreforkServer(CommonServer):
                 self.long_polling_spawn()
         while len(self.workers_cron) < config['max_cron_threads']:
             self.worker_spawn(WorkerCron, self.workers_cron)
+        if not len(self.celery_workers):
+            if DefaultCeleryWorker.concurrency:
+                self.worker_spawn(DefaultCeleryWorker, self.celery_workers)
+            if HighPriorityCeleryWorker.concurrency:
+                self.worker_spawn(HighPriorityCeleryWorker, self.celery_workers)
+            if LowPriorityCeleryWorker.concurrency:
+                self.worker_spawn(LowPriorityCeleryWorker, self.celery_workers)
+        # Avoid celery workers to be checked for a ping.  TODO:  Make the beat
+        # of workers be replicated to the Odoo parent server.
+        for pid in self.celery_workers:
+            self.workers.pop(pid, None)
 
     def sleep(self):
         try:
@@ -705,8 +718,8 @@ class Worker(object):
         #  XXX: The worker is instantiated before forking, so the parent's pid
         #  (ppid) is actually the running process.  This attribute will be
         #  "inherited" by children processes.  Notice both parent and children
-        #  keep their "unique view" of the Worker instance.  For instance, the
-        #  pid attribute is set by both processes after the fork.
+        #  keep their "unique view" of the Worker instance.  The pid attribute
+        #  is set by both processes after the fork.
         self.ppid = os.getpid()
         self.pid = None
         self.alive = True
@@ -932,6 +945,48 @@ class WorkerCron(Worker):
         Worker.start(self)
         self.multi.socket.close()
 
+
+class CeleryWorker(Worker):
+    # Bridges the Odoo preforking server with the Celery Worker.
+    def __init__(self, server, profile=False):
+        from openerp.celeryapp import app
+        self.app = app
+        super(CeleryWorker, self).__init__(server, profile=profile)
+
+    def run(self):
+        self.start()
+        from celery.worker import WorkController
+        # TODO: Queue distributions
+        self.controller = controller = WorkController(
+            app=self.app,
+            queues=self.queues,
+            concurrency=self.concurrency,
+        )
+        controller.start()
+
+    def signal_handler(self, sig, frame):
+        super(CeleryWorker, self).signal_handler(sig, frame)
+        if not self.alive:
+            _logger.debug('Raising KeyboardInterrupt inside the celery worker')
+            raise KeyboardInterrupt
+
+
+class DefaultCeleryWorker(CeleryWorker):
+    queues = 'default,high'
+    concurrency = config.get('celery.default_workers', 1)
+
+
+class HighPriorityCeleryWorker(CeleryWorker):
+    queues = 'high'
+    concurrency = config.get('celery.highpri_workers', 2)
+
+
+class LowPriorityCeleryWorker(CeleryWorker):
+    queues = 'low,high'
+    concurrency = config.get('celery.lowpri_workers', 1)
+
+
+
 #----------------------------------------------------------
 # start/stop public api
 #----------------------------------------------------------
@@ -1054,3 +1109,7 @@ def restart():
         os.kill(server.pid, signal.SIGHUP)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+
+# Local Variables:
+# fill-column: 80
+# End:
