@@ -43,6 +43,12 @@ PG_CONCURRENCY_ERRORS_TO_RETRY = (
 )
 
 
+from xoutil.context import context
+
+
+CELERY_JOB = object()
+
+
 class DefaultConfiguration(object):
     BROKER_URL = config.get('celery.broker', 'redis://localhost/9')
     CELERY_RESULT_BACKEND = config.get('celery.backend', BROKER_URL)
@@ -85,7 +91,8 @@ def task(self, dbname, uid, model, methodname, args, kwargs):
             if method:
                 # It's up to the user to return transferable things.
                 try:
-                    return method(cr, uid, *args, **kwargs)
+                    with context(CELERY_JOB, job=self):
+                        return method(cr, uid, *args, **kwargs)
                 except celery.exceptions.SoftTimeLimitExceeded:
                     cr.rollback()
                     raise
