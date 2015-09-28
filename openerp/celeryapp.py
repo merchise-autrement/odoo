@@ -34,6 +34,14 @@ import openerp.tools.config as config
 from openerp.api import Environment
 from openerp.modules.registry import RegistryManager
 
+from psycopg2 import OperationalError, errorcodes
+
+PG_CONCURRENCY_ERRORS_TO_RETRY = (
+    errorcodes.LOCK_NOT_AVAILABLE,
+    errorcodes.SERIALIZATION_FAILURE,
+    errorcodes.DEADLOCK_DETECTED
+)
+
 
 class DefaultConfiguration(object):
     BROKER_URL = config.get('celery.broker', 'redis://localhost/9')
@@ -68,8 +76,8 @@ app.config_from_object(DefaultConfiguration)
 
 # Since a model method may be altered in several addons, we funnel all calls to
 # execute a method in a single Celery task.
-@app.task
-def task(dbname, uid, model, methodname, args, kwargs):
+@app.task(bind=True, max_retries=5)
+def task(self, dbname, uid, model, methodname, args, kwargs):
     with Environment.manage():
         registry = RegistryManager.get(dbname)
         with registry.cursor() as cr:
@@ -81,6 +89,12 @@ def task(dbname, uid, model, methodname, args, kwargs):
                 except celery.exceptions.SoftTimeLimitExceeded:
                     cr.rollback()
                     raise
+                except OperationalError as error:
+                    cr.rollback()
+                    if error.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
+                        raise
+                    else:
+                        self.retry(error)
             else:
                 raise TypeError(
                     'Invalid method name %r for model %r' % (methodname, model)
