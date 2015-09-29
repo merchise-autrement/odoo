@@ -102,7 +102,31 @@ def task(self, dbname, uid, model, methodname, args, kwargs):
                     if error.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
                         raise
                     else:
-                        self.retry(error)
+                        self.retry(error)  # This raises a Retry exception
+                finally:
+                    # The following is a hackish and not robust way to notify
+                    # the Odoo Bus about the completion of the task.
+                    #
+                    # Technically we're still inside the task and the result
+                    # is yet to be transmitted to the backend.  In fact, the
+                    # following call might fail at the DB.
+                    #
+                    # This will be of course removed and the bus modified so
+                    # that proper completion of tasks be notified.
+                    import sys
+                    error = sys.exc_info()[1] if sys.exc_info() else None
+                    try:
+                        registry['bus.bus'].sendone(
+                            cr, uid, 'celeryapp:%s' % self.request.id,
+                            dict(
+                                uuid=self.request.id,
+                                status='success' if not error else 'failed'
+                            )
+                        )
+                    except:
+                        # Avoid having the task failed because of the failure
+                        # on the notification
+                        pass
             else:
                 raise TypeError(
                     'Invalid method name %r for model %r' % (methodname, model)
