@@ -754,6 +754,7 @@ instance.web.Throbber = instance.web.Widget.extend({
         this.spin = new Spinner(opts).spin(this.$el[0]);
         this.start_time = new Date().getTime();
         this.act_message();
+        return this._super();
     },
     act_message: function() {
         var self = this;
