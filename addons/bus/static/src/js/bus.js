@@ -40,6 +40,7 @@
             this.last = 0;
             this.stop = false;
             this.backoff = 1;
+            this.request = null;
         },
         start_polling: function(){
             if(!this.activated){
@@ -57,7 +58,7 @@
             self.activated = true;
             var data = {'channels': self.channels, 'last': self.last, 'options' : self.options};
             var poll = _.bind(self.poll, self);
-            openerp.session.rpc(
+            this.request = openerp.session.rpc(
                 '/longpolling/poll',
                 data, {shadow : true}
             ).then(function(result) {
@@ -91,10 +92,14 @@
         add_channel: function(channel){
             if(!_.contains(this.channels, channel)){
                 this.channels.push(channel);
+                if (this.request && this.request.abort)
+                   this.request.abort();
             }
         },
         delete_channel: function(channel){
             this.channels = _.without(this.channels, channel);
+            if (this.request && this.request.abort)
+                this.request.abort();
         },
     });
 
