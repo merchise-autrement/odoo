@@ -98,8 +98,12 @@
         },
     });
 
-    // singleton
-    bus.bus = new bus.Bus();
+    // merchise: not a singleton anymore.  Until I know how to interrupt an
+    // ongoing xhr request.  If a channel is appended to the bus we need to
+    // kill the current request and replace it, otherwise that channel may
+    // have messages from the server waiting for a long time.
+
+    // bus.bus = new bus.Bus();
     return bus;
 })();
 
