@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    <template id="assets_backend"
+	      name="web_celery_assets"
+	      inherit_id="web.assets_backend">
+      <xpath expr="." position="inside">
+	<script src="/web_celery/static/src/js/celery.js"></script>
+      </xpath>
+    </template>
+  </data>
+</openerp>

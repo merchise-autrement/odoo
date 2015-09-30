@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    <!-- TODO:  Create a UI for pending jobs.
+
+	 Idea:
+
+	 .________.__________________._   ....
+	 |        | Pending Jobs: 12 |
+	 |        \__________________/
+	 |
+
+    -->
+  </data>
+</openerp>
