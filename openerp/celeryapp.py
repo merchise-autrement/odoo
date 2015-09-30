@@ -74,7 +74,19 @@ class Configuration(object):
 
     CELERY_ENABLE_REMOTE_CONTROL = True
 
-    CELERYD_AUTOSCALER = 'celery.worker.autoscale:Autoscaler'
+    # Since our workers are embedded in the Odoo process, we can't turn off
+    # the server without shutting the workers down.  So it's probably best to
+    # keep the tasks in the broker until a worker has finished with them.
+    #
+    #                                .
+    #                               / \
+    #                              / ! \
+    #                             -------
+    #
+    # WARNING! You may do otherwise, but then you have to consider shutting
+    # down the HTTP downstream server first, wait for all jobs to finish and
+    # then shutdown then server.
+    CELERY_ACKS_LATE = True
 
 
 app = _CeleryApp(__name__)
