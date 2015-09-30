@@ -91,13 +91,20 @@ class Configuration(object):
     # then shutdown then server.
     CELERY_ACKS_LATE = True
 
+    _CELERYD_PREFETCH_MULTIPLIER = config.get('celery.prefetch_multiplier', 0)
+    if not _CELERYD_PREFETCH_MULTIPLIER:
+        # Avoid infinite prefetching
+        pass
+    else:
+        CELERYD_PREFETCH_MULTIPLIER = int(_CELERYD_PREFETCH_MULTIPLIER)
+    del _CELERYD_PREFETCH_MULTIPLIER
 
 app = _CeleryApp(__name__)
 app.config_from_object(Configuration)
 
 
-# Since a model method may be altered in several addons, we funnel all calls to
-# execute a method in a single Celery task.
+# Since a model method may be altered in several addons, we funnel all calls
+# to execute a method in a single Celery task.
 @app.task(bind=True, max_retries=5)
 def task(self, dbname, uid, model, methodname, args, kwargs):
     with Environment.manage():
