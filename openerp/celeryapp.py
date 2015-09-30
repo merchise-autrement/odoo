@@ -209,10 +209,3 @@ def LowPriorityDeferred(model, cr, uid, method, *args, **kwargs):
     '''
     args = _getargs(model, cr, uid, method, *args, **kwargs)
     return task.apply_async(queue='low', args=args)
-
-
-@app.task(max_retries=0)
-def long_debug_task(cycles=100):
-    import time
-    for _ in range(cycles):
-        time.sleep(2)
