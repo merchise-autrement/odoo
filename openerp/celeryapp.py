@@ -49,6 +49,9 @@ PG_CONCURRENCY_ERRORS_TO_RETRY = (
 # A context for jobs.  All jobs will be executed in this context.
 CELERY_JOB = object()
 
+# A context to explicitly avoid jobs.
+AVOID_JOB = object()
+
 
 class Configuration(object):
     BROKER_URL = config.get('celery.broker', 'redis://localhost/9')
@@ -145,13 +148,71 @@ def task(self, dbname, uid, model, methodname, args, kwargs):
                 )
 
 
-def Deferred(*args):
+def _getargs(model, cr, uid, method, *args, **kwargs):
+    from openerp.models import Model
+    from openerp.sql_db import Cursor
+    if isinstance(model, Model):
+        model = model._name
+    if isinstance(cr, Cursor):
+        dbname = cr.dbname
+    else:
+        dbname = cr
+    return (dbname, uid, model, method, args, kwargs)
+
+
+def Deferred(model, cr, uid, method, *args, **kwargs):
+    '''Request to run a method in a celery worker.
+
+    The job will be routed to the 'default' priority queue.
+
+    :param model: The Odoo model.
+    :param cr: The cursor or the DB name.
+    :param uid: The user id.
+    :param method: The name of method to run.
+
+    :returns: An AsyncResult that represents the job.
+
+    '''
+    args = _getargs(model, cr, uid, method, *args, **kwargs)
     return task.apply_async(queue='default', args=args)
 
 
-def HighPriorityDeferred(*args):
+def HighPriorityDeferred(model, cr, uid, method, *args, **kwargs):
+    '''Request to run a method in a celery worker.
+
+    The job will be routed to the 'high' priority queue.
+
+    :param model: The Odoo model.
+    :param cr: The cursor or the DB name.
+    :param uid: The user id.
+    :param method: The name of method to run.
+
+    :returns: An AsyncResult that represents the job.
+
+    '''
+    args = _getargs(model, cr, uid, method, *args, **kwargs)
     return task.apply_async(queue='high', args=args)
 
 
-def LowPriorityDeferred(*args):
+def LowPriorityDeferred(model, cr, uid, method, *args, **kwargs):
+    '''Request to run a method in a celery worker.
+
+    The job will be routed to the 'low' priority queue.
+
+    :param model: The Odoo model.
+    :param cr: The cursor or the DB name.
+    :param uid: The user id.
+    :param method: The name of method to run.
+
+    :returns: An AsyncResult that represents the job.
+
+    '''
+    args = _getargs(model, cr, uid, method, *args, **kwargs)
     return task.apply_async(queue='low', args=args)
+
+
+@app.task(max_retries=0)
+def long_debug_task(cycles=100):
+    import time
+    for _ in range(cycles):
+        time.sleep(2)
