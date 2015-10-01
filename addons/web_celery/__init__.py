@@ -29,8 +29,9 @@ from __future__ import (division as _py3_division,
 
 from xoutil.context import context
 
-from openerp.celeryapp import CELERY_JOB, HighPriorityDeferred
+from openerp.jobs import CELERY_JOB, HighPriorityDeferred, report_progress
 from openerp.models import Model
+from openerp.tools.translate import _
 
 
 def WAIT_FOR_TASK(job, next_action=None):
@@ -73,11 +74,28 @@ class Module(Model):
     _name = _inherit = 'ir.module.module'
 
     def button_immediate_install(self, cr, uid, *args, **kw):
+        import time
         import openerp.tools.config as config
         if CELERY_JOB in context or not config.get('debug_mode'):
-            return super(Module, self).button_immediate_install(
+            report_progress(
+                message=_('Installing has begun, wait for a minute '
+                          'or two to finish.'),
+                progress=0,
+                valuemin=0,
+                valuemax=100,
+            )
+            for progress in range(1, 25, 4):
+                report_progress(progress=progress)
+                time.sleep(0.86)
+            res = super(Module, self).button_immediate_install(
                 cr, uid, *args, **kw
             )
+            cr.commit()
+            for progress in range(progress, 101, 4):
+                report_progress(progress=progress)
+                time.sleep(0.86)
+            report_progress(progress=100)
+            return res
         else:
             return WAIT_FOR_TASK(
                 HighPriorityDeferred(

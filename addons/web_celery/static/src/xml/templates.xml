@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates id="templates" xml:space="preserve">
+
+  <t t-name="_ProgressBar">
+    <div class="progress">
+      <t t-if="percent and progress and valuemin and valuemax">
+	<div class="progress-bar progress-bar-info progress-bar-striped"
+	     role="progressbar"
+	     t-attr-aria-valuenow='progress'
+	     t-attr-aria-valuemin='valuemin'
+	     t-attr-aria-valuemax='valuemax'
+	     t-attr-style="'width: %d%%;' % percent">
+	  <span aria-hidden="true" class="percent-message">
+	    <t t-raw="'%d%%' % percent"/>
+	  </span>
+	</div>
+      </t>
+      <t t-if="!percent or !progress or !valuemin or !valuemax">
+	<div class="progress-bar progress-bar-info progress-bar-striped"
+	     role="progressbar" style="width: 0%;">
+	  <span aria-hidden="true" class="percent-message"></span>
+	</div>
+      </t>
+    </div>
+  </t>
+
+  <t t-name="BackgroundJobProgress">
+    <!-- Needs javascript to complete the aria-* attributes since they must not
+	 be enforced in some cases (e.g no progress value is known.) -->
+    <div class="modal background-job-dialog"
+	 tabindex="-1"
+	 data-backdrop="static">
+      <div class="modal-dialog modal-lg">
+	<div class="modal-content">
+	  <div class="modal-header">
+	    <h3 class="modal-title"><t t-raw="widget.title"/></h3>
+	  </div> <!-- header -->
+	  <div class="modal-body">
+	    <t t-call="_ProgressBar">
+	      <t t-if='widget.progress'>
+		<t t-set='progress' t-value='widget.progress'/>
+	      </t>
+	      <t t-if='widget.valuemin'>
+		<t t-set='valuemin' t-value='widget.valuemin'/>
+	      </t>
+	      <t t-if='widget.valuemax'>
+		<t t-set='valuemax' t-value='widget.valuemax'/>
+	      </t>
+	      <t t-if='widget.percent'>
+		<t t-set='percent' t-value='widget.percent'/>
+	      </t>
+	    </t>
+	    <p class='message'>
+	      <t t-esc='widget.message'/>
+	    </p>
+	  </div> <!-- body -->
+	</div> <!-- content -->
+      </div> <!-- modal-dialog -->
+    </div> <!-- modal -->
+  </t>
+
+</templates>

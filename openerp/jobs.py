@@ -37,20 +37,98 @@ import openerp.tools.config as config
 from openerp.api import Environment
 from openerp.modules.registry import RegistryManager
 
-from psycopg2 import OperationalError, errorcodes
 
-PG_CONCURRENCY_ERRORS_TO_RETRY = (
-    errorcodes.LOCK_NOT_AVAILABLE,
-    errorcodes.SERIALIZATION_FAILURE,
-    errorcodes.DEADLOCK_DETECTED
-)
+def Deferred(model, cr, uid, method, *args, **kwargs):
+    '''Request to run a method in a celery worker.
+
+    The job will be routed to the 'default' priority queue.
+
+    :param model: The Odoo model.
+    :param cr: The cursor or the DB name.
+    :param uid: The user id.
+    :param method: The name of method to run.
+
+    :returns: An AsyncResult that represents the job.
+
+    '''
+    args = _getargs(model, cr, uid, method, *args, **kwargs)
+    return task.apply_async(queue='default', args=args)
 
 
-# A context for jobs.  All jobs will be executed in this context.
-CELERY_JOB = object()
+def HighPriorityDeferred(model, cr, uid, method, *args, **kwargs):
+    '''Request to run a method in a celery worker.
 
-# A context to explicitly avoid jobs.
-AVOID_JOB = object()
+    The job will be routed to the 'high' priority queue.
+
+    :param model: The Odoo model.
+    :param cr: The cursor or the DB name.
+    :param uid: The user id.
+    :param method: The name of method to run.
+
+    :returns: An AsyncResult that represents the job.
+
+    '''
+    args = _getargs(model, cr, uid, method, *args, **kwargs)
+    return task.apply_async(queue='high', args=args)
+
+
+def LowPriorityDeferred(model, cr, uid, method, *args, **kwargs):
+    '''Request to run a method in a celery worker.
+
+    The job will be routed to the 'low' priority queue.
+
+    :param model: The Odoo model.
+    :param cr: The cursor or the DB name.
+    :param uid: The user id.
+    :param method: The name of method to run.
+
+    :returns: An AsyncResult that represents the job.
+
+    '''
+    args = _getargs(model, cr, uid, method, *args, **kwargs)
+    return task.apply_async(queue='low', args=args)
+
+
+def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
+                    status=None):
+    '''Sends a progress notification to those waiting.
+
+    :param message: The message to send to those waiting for the message.
+
+    :param progress: A number in the range given by `range` indicating how
+                     much has been done.
+
+                     If you can't produce a good estimate is best to send
+                     "stages" in the message.
+
+    :param valuemin: The minimum value `progress` can take.
+
+    :param valuemax: The maximum value `progress` can take.
+
+    The `valuemin` and `valuemax` arguments must be reported together.  And
+    once settle they cannot be changed.
+
+    :param status: The reported status. This should be one of the strings
+                   'success', 'failure' or 'pending'.
+
+       .. warning:: This argument should not be used but for internal (job
+                    framework module) purposes.
+
+    '''
+    _context = context[CELERY_JOB]
+    job = _context.get('job')
+    if job:
+        if valuemin is None or valuemax is None:
+            valuemin = valuemax = None
+        elif valuemin >= valuemax:
+            valuemin = valuemax = None
+        _send(get_progress_channel(job), dict(
+            status=status,
+            message=message,
+            progress=progress,
+            valuemin=valuemin,
+            valuemax=valuemax,
+        ))
 
 
 class Configuration(object):
@@ -102,6 +180,17 @@ class Configuration(object):
 app = _CeleryApp(__name__)
 app.config_from_object(Configuration)
 
+# A context for jobs.  All jobs will be executed in this context.
+CELERY_JOB = object()
+
+
+from psycopg2 import OperationalError, errorcodes
+PG_CONCURRENCY_ERRORS_TO_RETRY = (
+    errorcodes.LOCK_NOT_AVAILABLE,
+    errorcodes.SERIALIZATION_FAILURE,
+    errorcodes.DEADLOCK_DETECTED
+)
+
 
 # Since a model method may be altered in several addons, we funnel all calls
 # to execute a method in a single Celery task.
@@ -114,7 +203,8 @@ def task(self, dbname, uid, model, methodname, args, kwargs):
             if method:
                 # It's up to the user to return transferable things.
                 try:
-                    with context(CELERY_JOB, job=self):
+                    options = dict(job=self, registry=registry, cr=cr, uid=uid)
+                    with context(CELERY_JOB, **options):
                         return method(cr, uid, *args, **kwargs)
                 except celery.exceptions.SoftTimeLimitExceeded:
                     cr.rollback()
@@ -137,18 +227,10 @@ def task(self, dbname, uid, model, methodname, args, kwargs):
                     # that proper completion of tasks be notified.
                     import sys
                     error = sys.exc_info()[1] if sys.exc_info() else None
-                    try:
-                        registry['bus.bus'].sendone(
-                            cr, uid, 'celeryapp:%s' % self.request.id,
-                            dict(
-                                uuid=self.request.id,
-                                status='success' if not error else 'failed'
-                            )
-                        )
-                    except:
-                        # Avoid having the task failed because of the failure
-                        # on the notification
-                        pass
+                    status = 'success' if not error else 'failure'
+                    options = dict(job=self, registry=registry, cr=cr, uid=uid)
+                    with context(CELERY_JOB, **options):
+                        report_progress(status=status)
             else:
                 raise TypeError(
                     'Invalid method name %r for model %r' % (methodname, model)
@@ -167,52 +249,13 @@ def _getargs(model, cr, uid, method, *args, **kwargs):
     return (dbname, uid, model, method, args, kwargs)
 
 
-def Deferred(model, cr, uid, method, *args, **kwargs):
-    '''Request to run a method in a celery worker.
-
-    The job will be routed to the 'default' priority queue.
-
-    :param model: The Odoo model.
-    :param cr: The cursor or the DB name.
-    :param uid: The user id.
-    :param method: The name of method to run.
-
-    :returns: An AsyncResult that represents the job.
-
-    '''
-    args = _getargs(model, cr, uid, method, *args, **kwargs)
-    return task.apply_async(queue='default', args=args)
+def get_progress_channel(job):
+    return 'celeryapp:%s:progress' % job.request.id
 
 
-def HighPriorityDeferred(model, cr, uid, method, *args, **kwargs):
-    '''Request to run a method in a celery worker.
-
-    The job will be routed to the 'high' priority queue.
-
-    :param model: The Odoo model.
-    :param cr: The cursor or the DB name.
-    :param uid: The user id.
-    :param method: The name of method to run.
-
-    :returns: An AsyncResult that represents the job.
-
-    '''
-    args = _getargs(model, cr, uid, method, *args, **kwargs)
-    return task.apply_async(queue='high', args=args)
-
-
-def LowPriorityDeferred(model, cr, uid, method, *args, **kwargs):
-    '''Request to run a method in a celery worker.
-
-    The job will be routed to the 'low' priority queue.
-
-    :param model: The Odoo model.
-    :param cr: The cursor or the DB name.
-    :param uid: The user id.
-    :param method: The name of method to run.
-
-    :returns: An AsyncResult that represents the job.
-
-    '''
-    args = _getargs(model, cr, uid, method, *args, **kwargs)
-    return task.apply_async(queue='low', args=args)
+def _send(channel, message):
+    _context = context[CELERY_JOB]
+    registry = _context['registry']
+    cr = _context['cr']
+    uid = _context['uid']
+    registry['bus.bus'].sendone(cr, uid, channel, message)

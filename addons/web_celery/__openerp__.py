@@ -19,6 +19,7 @@ dict(
     summary='Web API for Celery Integration',
     depends=['web', 'bus'],
     data=['views/assets.xml', ],
+    qweb=['static/src/xml/*.xml', ],
     auto_install=True,
     installable=True,
     application=False,

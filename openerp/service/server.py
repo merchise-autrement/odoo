@@ -456,7 +456,9 @@ class PreforkServer(CommonServer):
         self.workers_http = {}
         self.workers_cron = {}
         self.workers = {}
-        self.celery_workers = {}
+        self.default_celery_workers = {}
+        self.highpri_celery_workers = {}
+        self.lowpri_celery_workers = {}
         self.generation = 0
         self.queue = []
         self.long_polling_pid = None
@@ -518,7 +520,9 @@ class PreforkServer(CommonServer):
             try:
                 self.workers_http.pop(pid, None)
                 self.workers_cron.pop(pid, None)
-                self.celery_workers.pop(pid, None)
+                self.default_celery_workers.pop(pid, None)
+                self.highpri_celery_workers.pop(pid, None)
+                self.lowpri_celery_workers.pop(pid, None)
                 u = self.workers.pop(pid)
                 u.close()
             except OSError:
@@ -587,29 +591,38 @@ class PreforkServer(CommonServer):
                 self.long_polling_spawn()
         while len(self.workers_cron) < config['max_cron_threads']:
             self.worker_spawn(WorkerCron, self.workers_cron)
-        if not len(self.celery_workers):
-            concurrency = int(config.get('celery.default_workers', 1))
-            if concurrency:
-                self.worker_spawn(
-                    DefaultCeleryWorker, self.celery_workers,
-                    concurrency=concurrency
-                )
-            concurrency = int(config.get('celery.highpri_workers', 2))
-            if concurrency:
-                self.worker_spawn(
-                    HighPriorityCeleryWorker, self.celery_workers,
-                    concurrency=concurrency
-                )
-            concurrency = int(config.get('celery.lowpri_workers', 1))
-            if concurrency:
-                self.worker_spawn(
-                    LowPriorityCeleryWorker, self.celery_workers,
-                    concurrency=concurrency
-                )
-        # Avoid celery workers to be checked for a ping.  TODO:  Make the beat
-        # of workers be replicated to the Odoo parent server.
-        for pid in self.celery_workers:
-            self.workers.pop(pid, None)
+        self.spawn_celery_workers()
+
+    def spawn_celery_workers(self):
+        workers = int(config.get('celery.default_workers', 1))
+        if workers and not len(self.default_celery_workers):
+            worker = self.worker_spawn(
+                DefaultCeleryWorker,
+                self.default_celery_workers,
+                concurrency=workers
+            )
+            # Avoid checking for time limits, celery manages those.
+            self.workers.pop(worker.pid, None)
+
+        workers = int(config.get('celery.highpri_workers', 2))
+        if workers and not len(self.highpri_celery_workers):
+            worker = self.worker_spawn(
+                HighPriorityCeleryWorker,
+                self.highpri_celery_workers,
+                concurrency=workers
+            )
+            # Avoid checking for time limits, celery manages those.
+            self.workers.pop(worker.pid, None)
+
+        workers = int(config.get('celery.lowpri_workers', 1))
+        if workers and not len(self.lowpri_celery_workers):
+            worker = self.worker_spawn(
+                LowPriorityCeleryWorker,
+                self.lowpri_celery_workers,
+                concurrency=workers
+            )
+            # Avoid checking for time limits, celery manages those.
+            self.workers.pop(worker.pid, None)
 
     def sleep(self):
         try:
@@ -963,7 +976,7 @@ class WorkerCron(Worker):
 class CeleryWorker(Worker):
     # Bridges the Odoo preforking server with the Celery Worker.
     def __init__(self, server, profile=False, concurrency=None):
-        from openerp.celeryapp import app
+        from openerp.jobs import app
         self.app = app
         self.concurrency = concurrency
         super(CeleryWorker, self).__init__(server, profile=profile)
@@ -1002,7 +1015,7 @@ class HighPriorityCeleryWorker(CeleryWorker):
 
 
 class LowPriorityCeleryWorker(CeleryWorker):
-    queues = 'low,high'
+    queues = 'low,high,default'
 
 
 # ---------------------------------------------------------

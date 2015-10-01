@@ -210,7 +210,9 @@
                                 var wc = new s.web.WebClient();
                                 wc.setElement($(document.body));
                                 wc.start();
+				window.oe_wc = wc;
                             </t>
+			    window.oe_s = s;
                         });
                     </script>
                 </t>
@@ -221,7 +223,7 @@
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
-                        </button>    
+                        </button>
                     </div>
                     <div class="navbar-collapse collapse" id="oe_main_menu_placeholder">
                         <t t-call="web.menu"/>
