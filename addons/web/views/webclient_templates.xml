@@ -210,9 +210,7 @@
                                 var wc = new s.web.WebClient();
                                 wc.setElement($(document.body));
                                 wc.start();
-				window.oe_wc = wc;
                             </t>
-			    window.oe_s = s;
                         });
                     </script>
                 </t>
