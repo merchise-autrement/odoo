@@ -1321,8 +1321,10 @@ class mail_thread(osv.AbstractModel):
                     continue
                 # 2) text/plain -> <pre/>
                 if part.get_content_type() == 'text/plain' and (not alternative or not body):
-                    body = tools.append_content_to_html(body, tools.ustr(part.get_payload(decode=True),
-                                                                         encoding, errors='replace'), preserve=True)
+                    body = tools.append_content_to_html(body, tools.ustr(
+                        part.get_payload(decode=True), encoding,
+                        errors='replace'), preserve=True
+                    )
                 # 3) text/html -> raw
                 elif part.get_content_type() == 'text/html':
                     # mutlipart/alternative have one text and a html part, keep only the second
@@ -1346,9 +1348,11 @@ class mail_thread(osv.AbstractModel):
                         body, tools.ustr(payload, encoding, errors='replace'),
                         preserve=True
                     )
-                # *) Anything else that it's not multipart -> attachment unless inlined.
-                elif not part.is_multipart() or not part.get('content-disposition', '').strip().startswith('inline'):
-                    attachments.append((filename or 'attachment', part.get_payload(decode=True)))
+                # *) Anything else is ignored. Some MUAs don't include the "Content-Disposition: inline", but simply omit it.  Since the
+                # "Content-Disposition: attachment" is already dealt in the item 1) and other stuff like message/reports should not be
+                # considered attachments.  Furthermore, message/ parts are "is_multipart()", and the payload is None.
+                else:
+                    pass
         return body, attachments
 
     def message_parse(self, cr, uid, message, save_original=False, context=None):
