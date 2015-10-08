@@ -51,7 +51,7 @@ def Deferred(model, cr, uid, method, *args, **kwargs):
     :returns: An AsyncResult that represents the job.
 
     '''
-    args = _getargs(model, cr, uid, method, *args, **kwargs)
+    args = _getargs(model, method, cr, uid, *args, **kwargs)
     return task.apply_async(queue='default', args=args)
 
 
@@ -68,7 +68,7 @@ def HighPriorityDeferred(model, cr, uid, method, *args, **kwargs):
     :returns: An AsyncResult that represents the job.
 
     '''
-    args = _getargs(model, cr, uid, method, *args, **kwargs)
+    args = _getargs(model, method, cr, uid, *args, **kwargs)
     return task.apply_async(queue='high', args=args)
 
 
@@ -85,7 +85,7 @@ def LowPriorityDeferred(model, cr, uid, method, *args, **kwargs):
     :returns: An AsyncResult that represents the job.
 
     '''
-    args = _getargs(model, cr, uid, method, *args, **kwargs)
+    args = _getargs(model, method, cr, uid, *args, **kwargs)
     return task.apply_async(queue='low', args=args)
 
 
@@ -195,7 +195,7 @@ PG_CONCURRENCY_ERRORS_TO_RETRY = (
 # Since a model method may be altered in several addons, we funnel all calls
 # to execute a method in a single Celery task.
 @app.task(bind=True, max_retries=5)
-def task(self, dbname, uid, model, methodname, args, kwargs):
+def task(self, model, methodname, dbname, uid, args, kwargs):
     with Environment.manage():
         registry = RegistryManager.get(dbname)
         with registry.cursor() as cr:
@@ -237,7 +237,7 @@ def task(self, dbname, uid, model, methodname, args, kwargs):
                 )
 
 
-def _getargs(model, cr, uid, method, *args, **kwargs):
+def _getargs(model, method, cr, uid, *args, **kwargs):
     from openerp.models import Model
     from openerp.sql_db import Cursor
     if isinstance(model, Model):
@@ -246,7 +246,7 @@ def _getargs(model, cr, uid, method, *args, **kwargs):
         dbname = cr.dbname
     else:
         dbname = cr
-    return (dbname, uid, model, method, args, kwargs)
+    return (model, method, dbname, uid, args, kwargs)
 
 
 def get_progress_channel(job):
