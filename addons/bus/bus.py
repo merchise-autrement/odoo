@@ -95,7 +95,9 @@ class ImDispatch(object):
 
         # immediatly returns if past notifications exist
         with registry.cursor() as cr:
-            notifications = registry['bus.bus'].poll(cr, openerp.SUPERUSER_ID, channels, last)
+            notifications = registry['bus.bus'].poll(
+                cr, openerp.SUPERUSER_ID, channels, last
+            )
         # or wait for future ones
         if not notifications:
             event = self.Event()
@@ -104,7 +106,9 @@ class ImDispatch(object):
             try:
                 event.wait(timeout=timeout)
                 with registry.cursor() as cr:
-                    notifications = registry['bus.bus'].poll(cr, openerp.SUPERUSER_ID, channels, last)
+                    notifications = registry['bus.bus'].poll(
+                        cr, openerp.SUPERUSER_ID, channels, last
+                    )
             except Exception:
                 # timeout
                 pass
@@ -146,12 +150,18 @@ class ImDispatch(object):
                 _logger.exception("Bus.loop error, sleep and retry")
                 time.sleep(TIMEOUT)
 
+    @property
+    def monitor(self):
+        from openerp.jobs import task_monitor
+        return task_monitor
+
     def start(self):
         if openerp.evented:
             # gevent mode
             import gevent.event
             self.Event = gevent.event.Event
             gevent.spawn(self.run)
+            gevent.spawn(self.monitor)
         elif openerp.multi_process:
             # disabled in prefork mode
             return
@@ -198,5 +208,6 @@ class Controller(openerp.http.Controller):
             print channels
             raise Exception("bus.Bus only string channels are allowed.")
         return self._poll(request.db, channels, last, options)
+
 
 # vim:et:

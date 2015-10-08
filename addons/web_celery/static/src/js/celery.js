@@ -99,7 +99,11 @@ openerp.web_celery = function(instance){
             var message = params[1];
             var status = message.status;
             if (status && (status == 'success' || status == 'failure')) {
-                this.update(100);
+                if (status != 'failure')
+                    this.update(100);
+                else {
+                    _.delay(_.bind(this.show_failure, this, message), 1);
+                }
                 this.stop_waiting();
             } else {
                 this.update(message.progress, message.valuemin,
@@ -138,6 +142,15 @@ openerp.web_celery = function(instance){
                 this.destroy();
             }
             this.done.resolve();
+        },
+
+        show_failure: function(message) {
+            var cm = new instance.web.CrashManager();
+            cm.show_error({
+                type: _t("Server Error"),
+                message: message.message,
+                data: {debug: message.traceback}
+            });
         },
 
         destroy: function() {

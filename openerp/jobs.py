@@ -27,6 +27,7 @@ from __future__ import (division as _py3_division,
 
 from xoutil import logger  # noqa
 from xoutil.context import context
+from xoutil.objects import extract_attrs
 
 from kombu import Exchange, Queue
 
@@ -215,26 +216,54 @@ def task(self, model, methodname, dbname, uid, args, kwargs):
                         raise
                     else:
                         self.retry(error)  # This raises a Retry exception
-                finally:
-                    # The following is a hackish and not robust way to notify
-                    # the Odoo Bus about the completion of the task.
-                    #
-                    # Technically we're still inside the task and the result
-                    # is yet to be transmitted to the backend.  In fact, the
-                    # following call might fail at the DB.
-                    #
-                    # This will be of course removed and the bus modified so
-                    # that proper completion of tasks be notified.
-                    import sys
-                    error = sys.exc_info()[1] if sys.exc_info() else None
-                    status = 'success' if not error else 'failure'
-                    options = dict(job=self, registry=registry, cr=cr, uid=uid)
-                    with context(CELERY_JOB, **options):
-                        report_progress(status=status)
             else:
                 raise TypeError(
                     'Invalid method name %r for model %r' % (methodname, model)
                 )
+
+
+def task_monitor():
+    '''Monitor tasks events and emit notifications.
+
+    Sends completion/failure signals to the Odoo bus.
+
+    Usage::
+
+       gevent.spawn(task_monitor)
+
+    '''
+    state = app.events.State()
+
+    def announce(status):
+        if status == 'failure':
+            def _data(task):
+                return dict(status=status,
+                            traceback=task.traceback,
+                            message=task.exception)
+        else:
+            def _data(task):
+                return dict(status=status)
+        def handler(event):
+            state.event(event)
+            uuid = event['uuid']
+            task = state.tasks[uuid]
+            args = eval(task.args, {}, {})   # FIX: Assumed tuple-like json serialization
+            model, method, dbname, uid = args[:4]
+            registry = RegistryManager.get(dbname)
+            with registry.cursor() as cr:
+                _send(get_progress_channel(uuid),
+                      _data(task),
+                      registry=registry, cr=cr, uid=uid)
+        return handler
+
+    with Environment.manage():
+        with app.connection() as connection:
+            recv = app.events.Receiver(connection, handlers={
+                'task-succeeded': announce('success'),
+                'task-failed': announce('failure'),
+                '*': state.event,
+            })
+            recv.capture(limit=None, timeout=None, wakeup=True)
 
 
 def _getargs(model, method, cr, uid, *args, **kwargs):
@@ -250,12 +279,31 @@ def _getargs(model, method, cr, uid, *args, **kwargs):
 
 
 def get_progress_channel(job):
-    return 'celeryapp:%s:progress' % job.request.id
+    '''Get the name of the Odoo bus channel for reporting progress.
+
+    :param job: Either the UUID or the job (a bound Task) instance that must
+                have a 'request' attribute.
+
+    '''
+    uuid = extract_attrs(job, 'request.id', default=job)
+    return 'celeryapp:%s:progress' % uuid
 
 
-def _send(channel, message):
-    _context = context[CELERY_JOB]
-    registry = _context['registry']
-    cr = _context['cr']
-    uid = _context['uid']
+def get_status_channel(job):
+    '''Get the name of the Odoo bus channel for reporting status.
+
+    :param job: Either the UUID or the job (a bound Task) instance that must
+                have a 'request' attribute.
+
+    '''
+    uuid = extract_attrs(job, 'request.id', default=job)
+    return 'celeryapp:%s:status' % uuid
+
+
+def _send(channel, message, registry=None, cr=None, uid=None):
+    if registry is None or cr is None or uid is None:
+        _context = context[CELERY_JOB]
+        registry = _context['registry']
+        cr = _context['cr']
+        uid = _context['uid']
     registry['bus.bus'].sendone(cr, uid, channel, message)
