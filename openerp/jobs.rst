@@ -102,9 +102,9 @@ documentation.
 Best practices for background jobs writing
 ==========================================
 
-As demonstrated in the Usage_ section:  Any method from a model can be
-delegated to a background job.  However, some rules and best practices should
-be honored:
+As demonstrated in the Usage_ section any method from a model can be delegated
+to a background job.  However, some rules and best practices should be
+honored:
 
 - If the method returns a value that is not serializable in JSON the result
   couldn't be retrieved afterwards (I haven't tested what happens.)
@@ -114,6 +114,10 @@ be honored:
   Yes, I did this in the `web_celery` addon, but only to be able to test the
   main concept, I ensure to override the method only when ``debug_mode`` is
   on.
+
+  The way to go would be the to make methods specifically designed to work on
+  the background and call normal methods from there and change the UI to call
+  the new methods.
 
 - You SHOULD make `progress reports <Reporting progress>`_ only from methods
   that are by themselves backgrounds jobs.  Keeping a sane progress report
@@ -127,6 +131,8 @@ be honored:
   Fact: When you remove a project from gitlab it says: "Ok, I'm done".  But
   the truth is it hasn't, it will remove the project after 15 minutes.
 
+- You SHOULD NOT rely on testing for `CONTEXT_JOB`.  This is considered an
+  implementation detail not part of the API.
 
 
 
