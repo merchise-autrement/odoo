@@ -981,6 +981,7 @@ class Model(object):
             return result
         return proxy
 
+
 class OpenERPSession(werkzeug.contrib.sessions.Session):
     def __init__(self, *args, **kwargs):
         self.inited = False
@@ -1226,14 +1227,15 @@ class OpenERPSession(werkzeug.contrib.sessions.Session):
         saved_actions = self.get('saved_actions', {})
         return saved_actions.get("actions", {}).get(key)
 
+
 def session_gc(session_store):
-    if random.random() < 0.001:
-        # we keep session one week
-        last_week = time.time() - 60*60*24*7
+    if random.random() < 0.001:  # 0.1% approx.
+        # we keep session 14 hours (8hours + 6 hours - France Cuba)
+        last_period = time.time() - 14*3600
         for fname in os.listdir(session_store.path):
             path = os.path.join(session_store.path, fname)
             try:
-                if os.path.getmtime(path) < last_week:
+                if os.path.getmtime(path) < last_period:
                     os.unlink(path)
             except OSError:
                 pass
@@ -1328,6 +1330,7 @@ class DisableCacheMiddleware(object):
             start_response(status, new_headers)
         return self.app(environ, start_wrapped)
 
+
 class Root(object):
     """Root WSGI application for the OpenERP Web Client.
     """
@@ -1339,7 +1342,9 @@ class Root(object):
         # Setup http sessions
         path = openerp.tools.config.session_dir
         _logger.debug('HTTP sessions stored in: %s', path)
-        return werkzeug.contrib.sessions.FilesystemSessionStore(path, session_class=OpenERPSession)
+        return werkzeug.contrib.sessions.FilesystemSessionStore(
+            path, session_class=OpenERPSession
+        )
 
     @lazy_property
     def nodb_routing_map(self):
