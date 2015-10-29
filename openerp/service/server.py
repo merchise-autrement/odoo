@@ -27,6 +27,15 @@ import werkzeug.serving
 
 _signals = {getattr(signal, name): name for name in dir(signal) if name.startswith('SIG')}
 
+
+class WorkerRuntimeError(RuntimeError):
+    _sentry_fingerprint = ['worker runtime error', ]
+
+
+class WorkerLimitException(WorkerRuntimeError):
+    _sentry_fingerprint = ['worker limit', ]
+
+
 if os.name == 'posix':
     # Unix only for workers
     import fcntl
@@ -568,7 +577,7 @@ class PreforkServer(CommonServer):
                 if WEXITSTATUS(status) == 3:
                     msg = "Critical worker error (%s)"
                     _logger.critical(msg, wpid)
-                    raise RuntimeError(msg % wpid)
+                    raise WorkerRuntimeError(msg % wpid)
                 self.worker_pop(wpid)
             except OSError, e:
                 if e.errno == errno.ECHILD:
@@ -804,7 +813,8 @@ class Worker(object):
         def time_expired(n, stack):
             # We dont suicide in such case, this will raise the exception at
             # the point of the
-            raise RuntimeError('CPU time limit exceeded.')
+            error = WorkerLimitException('CPU time limit exceeded.')
+            error._sentry_fingerprint = ['cpu']
         signal.signal(signal.SIGXCPU, time_expired)
         soft, hard = resource.getrlimit(resource.RLIMIT_CPU)
         resource.setrlimit(resource.RLIMIT_CPU, (cpu_time + config['limit_time_cpu'], hard))
