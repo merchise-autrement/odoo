@@ -802,8 +802,6 @@ class Worker(object):
         r = resource.getrusage(resource.RUSAGE_SELF)
         cpu_time = r.ru_utime + r.ru_stime
         def time_expired(n, stack):
-            _logger.info('Worker (%d) CPU time limit (%s) reached.', self.pid,
-                         config['limit_time_cpu'])
             # We dont suicide in such case, this will raise the exception at
             # the point of the
             raise RuntimeError('CPU time limit exceeded.')
