@@ -70,7 +70,7 @@
         <span class="oe_attachment_file">
             <span class="oe_add">
                 <!-- uploader of file -->
-                <button class="oe_attach"><span class="oe_e">'</span></button> 
+                <button class="oe_attach"><span class="oe_e">'</span></button>
                 <span class='oe_attach_label'>Attach a File</span>
                 <t t-call="HiddenInputFile">
                     <t t-set="fileupload_id" t-value="widget.fileupload_id"/>
@@ -151,7 +151,7 @@
             <t t-foreach='widget.recipients' t-as='recipient'>
                 <label t-attf-title="Add as recipient and follower (reason: #{recipient.reason})">
                     <input type="checkbox" t-att-checked="recipient.checked ? 'checked' : undefined" t-att-data="recipient.full_name"/>
-                    <t t-esc="recipient.name"/> 
+                    <t t-esc="recipient.name"/>
                     <t t-if="recipient.email_address">(<t t-esc="recipient.email_address"/>)</t>
                     <t t-if="!recipient.email_address">(no email address)</t>
                 </label>
@@ -162,7 +162,7 @@
         </div>
     </t>
 
-    <!-- 
+    <!--
         wall main template
         Template used to display the communication history in the wall.
         -->
