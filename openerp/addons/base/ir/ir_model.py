@@ -81,7 +81,8 @@ class ir_model(osv.osv):
             if model.model in self.pool:
                 res[model.id] = self.pool[model.model].is_transient()
             else:
-                _logger.error('Missing model', extra=dict(model=model.model))
+                _logger.error('Missing model %s', model.model,
+                              extra=dict(model=model.model))
         return res
 
     def _search_osv_memory(self, cr, uid, model, name, domain, context=None):
