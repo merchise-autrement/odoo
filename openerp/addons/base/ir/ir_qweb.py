@@ -453,21 +453,22 @@ class QWeb(orm.AbstractModel):
 
         """
         request = getattr(qwebcontext.get('request'), 'httprequest', None)
+        if len(element):
+            # An asset bundle is rendered in two differents contexts (when genereting html and
+            # when generating the bundle itself) so they must be qwebcontext free
+            # even '0' variable is forbidden
+            template = qwebcontext.get('__template__')
+            raise QWebException("t-call-assets cannot contain children nodes", template=template)
+        xmlid = template_attributes['call-assets']
+        cr, uid, context = [getattr(qwebcontext, attr) for attr in ('cr', 'uid', 'context')]
+        bundle = AssetsBundle(xmlid, cr=cr, uid=uid, context=context, registry=self.pool)
+        css = self.get_attr_bool(template_attributes.get('css'), default=True)
+        js = self.get_attr_bool(template_attributes.get('js'), default=True)
         if request and (request.is_spdy or request.is_http2):
-            template_attributes['call'] = template_attributes.pop('call-assets')
-            return self.render_tag_call(element, template_attributes, generated_attributes, qwebcontext)
+            #TODO:Review this solution, when request is spdy or request is
+            #http2 serve the javascript and css files like debug
+            return bundle.to_html(css=css, js=js, debug=bool(qwebcontext.get('debug')), spdy=True)
         else:
-            if len(element):
-                # An asset bundle is rendered in two differents contexts (when genereting html and
-                # when generating the bundle itself) so they must be qwebcontext free
-                # even '0' variable is forbidden
-                template = qwebcontext.get('__template__')
-                raise QWebException("t-call-assets cannot contain children nodes", template=template)
-            xmlid = template_attributes['call-assets']
-            cr, uid, context = [getattr(qwebcontext, attr) for attr in ('cr', 'uid', 'context')]
-            bundle = AssetsBundle(xmlid, cr=cr, uid=uid, context=context, registry=self.pool)
-            css = self.get_attr_bool(template_attributes.get('css'), default=True)
-            js = self.get_attr_bool(template_attributes.get('js'), default=True)
             return bundle.to_html(css=css, js=js, debug=bool(qwebcontext.get('debug')))
 
     def render_tag_set(self, element, template_attributes, generated_attributes, qwebcontext):
@@ -1140,11 +1141,11 @@ class AssetsBundle(object):
     def can_aggregate(self, url):
         return not urlparse(url).netloc and not url.startswith(('/web/css', '/web/js'))
 
-    def to_html(self, sep=None, css=True, js=True, debug=False):
+    def to_html(self, sep=None, css=True, js=True, debug=False, spdy=False):
         if sep is None:
             sep = '\n            '
         response = []
-        if debug:
+        if debug or spdy:
             if css and self.stylesheets:
                 self.compile_sass()
                 for style in self.stylesheets:
