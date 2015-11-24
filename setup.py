@@ -108,7 +108,7 @@ def py2exe_options():
                         # Merchise
                         'celery',
                         'flower',
-                        'redis', 'rb'
+                        'redis',
                         'xoutil',
                     ],
                     'excludes': ['Tkconstants', 'Tkinter', 'tcl'],
