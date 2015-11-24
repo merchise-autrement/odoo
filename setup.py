@@ -108,6 +108,7 @@ def py2exe_options():
                         # Merchise
                         'celery',
                         'flower',
+                        'hiredis',
                         'redis',
                         'xoutil',
                     ],
