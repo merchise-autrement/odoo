@@ -780,6 +780,8 @@ class Worker(object):
         if sig == signal.SIGUSR2:
             _logger.debug('Profile %s -> %s', self.profile, not self.profile)
             self.profile = not self.profile
+            if self.profile:
+                self.age = time.time()
 
     def sleep(self):
         try:
@@ -846,14 +848,13 @@ class Worker(object):
 
     def run(self):
         profile = self.profile
-        age = time.time()
+        self.age = time.time()
         try:
             self.start()
             while self.alive:
                 self.process_limit()
                 self.multi.pipe_ping(self.watchdog_pipe)
-                self.sleep()
-                if self.profile and (time.time() - age) > FIVE_MINUTES:
+                if self.profile and (time.time() - self.age) > FIVE_MINUTES:
                     _logger.warn('Forcing profile dump cause it was active'
                                  'more than 5 minutes')
                     self.profile = False
@@ -863,22 +864,25 @@ class Worker(object):
                     self.setproctitle()
                     profile = self.profile
                     self.profiler.enable()
-                    age = time.time()
+                    self.age = time.time()
 
                 if not self.profile and profile:
                     _logger.debug('Dumping profiling information...')
                     # TRACING ---> NOT TRACING
                     self.profiler.create_stats()
-                    with open('/tmp/odoo.stats%d.txt' % self.pid, 'w') as st:
+                    with open('/tmp/odoo.stats-%d.txt' % self.pid, 'w') as st:
                         st = Stats(self.profiler, stream=st).sort_stats('cumulative')
                         st.print_stats()
                     self.setproctitle()
                     profile = self.profile
 
+                self.sleep()
                 self.process_work()
-            _logger.info("Worker (%s) exiting. request_count: %s, registry count: %s.",
-                         self.pid, self.request_count,
-                         len(openerp.modules.registry.RegistryManager.registries))
+            _logger.info(
+                "Worker (%s) exiting. request_count: %s, registry count: %s.",
+                self.pid, self.request_count,
+                len(openerp.modules.registry.RegistryManager.registries)
+            )
             self.stop()
         except Exception:
             _logger.exception("Worker (%s) Exception occured, exiting..." % self.pid)
