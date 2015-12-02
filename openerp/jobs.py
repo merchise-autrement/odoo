@@ -35,8 +35,26 @@ import celery.exceptions
 from celery import Celery as _CeleryApp
 
 import openerp.tools.config as config
+
+from openerp.release import version
 from openerp.api import Environment
 from openerp.modules.registry import RegistryManager
+
+
+# The queues are named using the version info.  This is to avoid clashes with
+# other systems using Celery and the same broker.  I've seen sentry tasks
+# being routed to one of workers.
+
+# TODO: Write an auto-migration of task routed to older queue names.
+
+_VERSION_INFO = version.replace('.', '_').replace('+', '__')
+ROUTE_NS = 'odoo-{}'.format(_VERSION_INFO)
+ROUTE_KEY='{}.#'.format(ROUTE_NS)
+DEFAULT_QUEUE_NAME = '{}.default'.format(ROUTE_NS)
+LOWPRI_QUEUE_NAME = '{}.low'.format(ROUTE_NS)
+HIGHPRI_QUEUE_NAME = '{}.high'.format(ROUTE_NS)
+
+del _VERSION_INFO
 
 
 def Deferred(model, cr, uid, method, *args, **kwargs):
@@ -53,7 +71,7 @@ def Deferred(model, cr, uid, method, *args, **kwargs):
 
     '''
     args = _getargs(model, method, cr, uid, *args, **kwargs)
-    return task.apply_async(queue='default', args=args)
+    return task.apply_async(queue=DEFAULT_QUEUE_NAME, args=args)
 
 
 def HighPriorityDeferred(model, cr, uid, method, *args, **kwargs):
@@ -70,7 +88,7 @@ def HighPriorityDeferred(model, cr, uid, method, *args, **kwargs):
 
     '''
     args = _getargs(model, method, cr, uid, *args, **kwargs)
-    return task.apply_async(queue='high', args=args)
+    return task.apply_async(queue=HIGHPRI_QUEUE_NAME, args=args)
 
 
 def LowPriorityDeferred(model, cr, uid, method, *args, **kwargs):
@@ -87,7 +105,7 @@ def LowPriorityDeferred(model, cr, uid, method, *args, **kwargs):
 
     '''
     args = _getargs(model, method, cr, uid, *args, **kwargs)
-    return task.apply_async(queue='low', args=args)
+    return task.apply_async(queue=LOWPRI_QUEUE_NAME, args=args)
 
 
 def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
@@ -136,25 +154,31 @@ class Configuration(object):
     BROKER_URL = config.get('celery.broker', 'redis://localhost/9')
     CELERY_RESULT_BACKEND = config.get('celery.backend', BROKER_URL)
 
-    CELERY_DEFAULT_QUEUE = 'default'
+    CELERY_DEFAULT_QUEUE = DEFAULT_QUEUE_NAME
     CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
-    CELERY_DEFAULT_ROUTING_KEY = 'default'
+    CELERY_DEFAULT_ROUTING_KEY = DEFAULT_QUEUE_NAME
 
     CELERY_SEND_EVENTS = True
     CELERYD_MAX_TASKS_PER_CHILD = 2000
 
     # TODO: Take queues from configuration.
     CELERY_QUEUES = (
-        Queue('default', Exchange('default'), routing_key='default'),
-        Queue('high', Exchange('high'), routing_key='high'),
-        Queue('low', Exchange('low'), routing_key='low'),
+        Queue(DEFAULT_QUEUE_NAME, Exchange(DEFAULT_QUEUE_NAME),
+              routing_key=DEFAULT_QUEUE_NAME),
+        Queue(LOWPRI_QUEUE_NAME, Exchange(LOWPRI_QUEUE_NAME),
+              routing_key=LOWPRI_QUEUE_NAME),
+        Queue(HIGHPRI_QUEUE_NAME, Exchange(HIGHPRI_QUEUE_NAME),
+              routing_key=HIGHPRI_QUEUE_NAME),
     )
-    CELERY_CREATE_MISSING_QUEUES = True
+    CELERY_CREATE_MISSING_QUEUES = False
 
     CELERYD_TASK_TIME_LIMIT = 600  # 10 minutes
     CELERYD_TASK_SOFT_TIME_LIMIT = 540  # 9 minutes
 
     CELERY_ENABLE_REMOTE_CONTROL = True
+
+    CELERY_ENABLE_UTC = True
+    CELERY_ALWAYS_EAGER = False
 
     # Since our workers are embedded in the Odoo process, we can't turn off
     # the server without shutting the workers down.  So it's probably best to
@@ -243,26 +267,36 @@ def task_monitor():
         else:
             def _data(task):
                 return dict(status=status)
+
         def handler(event):
             state.event(event)
             uuid = event['uuid']
             task = state.tasks[uuid]
-            args = eval(task.args, {}, {})   # FIX: Assumed tuple-like json serialization
-            model, method, dbname, uid = args[:4]
-            registry = RegistryManager.get(dbname)
-            with registry.cursor() as cr:
-                _send(get_progress_channel(uuid),
-                      _data(task),
-                      registry=registry, cr=cr, uid=uid)
+            if task.name.startswith('openerp.'):
+                # FIXME: Assumed tuple-like json serialization
+                args = eval(task.args, {}, {})
+                model, method, dbname, uid = args[:4]
+                registry = RegistryManager.get(dbname)
+                with registry.cursor() as cr:
+                    _send(get_progress_channel(uuid),
+                          _data(task),
+                          registry=registry, cr=cr, uid=uid)
+            else:
+                logger.warn('Received event for extraneous job %s', task.name)
         return handler
 
     with Environment.manage():
         with app.connection() as connection:
-            recv = app.events.Receiver(connection, handlers={
-                'task-succeeded': announce('success'),
-                'task-failed': announce('failure'),
-                '*': state.event,
-            })
+            recv = app.events.Receiver(
+                connection,
+                app=app,
+                routing_key=ROUTE_KEY,
+                handlers={
+                    'task-succeeded': announce('success'),
+                    'task-failed': announce('failure'),
+                    '*': state.event,
+                }
+            )
             recv.capture(limit=None, timeout=None, wakeup=True)
 
 

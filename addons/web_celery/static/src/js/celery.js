@@ -61,8 +61,11 @@ openerp.web_celery = function(instance){
                         thrown('AssertionError: percent makes no sense');
                 } catch (error) {
                     // Safely avoid any non-sensible value
-                    this.percent = this.progress = this.valuemin = this.valuemax = null;
+                    this.progress = this.valuemin = this.valuemax = null;
+                    this.percent = 0;
                 }
+            else
+                this.percent = 0;  // Start at 0.
             this.message = message;
             this.updateView();
         },

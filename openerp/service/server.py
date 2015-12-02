@@ -17,6 +17,8 @@ import threading
 import time
 import unittest2
 
+from xoutil.objects import classproperty
+
 try:
     from cProfile import Profile
 except ImportError:
@@ -1019,15 +1021,29 @@ class CeleryWorker(Worker):
 
 
 class DefaultCeleryWorker(CeleryWorker):
-    queues = 'default,high'
+    @classproperty
+    def queues(cls):
+        from openerp.jobs import DEFAULT_QUEUE_NAME, HIGHPRI_QUEUE_NAME
+        return '{},{}'.format(DEFAULT_QUEUE_NAME, HIGHPRI_QUEUE_NAME)
 
 
 class HighPriorityCeleryWorker(CeleryWorker):
-    queues = 'high'
+    @classproperty
+    def queues(cls):
+        from openerp.jobs import HIGHPRI_QUEUE_NAME
+        return HIGHPRI_QUEUE_NAME
 
 
 class LowPriorityCeleryWorker(CeleryWorker):
-    queues = 'low,high,default'
+    @classproperty
+    def queues(cls):
+        from openerp.jobs import (DEFAULT_QUEUE_NAME, HIGHPRI_QUEUE_NAME,
+                                  LOWPRI_QUEUE_NAME)
+        return '{},{},{}'.format(
+            LOWPRI_QUEUE_NAME,
+            HIGHPRI_QUEUE_NAME,
+            DEFAULT_QUEUE_NAME,
+        )
 
 
 # ---------------------------------------------------------
