@@ -470,6 +470,7 @@ class PreforkServer(CommonServer):
         self.default_celery_workers = {}
         self.highpri_celery_workers = {}
         self.lowpri_celery_workers = {}
+        self.celery_beat_workers = {}
         self.generation = 0
         self.queue = []
         self.long_polling_pid = None
@@ -534,6 +535,7 @@ class PreforkServer(CommonServer):
                 self.default_celery_workers.pop(pid, None)
                 self.highpri_celery_workers.pop(pid, None)
                 self.lowpri_celery_workers.pop(pid, None)
+                self.celery_beat_workers.pop(pid, None)
                 u = self.workers.pop(pid)
                 u.close()
             except OSError:
@@ -632,6 +634,13 @@ class PreforkServer(CommonServer):
                 self.lowpri_celery_workers,
                 concurrency=workers
             )
+            # Avoid checking for time limits, celery manages those.
+            self.workers.pop(worker.pid, None)
+
+        beat = config.get('celery.beat', False)
+        if beat and not self.celery_beat_workers:
+            worker = self.worker_spawn(CeleryBeatWorker,
+                                       self.celery_beat_workers)
             # Avoid checking for time limits, celery manages those.
             self.workers.pop(worker.pid, None)
 
@@ -1044,6 +1053,13 @@ class LowPriorityCeleryWorker(CeleryWorker):
             HIGHPRI_QUEUE_NAME,
             DEFAULT_QUEUE_NAME,
         )
+
+
+class CeleryBeatWorker(Worker):
+    def run(self):
+        from openerp.jobs import app
+        self.start()
+        app.Beat().run()
 
 
 # ---------------------------------------------------------
