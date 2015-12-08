@@ -1013,6 +1013,8 @@ class CeleryWorker(Worker):
             queues=self.queues,
             concurrency=self.concurrency,
             hostname=self.hostname,
+            without_mingle=True,
+            without_gossip=True,
         )
         controller.start()
 

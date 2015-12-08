@@ -150,18 +150,12 @@ class ImDispatch(object):
                 _logger.exception("Bus.loop error, sleep and retry")
                 time.sleep(TIMEOUT)
 
-    @property
-    def monitor(self):
-        from openerp.jobs import task_monitor
-        return task_monitor
-
     def start(self):
         if openerp.evented:
             # gevent mode
             import gevent.event
             self.Event = gevent.event.Event
             gevent.spawn(self.run)
-            gevent.spawn(self.monitor)
         elif openerp.multi_process:
             # disabled in prefork mode
             return

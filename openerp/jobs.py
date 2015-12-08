@@ -49,7 +49,8 @@ from openerp.modules.registry import RegistryManager
 
 _VERSION_INFO = version.replace('.', '_').replace('+', '__')
 ROUTE_NS = 'odoo-{}'.format(_VERSION_INFO)
-ROUTE_KEY='{}.#'.format(ROUTE_NS)
+ROUTE_KEY = '{}.#'.format(ROUTE_NS)
+
 DEFAULT_QUEUE_NAME = '{}.default'.format(ROUTE_NS)
 LOWPRI_QUEUE_NAME = '{}.low'.format(ROUTE_NS)
 HIGHPRI_QUEUE_NAME = '{}.high'.format(ROUTE_NS)
@@ -230,74 +231,63 @@ def task(self, model, methodname, dbname, uid, args, kwargs):
                 try:
                     options = dict(job=self, registry=registry, cr=cr, uid=uid)
                     with context(CELERY_JOB, **options):
-                        return method(cr, uid, *args, **kwargs)
-                except celery.exceptions.SoftTimeLimitExceeded:
+                        res = method(cr, uid, *args, **kwargs)
+                    _report_success.delay(dbname, uid, self.request.id)
+                    return res
+                except celery.exceptions.SoftTimeLimitExceeded as error:
                     cr.rollback()
+                    _report_current_failure(dbname, uid, self.request.id,
+                                            error)
                     raise
                 except OperationalError as error:
                     cr.rollback()
                     if error.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
+                        _report_current_failure(dbname, uid, self.request.id,
+                                                error)
                         raise
                     else:
                         self.retry(error)  # This raises a Retry exception
+                except Exception as error:
+                    _report_current_failure(dbname, uid, self.request.id,
+                                            error)
+                    raise
             else:
                 raise TypeError(
                     'Invalid method name %r for model %r' % (methodname, model)
                 )
 
 
-def task_monitor():
-    '''Monitor tasks events and emit notifications.
+@app.task(bind=True, max_retries=5)
+def _report_success(self, dbname, uid, job_uuid):
+    try:
+        with Environment.manage():
+            registry = RegistryManager.get(dbname)
+            with registry.cursor() as cr:
+                _send(get_progress_channel(job_uuid),
+                      dict(status='success'),
+                      registry=registry, cr=cr, uid=uid)
+    except Exception as error:
+        self.retry(error)
 
-    Sends completion/failure signals to the Odoo bus.
 
-    Usage::
+@app.task(bind=True, max_retries=5)
+def _report_failure(self, dbname, uid, job_uuid, tb, message=''):
+    try:
+        with Environment.manage():
+            registry = RegistryManager.get(dbname)
+            with registry.cursor() as cr:
+                _send(get_progress_channel(job_uuid),
+                      dict(status='failure', traceback=tb, message=message),
+                      registry=registry, cr=cr, uid=uid)
+    except Exception as error:
+        self.retry(error)
 
-       gevent.spawn(task_monitor)
 
-    '''
-    state = app.events.State()
-
-    def announce(status):
-        if status == 'failure':
-            def _data(task):
-                return dict(status=status,
-                            traceback=task.traceback,
-                            message=task.exception)
-        else:
-            def _data(task):
-                return dict(status=status)
-
-        def handler(event):
-            state.event(event)
-            uuid = event['uuid']
-            task = state.tasks[uuid]
-            if task.name.startswith('openerp.'):
-                # FIXME: Assumed tuple-like json serialization
-                args = eval(task.args, {}, {})
-                model, method, dbname, uid = args[:4]
-                registry = RegistryManager.get(dbname)
-                with registry.cursor() as cr:
-                    _send(get_progress_channel(uuid),
-                          _data(task),
-                          registry=registry, cr=cr, uid=uid)
-            else:
-                logger.warn('Received event for extraneous job %s', task.name)
-        return handler
-
-    with Environment.manage():
-        with app.connection() as connection:
-            recv = app.events.Receiver(
-                connection,
-                app=app,
-                routing_key=ROUTE_KEY,
-                handlers={
-                    'task-succeeded': announce('success'),
-                    'task-failed': announce('failure'),
-                    '*': state.event,
-                }
-            )
-            recv.capture(limit=None, timeout=None, wakeup=True)
+def _report_current_failure(dbname, uid, job_uuid, error):
+    import traceback
+    message = getattr(error, 'message', '')
+    _report_failure.delay(dbname, uid, job_uuid, traceback.format_exc(),
+                          message=message)
 
 
 def _getargs(model, method, cr, uid, *args, **kwargs):
