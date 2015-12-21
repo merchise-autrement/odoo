@@ -1017,6 +1017,8 @@ class purchase_order(osv.osv):
                             all(move.invoice_state == 'invoiced' for move in po_line.move_ids if move.state == 'done')
                             and po_line.invoice_lines and all(line.invoice_id.state not in ['draft', 'cancel'] for line in po_line.invoice_lines)):
                         is_invoiced.append(po_line.id)
+                    elif po_line.product_id.type == 'service':
+                        is_invoiced.append(po_line.id)
             else:
                 for po_line in po.order_line:
                     if (po_line.invoice_lines and 
@@ -1251,9 +1253,13 @@ class purchase_order_line(osv.osv):
             else:
                 price = product.standard_price
 
-        taxes = account_tax.browse(cr, uid, map(lambda x: x.id, product.supplier_taxes_id))
+        if uid == SUPERUSER_ID:
+            company_id = self.pool['res.users'].browse(cr, uid, [uid]).company_id.id
+            taxes = product.supplier_taxes_id.filtered(lambda r: r.company_id.id == company_id)
+        else:
+            taxes = product.supplier_taxes_id
         fpos = fiscal_position_id and account_fiscal_position.browse(cr, uid, fiscal_position_id, context=context) or False
-        taxes_ids = account_fiscal_position.map_tax(cr, uid, fpos, taxes)
+        taxes_ids = account_fiscal_position.map_tax(cr, uid, fpos, taxes, context=context)
         price = self.pool['account.tax']._fix_tax_included_price(cr, uid, price, product.supplier_taxes_id, taxes_ids)
         res['value'].update({'price_unit': price, 'taxes_id': taxes_ids})
 
@@ -1418,7 +1424,7 @@ class procurement_order(osv.osv):
         fiscal_position_id = po_obj.onchange_partner_id(cr, uid, None, partner.id, context=context)['value']['fiscal_position']
         if fiscal_position_id:
             fiscal_position = acc_pos_obj.browse(cr, uid, fiscal_position_id, context=context)
-        taxes = acc_pos_obj.map_tax(cr, uid, fiscal_position, taxes_ids)
+        taxes = acc_pos_obj.map_tax(cr, uid, fiscal_position, taxes_ids, context=context)
         name = product.display_name
         if product.description_purchase:
             name += '\n' + product.description_purchase
@@ -1504,9 +1510,12 @@ class procurement_order(osv.osv):
                 if available_draft_po_ids:
                     po_id = available_draft_po_ids[0]
                     po_rec = po_obj.browse(cr, uid, po_id, context=context)
+
+                    po_to_update = {'origin': po_rec.origin and ', '.join([po_rec.origin, procurement.origin]) or procurement.origin}
                     #if the product has to be ordered earlier those in the existing PO, we replace the purchase date on the order to avoid ordering it too late
                     if datetime.strptime(po_rec.date_order, DEFAULT_SERVER_DATETIME_FORMAT) > purchase_date:
-                        po_obj.write(cr, uid, [po_id], {'date_order': purchase_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)}, context=context)
+                        po_to_update.update({'date_order': purchase_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+                    po_obj.write(cr, uid, [po_id], po_to_update, context=context)
                     #look for any other PO line in the selected PO with same product and UoM to sum quantities instead of creating a new po line
                     available_po_line_ids = po_line_obj.search(cr, uid, [('order_id', '=', po_id), ('product_id', '=', line_vals['product_id']), ('product_uom', '=', line_vals['product_uom'])], context=context)
                     if available_po_line_ids:

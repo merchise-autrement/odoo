@@ -246,7 +246,8 @@ def task(self, model, methodname, dbname, uid, args, kwargs):
                                                 error)
                         raise
                     else:
-                        self.retry(error)  # This raises a Retry exception
+                        self.retry(args=(model, methodname, dbname, uid,
+                                         args, kwargs))
                 except Exception as error:
                     _report_current_failure(dbname, uid, self.request.id,
                                             error)
@@ -267,7 +268,7 @@ def _report_success(self, dbname, uid, job_uuid):
                       dict(status='success'),
                       registry=registry, cr=cr, uid=uid)
     except Exception as error:
-        self.retry(error)
+        self.retry(args=(dbname, uid, job_uuid))
 
 
 @app.task(bind=True, max_retries=5)
@@ -280,7 +281,8 @@ def _report_failure(self, dbname, uid, job_uuid, tb, message=''):
                       dict(status='failure', traceback=tb, message=message),
                       registry=registry, cr=cr, uid=uid)
     except Exception as error:
-        self.retry(error)
+        self.retry(args=(dbname, uid, job_uuid, tb),
+                   kwargs={'message': message})
 
 
 def _report_current_failure(dbname, uid, job_uuid, error):

@@ -135,17 +135,6 @@ honored:
   implementation detail not part of the API.
 
 
-
-The only thing I think is left to do
-====================================
-
-Integrate the `bus` addon to notify about completed/failed tasks.
-
-Currently I'm notifying the completion of a job at the very end of the task
-definition.  This is wrong and probably prone to failure.  The right way would
-be to monitor the workers events in the GeventServer loop.
-
-
 ..
    Local Variables:
    ispell-dictionary: "en"

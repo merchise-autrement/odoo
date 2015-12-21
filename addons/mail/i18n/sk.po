@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Odoo 8.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-21 14:07+0000\n"
-"PO-Revision-Date: 2015-11-13 19:08+0000\n"
+"PO-Revision-Date: 2015-12-12 20:43+0000\n"
 "Last-Translator: Martin Trigaux\n"
 "Language-Team: Slovak (http://www.transifex.com/odoo/odoo-8/language/sk/)\n"
 "MIME-Version: 1.0\n"
@@ -696,7 +696,7 @@ msgstr ""
 #: code:addons/mail/static/src/xml/mail_followers.xml:12
 #, python-format
 msgid "Follow"
-msgstr ""
+msgstr "Odoberať"
 
 #. module: mail
 #. openerp-web
@@ -756,7 +756,7 @@ msgstr "Od"
 #: code:addons/mail/res_users.py:75
 #, python-format
 msgid "Go to the configuration panel"
-msgstr ""
+msgstr "Ísť na panel konfigurácie"
 
 #. module: mail
 #: view:mail.group:mail.view_group_search
@@ -803,7 +803,7 @@ msgstr ""
 #. module: mail
 #: field:mail.message.subtype,hidden:0
 msgid "Hidden"
-msgstr ""
+msgstr "Skrytý"
 
 #. module: mail
 #: help:mail.message.subtype,hidden:0
@@ -985,7 +985,7 @@ msgstr ""
 #: code:addons/mail/mail_mail.py:340
 #, python-format
 msgid "Mail Delivery Failed"
-msgstr ""
+msgstr "Doručenie e-mailu zlyhalo"
 
 #. module: mail
 #: field:ir.ui.menu,mail_group_id:0
@@ -1012,7 +1012,7 @@ msgstr "Označiť ako zostávajúce"
 #. module: mail
 #: field:mail.group,image_medium:0
 msgid "Medium-sized photo"
-msgstr ""
+msgstr "Stredne veľká fotografia"
 
 #. module: mail
 #: help:mail.group,image_medium:0
@@ -1367,7 +1367,7 @@ msgstr ""
 #. module: mail
 #: field:mail.group,image:0
 msgid "Photo"
-msgstr ""
+msgstr "Fotografia"
 
 #. module: mail
 #. openerp-web
@@ -1484,7 +1484,7 @@ msgstr "Súvisiace menu"
 #. module: mail
 #: field:mail.followers,partner_id:0
 msgid "Related Partner"
-msgstr ""
+msgstr "Súvisiaci partner"
 
 #. module: mail
 #: field:mail.message.subtype,relation_field:0
@@ -1623,7 +1623,7 @@ msgstr ""
 #. module: mail
 #: field:mail.group,image_small:0
 msgid "Small-sized photo"
-msgstr ""
+msgstr "Malá fotografia"
 
 #. module: mail
 #: help:mail.group,image_small:0
@@ -1742,7 +1742,7 @@ msgid ""
 "The requested operation cannot be completed due to security restrictions. Please contact your system administrator.\n"
 "\n"
 "(Document type: %s, Operation: %s)"
-msgstr ""
+msgstr "Vyžiadaná operácia nemôže byť dokončená kôli bezpečnostným opatreniam. Prosím konaktujte vášho systémového administrátora.\n\n(Typ dokumentu: %s, operácia: %s)"
 
 #. module: mail
 #: help:mail.group,image:0
@@ -2116,7 +2116,7 @@ msgstr ""
 #: code:addons/mail/static/src/xml/mail.xml:297
 #, python-format
 msgid "to"
-msgstr ""
+msgstr "na"
 
 #. module: mail
 #. openerp-web
