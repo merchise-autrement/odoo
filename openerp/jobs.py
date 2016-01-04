@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # celeryapp
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise Autrement and Contributors
+# Copyright (c) 2015, 2016 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -58,56 +58,45 @@ HIGHPRI_QUEUE_NAME = '{}.high'.format(ROUTE_NS)
 del _VERSION_INFO
 
 
-def Deferred(model, cr, uid, method, *args, **kwargs):
-    '''Request to run a method in a celery worker.
+def _build_api_function(name, queue):
+    def func(model, cr, uid, method, *args, **kwargs):
+        args = _getargs(model, method, cr, uid, *args, **kwargs)
+        if CELERY_JOB in context:
+            return task(*args)
+        else:
+            return task.apply_async(queue=queue, args=args)
+    func.__name__ = name
+    func.__doc__ = (
+        '''Request to run a method in a celery worker.
 
-    The job will be routed to the 'default' priority queue.
+        The job will be routed to the '{queue}' priority queue.
 
-    :param model: The Odoo model.
-    :param cr: The cursor or the DB name.
-    :param uid: The user id.
-    :param method: The name of method to run.
+        :param model: The Odoo model.
+        :param cr: The cursor or the DB name.
+        :param uid: The user id.
+        :param method: The name of method to run.
 
-    :returns: An AsyncResult that represents the job.
+        :returns: An AsyncResult that represents the job.
 
-    '''
-    args = _getargs(model, method, cr, uid, *args, **kwargs)
-    return task.apply_async(queue=DEFAULT_QUEUE_NAME, args=args)
+        .. warning:: Nested calls don't issue sub-tasks.
 
+           When running inside a background job, calling this function
+           **won't** create another background job, but inline the function
+           call.
 
-def HighPriorityDeferred(model, cr, uid, method, *args, **kwargs):
-    '''Request to run a method in a celery worker.
+        '''
+    ).format(queue=queue.rsplit('.', 1)[-1] if '.' in queue else queue)
+    return func
 
-    The job will be routed to the 'high' priority queue.
-
-    :param model: The Odoo model.
-    :param cr: The cursor or the DB name.
-    :param uid: The user id.
-    :param method: The name of method to run.
-
-    :returns: An AsyncResult that represents the job.
-
-    '''
-    args = _getargs(model, method, cr, uid, *args, **kwargs)
-    return task.apply_async(queue=HIGHPRI_QUEUE_NAME, args=args)
-
-
-def LowPriorityDeferred(model, cr, uid, method, *args, **kwargs):
-    '''Request to run a method in a celery worker.
-
-    The job will be routed to the 'low' priority queue.
-
-    :param model: The Odoo model.
-    :param cr: The cursor or the DB name.
-    :param uid: The user id.
-    :param method: The name of method to run.
-
-    :returns: An AsyncResult that represents the job.
-
-    '''
-    args = _getargs(model, method, cr, uid, *args, **kwargs)
-    return task.apply_async(queue=LOWPRI_QUEUE_NAME, args=args)
-
+Deferred = _build_api_function('Deferred', DEFAULT_QUEUE_NAME)
+HighPriorityDeferred = _build_api_function(
+    'HighPriorityDeferred',
+    HIGHPRI_QUEUE_NAME
+)
+LowPriorityDeferred = _build_api_function(
+    'LowPriorityDeferred',
+    LOWPRI_QUEUE_NAME
+)
 
 def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
                     status=None):
@@ -232,12 +221,14 @@ def task(self, model, methodname, dbname, uid, args, kwargs):
                     options = dict(job=self, registry=registry, cr=cr, uid=uid)
                     with context(CELERY_JOB, **options):
                         res = method(cr, uid, *args, **kwargs)
-                    _report_success.delay(dbname, uid, self.request.id)
+                    if self.request.id:
+                        _report_success.delay(dbname, uid, self.request.id)
                     return res
                 except celery.exceptions.SoftTimeLimitExceeded as error:
                     cr.rollback()
-                    _report_current_failure(dbname, uid, self.request.id,
-                                            error)
+                    if self.request.id:
+                        _report_current_failure(dbname, uid, self.request.id,
+                                                error)
                     raise
                 except OperationalError as error:
                     cr.rollback()
