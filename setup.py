@@ -175,7 +175,7 @@ setup(
         # Merchise
         'celery',
         'flower',
-        'redis', 'rb',
+        'redis',
         'xoutil',
     ],
     extras_require={
