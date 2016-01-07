@@ -475,16 +475,6 @@ class PreforkServer(CommonServer):
         self.queue = []
         self.long_polling_pid = None
 
-    @property
-    def other_workers(self):
-        from xoutil.objects import dict_merge
-        return dict_merge(
-            self.default_celery_workers,
-            self.highpri_celery_workers,
-            self.lowpri_celery_workers,
-            self.celery_beat_workers
-        )
-
     def pipe_new(self):
         pipe = os.pipe()
         for fd in pipe:
@@ -719,8 +709,6 @@ class PreforkServer(CommonServer):
             limit = time.time() + self.timeout
             for pid in self.workers.keys():
                 self.worker_kill(pid, signal.SIGINT)
-            for pid in self.other_workers.keys():
-                self.worker_kill(pid, signal.SIGINT)
             while self.workers and time.time() < limit:
                 try:
                     self.process_signals()
@@ -732,8 +720,6 @@ class PreforkServer(CommonServer):
         else:
             _logger.info("Stopping forcefully")
         for pid in self.workers.keys():
-            self.worker_kill(pid, signal.SIGTERM)
-        for pid in self.other_workers.keys():
             self.worker_kill(pid, signal.SIGTERM)
         self.socket.close()
 
