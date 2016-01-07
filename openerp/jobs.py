@@ -212,6 +212,7 @@ PG_CONCURRENCY_ERRORS_TO_RETRY = (
 @app.task(bind=True, max_retries=5)
 def task(self, model, methodname, dbname, uid, args, kwargs):
     with Environment.manage():
+        RegistryManager.check_registry_signaling(dbname)
         registry = RegistryManager.get(dbname)
         with registry.cursor() as cr:
             method = getattr(registry[model], methodname)
