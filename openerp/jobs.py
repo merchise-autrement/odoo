@@ -286,12 +286,16 @@ def _report_current_failure(dbname, uid, job_uuid, error):
 def _getargs(model, method, cr, uid, *args, **kwargs):
     from openerp.models import Model
     from openerp.sql_db import Cursor
+    from openerp.tools import frozendict
     if isinstance(model, Model):
         model = model._name
     if isinstance(cr, Cursor):
         dbname = cr.dbname
     else:
         dbname = cr
+    odoo_context = kwargs.get('context', None)
+    if isinstance(odoo_context, frozendict):
+        kwargs['context'] = dict(odoo_context)
     return (model, method, dbname, uid, args, kwargs)
 
 
