@@ -585,12 +585,21 @@ class BaseModel(object):
         cls._local_constraints = cls.__dict__.get('_constraints', [])
         cls._local_sql_constraints = cls.__dict__.get('_sql_constraints', [])
 
+        import sys
+        if sys.version_info < (3, 0):
+            _encode = lambda s: s.encode('utf-8')
+        else:
+            _encode = lambda s: s
+        del sys
+
         # determine inherited models
         parents = getattr(cls, '_inherit', [])
         parents = [parents] if isinstance(parents, basestring) else (parents or [])
+        parents = [_encode(parent) for parent in parents]
 
         # determine the model's name
         name = cls._name or (len(parents) == 1 and parents[0]) or cls.__name__
+        name = _encode(name)
 
         # determine the module that introduced the model
         original_module = pool[name]._original_module if name in parents else cls._module
