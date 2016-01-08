@@ -17,6 +17,7 @@ openerp.web_celery = function(instance){
         init: function(parent, options) {
             this._super(parent);
             var uuid, bus;
+            this.percent = 0;
             this.done = $.Deferred();
             this.uuid = uuid = options.params.uuid;
             this.next_action = options.params.next_action;
@@ -64,8 +65,6 @@ openerp.web_celery = function(instance){
                     this.progress = this.valuemin = this.valuemax = null;
                     this.percent = 0;
                 }
-            else
-                this.percent = 0;  // Start at 0.
             this.message = message;
             this.updateView();
         },
@@ -84,7 +83,9 @@ openerp.web_celery = function(instance){
             if (isOk(this.progress)) {
                 $progressbar.attr('aria-valuenow', this.progress);
             }
-            if (isOk(this.percent)) {
+            // percent should be always ok, but will show only a progress bar
+            // if there's a progress value.
+            if (isOk(this.percent) && isOk(this.progress)) {
                 $progressbar.attr('style', 'width: ' + this.percent + '%');
                 var $pmsg = $progressbar.find('.percent-message');
                 if ($pmsg.length){
@@ -103,7 +104,6 @@ openerp.web_celery = function(instance){
             var status = message.status;
             if (status && (status == 'success' || status == 'failure')) {
                 if (status != 'failure') {
-                    this.update(100);
                     var next = message.next_action;
                     if (next) {
                         this.next_action = next;
