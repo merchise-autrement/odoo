@@ -19,7 +19,7 @@ openerp.web_celery = function(instance){
             var uuid, bus;
             this.done = $.Deferred();
             this.uuid = uuid = options.params.uuid;
-            this.next = options.params.next_action;
+            this.next_action = options.params.next_action;
             this.title = _t('Working');
             this.message = _t('Your request is being processed (or about '+
                               'to be processed.)  Please wait.');
@@ -102,8 +102,13 @@ openerp.web_celery = function(instance){
             var message = params[1];
             var status = message.status;
             if (status && (status == 'success' || status == 'failure')) {
-                if (status != 'failure')
+                if (status != 'failure') {
                     this.update(100);
+                    var next = message.next_action;
+                    if (next) {
+                        this.next_action = next;
+                    }
+                }
                 else {
                     _.delay(_.bind(this.show_failure, this, message), 1);
                 }
@@ -137,8 +142,14 @@ openerp.web_celery = function(instance){
             if (!this.isDestroyed()) {
                 var parent = this.getParent();
                 var self = this;
-                if (!!this.next) {
-                    _.delay(function(){parent.do_action(self.next);}, 1);
+                if (!!self.next_action) {
+                    _.delay(function(){
+                        // First go back to remove the progress bar level from
+                        // the breadcumbs, and then go the specified action.
+                        parent.do_action('history_back').then(
+                            function(){parent.do_action(self.next_action);}
+                        );
+                    }, 1);
                 } else {
                     _.delay(function(){parent.do_action('history_back');}, 1);
                 }

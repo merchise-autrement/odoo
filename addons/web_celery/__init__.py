@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # web_celery
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise Autrement and Contributors
+# Copyright (c) 2015, 2016 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -51,9 +51,7 @@ def WAIT_FOR_TASK(job, next_action=None):
     '''
     return dict(
         type='ir.actions.client',
-        tag=('wait_for_background_job'
-             if job.status in ('STARTED', 'PENDING')
-             else next_action['tag']),
+        tag='wait_for_background_job' if job.status in ('STARTED', 'PENDING') else next_action['tag'],
         params=dict(
             uuid=job.id,
             next_action=next_action,

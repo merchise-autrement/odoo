@@ -223,8 +223,7 @@ def task(self, model, methodname, dbname, uid, args, kwargs):
                     with context(CELERY_JOB, **options):
                         res = method(cr, uid, *args, **kwargs)
                     if self.request.id:
-                        _report_success.delay(dbname, uid, self.request.id)
-                    return res
+                        _report_success.delay(dbname, uid, self.request.id, result=res)
                 except celery.exceptions.SoftTimeLimitExceeded as error:
                     cr.rollback()
                     if self.request.id:
@@ -251,13 +250,13 @@ def task(self, model, methodname, dbname, uid, args, kwargs):
 
 
 @app.task(bind=True, max_retries=5)
-def _report_success(self, dbname, uid, job_uuid):
+def _report_success(self, dbname, uid, job_uuid, result=None):
     try:
         with Environment.manage():
             registry = RegistryManager.get(dbname)
             with registry.cursor() as cr:
                 _send(get_progress_channel(job_uuid),
-                      dict(status='success'),
+                      dict(status='success', next_action=result),
                       registry=registry, cr=cr, uid=uid)
     except Exception as error:
         self.retry(args=(dbname, uid, job_uuid))
