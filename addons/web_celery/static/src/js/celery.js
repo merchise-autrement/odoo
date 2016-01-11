@@ -1,5 +1,6 @@
 openerp.web_celery = function(instance){
     var pending_jobs = 0;
+    var _t = instance.web._t;
 
     // That's 20 minutes!  This should account for the time in the queue plus
     // the running time.
