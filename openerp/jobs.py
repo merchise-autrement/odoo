@@ -281,6 +281,7 @@ def _report_current_failure(dbname, uid, job_uuid, error):
     message = getattr(error, 'message', '')
     _report_failure.delay(dbname, uid, job_uuid, traceback.format_exc(),
                           message=message)
+    logger.exception('Unhandled exception in task')
 
 
 def _getargs(model, method, cr, uid, *args, **kwargs):
