@@ -62,6 +62,11 @@ def _build_api_function(name, queue):
     def func(model, cr, uid, method, *args, **kwargs):
         args = _getargs(model, method, cr, uid, *args, **kwargs)
         if CELERY_JOB in context:
+            logger.warn('Nested background call detected for model %s '
+                        'and method %s', model, method, extra=dict(
+                            model=model, method=method, uid=uid,
+                            args=args
+                        ))
             return task(*args)
         else:
             return task.apply_async(queue=queue, args=args)
