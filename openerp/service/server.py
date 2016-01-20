@@ -1015,6 +1015,7 @@ class CeleryWorker(Worker):
             hostname=self.hostname,
             without_mingle=True,
             without_gossip=True,
+            send_events=True,
         )
         controller.start()
 
