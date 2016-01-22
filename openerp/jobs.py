@@ -26,7 +26,7 @@ from __future__ import (division as _py3_division,
 
 
 from xoutil import logger  # noqa
-from xoutil.context import context
+from xoutil.context import context as _exec_context
 from xoutil.objects import extract_attrs
 
 from kombu import Exchange, Queue
@@ -61,7 +61,7 @@ del _VERSION_INFO
 def _build_api_function(name, queue):
     def func(model, cr, uid, method, *args, **kwargs):
         args = _getargs(model, method, cr, uid, *args, **kwargs)
-        if CELERY_JOB in context:
+        if CELERY_JOB in _exec_context:
             logger.warn('Nested background call detected for model %s '
                         'and method %s', model, method, extra=dict(
                             model=model, method=method, uid=uid,
@@ -129,7 +129,7 @@ def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
                     framework module) purposes.
 
     '''
-    _context = context[CELERY_JOB]
+    _context = _exec_context[CELERY_JOB]
     job = _context.get('job')
     if job:
         if valuemin is None or valuemax is None:
@@ -225,7 +225,7 @@ def task(self, model, methodname, dbname, uid, args, kwargs):
                 # It's up to the user to return transferable things.
                 try:
                     options = dict(job=self, registry=registry, cr=cr, uid=uid)
-                    with context(CELERY_JOB, **options):
+                    with _exec_context(CELERY_JOB, **options):
                         res = method(cr, uid, *args, **kwargs)
                     if self.request.id:
                         _report_success.delay(dbname, uid, self.request.id, result=res)
@@ -329,7 +329,7 @@ def get_status_channel(job):
 
 def _send(channel, message, registry=None, cr=None, uid=None):
     if registry is None or cr is None or uid is None:
-        _context = context[CELERY_JOB]
+        _context = _exec_context[CELERY_JOB]
         registry = _context['registry']
         cr = _context['cr']
         uid = _context['uid']
