@@ -789,7 +789,7 @@ class Worker(object):
         # Handles SIGINT (Ctrl-C).  This will make the worker quit nicely.
         self.alive = (sig != signal.SIGINT)
         if sig == signal.SIGUSR2:
-            _logger.debug('Profile %s -> %s', self.profile, not self.profile)
+            _logger.info('Profile %s -> %s', self.profile, not self.profile)
             self.profile = not self.profile
             if self.profile:
                 self.age = time.time()
@@ -871,14 +871,14 @@ class Worker(object):
                     self.profile = False
                 if self.profile and not profile:
                     # NOT TRACING ---> TRACING
-                    _logger.debug('Activating profiling...')
+                    _logger.info('Activating profiling...')
                     self.setproctitle()
                     profile = self.profile
                     self.profiler.enable()
                     self.age = time.time()
 
                 if not self.profile and profile:
-                    _logger.debug('Dumping profiling information...')
+                    _logger.info('Dumping profiling information...')
                     # TRACING ---> NOT TRACING
                     self.profiler.create_stats()
                     with open('/tmp/odoo.stats-%d.txt' % self.pid, 'w') as st:
