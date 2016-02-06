@@ -24,7 +24,7 @@
     }
 
 
-    bus.HIDDEN_DELAY = 4000;
+    bus.HIDDEN_DELAY = 30000;
     bus.ERROR_DELAY = 10000;
 
     var rolldice = function() {
