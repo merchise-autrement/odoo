@@ -1326,7 +1326,12 @@ class mail_thread(osv.AbstractModel):
                         filename=decode(filename)
                 encoding = part.get_content_charset()  # None if attachment
                 # 1) Explicit Attachments -> attachments
-                if filename or part.get('content-disposition', '').strip().startswith('attachment'):
+                disposition = ''
+                _disposition_headers = ['Content-Disposition', 'X-Original-Content-Disposition']
+                while not disposition and _disposition_headers:
+                    _header = _disposition_headers.pop(0)
+                    diposition = part.get(_header, '')
+                if filename or disposition.strip().startswith('attachment'):
                     attachments.append((filename or 'attachment', part.get_payload(decode=True)))
                     continue
                 # 2) text/plain -> <pre/>
