@@ -127,7 +127,7 @@ class product_pricelist(osv.osv):
                        FROM ((
                                 SELECT pr.id, pr.name
                                 FROM product_pricelist pr JOIN
-                                     res_currency cur ON 
+                                     res_currency cur ON
                                          (pr.currency_id = cur.id)
                                 WHERE pr.name || ' (' || cur.name || ')' = %(name)s
                             )
@@ -140,7 +140,7 @@ class product_pricelist(osv.osv):
                                         tr.name = 'product.pricelist,name' AND
                                         tr.lang = %(lang)s
                                      ) JOIN
-                                     res_currency cur ON 
+                                     res_currency cur ON
                                          (pr.currency_id = cur.id)
                                 WHERE tr.value || ' (' || cur.name || ')' = %(name)s
                             )
@@ -215,7 +215,11 @@ class product_pricelist(osv.osv):
                 version = v
                 break
         if not version:
-            raise osv.except_osv(_('Warning!'), _("At least one pricelist has no active version !\nPlease create or activate one."))
+            raise osv.except_osv(
+                _('Warning!'),
+                _("%s does not have an active season to date %s !\n"
+                  "Please create or activate one." % (pricelist.name, date)))
+#            raise osv.except_osv(_('Warning!'), _("At least one pricelist has no active version !\nPlease create or activate one."))
         categ_ids = {}
         for p in products:
             categ = p.categ_id
@@ -244,7 +248,7 @@ class product_pricelist(osv.osv):
                 'AND (price_version_id = %s) '
             'ORDER BY sequence, min_quantity desc',
             (prod_tmpl_ids, prod_ids, categ_ids, version.id))
-        
+
         item_ids = [x[0] for x in cr.fetchall()]
         items = self.pool.get('product.pricelist.item').browse(cr, uid, item_ids, context=context)
 
@@ -535,4 +539,3 @@ class product_pricelist_item(osv.osv):
 
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-

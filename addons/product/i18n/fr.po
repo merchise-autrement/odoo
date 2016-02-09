@@ -1,7 +1,7 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # * product
-# 
+
 # Translators:
 # Fabien Pinckaers <fp@openerp.com>, 2015
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2014
@@ -824,12 +824,13 @@ msgid "Associated field in the product form."
 msgstr "Champ associé dans le formulaire de l'article"
 
 #. module: product
-#: code:addons/product/pricelist.py:215
+#: code:addons/product/pricelist.py:221
 #, python-format
 msgid ""
-"At least one pricelist has no active version !\n"
+"%s does not have an active season to date %s !\n"
 "Please create or activate one."
-msgstr "Au moins une liste de prix n'a pas de version active !\nCréez ou activez en une."
+msgstr "%s n'a pas une saison active à ce jour %s !\n"
+"Créez ou activez en une."
 
 #. module: product
 #: field:product.attribute.line,attribute_id:0

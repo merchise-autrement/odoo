@@ -1,7 +1,7 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # * product
-# 
+
 # Translators:
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2014
 msgid ""
@@ -817,12 +817,13 @@ msgid "Associated field in the product form."
 msgstr "Campo asociado en el formulario de producto."
 
 #. module: product
-#: code:addons/product/pricelist.py:215
+#: code:addons/product/pricelist.py:221
 #, python-format
 msgid ""
-"At least one pricelist has no active version !\n"
+"%s does not have an active season to date %s !\n"
 "Please create or activate one."
-msgstr "¡Al menos una lista de precios no tiene una versión activa!\nPor favor, cree o active una."
+msgstr "%s no tiene una temporada activa para la fecha %s !\n"
+"Por favor cree o active una."
 
 #. module: product
 #: field:product.attribute.line,attribute_id:0
