@@ -1330,8 +1330,8 @@ class mail_thread(osv.AbstractModel):
                 _disposition_headers = ['Content-Disposition', 'X-Original-Content-Disposition']
                 while not disposition and _disposition_headers:
                     _header = _disposition_headers.pop(0)
-                    diposition = part.get(_header, '')
-                if filename or disposition.strip().startswith('attachment'):
+                    disposition = part.get(_header, '').strip()
+                if filename or disposition.startswith('attachment'):
                     attachments.append((filename or 'attachment', part.get_payload(decode=True)))
                     continue
                 # 2) text/plain -> <pre/>
