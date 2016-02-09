@@ -1315,7 +1315,13 @@ class mail_thread(osv.AbstractModel):
                 # original get_filename is not able to decode iso-8859-1 (for instance).
                 # therefore, iso encoded attachements are not able to be decoded properly with get_filename
                 # code here partially copy the original get_filename method, but handle more encoding
-                filename=part.get_param('filename', None, 'content-disposition')
+                disposition = ''
+                _disposition_header = None
+                _disposition_headers = ['Content-Disposition', 'X-Original-Content-Disposition']
+                while not disposition and _disposition_headers:
+                    _disposition_header = _disposition_headers.pop(0)
+                    disposition = part.get(_disposition_header, '').strip()
+                filename=part.get_param('filename', None, _disposition_header or 'Content-Disposition')
                 if not filename:
                     filename=part.get_param('name', None)
                 if filename:
@@ -1326,11 +1332,6 @@ class mail_thread(osv.AbstractModel):
                         filename=decode(filename)
                 encoding = part.get_content_charset()  # None if attachment
                 # 1) Explicit Attachments -> attachments
-                disposition = ''
-                _disposition_headers = ['Content-Disposition', 'X-Original-Content-Disposition']
-                while not disposition and _disposition_headers:
-                    _header = _disposition_headers.pop(0)
-                    disposition = part.get(_header, '').strip()
                 if filename or disposition.startswith('attachment'):
                     attachments.append((filename or 'attachment', part.get_payload(decode=True)))
                     continue
