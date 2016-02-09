@@ -826,8 +826,7 @@ msgstr "Champ associé dans le formulaire de l'article"
 #. module: product
 #: code:addons/product/pricelist.py:221
 #, python-format
-msgid ""
-"%s does not have an active season to date %s !\n"
+msgid "%s does not have an active season to date %s !\n"
 "Please create or activate one."
 msgstr "%s n'a pas une saison active à ce jour %s !\n"
 "Créez ou activez en une."

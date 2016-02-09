@@ -819,8 +819,7 @@ msgstr "Campo asociado en el formulario de producto."
 #. module: product
 #: code:addons/product/pricelist.py:221
 #, python-format
-msgid ""
-"%s does not have an active season to date %s !\n"
+msgid "%s does not have an active season to date %s !\n"
 "Please create or activate one."
 msgstr "%s no tiene una temporada activa para la fecha %s !\n"
 "Por favor cree o active una."
