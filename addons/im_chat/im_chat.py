@@ -394,7 +394,8 @@ class Controller(openerp.addons.bus.bus.Controller):
     def _poll(self, dbname, channels, last, options):
         if request.session.uid:
             registry, cr, uid, context = request.registry, request.cr, request.session.uid, request.context
-            registry.get('im_chat.presence').update(cr, uid, options.get('im_presence', False), context=context)
+            if random.random() < 0.5: # a 50% chance of updating presence to the DB
+                registry.get('im_chat.presence').update(cr, uid, options.get('im_presence', False), context=context)
             ## For performance issue, the real time status notification is disabled. This means a change of status are still braoadcasted
             ## but not received by anyone. Otherwise, all listening user restart their longpolling at the same time and cause a 'ConnectionPool Full Error'
             ## since there is not enought cursors for everyone. Now, when a user open his list of users, an RPC call is made to update his user status list.
