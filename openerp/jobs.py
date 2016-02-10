@@ -147,7 +147,9 @@ def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
 
 class Configuration(object):
     BROKER_URL = config.get('celery.broker', 'redis://localhost/9')
-    CELERY_RESULT_BACKEND = config.get('celery.backend', BROKER_URL)
+    # We don't use the backend, but send results via another message.  If you
+    # need it provide a sensible value.
+    CELERY_RESULT_BACKEND = config.get('celery.backend')
 
     CELERY_DEFAULT_QUEUE = DEFAULT_QUEUE_NAME
     CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
