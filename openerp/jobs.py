@@ -261,7 +261,7 @@ def _report_success(self, dbname, uid, job_uuid, result=None):
             registry = RegistryManager.get(dbname)
             with registry.cursor() as cr:
                 _send(get_progress_channel(job_uuid),
-                      dict(status='success', next_action=result),
+                      dict(status='success', result=result),
                       registry=registry, cr=cr, uid=uid)
     except Exception as error:
         self.retry(args=(dbname, uid, job_uuid))

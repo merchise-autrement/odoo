@@ -25,12 +25,10 @@ openerp.web_celery = function(instance){
             this.title = _t('Working');
             this.message = _t('Your request is being processed (or about '+
                               'to be processed.)  Please wait.');
-
             bus = this.bus = new instance.bus.Bus();
             bus.add_channel(get_progress_channel(options.params));
             bus.on('notification', this, this.on_job_notification);
             pending_jobs += 1;
-
             this.show().done(_.bind(this.start_waiting, this));
         },
 
@@ -105,7 +103,7 @@ openerp.web_celery = function(instance){
             var status = message.status;
             if (status && (status == 'success' || status == 'failure')) {
                 if (status != 'failure') {
-                    var next = message.next_action;
+                    var next = message.result;
                     if (next) {
                         this.next_action = next;
                     }
