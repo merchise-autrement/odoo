@@ -1,7 +1,7 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # * product
-
+#
 # Translators:
 # Fabien Pinckaers <fp@openerp.com>, 2015
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2014
