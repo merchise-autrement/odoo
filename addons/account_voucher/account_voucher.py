@@ -1029,6 +1029,7 @@ class account_voucher(osv.osv):
         '''
         voucher = self.pool.get('account.voucher').browse(cr,uid,voucher_id,context)
         move = self.pool.get('account.move.line').browse(cr,uid,move_id,context)
+        move_name = move.name
         debit = credit = 0.0
         # TODO: is there any other alternative then the voucher type ??
         # ANSWER: We can have payment and receipt "In Advance".
@@ -1043,7 +1044,7 @@ class account_voucher(osv.osv):
         sign = debit - credit < 0 and -1 or 1
         #set the first line of the voucher
         move_line = {
-                'name': move.name or '/',
+                'name': move_name or '/',
                 'debit': debit,
                 'credit': credit,
                 'account_id': voucher.account_id.id,
