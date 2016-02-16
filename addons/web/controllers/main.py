@@ -1455,6 +1455,7 @@ class Export(http.Controller):
             (prefix + '/' + k, prefix_string + '/' + v)
             for k, v in self.fields_info(model, export_fields).iteritems())
 
+
 class ExportFormat(object):
     raw_data = False
 
@@ -1533,12 +1534,13 @@ class CSVExport(ExportFormat, http.Controller):
             row = []
             for d in data:
                 if isinstance(d, basestring):
-                    d = d.replace('\n',' ').replace('\t',' ')
+                    d = d.replace('\n', ' ').replace('\t', ' ')
                     try:
                         d = d.encode('utf-8')
                     except UnicodeError:
                         pass
-                if d is False: d = None
+                if d is False:
+                    d = None
                 row.append(d)
             writer.writerow(row)
 
@@ -1569,11 +1571,13 @@ class ExcelExport(ExportFormat, http.Controller):
 
         for i, fieldname in enumerate(fields):
             worksheet.write(0, i, fieldname)
-            worksheet.col(i).width = 8000 # around 220 pixels
+            worksheet.col(i).width = 8000  # around 220 pixels
 
         base_style = xlwt.easyxf('align: wrap yes')
-        date_style = xlwt.easyxf('align: wrap yes', num_format_str='YYYY-MM-DD')
-        datetime_style = xlwt.easyxf('align: wrap yes', num_format_str='YYYY-MM-DD HH:mm:SS')
+        date_style = xlwt.easyxf('align: wrap yes',
+                                 num_format_str='YYYY-MM-DD')
+        datetime_style = xlwt.easyxf('align: wrap yes',
+                                     num_format_str='YYYY-MM-DD HH:mm:SS')
 
         for row_index, row in enumerate(rows):
             for cell_index, cell_value in enumerate(row):
@@ -1584,7 +1588,8 @@ class ExcelExport(ExportFormat, http.Controller):
                     cell_style = datetime_style
                 elif isinstance(cell_value, datetime.date):
                     cell_style = date_style
-                worksheet.write(row_index + 1, cell_index, cell_value, cell_style)
+                worksheet.write(row_index + 1, cell_index, cell_value,
+                                cell_style)
 
         fp = StringIO()
         workbook.save(fp)
