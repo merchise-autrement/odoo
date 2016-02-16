@@ -58,7 +58,7 @@ HIGHPRI_QUEUE_NAME = '{}.high'.format(ROUTE_NS)
 del _VERSION_INFO
 
 
-def _build_api_function(name, queue):
+def _build_api_function(name, queue, **options):
     def func(model, cr, uid, method, *args, **kwargs):
         args = _getargs(model, method, cr, uid, *args, **kwargs)
         if CELERY_JOB in _exec_context:
@@ -69,7 +69,7 @@ def _build_api_function(name, queue):
                         ))
             return task(*args)
         else:
-            return task.apply_async(queue=queue, args=args)
+            return task.apply_async(queue=queue, args=args, **options)
     func.__name__ = name
     func.__doc__ = (
         '''Request to run a method in a celery worker.
@@ -93,15 +93,25 @@ def _build_api_function(name, queue):
     ).format(queue=queue.rsplit('.', 1)[-1] if '.' in queue else queue)
     return func
 
-Deferred = _build_api_function('Deferred', DEFAULT_QUEUE_NAME)
-HighPriorityDeferred = _build_api_function(
-    'HighPriorityDeferred',
-    HIGHPRI_QUEUE_NAME
-)
-LowPriorityDeferred = _build_api_function(
-    'LowPriorityDeferred',
-    LOWPRI_QUEUE_NAME
-)
+
+def DefaultDeferredType(**options):
+    return _build_api_function('Deferred', DEFAULT_QUEUE_NAME, **options)
+
+
+def HighPriorityDeferredType(**options):
+    return _build_api_function('HighPriorityDeferred', HIGHPRI_QUEUE_NAME,
+                               **options)
+
+
+def LowPriorityDeferredType(**options):
+    return _build_api_function('LowPriorityDeferred', LOWPRI_QUEUE_NAME,
+                               **options)
+
+
+Deferred = DefaultDeferredType()
+HighPriorityDeferred = HighPriorityDeferredType()
+LowPriorityDeferred = LowPriorityDeferredType()
+
 
 def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
                     status=None):
