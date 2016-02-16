@@ -114,6 +114,11 @@ openerp.web_celery = function(instance){
                 this.destroy();
             }
             this.done.resolve();
+        },
+
+        destroy: function() {
+            pending_jobs -= 1;
+            this._super();
         }
     });
 
@@ -172,7 +177,6 @@ openerp.web_celery = function(instance){
         },
 
         destroy: function() {
-            pending_jobs -= 1;
             // For some reason, when showing the dialog two backdrops are
             // being placed in the DOM, but hiding only removes one: remove
             // them all.
