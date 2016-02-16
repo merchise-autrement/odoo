@@ -28,7 +28,7 @@ openerp.web_celery = function(instance){
             bus.add_channel(get_progress_channel(options.params));
             bus.on('notification', this, this.on_job_notification);
             pending_jobs += 1;
-	    this.show().done(_.bind(this.start_waiting, this));
+            this.show().done(_.bind(this.start_waiting, this));
         },
 
 
@@ -120,9 +120,9 @@ openerp.web_celery = function(instance){
 
     openerp.CeleryJobThrobber = openerp.JobThrobber.extend({
 
-	template: "BackgroundJobProgress",
+        template: "BackgroundJobProgress",
 
-	show: function() {
+        show: function() {
             return this.appendTo($("body"));
         },
 
@@ -186,9 +186,13 @@ openerp.web_celery = function(instance){
     });
 
     if (!!instance){
-	if(!!instance.hasOwnProperty('web')){
-	    instance.web.client_actions.add('wait_for_background_job',
-					    'openerp.CeleryJobThrobber');
-	}
+        if(!!instance.hasOwnProperty('web')){
+            instance.web.client_actions.add('wait_for_background_job',
+                                            'openerp.CeleryJobThrobber');
+        }
     }
 };
+
+// Local Variables:
+// indent-tabs-mode: nil
+// End:
