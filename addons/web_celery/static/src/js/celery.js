@@ -12,15 +12,21 @@ openerp.web_celery = function(instance){
 
     var isOk = function(v) {return _.isNumber(v) && !_.isNaN(v);}
 
+    /**
+     *  Basic poller for background jobs.
+     *
+     *  You must use the subclasses of this poller.  See the provided
+     *  `celery.rst` for the specification.
+     *
+     */
     openerp.JobThrobber = openerp.Widget.extend({
-
         init: function(parent, options) {
             this._super(parent);
-            var uuid, bus;
+            var uuid, bus,
+                self = this;
+            var finished = this.finished = $.Deferred();
             this.percent = 0;
-            this.done = $.Deferred();
             this.uuid = uuid = options.params.uuid;
-            this.next_action = options.params.next_action;
             this.title = _t('Working');
             this.message = _t('Your request is being processed (or about '+
                               'to be processed.)  Please wait.');
@@ -29,8 +35,14 @@ openerp.web_celery = function(instance){
             bus.on('notification', this, this.on_job_notification);
             pending_jobs += 1;
             this.show().done(_.bind(this.start_waiting, this));
+            $.when(finished)
+                .done(function(message){
+                    self.show_success(message);
+                })
+                .fail(function(message){
+                    self.show_failure(message);
+                });
         },
-
 
         update: function(progress, valuemin, valuemax, message) {
             if (isOk(progress))
@@ -45,7 +57,7 @@ openerp.web_celery = function(instance){
                 try {
                     var p = this.percent = Math.round(this.progress/(this.valuemax-this.valuemin)*100);
                     if (p < 0 || p > 100)
-                        thrown('AssertionError: percent makes no sense');
+                        throw ('AssertionError: percent makes no sense');
                 } catch (error) {
                     // Safely avoid any non-sensible value
                     this.progress = this.valuemin = this.valuemax = null;
@@ -55,22 +67,17 @@ openerp.web_celery = function(instance){
             this.updateView();
         },
 
-
         on_job_notification: function(params){
             var channel = params[0];
             var message = params[1];
             var status = message.status;
             if (status && (status == 'success' || status == 'failure')) {
                 if (status != 'failure') {
-                    var next = message.result;
-                    if (next) {
-                        this.next_action = next;
-                    }
+                    this.finished.resolve(message);
                 }
                 else {
-                    _.delay(_.bind(this.show_failure, this, message), 1);
+                    this.finished.reject(message);
                 }
-                this.stop_waiting();
             } else {
                 this.update(message.progress, message.valuemin,
                             message.valuemax, message.message);
@@ -80,46 +87,40 @@ openerp.web_celery = function(instance){
         start_waiting: function() {
             this.bus.start_polling();
             var timer = $.elapsed(JOB_TIME_LIMIT);
-            var done = this.done;
+            var finished = this.finished;
             var self = this;
-            $.whichever(done, timer).done(function(which){
+            $.whichever(finished, timer).always(function(which){
                 if (which == timer) {
-                    self.do_warn(
-                        _t('Ask for help'),
-                        _t("You're stuck waiting for a job that is taking "+
-                           "forever.  Grab the next IT guy and ask help."),
-                        true
-                    );
-                    self.stop_waiting();
+                    finished.reject({
+                        type: "warning",
+                        kind: "timeout"
+                    });
                 }
+                self.stop_waiting();
             });
         },
 
         stop_waiting: function() {
             this.bus.stop_polling();
-            if (!this.isDestroyed()) {
-                var parent = this.getParent();
-                var self = this;
-                if (!!self.next_action) {
-                    _.delay(function(){
-                        // First go back to remove the progress bar level from
-                        // the breadcumbs, and then go the specified action.
-                        parent.do_action('history_back').then(
-                            function(){parent.do_action(self.next_action);}
-                        );
-                    }, 1);
-                } else {
-                    _.delay(function(){parent.do_action('history_back');}, 1);
-                }
-                this.destroy();
-            }
-            this.done.resolve();
+            this.finished.resolve();
+        },
+
+        destroy: function() {
+            pending_jobs -= 1;
+            this._super();
+        },
+
+        show_failure: function() {
+            throw ('Not implemented');
+        },
+
+        show_success: function() {
+            throw ('Not implemented');
         }
     });
 
 
-    openerp.CeleryJobThrobber = openerp.JobThrobber.extend({
-
+    openerp.ProgressBarThrobber = openerp.JobThrobber.extend({
         template: "BackgroundJobProgress",
 
         show: function() {
@@ -163,17 +164,56 @@ openerp.web_celery = function(instance){
                 }
             }
         },
+
+        show_success: function(message) {
+            var next_action = message.result,
+                parent = this.getParent(),
+                self = this;
+            if (next_action) {
+                _.defer(function() {
+                    // First go back to remove the progress bar level from
+                    // the breadcumbs, and then go the specified action.
+                    parent.do_action('history_back').then(
+                        function(){
+                            parent.do_action(next_action);
+                            self.destroy();
+                        }
+                    );
+                });
+            } else {
+                _.defer(function(){
+                    parent.do_action('history_back');
+                    self.destroy();
+                });
+            }
+        },
+
         show_failure: function(message) {
-            var cm = new instance.web.CrashManager();
-            cm.show_error({
-                type: _t("Server Error"),
-                message: message.message,
-                data: {debug: message.traceback}
+            // TODO: Verify the failure
+            if (!!message.traceback) {
+                var cm = new instance.web.CrashManager();
+                cm.show_error({
+                    type: _t("Server Error"),
+                    message: message.message,
+                    data: {debug: message.traceback}
+                });
+            } else if (!!message.kind) {
+                this.do_warn(
+                    _t('Ask for help'),
+                    _t("You're stuck waiting for a job that is taking "+
+                       "forever.  Grab the next IT guy and ask help."),
+                    true
+                );
+            }
+            var self = this,
+                parent = this.getParent();
+            _.defer(function(){
+                parent.do_action('history_back');
+                self.destroy();
             });
         },
 
         destroy: function() {
-            pending_jobs -= 1;
             // For some reason, when showing the dialog two backdrops are
             // being placed in the DOM, but hiding only removes one: remove
             // them all.
@@ -188,7 +228,7 @@ openerp.web_celery = function(instance){
     if (!!instance){
         if(!!instance.hasOwnProperty('web')){
             instance.web.client_actions.add('wait_for_background_job',
-                                            'openerp.CeleryJobThrobber');
+                                            'openerp.ProgressBarThrobber');
         }
     }
 };
