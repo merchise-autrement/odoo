@@ -1,6 +1,6 @@
 openerp.web_celery = function(instance){
     var pending_jobs = 0;
-    var _t = instance.web._t;
+    var _t = openerp._t;
 
     // That's 20 minutes!  This should account for the time in the queue plus
     // the running time.
@@ -12,8 +12,7 @@ openerp.web_celery = function(instance){
 
     var isOk = function(v) {return _.isNumber(v) && !_.isNaN(v);}
 
-    instance.web.JobThrobber = instance.web.Widget.extend({
-        template: "BackgroundJobProgress",
+    openerp.JobThrobber = openerp.Widget.extend({
 
         init: function(parent, options) {
             this._super(parent);
@@ -25,25 +24,13 @@ openerp.web_celery = function(instance){
             this.title = _t('Working');
             this.message = _t('Your request is being processed (or about '+
                               'to be processed.)  Please wait.');
-            bus = this.bus = new instance.bus.Bus();
+            bus = this.bus = new openerp.bus.Bus();
             bus.add_channel(get_progress_channel(options.params));
             bus.on('notification', this, this.on_job_notification);
             pending_jobs += 1;
-            this.show().done(_.bind(this.start_waiting, this));
+	    this.show().done(_.bind(this.start_waiting, this));
         },
 
-        show: function() {
-            return this.appendTo($("body"));
-        },
-
-        start: function() {
-            var res = $.Deferred();
-            this.$el.on('show.bs.modal', function(){
-                res.resolve();
-            });
-            this.$el.modal('show');
-            return res.promise();
-        },
 
         update: function(progress, valuemin, valuemax, message) {
             if (isOk(progress))
@@ -68,34 +55,6 @@ openerp.web_celery = function(instance){
             this.updateView();
         },
 
-        updateView: function() {
-            if (this.message) {
-                this.$('.message').text(this.message);
-            }
-            var $progressbar = this.$('.progress-bar');
-            if (isOk(this.valuemin) && !$progressbar.attr('aria-valuemin')) {
-                $progressbar.attr('aria-valuemin', this.valuemin);
-            }
-            if (isOk(this.valuemax) && !$progressbar.attr('aria-valuemax')) {
-                $progressbar.attr('aria-valuemax', this.valuemax);
-            }
-            if (isOk(this.progress)) {
-                $progressbar.attr('aria-valuenow', this.progress);
-            }
-            // percent should be always ok, but will show only a progress bar
-            // if there's a progress value.
-            if (isOk(this.percent) && isOk(this.progress)) {
-                $progressbar.attr('style', 'width: ' + this.percent + '%');
-                var $pmsg = $progressbar.find('.percent-message');
-                if ($pmsg.length){
-                    $pmsg.text(this.percent + '%');
-                } else {
-                    $msg = $progressbar.find('.progress-bar');
-                    $msg.add('<span aria-hidden="true" class="percent-message">' +
-                             this.percent + '%</span>');
-                }
-            }
-        },
 
         on_job_notification: function(params){
             var channel = params[0];
@@ -155,8 +114,55 @@ openerp.web_celery = function(instance){
                 this.destroy();
             }
             this.done.resolve();
+        }
+    });
+
+
+    openerp.CeleryJobThrobber = openerp.JobThrobber.extend({
+
+	template: "BackgroundJobProgress",
+
+	show: function() {
+            return this.appendTo($("body"));
         },
 
+        start: function() {
+            var res = $.Deferred();
+            this.$el.on('show.bs.modal', function(){
+                res.resolve();
+            });
+            this.$el.modal('show');
+            return res.promise();
+        },
+
+        updateView: function() {
+            if (this.message) {
+                this.$('.message').text(this.message);
+            }
+            var $progressbar = this.$('.progress-bar');
+            if (isOk(this.valuemin) && !$progressbar.attr('aria-valuemin')) {
+                $progressbar.attr('aria-valuemin', this.valuemin);
+            }
+            if (isOk(this.valuemax) && !$progressbar.attr('aria-valuemax')) {
+                $progressbar.attr('aria-valuemax', this.valuemax);
+            }
+            if (isOk(this.progress)) {
+                $progressbar.attr('aria-valuenow', this.progress);
+            }
+            // percent should be always ok, but will show only a progress bar
+            // if there's a progress value.
+            if (isOk(this.percent) && isOk(this.progress)) {
+                $progressbar.attr('style', 'width: ' + this.percent + '%');
+                var $pmsg = $progressbar.find('.percent-message');
+                if ($pmsg.length){
+                    $pmsg.text(this.percent + '%');
+                } else {
+                    $msg = $progressbar.find('.progress-bar');
+                    $msg.add('<span aria-hidden="true" class="percent-message">' +
+                             this.percent + '%</span>');
+                }
+            }
+        },
         show_failure: function(message) {
             var cm = new instance.web.CrashManager();
             cm.show_error({
@@ -177,9 +183,12 @@ openerp.web_celery = function(instance){
             this.$el.modal('hide');
             this._super();
         }
-
     });
 
-    instance.web.client_actions.add('wait_for_background_job',
-                                    'instance.web.JobThrobber');
+    if (!!instance){
+	if(!!instance.hasOwnProperty('web')){
+	    instance.web.client_actions.add('wait_for_background_job',
+					    'openerp.CeleryJobThrobber');
+	}
+    }
 };
