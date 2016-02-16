@@ -118,8 +118,7 @@ openerp.web_celery = function(instance){
     });
 
 
-    openerp.CeleryJobThrobber = openerp.JobThrobber.extend({
-
+    openerp.ProgressBarThrobber = openerp.JobThrobber.extend({
         template: "BackgroundJobProgress",
 
         show: function() {
@@ -188,7 +187,7 @@ openerp.web_celery = function(instance){
     if (!!instance){
         if(!!instance.hasOwnProperty('web')){
             instance.web.client_actions.add('wait_for_background_job',
-                                            'openerp.CeleryJobThrobber');
+                                            'openerp.ProgressBarThrobber');
         }
     }
 };
