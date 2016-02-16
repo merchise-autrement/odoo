@@ -205,7 +205,12 @@ openerp.web_celery = function(instance){
                     true
                 );
             }
-            this.destroy();
+            var self = this,
+                parent = this.getParent();
+            _.defer(function(){
+                parent.do_action('history_back');
+                self.destroy();
+            });
         },
 
         destroy: function() {
