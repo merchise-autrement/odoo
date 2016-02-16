@@ -45,7 +45,7 @@ openerp.web_celery = function(instance){
                 try {
                     var p = this.percent = Math.round(this.progress/(this.valuemax-this.valuemin)*100);
                     if (p < 0 || p > 100)
-                        thrown('AssertionError: percent makes no sense');
+                        throw ('AssertionError: percent makes no sense');
                 } catch (error) {
                     // Safely avoid any non-sensible value
                     this.progress = this.valuemin = this.valuemax = null;
