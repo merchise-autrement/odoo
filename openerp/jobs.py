@@ -59,9 +59,11 @@ del _VERSION_INFO
 
 
 def _build_api_function(name, queue, **options):
+    disallow_nested = not options.pop('allow_nested', False)
+
     def func(model, cr, uid, method, *args, **kwargs):
         args = _getargs(model, method, cr, uid, *args, **kwargs)
-        if CELERY_JOB in _exec_context:
+        if disallow_nested and CELERY_JOB in _exec_context:
             logger.warn('Nested background call detected for model %s '
                         'and method %s', model, method, extra=dict(
                             model=model, method=method, uid=uid,
