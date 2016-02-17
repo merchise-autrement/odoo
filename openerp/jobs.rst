@@ -129,7 +129,8 @@ The signature for all of those functions is the same:
 
    Run a method of a given model in the background.
 
-   :param model: The name of model.
+   :param model: The name of model, a recordset (an instance of Model) or a
+		 subclass of Model.
 
    :param cr: The cursor.  You may pass a string with the name of the
               database.

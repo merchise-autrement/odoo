@@ -304,11 +304,13 @@ def _report_current_failure(dbname, uid, job_uuid, error):
 
 
 def _getargs(model, method, cr, uid, *args, **kwargs):
-    from openerp.models import Model
+    from openerp.models import BaseModel
     from openerp.sql_db import Cursor
     from openerp.tools import frozendict
-    if isinstance(model, Model):
+    if isinstance(model, BaseModel):
         model = model._name
+    elif isinstance(model, type(BaseModel)):
+        model = getattr(model, '_name', None) or model._inherit
     if isinstance(cr, Cursor):
         dbname = cr.dbname
     else:
