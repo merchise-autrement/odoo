@@ -86,6 +86,72 @@ may watch the whole story using ``flower``::
 It will create a nice dashboard to monitor the Celery Workers.
 
 
+Creating new types of deferreds
+-------------------------------
+
+The high level API does not allow to pass any options to the celery job (see
+the `apply_async` method for calling tasks in celery).  If you need to pass
+options, for instance, to delay a job for a given amount of time (ETA or
+countdown), you may use one of these instead.
+
+- ``DefaultDeferredType``
+- ``HighPriorityDeferredType``
+- ``LowPriorityDeferredType``
+
+The signature for all of those functions is the same:
+
+.. function:: DefaultDeferredType(**options)
+
+   Return a function to create background jobs.  The returned function has the
+   signature explained in the `Deferred`:func: function documentation.
+
+   The `options` keyword arguments are passed to the `!apply_async`:meth:
+   method the celery task class.  Any valid argument but `queue` and `args`
+   can be used.  The `queue` is fixed by the type of deferred and `args` are
+   properly constructed by the call to the resulting function.
+
+   In addition you may also pass the following options which are specific of
+   this API and passed to the Celery task:
+
+   :keyword allow_nested: Whether to allow 'nested' background jobs.
+
+      By default (``allow_nested=False``) the returned function will create a
+      new background job only if not called within the context of another
+      background job.
+
+      If this argument is True, the returned function will always create a new
+      background job despite the calling context.
+
+   :type allow_nested: bool
+
+
+.. function:: Deferred(model, cr, uid, method, *args, **kwargs):
+
+   Run a method of a given model in the background.
+
+   :param model: The name of model, a recordset (an instance of Model) or a
+		 subclass of Model.
+
+   :param cr: The cursor.  You may pass a string with the name of the
+              database.
+
+   :param uid: The user id for the background job.
+
+   :param method: The name of the method to run as a background job.
+
+   The rest of the arguments are the arguments to the method.
+
+
+Example: Delay the execution of the task by passing a countdown::
+
+  >>> from openerp.jobs import DefaultDeferredType
+  >>> for i in range(1000):
+  ...     res = DefaultDeferredType(countdown=i + 10)('res.users', 'mercurio',
+  ...                                                 1, 'search', [])
+
+
+
+
 Reporting progress
 ------------------
 

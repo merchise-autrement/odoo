@@ -58,10 +58,12 @@ HIGHPRI_QUEUE_NAME = '{}.high'.format(ROUTE_NS)
 del _VERSION_INFO
 
 
-def _build_api_function(name, queue):
+def _build_api_function(name, queue, **options):
+    disallow_nested = not options.pop('allow_nested', False)
+
     def func(model, cr, uid, method, *args, **kwargs):
         args = _getargs(model, method, cr, uid, *args, **kwargs)
-        if CELERY_JOB in _exec_context:
+        if disallow_nested and CELERY_JOB in _exec_context:
             logger.warn('Nested background call detected for model %s '
                         'and method %s', model, method, extra=dict(
                             model=model, method=method, uid=uid,
@@ -69,7 +71,7 @@ def _build_api_function(name, queue):
                         ))
             return task(*args)
         else:
-            return task.apply_async(queue=queue, args=args)
+            return task.apply_async(queue=queue, args=args, **options)
     func.__name__ = name
     func.__doc__ = (
         '''Request to run a method in a celery worker.
@@ -93,15 +95,25 @@ def _build_api_function(name, queue):
     ).format(queue=queue.rsplit('.', 1)[-1] if '.' in queue else queue)
     return func
 
-Deferred = _build_api_function('Deferred', DEFAULT_QUEUE_NAME)
-HighPriorityDeferred = _build_api_function(
-    'HighPriorityDeferred',
-    HIGHPRI_QUEUE_NAME
-)
-LowPriorityDeferred = _build_api_function(
-    'LowPriorityDeferred',
-    LOWPRI_QUEUE_NAME
-)
+
+def DefaultDeferredType(**options):
+    return _build_api_function('Deferred', DEFAULT_QUEUE_NAME, **options)
+
+
+def HighPriorityDeferredType(**options):
+    return _build_api_function('HighPriorityDeferred', HIGHPRI_QUEUE_NAME,
+                               **options)
+
+
+def LowPriorityDeferredType(**options):
+    return _build_api_function('LowPriorityDeferred', LOWPRI_QUEUE_NAME,
+                               **options)
+
+
+Deferred = DefaultDeferredType()
+HighPriorityDeferred = HighPriorityDeferredType()
+LowPriorityDeferred = LowPriorityDeferredType()
+
 
 def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
                     status=None):
@@ -292,11 +304,13 @@ def _report_current_failure(dbname, uid, job_uuid, error):
 
 
 def _getargs(model, method, cr, uid, *args, **kwargs):
-    from openerp.models import Model
+    from openerp.models import BaseModel
     from openerp.sql_db import Cursor
     from openerp.tools import frozendict
-    if isinstance(model, Model):
+    if isinstance(model, BaseModel):
         model = model._name
+    elif isinstance(model, type(BaseModel)):
+        model = getattr(model, '_name', None) or model._inherit
     if isinstance(cr, Cursor):
         dbname = cr.dbname
     else:
