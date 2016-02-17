@@ -530,13 +530,13 @@ class product_template(osv.osv):
         'description_sale': fields.text('Sale Description',translate=True,
             help="A description of the Product that you want to communicate to your customers. "
                  "This description will be copied to every Sale Order, Delivery Order and Customer Invoice/Refund"),
-        'type': fields.selection([('consu', 'Consumable'),('service','Service')], 'Product Type', required=True, help="Consumable are product where you don't manage stock, a service is a non-material product provided by a company or an individual."),        
+        'type': fields.selection([('consu', 'Consumable'),('service','Service')], 'Product Type', required=True, help="Consumable are product where you don't manage stock, a service is a non-material product provided by a company or an individual."),
         'rental': fields.boolean('Can be Rent'),
         'categ_id': fields.many2one('product.category','Internal Category', required=True, change_default=True, domain="[('type','=','normal')]" ,help="Select category for the current product"),
         'price': fields.function(_product_template_price, type='float', string='Price', digits_compute=dp.get_precision('Product Price')),
         'list_price': fields.float('Sale Price', digits_compute=dp.get_precision('Product Price'), help="Base price to compute the customer price. Sometimes called the catalog price."),
         'lst_price' : fields.related('list_price', type="float", string='Public Price', digits_compute=dp.get_precision('Product Price')),
-        'standard_price': fields.property(type = 'float', digits_compute=dp.get_precision('Product Price'), 
+        'standard_price': fields.property(type = 'float', digits_compute=dp.get_precision('Product Price'),
                                           help="Cost price of the product template used for standard stock valuation in accounting and used as a base price on purchase orders. "
                                                "Expressed in the default unit of measure of the product.",
                                           groups="base.group_user", string="Cost Price"),
@@ -564,7 +564,7 @@ class product_template(osv.osv):
         'image': fields.binary("Image",
             help="This field holds the image used as image for the product, limited to 1024x1024px."),
         'image_medium': fields.function(_get_image, fnct_inv=_set_image,
-            string="Medium-sized image", type="binary", multi="_get_image", 
+            string="Medium-sized image", type="binary", multi="_get_image",
             store={
                 'product.template': (lambda self, cr, uid, ids, c={}: ids, ['image'], 10),
             },
@@ -791,7 +791,7 @@ class product_template(osv.osv):
         'company_id': lambda s,cr,uid,c: s.pool.get('res.company')._company_default_get(cr, uid, 'product.template', context=c),
         'list_price': 1,
         'standard_price': 0.0,
-        'sale_ok': 1,        
+        'sale_ok': 1,
         'uom_id': _get_uom_id,
         'uom_po_id': _get_uom_id,
         'uos_coeff': 1.0,
@@ -918,7 +918,7 @@ class product_product(osv.osv):
             value = product_uom_obj._compute_price(cr, uid,
                     context['uom'], value, uom.id)
         value =  value - product.price_extra
-        
+
         return product.write({'list_price': value})
 
     def _get_partner_code_name(self, cr, uid, ids, product, partner_id, context=None):
@@ -1305,11 +1305,27 @@ class product_supplierinfo(osv.osv):
         return result
 
     _columns = {
-        'name' : fields.many2one('res.partner', 'Supplier', required=True,domain = [('supplier','=',True)], ondelete='cascade', help="Supplier of this product"),
-        'product_name': fields.char('Supplier Product Name', help="This supplier's product name will be used when printing a request for quotation. Keep empty to use the internal one."),
+        'name' : fields.many2one(
+            'res.partner',
+            'Supplier',
+            required=True,
+            domain = [('supplier','=',True)],
+            ondelete='cascade',
+            help="Supplier of this product",
+        ),
+        'product_name': fields.char(
+            'Supplier Product Name',
+            help="This supplier's product name will be used when printing a request for quotation. Keep empty to use the internal one."),
         'product_code': fields.char('Supplier Product Code', help="This supplier's product code will be used when printing a request for quotation. Keep empty to use the internal one."),
         'sequence' : fields.integer('Sequence', help="Assigns the priority to the list of product supplier."),
-        'product_uom': fields.related('product_tmpl_id', 'uom_po_id', type='many2one', relation='product.uom', string="Supplier Unit of Measure", readonly="1", help="This comes from the product form."),
+        'product_uom': fields.related(
+            'product_tmpl_id', 'uom_po_id',
+            type='many2one',
+            relation='product.uom',
+            string="Supplier Unit of Measure",
+            readonly="1",
+            help="This comes from the product form."
+        ),
         'min_qty': fields.float('Minimal Quantity', required=True, help="The minimal quantity to purchase to this supplier, expressed in the supplier Product Unit of Measure if not empty, in the default unit of measure of the product otherwise."),
         'qty': fields.function(_calc_qty, store=True, type='float', string='Quantity', multi="qty", help="This is a quantity which is converted into Default Unit of Measure."),
         'product_tmpl_id' : fields.many2one('product.template', 'Product Template', required=True, ondelete='cascade', select=True, oldname='product_id'),
