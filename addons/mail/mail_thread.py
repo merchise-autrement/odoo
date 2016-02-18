@@ -1321,15 +1321,15 @@ class mail_thread(osv.AbstractModel):
                 while not disposition and _disposition_headers:
                     _disposition_header = _disposition_headers.pop(0)
                     disposition = part.get(_disposition_header, '').strip()
-                filename=part.get_param('filename', None, _disposition_header or 'Content-Disposition')
+                filename = part.get_param('filename', None, _disposition_header or 'Content-Disposition')
                 if not filename:
-                    filename=part.get_param('name', None)
+                    filename = part.get_param('name', None)
                 if filename:
                     if isinstance(filename, tuple):
                         # RFC2231
-                        filename=email.utils.collapse_rfc2231_value(filename).strip()
+                        filename = email.utils.collapse_rfc2231_value(filename).strip()
                     else:
-                        filename=decode(filename)
+                        filename = decode(filename)
                 encoding = part.get_content_charset()  # None if attachment
                 # 1) Explicit Attachments -> attachments
                 if filename or disposition.startswith('attachment'):
@@ -1351,10 +1351,8 @@ class mail_thread(osv.AbstractModel):
                         body = html
                     else:
                         body = tools.append_content_to_html(body, html, plaintext=False)
-                # 4) if message/* we will do mostly like text/plain but Python
-                # handles message/* as multipart and thus
-                # get_payload(decode=True) is None.  Letting the "attachment"
-                # catch-all facility to proceed would only result in several
+                # 4) if message/* we will do mostly like text/plain but Python handles message/* as multipart and thus
+                # get_payload(decode=True) is None.  Letting the "attachment" catch-all facility to proceed would only result in several
                 # 4-bytes attachments with "None".
                 elif part.get_content_maintype() == 'message':
                     payload = ''.join(
@@ -1364,11 +1362,9 @@ class mail_thread(osv.AbstractModel):
                         body, tools.ustr(payload, encoding, errors='replace'),
                         preserve=True
                     )
-                # *) Anything else is ignored. Some MUAs don't include the "Content-Disposition: inline", but simply omit it.  Since the
-                # "Content-Disposition: attachment" is already dealt in the item 1) and other stuff like message/reports should not be
-                # considered attachments.  Furthermore, message/ parts are "is_multipart()", and the payload is None.
+                # *) Anything else -> attachment; there are some very strange MUAs out there.
                 else:
-                    pass
+                    attachments.append((filename or 'attachment', part.get_payload(decode=True)))
         return body, attachments
 
     def message_parse(self, cr, uid, message, save_original=False, context=None):
