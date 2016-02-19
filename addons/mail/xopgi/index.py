@@ -35,7 +35,7 @@ from xoeuf.osv.orm import get_modelname
 
 
 # TODO: Move this to xoutil ?
-def generate_reference(search, maxtries=4, start=1, lower=False):
+def generate_reference(search, maxtries=4, start=1, lower=True):
     '''Generates an unused reference.
 
     :param search: A search callback to check if a candidate reference is
