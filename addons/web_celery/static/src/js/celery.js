@@ -197,6 +197,9 @@ openerp.web_celery = function(instance){
                     message: message.message,
                     data: {debug: message.traceback}
                 });
+            } else if (!!message.message.exception_type) {
+                var cm = new instance.web.CrashManager();
+                cm.rpc_error({data: message.message})
             } else if (!!message.kind) {
                 this.do_warn(
                     _t('Ask for help'),

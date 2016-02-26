@@ -39,6 +39,8 @@ import openerp.tools.config as config
 from openerp.release import version
 from openerp.api import Environment
 from openerp.modules.registry import RegistryManager
+from openerp.exceptions import except_orm
+from openerp.http import serialize_exception as _serialize_exception
 
 
 # The queues are named using the version info.  This is to avoid clashes with
@@ -258,6 +260,12 @@ def task(self, model, methodname, dbname, uid, args, kwargs):
                     else:
                         self.retry(args=(model, methodname, dbname, uid,
                                          args, kwargs))
+                except except_orm as error:
+                    cr.rollback()
+                    if self.request.id:
+                        _report_current_warning(dbname, uid, self.request.id,
+                                                error)
+                    raise
                 except Exception as error:
                     _report_current_failure(dbname, uid, self.request.id,
                                             error)
@@ -282,7 +290,7 @@ def _report_success(self, dbname, uid, job_uuid, result=None):
 
 
 @app.task(bind=True, max_retries=5)
-def _report_failure(self, dbname, uid, job_uuid, tb, message=''):
+def _report_failure(self, dbname, uid, job_uuid, tb=None, message=''):
     try:
         with Environment.manage():
             registry = RegistryManager.get(dbname)
@@ -300,6 +308,12 @@ def _report_current_failure(dbname, uid, job_uuid, error):
     message = getattr(error, 'message', '')
     _report_failure.delay(dbname, uid, job_uuid, traceback.format_exc(),
                           message=message)
+    logger.exception('Unhandled exception in task')
+
+
+def _report_current_warning(dbname, uid, job_uuid, error):
+    data = _serialize_exception(error)
+    _report_failure.delay(dbname, uid, job_uuid, message=data)
     logger.exception('Unhandled exception in task')
 
 
