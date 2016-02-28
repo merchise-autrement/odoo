@@ -59,6 +59,7 @@ If you don't see that something has gone bad or your configuration has
 disabled the workers.  If you see that, then you may start to send jobs to the
 workers (use the shell).
 
+
 High level API
 --------------
 
@@ -151,7 +152,6 @@ Example: Delay the execution of the task by passing a countdown::
 
 
 
-
 Reporting progress
 ------------------
 
@@ -162,7 +162,6 @@ and a message.
 You may report progress changes by using the function
 ``openerp.jobs.report_progress``.  It is documented, so read the
 documentation.
-
 
 
 Best practices for background jobs writing

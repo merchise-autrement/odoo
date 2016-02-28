@@ -42,11 +42,12 @@ The server
 
   This is different from the "accepting and then forking" cycle we see in
   other servers (call it simply forking).  When "forking" is employed the
-  parent process accepts all incoming connections and the forks children that
+  parent process accepts all incoming connections and then forks children that
   handle that connection.  In HTTP this is rather wasteful.
 
-  This pre-forking implementation shares the listening socket FD in all
-  workers.  All accept connections.  Calling accept from several process makes
+  This pre-forking opens the listening socket and then forks several workers
+  children.  This means that the listening socket FD is shared by all workers.
+  All accept connections.  Calling `accept(2)`:man: from several process makes
   all threads/process to block until a connection is established (the 3WHS is
   done).  In older Linuxes, this could lead to a `Thundering Herd`__ (this is
   not actually applicable since the number of workers in our case is limited
