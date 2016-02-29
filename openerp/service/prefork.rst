@@ -6,7 +6,7 @@
 
    These note are about learning.  I need to write stuff while I'm learning,
    it let's me to fix it on my head.  At the same time, I believe, these notes
-   will serve any one (including myself) needing to change and/or debug the
+   will serve anyone (including myself) needing to change and/or debug the
    server.
 
    These notes may contain errors and other inaccuracies.  To the best of my
@@ -16,6 +16,11 @@
    You are entitle to correct me publicly.
 
    .. image:: http://imgs.xkcd.com/comics/duty_calls.png
+
+   These notes are distributed in the hope that they will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+   or FITNESS FOR A PARTICULAR PURPOSE.
+
 
 
 Notes about the preforking implementation in Odoo
