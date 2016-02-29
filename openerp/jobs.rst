@@ -86,6 +86,27 @@ may watch the whole story using ``flower``::
 It will create a nice dashboard to monitor the Celery Workers.
 
 
+Creating new types of deferreds
+-------------------------------
+
+The high level API does not allow to pass any options the celery job (see the
+`async_apply` method for calling tasks in celery).  If you need to pass
+options, for instance, to delay a job until (ETA or countdown), you may use
+one of these instead.
+
+- ``DefaultDeferredType``
+- ``HighPriorityDeferredType``
+- ``LowPriorityDeferredType``
+
+For instance you may delay the execution of the task by passing a countdown::
+
+  >>> from openerp.jobs import DefaultDeferredType
+  >>> for i in range(1000):
+  ...     res = DefaultDeferredType(countdown=i + 10)('res.users', 'mercurio',
+  ...                                                 1, 'search', [])
+
+
+
 Reporting progress
 ------------------
 
