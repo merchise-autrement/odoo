@@ -119,15 +119,15 @@ LowPriorityDeferred = LowPriorityDeferredType()
 
 def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
                     status=None):
-    '''Sends a progress notification to those waiting.
+    '''Send a progress notification to whomever is polling the current job.
 
     :param message: The message to send to those waiting for the message.
 
-    :param progress: A number in the range given by `range` indicating how
-                     much has been done.
+    :param progress: A number in the range given by `valuemin` and `valuemax`
+           indicating how much has been done.
 
-                     If you can't produce a good estimate is best to send
-                     "stages" in the message.
+           If you can't produce a good estimate is best to send "stages" in
+           the message.
 
     :param valuemin: The minimum value `progress` can take.
 
@@ -137,7 +137,7 @@ def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
     once settle they cannot be changed.
 
     :param status: The reported status. This should be one of the strings
-                   'success', 'failure' or 'pending'.
+       'success', 'failure' or 'pending'.
 
        .. warning:: This argument should not be used but for internal (job
                     framework module) purposes.
