@@ -24,6 +24,8 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
+import contextlib
+import threading
 
 from xoutil import logger  # noqa
 from xoutil.context import context as _exec_context
@@ -230,53 +232,69 @@ PG_CONCURRENCY_ERRORS_TO_RETRY = (
 # to execute a method in a single Celery task.
 @app.task(bind=True, max_retries=5)
 def task(self, model, methodname, dbname, uid, args, kwargs):
-    with Environment.manage():
-        RegistryManager.check_registry_signaling(dbname)
-        registry = RegistryManager.get(dbname)
-        with registry.cursor() as cr:
-            method = getattr(registry[model], methodname)
-            if method:
-                # It's up to the user to return transferable things.
-                try:
-                    options = dict(job=self, registry=registry, cr=cr, uid=uid)
-                    with _exec_context(CELERY_JOB, **options):
-                        res = method(cr, uid, *args, **kwargs)
-                    if self.request.id:
-                        _report_success.delay(dbname, uid, self.request.id, result=res)
-                except celery.exceptions.SoftTimeLimitExceeded as error:
-                    cr.rollback()
-                    if self.request.id:
-                        _report_current_failure(dbname, uid, self.request.id,
-                                                error)
-                    raise
-                except OperationalError as error:
-                    cr.rollback()
-                    if error.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
-                        _report_current_failure(dbname, uid, self.request.id,
-                                                error)
-                        raise
-                    else:
-                        self.retry(args=(model, methodname, dbname, uid,
-                                         args, kwargs))
-                except Exception as error:
+    with _single_registry(dbname, uid) as (registry, cr):
+        method = getattr(registry[model], methodname)
+        if method:
+            # It's up to the user to return transferable things.
+            try:
+                options = dict(job=self, registry=registry, cr=cr, uid=uid)
+                with _exec_context(CELERY_JOB, **options):
+                    res = method(cr, uid, *args, **kwargs)
+                if self.request.id:
+                    _report_success.delay(dbname, uid, self.request.id,
+                                          result=res)
+            except celery.exceptions.SoftTimeLimitExceeded as error:
+                cr.rollback()
+                if self.request.id:
+                    _report_current_failure(dbname, uid, self.request.id,
+                                            error)
+                raise
+            except OperationalError as error:
+                cr.rollback()
+                if error.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
                     _report_current_failure(dbname, uid, self.request.id,
                                             error)
                     raise
-            else:
-                raise TypeError(
-                    'Invalid method name %r for model %r' % (methodname, model)
-                )
+                else:
+                    # This method raises celery.exceptions.Retry
+                    self.retry(args=(model, methodname, dbname, uid,
+                                     args, kwargs))
+            except Exception as error:
+                cr.rollback()
+                _report_current_failure(dbname, uid, self.request.id,
+                                        error)
+                raise
+        else:
+            raise TypeError(
+                'Invalid method name %r for model %r' % (methodname, model)
+            )
+
+
+@contextlib.contextmanager
+def _single_registry(dbname, uid):
+    RegistryManager.check_registry_signaling(dbname)
+    registry = RegistryManager.get(dbname)
+    # Several pieces of OpenERP code expect this attributes to be set in the
+    # current thread.
+    threading.current_thread().uid = uid
+    threading.current_thread().dbname = dbname
+    try:
+        with registry.cursor() as cr, Environment.manage():
+            yield registry, cr
+    finally:
+        if hasattr(threading.current_thread(), 'uid'):
+            del threading.current_thread().uid
+        if hasattr(threading.current_thread(), 'dbname'):
+            del threading.current_thread().dbname
 
 
 @app.task(bind=True, max_retries=5)
 def _report_success(self, dbname, uid, job_uuid, result=None):
     try:
-        with Environment.manage():
-            registry = RegistryManager.get(dbname)
-            with registry.cursor() as cr:
-                _send(get_progress_channel(job_uuid),
-                      dict(status='success', result=result),
-                      registry=registry, cr=cr, uid=uid)
+        with _single_registry(dbname, uid) as (registry, cr):
+            _send(get_progress_channel(job_uuid),
+                  dict(status='success', result=result),
+                  registry=registry, cr=cr, uid=uid)
     except Exception as error:
         self.retry(args=(dbname, uid, job_uuid))
 
@@ -284,12 +302,10 @@ def _report_success(self, dbname, uid, job_uuid, result=None):
 @app.task(bind=True, max_retries=5)
 def _report_failure(self, dbname, uid, job_uuid, tb, message=''):
     try:
-        with Environment.manage():
-            registry = RegistryManager.get(dbname)
-            with registry.cursor() as cr:
-                _send(get_progress_channel(job_uuid),
-                      dict(status='failure', traceback=tb, message=message),
-                      registry=registry, cr=cr, uid=uid)
+        with _single_registry(dbname, uid) as (registry, cr):
+            _send(get_progress_channel(job_uuid),
+                  dict(status='failure', traceback=tb, message=message),
+                  registry=registry, cr=cr, uid=uid)
     except Exception as error:
         self.retry(args=(dbname, uid, job_uuid, tb),
                    kwargs={'message': message})
