@@ -70,7 +70,7 @@ def _build_api_function(name, queue, **options):
             logger.warn('Nested background call detected for model %s '
                         'and method %s', model, method, extra=dict(
                             model=model, method=method, uid=uid,
-                            args=args
+                            args_=args
                         ))
             return task(*args)
         else:
