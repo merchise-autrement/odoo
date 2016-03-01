@@ -91,6 +91,8 @@ import workflow
 from . import models
 from . import fields
 from . import api
+from . import signals  # noqa
+
 from openerp.tools.translate import _
 
 #----------------------------------------------------------

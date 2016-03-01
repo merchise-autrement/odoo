@@ -24,6 +24,8 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
+import contextlib
+import threading
 
 from xoutil import logger  # noqa
 from xoutil.context import context as _exec_context
@@ -39,6 +41,7 @@ import openerp.tools.config as config
 from openerp.release import version
 from openerp.api import Environment
 from openerp.modules.registry import RegistryManager
+from openerp.http import serialize_exception as _serialize_exception
 
 
 # The queues are named using the version info.  This is to avoid clashes with
@@ -59,9 +62,11 @@ del _VERSION_INFO
 
 
 def _build_api_function(name, queue, **options):
+    disallow_nested = not options.pop('allow_nested', False)
+
     def func(model, cr, uid, method, *args, **kwargs):
         args = _getargs(model, method, cr, uid, *args, **kwargs)
-        if CELERY_JOB in _exec_context:
+        if disallow_nested and CELERY_JOB in _exec_context:
             logger.warn('Nested background call detected for model %s '
                         'and method %s', model, method, extra=dict(
                             model=model, method=method, uid=uid,
@@ -115,15 +120,15 @@ LowPriorityDeferred = LowPriorityDeferredType()
 
 def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
                     status=None):
-    '''Sends a progress notification to those waiting.
+    '''Send a progress notification to whomever is polling the current job.
 
     :param message: The message to send to those waiting for the message.
 
-    :param progress: A number in the range given by `range` indicating how
-                     much has been done.
+    :param progress: A number in the range given by `valuemin` and `valuemax`
+           indicating how much has been done.
 
-                     If you can't produce a good estimate is best to send
-                     "stages" in the message.
+           If you can't produce a good estimate is best to send "stages" in
+           the message.
 
     :param valuemin: The minimum value `progress` can take.
 
@@ -133,7 +138,7 @@ def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
     once settle they cannot be changed.
 
     :param status: The reported status. This should be one of the strings
-                   'success', 'failure' or 'pending'.
+       'success', 'failure' or 'pending'.
 
        .. warning:: This argument should not be used but for internal (job
                     framework module) purposes.
@@ -228,66 +233,80 @@ PG_CONCURRENCY_ERRORS_TO_RETRY = (
 # to execute a method in a single Celery task.
 @app.task(bind=True, max_retries=5)
 def task(self, model, methodname, dbname, uid, args, kwargs):
-    with Environment.manage():
-        RegistryManager.check_registry_signaling(dbname)
-        registry = RegistryManager.get(dbname)
-        with registry.cursor() as cr:
-            method = getattr(registry[model], methodname)
-            if method:
-                # It's up to the user to return transferable things.
-                try:
-                    options = dict(job=self, registry=registry, cr=cr, uid=uid)
-                    with _exec_context(CELERY_JOB, **options):
-                        res = method(cr, uid, *args, **kwargs)
-                    if self.request.id:
-                        _report_success.delay(dbname, uid, self.request.id, result=res)
-                except celery.exceptions.SoftTimeLimitExceeded as error:
-                    cr.rollback()
-                    if self.request.id:
-                        _report_current_failure(dbname, uid, self.request.id,
-                                                error)
-                    raise
-                except OperationalError as error:
-                    cr.rollback()
-                    if error.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
-                        _report_current_failure(dbname, uid, self.request.id,
-                                                error)
-                        raise
-                    else:
-                        self.retry(args=(model, methodname, dbname, uid,
-                                         args, kwargs))
-                except Exception as error:
+    with _single_registry(dbname, uid) as (registry, cr):
+        method = getattr(registry[model], methodname)
+        if method:
+            # It's up to the user to return transferable things.
+            try:
+                options = dict(job=self, registry=registry, cr=cr, uid=uid)
+                with _exec_context(CELERY_JOB, **options):
+                    res = method(cr, uid, *args, **kwargs)
+                if self.request.id:
+                    _report_success.delay(dbname, uid, self.request.id,
+                                          result=res)
+            except celery.exceptions.SoftTimeLimitExceeded as error:
+                cr.rollback()
+                if self.request.id:
+                    _report_current_failure(dbname, uid, self.request.id,
+                                            error)
+                raise
+            except OperationalError as error:
+                cr.rollback()
+                if error.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
                     _report_current_failure(dbname, uid, self.request.id,
                                             error)
                     raise
-            else:
-                raise TypeError(
-                    'Invalid method name %r for model %r' % (methodname, model)
-                )
+                else:
+                    # This method raises celery.exceptions.Retry
+                    self.retry(args=(model, methodname, dbname, uid,
+                                     args, kwargs))
+            except Exception as error:
+                cr.rollback()
+                _report_current_failure(dbname, uid, self.request.id,
+                                        error)
+                raise
+        else:
+            raise TypeError(
+                'Invalid method name %r for model %r' % (methodname, model)
+            )
+
+
+@contextlib.contextmanager
+def _single_registry(dbname, uid):
+    RegistryManager.check_registry_signaling(dbname)
+    registry = RegistryManager.get(dbname)
+    # Several pieces of OpenERP code expect this attributes to be set in the
+    # current thread.
+    threading.current_thread().uid = uid
+    threading.current_thread().dbname = dbname
+    try:
+        with registry.cursor() as cr, Environment.manage():
+            yield registry, cr
+    finally:
+        if hasattr(threading.current_thread(), 'uid'):
+            del threading.current_thread().uid
+        if hasattr(threading.current_thread(), 'dbname'):
+            del threading.current_thread().dbname
 
 
 @app.task(bind=True, max_retries=5)
 def _report_success(self, dbname, uid, job_uuid, result=None):
     try:
-        with Environment.manage():
-            registry = RegistryManager.get(dbname)
-            with registry.cursor() as cr:
-                _send(get_progress_channel(job_uuid),
-                      dict(status='success', result=result),
-                      registry=registry, cr=cr, uid=uid)
+        with _single_registry(dbname, uid) as (registry, cr):
+            _send(get_progress_channel(job_uuid),
+                  dict(status='success', result=result),
+                  registry=registry, cr=cr, uid=uid)
     except Exception as error:
         self.retry(args=(dbname, uid, job_uuid))
 
 
 @app.task(bind=True, max_retries=5)
-def _report_failure(self, dbname, uid, job_uuid, tb, message=''):
+def _report_failure(self, dbname, uid, job_uuid, tb=None, message=''):
     try:
-        with Environment.manage():
-            registry = RegistryManager.get(dbname)
-            with registry.cursor() as cr:
-                _send(get_progress_channel(job_uuid),
-                      dict(status='failure', traceback=tb, message=message),
-                      registry=registry, cr=cr, uid=uid)
+        with _single_registry(dbname, uid) as (registry, cr):
+            _send(get_progress_channel(job_uuid),
+                  dict(status='failure', traceback=tb, message=message),
+                  registry=registry, cr=cr, uid=uid)
     except Exception as error:
         self.retry(args=(dbname, uid, job_uuid, tb),
                    kwargs={'message': message})
@@ -295,18 +314,19 @@ def _report_failure(self, dbname, uid, job_uuid, tb, message=''):
 
 def _report_current_failure(dbname, uid, job_uuid, error):
     import traceback
-    message = getattr(error, 'message', '')
-    _report_failure.delay(dbname, uid, job_uuid, traceback.format_exc(),
-                          message=message)
+    data = _serialize_exception(error)
+    _report_failure.delay(dbname, uid, job_uuid, message=data)
     logger.exception('Unhandled exception in task')
 
 
 def _getargs(model, method, cr, uid, *args, **kwargs):
-    from openerp.models import Model
+    from openerp.models import BaseModel
     from openerp.sql_db import Cursor
     from openerp.tools import frozendict
-    if isinstance(model, Model):
+    if isinstance(model, BaseModel):
         model = model._name
+    elif isinstance(model, type(BaseModel)):
+        model = getattr(model, '_name', None) or model._inherit
     if isinstance(cr, Cursor):
         dbname = cr.dbname
     else:

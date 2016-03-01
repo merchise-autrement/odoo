@@ -6,7 +6,7 @@
 
    These note are about learning.  I need to write stuff while I'm learning,
    it let's me to fix it on my head.  At the same time, I believe, these notes
-   will serve any one (including myself) needing to change and/or debug the
+   will serve anyone (including myself) needing to change and/or debug the
    server.
 
    These notes may contain errors and other inaccuracies.  To the best of my
@@ -16,6 +16,11 @@
    You are entitle to correct me publicly.
 
    .. image:: http://imgs.xkcd.com/comics/duty_calls.png
+
+   These notes are distributed in the hope that they will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+   or FITNESS FOR A PARTICULAR PURPOSE.
+
 
 
 Notes about the preforking implementation in Odoo
@@ -42,11 +47,12 @@ The server
 
   This is different from the "accepting and then forking" cycle we see in
   other servers (call it simply forking).  When "forking" is employed the
-  parent process accepts all incoming connections and the forks children that
+  parent process accepts all incoming connections and then forks children that
   handle that connection.  In HTTP this is rather wasteful.
 
-  This pre-forking implementation shares the listening socket FD in all
-  workers.  All accept connections.  Calling accept from several process makes
+  This pre-forking opens the listening socket and then forks several workers
+  children.  This means that the listening socket FD is shared by all workers.
+  All accept connections.  Calling `accept(2)`:man: from several process makes
   all threads/process to block until a connection is established (the 3WHS is
   done).  In older Linuxes, this could lead to a `Thundering Herd`__ (this is
   not actually applicable since the number of workers in our case is limited
