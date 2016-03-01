@@ -41,6 +41,7 @@ import openerp.tools.config as config
 from openerp.release import version
 from openerp.api import Environment
 from openerp.modules.registry import RegistryManager
+from openerp.http import serialize_exception as _serialize_exception
 
 
 # The queues are named using the version info.  This is to avoid clashes with
@@ -300,7 +301,7 @@ def _report_success(self, dbname, uid, job_uuid, result=None):
 
 
 @app.task(bind=True, max_retries=5)
-def _report_failure(self, dbname, uid, job_uuid, tb, message=''):
+def _report_failure(self, dbname, uid, job_uuid, tb=None, message=''):
     try:
         with _single_registry(dbname, uid) as (registry, cr):
             _send(get_progress_channel(job_uuid),
@@ -313,9 +314,8 @@ def _report_failure(self, dbname, uid, job_uuid, tb, message=''):
 
 def _report_current_failure(dbname, uid, job_uuid, error):
     import traceback
-    message = getattr(error, 'message', '')
-    _report_failure.delay(dbname, uid, job_uuid, traceback.format_exc(),
-                          message=message)
+    data = _serialize_exception(error)
+    _report_failure.delay(dbname, uid, job_uuid, message=data)
     logger.exception('Unhandled exception in task')
 
 
