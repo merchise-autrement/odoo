@@ -39,7 +39,6 @@ import openerp.tools.config as config
 from openerp.release import version
 from openerp.api import Environment
 from openerp.modules.registry import RegistryManager
-from openerp.exceptions import except_orm
 from openerp.http import serialize_exception as _serialize_exception
 
 
@@ -260,13 +259,8 @@ def task(self, model, methodname, dbname, uid, args, kwargs):
                     else:
                         self.retry(args=(model, methodname, dbname, uid,
                                          args, kwargs))
-                except except_orm as error:
-                    cr.rollback()
-                    if self.request.id:
-                        _report_current_warning(dbname, uid, self.request.id,
-                                                error)
-                    raise
                 except Exception as error:
+                    cr.rollback()
                     _report_current_failure(dbname, uid, self.request.id,
                                             error)
                     raise
@@ -305,13 +299,6 @@ def _report_failure(self, dbname, uid, job_uuid, tb=None, message=''):
 
 def _report_current_failure(dbname, uid, job_uuid, error):
     import traceback
-    message = getattr(error, 'message', '')
-    _report_failure.delay(dbname, uid, job_uuid, traceback.format_exc(),
-                          message=message)
-    logger.exception('Unhandled exception in task')
-
-
-def _report_current_warning(dbname, uid, job_uuid, error):
     data = _serialize_exception(error)
     _report_failure.delay(dbname, uid, job_uuid, message=data)
     logger.exception('Unhandled exception in task')

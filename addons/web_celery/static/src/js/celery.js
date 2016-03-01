@@ -190,23 +190,26 @@ openerp.web_celery = function(instance){
 
         show_failure: function(message) {
             // TODO: Verify the failure
-            if (!!message.traceback) {
-                var cm = new instance.web.CrashManager();
-                cm.show_error({
-                    type: _t("Server Error"),
-                    message: message.message,
-                    data: {debug: message.traceback}
-                });
-            } else if (!!message.message.exception_type) {
-                var cm = new instance.web.CrashManager();
-                cm.rpc_error({data: message.message})
-            } else if (!!message.kind) {
+            if (!!message.kind) {
                 this.do_warn(
                     _t('Ask for help'),
                     _t("You're stuck waiting for a job that is taking "+
                        "forever.  Grab the next IT guy and ask help."),
                     true
                 );
+            }
+            else {
+                var cm = new instance.web.CrashManager();
+                // Our 'message' has the error data in 'message.message'. This
+                // can be passed to the CrashManager as the 'data' attribute
+                // of the error object.
+                var error = message;
+                var data = error.data = _.clone(message.message);
+                // We need to copy the 'message' title of the error.
+                if (!!data.message) {
+                    error.message = data.message;
+                }
+                cm.rpc_error(error);
             }
             var self = this,
                 parent = this.getParent();
