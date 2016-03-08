@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Odoo 8.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-15 06:40+0000\n"
-"PO-Revision-Date: 2016-02-13 21:41+0000\n"
+"PO-Revision-Date: 2016-02-25 23:40+0000\n"
 "Last-Translator: Martin Trigaux\n"
 "Language-Team: Spanish (Colombia) (http://www.transifex.com/odoo/odoo-8/language/es_CO/)\n"
 "MIME-Version: 1.0\n"
@@ -686,7 +686,7 @@ msgstr "Contabilidad. Informe Contable Común"
 #. module: account
 #: model:ir.model,name:account.model_account_common_journal_report
 msgid "Account Common Journal Report"
-msgstr ""
+msgstr "Account Common Journal Report"
 
 #. module: account
 #: model:ir.model,name:account.model_account_common_partner_report
@@ -771,7 +771,7 @@ msgstr "Nombre Cuenta."
 #. module: account
 #: model:ir.model,name:account.model_account_partner_ledger
 msgid "Account Partner Ledger"
-msgstr ""
+msgstr "Mayor de Cuenta de Empresa"
 
 #. module: account
 #: field:res.partner,property_account_payable:0
@@ -787,7 +787,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:account.action_account_print_journal
 #: model:ir.model,name:account.model_account_print_journal
 msgid "Account Print Journal"
-msgstr ""
+msgstr "Cuenta de Diario"
 
 #. module: account
 #: view:product.category:account.view_category_property_form
@@ -3721,7 +3721,7 @@ msgstr "Diferencia"
 msgid ""
 "Difference between the theoretical closing balance and the real closing "
 "balance."
-msgstr ""
+msgstr "Diferencia entre el saldo de cierre teórico y el saldo de cierre real"
 
 #. module: account
 #: view:account.open.closed.fiscalyear:account.view_account_open_closed_fiscalyear
@@ -4076,7 +4076,7 @@ msgstr ""
 #. module: account
 #: field:account.print.journal,sort_selection:0
 msgid "Entries Sorted by"
-msgstr ""
+msgstr "Entradas ordenadas por"
 
 #. module: account
 #: code:addons/account/account_move_line.py:964
@@ -4726,7 +4726,7 @@ msgstr "General"
 #: view:analytic.entries.report:account.view_analytic_entries_report_search
 #: field:analytic.entries.report,general_account_id:0
 msgid "General Account"
-msgstr ""
+msgstr "Cuenta General"
 
 #. module: account
 #: view:account.analytic.line:account.view_account_analytic_line_form
@@ -5357,7 +5357,7 @@ msgstr ""
 #: view:account.account.template:account.view_account_template_search
 #: field:account.account.template,type:0 field:account.entries.report,type:0
 msgid "Internal Type"
-msgstr ""
+msgstr "Tipo Interno"
 
 #. module: account
 #: view:account.account.template:account.view_account_template_form
@@ -5608,7 +5608,7 @@ msgstr "Actúa como una cuenta por defecto para los montos deudores"
 msgid ""
 "It adds the currency column on report if the currency differs from the "
 "company currency."
-msgstr ""
+msgstr "Se añade la columna de la moneda en el informe si la moneda es diferente de la divisa de la empresa."
 
 #. module: account
 #: help:account.invoice,reconciled:0
@@ -5763,7 +5763,7 @@ msgstr ""
 #: view:website:account.report_journal
 #: view:website:account.report_salepurchasejournal
 msgid "Journal Entry Number"
-msgstr ""
+msgstr "Número de asiento"
 
 #. module: account
 #: view:account.move.reconcile:account.view_move_reconcile_form
@@ -6254,7 +6254,7 @@ msgstr "VARIOS"
 #. module: account
 #: field:account.sequence.fiscalyear,sequence_main_id:0
 msgid "Main Sequence"
-msgstr ""
+msgstr "Secuencia Principal"
 
 #. module: account
 #: sql_constraint:account.sequence.fiscalyear:0
@@ -6907,7 +6907,7 @@ msgstr ""
 #: code:addons/account/account.py:435 code:addons/account/account.py:447
 #, python-format
 msgid "Opening Balance"
-msgstr ""
+msgstr "Saldo de Apertura"
 
 #. module: account
 #: view:account.bank.statement:account.view_bank_statement_form2
@@ -7176,7 +7176,7 @@ msgstr ""
 #: view:website:account.report_partnerledger
 #: view:website:account.report_partnerledgerother
 msgid "Partner Ledger"
-msgstr ""
+msgstr "Mayor de Empresa"
 
 #. module: account
 #: field:account.bank.statement.line,partner_name:0
@@ -7589,7 +7589,7 @@ msgstr ""
 #. module: account
 #: field:account.automatic.reconcile,power:0
 msgid "Power"
-msgstr ""
+msgstr "Potencia"
 
 #. module: account
 #: selection:account.financial.report,sign:0
@@ -7632,7 +7632,7 @@ msgstr "Imprimir Factura"
 msgid ""
 "Print Report with the currency column if the currency differs from the "
 "company currency."
-msgstr ""
+msgstr "Imprime la columna de la moneda en el informe si la moneda es diferente de la divisa de la empresa."
 
 #. module: account
 #: model:ir.actions.act_window,name:account.action_account_print_sale_purchase_journal
@@ -7891,7 +7891,7 @@ msgstr "Cantidad"
 #. module: account
 #: field:temp.range,name:0
 msgid "Range"
-msgstr ""
+msgstr "Rango"
 
 #. module: account
 #: view:account.invoice:account.invoice_form
@@ -7907,7 +7907,7 @@ msgstr ""
 #. module: account
 #: view:account.bank.statement:account.view_bank_statement_form2
 msgid "Real Closing Balance"
-msgstr ""
+msgstr "Saldo de Cierre Real"
 
 #. module: account
 #: field:account.invoice.refund,description:0 field:cash.box.in,name:0
@@ -8429,7 +8429,7 @@ msgstr ""
 #. module: account
 #: view:website:account.report_salepurchasejournal
 msgid "Sale/Purchase Journal"
-msgstr ""
+msgstr "Diario de Ventas/Compras"
 
 #. module: account
 #: model:ir.ui.menu,name:account.menu_account_print_sale_purchase_journal
@@ -8598,7 +8598,7 @@ msgstr ""
 #. module: account
 #: view:account.config.settings:account.view_account_config_settings
 msgid "Select Company"
-msgstr ""
+msgstr "Seleccione Compañía"
 
 #. module: account
 #: help:account.open.closed.fiscalyear,fyear_id:0
@@ -9103,7 +9103,7 @@ msgstr "Subtotal"
 #. module: account
 #: view:account.bank.statement:account.view_bank_statement_form2
 msgid "Sum of opening balance and transactions."
-msgstr ""
+msgstr "Suma del saldo de apertura y las transacciones"
 
 #. module: account
 #: field:account.bank.statement,message_summary:0
@@ -9270,7 +9270,7 @@ msgstr "Cuenta de Impuestos"
 #. module: account
 #: view:website:account.report_vat
 msgid "Tax Amount"
-msgstr ""
+msgstr "Impuesto"
 
 #. module: account
 #: view:account.tax:account.view_account_tax_search
@@ -9331,7 +9331,7 @@ msgstr "Cálculo de Impuestos"
 #: view:account.tax.template:account.view_account_tax_template_form
 #: view:website:account.report_salepurchasejournal
 msgid "Tax Declaration"
-msgstr ""
+msgstr "Declaración de Impuestos"
 
 #. module: account
 #: view:account.tax:account.view_tax_form
@@ -10389,7 +10389,7 @@ msgstr "A"
 #. module: account
 #: view:account.period:account.view_account_period_search
 msgid "To Close"
-msgstr ""
+msgstr "Para Cerrar"
 
 #. module: account
 #: view:account.invoice.report:account.view_account_invoice_report_search
@@ -10538,7 +10538,7 @@ msgstr ""
 #. module: account
 #: view:account.bank.statement:account.view_bank_statement_form2
 msgid "Total of closing cash control lines."
-msgstr ""
+msgstr "Total de las lineas de cierre del control de caja"
 
 #. module: account
 #: view:account.bank.statement:account.view_bank_statement_form2
@@ -10552,7 +10552,7 @@ msgstr ""
 #: view:website:account.report_generaljournal
 #: view:website:account.report_partnerbalance
 msgid "Total:"
-msgstr ""
+msgstr "Total:"
 
 #. module: account
 #. openerp-web
@@ -10781,7 +10781,7 @@ msgstr ""
 #. module: account
 #: field:report.invoice.created,amount_untaxed:0
 msgid "Untaxed"
-msgstr ""
+msgstr "No Sujeto a Impuestos"
 
 #. module: account
 #: view:account.invoice:account.invoice_tree
@@ -11006,7 +11006,7 @@ msgstr "Uff, eso fue rápido!"
 #: field:account.print.journal,amount_currency:0
 #: field:account.report.general.ledger,amount_currency:0
 msgid "With Currency"
-msgstr ""
+msgstr "Con Moneda"
 
 #. module: account
 #: selection:account.balance.report,display_account:0
