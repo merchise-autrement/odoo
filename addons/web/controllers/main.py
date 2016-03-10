@@ -1085,7 +1085,11 @@ class Binary(http.Controller):
         Model = request.registry['ir.attachment']
         cr, uid, context = request.cr, request.uid, request.context
         res = Model.read(cr, uid, [int(id)], ['filename', 'store_fname'],
-                         context=context)[0]
+                         context=context)
+        if not res:
+            return request.not_found()
+        else:
+            res = res[0]
         media_prefix = openerp.tools.config.get('media_prefix')
         proxied = openerp.tools.config['proxy_mode'] \
                   and 'HTTP_X_FORWARDED_HOST' in request.httprequest.environ
