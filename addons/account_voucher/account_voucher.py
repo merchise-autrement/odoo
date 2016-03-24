@@ -254,7 +254,7 @@ class account_voucher(osv.osv):
 
     def _get_currency_help_label(self, cr, uid, currency_id, payment_rate, payment_rate_currency_id, context=None):
         """
-        This function builds a string to help the users to understand the behavior of the payment rate fields they can specify on the voucher. 
+        This function builds a string to help the users to understand the behavior of the payment rate fields they can specify on the voucher.
         This string is only used to improve the usability in the voucher form view and has no other effect.
 
         :param currency_id: the voucher currency
@@ -356,7 +356,7 @@ class account_voucher(osv.osv):
             help='The specific rate that will be used, in this voucher, between the selected currency (in \'Payment Rate Currency\' field)  and the voucher currency.'),
         'paid_amount_in_company_currency': fields.function(_paid_amount_in_company_currency, string='Paid Amount in Company Currency', type='float', readonly=True),
         'is_multi_currency': fields.boolean('Multi Currency Voucher', help='Fields with internal purpose only that depicts if the voucher is a multi currency one or not'),
-        'currency_help_label': fields.function(_fnct_currency_help_label, type='text', string="Helping Sentence", help="This sentence helps you to know how to specify the payment rate by giving you the direct effect it has"), 
+        'currency_help_label': fields.function(_fnct_currency_help_label, type='text', string="Helping Sentence", help="This sentence helps you to know how to specify the payment rate by giving you the direct effect it has"),
     }
     _defaults = {
         'period_id': _get_period,
@@ -644,10 +644,10 @@ class account_voucher(osv.osv):
         for key in vals2.keys():
             res[key].update(vals2[key])
         #TODO: can probably be removed now
-        #TODO: onchange_partner_id() should not returns [pre_line, line_dr_ids, payment_rate...] for type sale, and not 
+        #TODO: onchange_partner_id() should not returns [pre_line, line_dr_ids, payment_rate...] for type sale, and not
         # [pre_line, line_cr_ids, payment_rate...] for type purchase.
-        # We should definitively split account.voucher object in two and make distinct on_change functions. In the 
-        # meanwhile, bellow lines must be there because the fields aren't present in the view, what crashes if the 
+        # We should definitively split account.voucher object in two and make distinct on_change functions. In the
+        # meanwhile, bellow lines must be there because the fields aren't present in the view, what crashes if the
         # onchange returns a value for them
         if ttype == 'sale':
             del(res['value']['line_dr_ids'])
@@ -833,7 +833,7 @@ class account_voucher(osv.osv):
             #read the voucher rate with the right date in the context
             voucher_rate = self.pool.get('res.currency').read(cr, uid, [currency_id], ['rate'], context=ctx)[0]['rate']
             ctx.update({
-                'voucher_special_currency_rate': payment_rate * voucher_rate, 
+                'voucher_special_currency_rate': payment_rate * voucher_rate,
                 'voucher_special_currency': payment_rate_currency_id})
             vals = self.onchange_rate(cr, uid, ids, payment_rate, amount, currency_id, payment_rate_currency_id, company_id, context=ctx)
             for key in vals.keys():
@@ -904,7 +904,7 @@ class account_voucher(osv.osv):
             'payment_rate_currency_id': currency_id,
             'period_id': period_ids and period_ids[0] or False
         })
-        #in case we want to register the payment directly from an invoice, it's confusing to allow to switch the journal 
+        #in case we want to register the payment directly from an invoice, it's confusing to allow to switch the journal
         #without seeing that the amount is expressed in the journal currency, and not in the invoice currency. So to avoid
         #this common mistake, we simply reset the amount to 0 if the currency is not the invoice currency.
         if context.get('payment_expected_currency') and currency_id != context.get('payment_expected_currency'):
