@@ -7,7 +7,7 @@
 # Jan-Erik Finlander, 2015
 # Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2015-2016
 # Jussi Lehto <jussi@gulfeo.com>, 2015
-# Kari Lindgren <kari.lindgren@emsystems.fi>, 2015
+# Kari Lindgren <kari.lindgren@emsystems.fi>, 2015-2016
 # Kari Lindgren <karisatu@gmail.com>, 2015
 # Mika Karvinen <karvinenm@gmail.com>, 2015
 # Veikko Väätäjä <veikko.vaataja@gmail.com>, 2015
@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: Odoo 8.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-15 06:40+0000\n"
-"PO-Revision-Date: 2016-04-08 05:27+0000\n"
+"PO-Revision-Date: 2016-04-28 12:06+0000\n"
 "Last-Translator: Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>\n"
 "Language-Team: Finnish (http://www.transifex.com/odoo/odoo-8/language/fi/)\n"
 "MIME-Version: 1.0\n"
@@ -494,7 +494,7 @@ msgid ""
 "                would be referred to as FY 2011.\n"
 "              </p>\n"
 "            "
-msgstr ""
+msgstr "<p class=\"oe_view_nocontent_create\">\nKlikkaa aloittaaksesi uuden tilikauden.\n</p><p>\nMääritä yrityksen tilikausi tarpeen mukaan. Tilikausi on jakso, jonka lopussa tehdään yrityksen tilinpäätös (yleensä 12 kuukautta). Tilikauteen viitataan yleensä sen päättymispäivällä. Jos yrityksen tilikausi päättyy esimerkiksi 30. marraskuuta 2011, kaikki välillä 1. Joulukuta 2010 ja 30. marraskuuta 2011 kuuluisi tilikauteen 2011.\n</p>"
 
 #. module: account
 #: model:ir.actions.act_window,help:account.action_account_moves_all_a
@@ -3610,7 +3610,7 @@ msgstr "Debettien keskitys"
 #. module: account
 #: field:account.move.line.reconcile,debit:0
 msgid "Debit amount"
-msgstr "Debet ,äärä"
+msgstr "Debet määrä"
 
 #. module: account
 #: selection:report.account.sales,month:0
@@ -4733,7 +4733,7 @@ msgstr "Yleinen"
 #: view:analytic.entries.report:account.view_analytic_entries_report_search
 #: field:analytic.entries.report,general_account_id:0
 msgid "General Account"
-msgstr "Yleinen tili"
+msgstr "Yleistili"
 
 #. module: account
 #: view:account.analytic.line:account.view_account_analytic_line_form
@@ -6455,7 +6455,7 @@ msgstr "Siirto"
 #. module: account
 #: field:account.analytic.line,move_id:0
 msgid "Move Line"
-msgstr "Siirtymärivi"
+msgstr "Kirjausrivi"
 
 #. module: account
 #: view:website:account.report_analyticjournal
@@ -10874,7 +10874,7 @@ msgstr "Alv-velvollisuus"
 #. module: account
 #: field:account.fiscal.position,vat_required:0
 msgid "VAT required"
-msgstr "ALV on vaadittu"
+msgstr "ALV vaaditaan"
 
 #. module: account
 #: selection:account.entries.report,move_line_state:0
