@@ -30,8 +30,11 @@ openerp.web_celery = function(instance){
             this.title = _t('Working');
             this.message = _t('Your request is being processed (or about '+
                               'to be processed.)  Please wait.');
+            var channel = this.channel = get_progress_channel(options.params);
+            // The CrossTabBus cannot be used cause it's implemented to be
+            // a singleton.
             bus = this.bus = new openerp.bus.Bus();
-            bus.add_channel(get_progress_channel(options.params));
+            bus.add_channel(channel);
             bus.on('notification', this, this.on_job_notification);
             pending_jobs += 1;
             this.show().done(_.bind(this.start_waiting, this));
@@ -67,21 +70,26 @@ openerp.web_celery = function(instance){
             this.updateView();
         },
 
-        on_job_notification: function(params){
-            var channel = params[0];
-            var message = params[1];
-            var status = message.status;
-            if (status && (status == 'success' || status == 'failure')) {
-                if (status != 'failure') {
-                    this.finished.resolve(message);
+        on_job_notification: function(notifications){
+            var self = this;
+            _.each(notifications, function (params) {
+                var channel = params[0];
+                if (channel != self.channel)
+                    return;
+                var message = params[1];
+                var status = message.status;
+                if (status && (status == 'success' || status == 'failure')) {
+                    if (status != 'failure') {
+                        self.finished.resolve(message);
+                    }
+                    else {
+                        self.finished.reject(message);
+                    }
+                } else {
+                    self.update(message.progress, message.valuemin,
+                        message.valuemax, message.message);
                 }
-                else {
-                    this.finished.reject(message);
-                }
-            } else {
-                this.update(message.progress, message.valuemin,
-                            message.valuemax, message.message);
-            }
+            });
         },
 
         start_waiting: function() {
