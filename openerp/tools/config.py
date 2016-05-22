@@ -278,6 +278,8 @@ class configmanager(object):
         security = optparse.OptionGroup(parser, 'Security-related options')
         security.add_option('--no-database-list', action="store_false", dest='list_db', my_default=True,
                             help="disable the ability to return the list of databases")
+        security.add_option('--disable-database-manager', action='store_true', dest='disable_database_manager', my_default=False,
+                            help='Disable the ability to manage the databases from the web interface.')
         parser.add_option_group(security)
 
         # Advanced options
