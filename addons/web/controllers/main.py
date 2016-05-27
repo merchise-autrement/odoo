@@ -42,6 +42,7 @@ from openerp.modules import get_module_resource
 from openerp.tools import topological_sort
 from openerp.tools.translate import _
 from openerp.tools import ustr
+from openerp.tools.config import config
 from openerp import http
 
 from openerp.http import request, serialize_exception as _serialize_exception
@@ -510,6 +511,7 @@ class Home(http.Controller):
         except openerp.exceptions.AccessDenied:
             values['databases'] = None
 
+        values['disable_database_manager'] = config.get('disable_database_manager', False)
         if request.httprequest.method == 'POST':
             old_uid = request.uid
             uid = request.session.authenticate(request.session.db, request.params['login'], request.params['password'])
@@ -663,123 +665,124 @@ class Proxy(http.Controller):
         base_url = request.httprequest.base_url
         return Client(request.httprequest.app, BaseResponse).get(path, base_url=base_url).data
 
-class Database(http.Controller):
 
-    @http.route('/web/database/selector', type='http', auth="none")
-    def selector(self, **kw):
-        try:
-            dbs = http.db_list()
-            if not dbs:
-                return http.local_redirect('/web/database/manager')
-        except openerp.exceptions.AccessDenied:
-            dbs = False
-        return env.get_template("database_selector.html").render({
-            'databases': dbs,
-            'debug': request.debug,
-            'error': kw.get('error')
-        })
+if not config.get('disable_database_manager', False):
+    class Database(http.Controller):
+        @http.route('/web/database/selector', type='http', auth="none")
+        def selector(self, **kw):
+            try:
+                dbs = http.db_list()
+                if not dbs:
+                    return http.local_redirect('/web/database/manager')
+            except openerp.exceptions.AccessDenied:
+                dbs = False
+            return env.get_template("database_selector.html").render({
+                'databases': dbs,
+                'debug': request.debug,
+                'error': kw.get('error')
+            })
 
-    @http.route('/web/database/manager', type='http', auth="none")
-    def manager(self, **kw):
-        # TODO: migrate the webclient's database manager to server side views
-        request.session.logout()
-        return env.get_template("database_manager.html").render({
-            'modules': simplejson.dumps(module_boot()),
-        })
+        @http.route('/web/database/manager', type='http', auth="none")
+        def manager(self, **kw):
+            # TODO: migrate the webclient's database manager to server side views
+            request.session.logout()
+            return env.get_template("database_manager.html").render({
+                'modules': simplejson.dumps(module_boot()),
+            })
 
-    @http.route('/web/database/get_list', type='json', auth="none")
-    def get_list(self):
-        # TODO change js to avoid calling this method if in monodb mode
-        try:
-            return http.db_list()
-        except openerp.exceptions.AccessDenied:
-            monodb = db_monodb()
-            if monodb:
-                return [monodb]
-            raise
+        @http.route('/web/database/get_list', type='json', auth="none")
+        def get_list(self):
+            # TODO change js to avoid calling this method if in monodb mode
+            try:
+                return http.db_list()
+            except openerp.exceptions.AccessDenied:
+                monodb = db_monodb()
+                if monodb:
+                    return [monodb]
+                raise
 
-    @http.route('/web/database/create', type='json', auth="none")
-    def create(self, fields):
-        params = dict(map(operator.itemgetter('name', 'value'), fields))
-        db_created = request.session.proxy("db").create_database(
-            params['super_admin_pwd'],
-            params['db_name'],
-            bool(params.get('demo_data')),
-            params['db_lang'],
-            params['create_admin_pwd'])
-        if db_created:
-            request.session.authenticate(params['db_name'], 'admin', params['create_admin_pwd'])
-        return db_created
+        @http.route('/web/database/create', type='json', auth="none")
+        def create(self, fields):
+            params = dict(map(operator.itemgetter('name', 'value'), fields))
+            db_created = request.session.proxy("db").create_database(
+                params['super_admin_pwd'],
+                params['db_name'],
+                bool(params.get('demo_data')),
+                params['db_lang'],
+                params['create_admin_pwd'])
+            if db_created:
+                request.session.authenticate(params['db_name'], 'admin', params['create_admin_pwd'])
+            return db_created
 
-    @http.route('/web/database/duplicate', type='json', auth="none")
-    def duplicate(self, fields):
-        params = dict(map(operator.itemgetter('name', 'value'), fields))
-        duplicate_attrs = (
-            params['super_admin_pwd'],
-            params['db_original_name'],
-            params['db_name'],
-        )
+        @http.route('/web/database/duplicate', type='json', auth="none")
+        def duplicate(self, fields):
+            params = dict(map(operator.itemgetter('name', 'value'), fields))
+            duplicate_attrs = (
+                params['super_admin_pwd'],
+                params['db_original_name'],
+                params['db_name'],
+            )
 
-        return request.session.proxy("db").duplicate_database(*duplicate_attrs)
+            return request.session.proxy("db").duplicate_database(*duplicate_attrs)
 
-    @http.route('/web/database/drop', type='json', auth="none")
-    def drop(self, fields):
-        password, db = operator.itemgetter(
-            'drop_pwd', 'drop_db')(
-                dict(map(operator.itemgetter('name', 'value'), fields)))
+        @http.route('/web/database/drop', type='json', auth="none")
+        def drop(self, fields):
+            password, db = operator.itemgetter(
+                'drop_pwd', 'drop_db')(
+                    dict(map(operator.itemgetter('name', 'value'), fields)))
 
-        try:
-            if request.session.proxy("db").drop(password, db):
-                return True
-            else:
-                return False
-        except openerp.exceptions.AccessDenied:
-            return {'error': 'AccessDenied', 'title': 'Drop Database'}
-        except Exception:
-            return {'error': _('Could not drop database !'), 'title': _('Drop Database')}
+            try:
+                if request.session.proxy("db").drop(password, db):
+                    return True
+                else:
+                    return False
+            except openerp.exceptions.AccessDenied:
+                return {'error': 'AccessDenied', 'title': 'Drop Database'}
+            except Exception:
+                return {'error': _('Could not drop database !'), 'title': _('Drop Database')}
 
-    @http.route('/web/database/backup', type='http', auth="none")
-    def backup(self, backup_db, backup_pwd, token, backup_format='zip'):
-        try:
-            openerp.service.security.check_super(backup_pwd)
-            ts = datetime.datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S")
-            filename = "%s_%s.%s" % (backup_db, ts, backup_format)
-            headers = [
-                ('Content-Type', 'application/octet-stream; charset=binary'),
-                ('Content-Disposition', content_disposition(filename)),
-            ]
-            dump_stream = openerp.service.db.dump_db(backup_db, None, backup_format)
-            response = werkzeug.wrappers.Response(dump_stream, headers=headers, direct_passthrough=True)
-            response.set_cookie('fileToken', token)
-            return response
-        except Exception, e:
-            _logger.exception('Database.backup')
-            return simplejson.dumps([[],[{'error': openerp.tools.ustr(e), 'title': _('Backup Database')}]])
+        @http.route('/web/database/backup', type='http', auth="none")
+        def backup(self, backup_db, backup_pwd, token, backup_format='zip'):
+            try:
+                openerp.service.security.check_super(backup_pwd)
+                ts = datetime.datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S")
+                filename = "%s_%s.%s" % (backup_db, ts, backup_format)
+                headers = [
+                    ('Content-Type', 'application/octet-stream; charset=binary'),
+                    ('Content-Disposition', content_disposition(filename)),
+                ]
+                dump_stream = openerp.service.db.dump_db(backup_db, None, backup_format)
+                response = werkzeug.wrappers.Response(dump_stream, headers=headers, direct_passthrough=True)
+                response.set_cookie('fileToken', token)
+                return response
+            except Exception, e:
+                _logger.exception('Database.backup')
+                return simplejson.dumps([[],[{'error': openerp.tools.ustr(e), 'title': _('Backup Database')}]])
 
-    @http.route('/web/database/restore', type='http', auth="none")
-    def restore(self, db_file, restore_pwd, new_db, mode):
-        try:
-            copy = mode == 'copy'
-            data = base64.b64encode(db_file.read())
-            request.session.proxy("db").restore(restore_pwd, new_db, data, copy)
-            return ''
-        except openerp.exceptions.AccessDenied, e:
-            raise Exception("AccessDenied")
+        @http.route('/web/database/restore', type='http', auth="none")
+        def restore(self, db_file, restore_pwd, new_db, mode):
+            try:
+                copy = mode == 'copy'
+                data = base64.b64encode(db_file.read())
+                request.session.proxy("db").restore(restore_pwd, new_db, data, copy)
+                return ''
+            except openerp.exceptions.AccessDenied, e:
+                raise Exception("AccessDenied")
 
-    @http.route('/web/database/change_password', type='json', auth="none")
-    def change_password(self, fields):
-        old_password, new_password = operator.itemgetter(
-            'old_pwd', 'new_pwd')(
-                dict(map(operator.itemgetter('name', 'value'), fields)))
-        try:
-            return request.session.proxy("db").change_admin_password(old_password, new_password)
-        except openerp.exceptions.AccessDenied:
-            return {'error': 'AccessDenied', 'title': _('Change Password')}
-        except Exception:
-            return {'error': _('Error, password not changed !'), 'title': _('Change Password')}
+        @http.route('/web/database/change_password', type='json', auth="none")
+        def change_password(self, fields):
+            old_password, new_password = operator.itemgetter(
+                'old_pwd', 'new_pwd')(
+                    dict(map(operator.itemgetter('name', 'value'), fields)))
+            try:
+                return request.session.proxy("db").change_admin_password(old_password, new_password)
+            except openerp.exceptions.AccessDenied:
+                return {'error': 'AccessDenied', 'title': _('Change Password')}
+            except Exception:
+                return {'error': _('Error, password not changed !'), 'title': _('Change Password')}
+
 
 class Session(http.Controller):
-
     def session_info(self):
         request.session.ensure_valid()
         return {
