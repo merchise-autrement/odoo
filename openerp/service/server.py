@@ -456,7 +456,8 @@ class PreforkServer(CommonServer):
     """
     def __init__(self, app):
         # config
-        self.address = (config['xmlrpc_interface'] or '0.0.0.0', config['xmlrpc_port'])
+        self.address = config['xmlrpc'] and \
+            (config['xmlrpc_interface'] or '0.0.0.0', config['xmlrpc_port'])
         self.population = config['workers']
         self.timeout = config['limit_time_real']
         self.limit_request = config['limit_request']
@@ -693,12 +694,13 @@ class PreforkServer(CommonServer):
         signal.signal(signal.SIGQUIT, dumpstacks)
         signal.signal(signal.SIGUSR1, log_ormcache_stats)
 
-        # listen to socket
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.socket.setblocking(0)
-        self.socket.bind(self.address)
-        self.socket.listen(8 * self.population)
+        if self.address:
+            # listen to socket
+            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.socket.setblocking(0)
+            self.socket.bind(self.address)
+            self.socket.listen(8 * self.population)
 
     def stop(self, graceful=True):
         if self.long_polling_pid is not None:
@@ -722,7 +724,8 @@ class PreforkServer(CommonServer):
             _logger.info("Stopping forcefully")
         for pid in self.workers.keys():
             self.worker_kill(pid, signal.SIGTERM)
-        self.socket.close()
+        if self.socket:
+            self.socket.close()
 
     def run(self, preload, stop):
         self.start()
@@ -844,13 +847,14 @@ class Worker(object):
         # Reseed the random number generator, so that it diverts from parent
         # and siblings.
         random.seed()
-        # Prevent fd inheritance close_on_exec
-        flags = fcntl.fcntl(self.multi.socket, fcntl.F_GETFD) | fcntl.FD_CLOEXEC
-        fcntl.fcntl(self.multi.socket, fcntl.F_SETFD, flags)
-        # reset blocking status
-        self.multi.socket.setblocking(0)
-        signal.signal(signal.SIGINT, self.signal_handler)  # Ctrl-C
-        # Do the default action for SIGTERM and SIGCHLD.  man page signal(7)
+        if self.multi.socket:
+            # Prevent fd inheritance: close_on_exec
+            flags = fcntl.fcntl(self.multi.socket, fcntl.F_GETFD) | fcntl.FD_CLOEXEC
+            fcntl.fcntl(self.multi.socket, fcntl.F_SETFD, flags)
+            # reset blocking status
+            self.multi.socket.setblocking(0)
+
+        signal.signal(signal.SIGINT, self.signal_handler)
         signal.signal(signal.SIGTERM, signal.SIG_DFL)
         signal.signal(signal.SIGCHLD, signal.SIG_DFL)
         signal.signal(signal.SIGUSR2, self.signal_handler)
@@ -994,7 +998,8 @@ class WorkerCron(Worker):
     def start(self):
         os.nice(10)     # mommy always told me to be nice with others...
         Worker.start(self)
-        self.multi.socket.close()
+        if self.multi.socket:
+            self.multi.socket.close()
 
 
 class CeleryWorker(Worker):
