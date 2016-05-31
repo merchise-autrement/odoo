@@ -1232,7 +1232,10 @@ class OpenERPSession(werkzeug.contrib.sessions.Session):
 
 
 def session_gc(session_store):
-    if random.random() < 0.001:  # 0.1% approx.
+    # This method is called for every HTTP request (called by setup_session,
+    # which is called by dispatch); so we likely do clean ups about for
+    # 0.001% of calls.
+    if random.random() < 0.001:
         # we keep session 14 hours (8hours + 6 hours - France Cuba)
         last_period = time.time() - 14*3600
         for fname in os.listdir(session_store.path):
