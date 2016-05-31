@@ -1238,13 +1238,15 @@ def session_gc(session_store):
     if random.random() < 0.001:
         # we keep session 14 hours (8hours + 6 hours - France Cuba)
         last_period = time.time() - 14*3600
-        for fname in os.listdir(session_store.path):
-            path = os.path.join(session_store.path, fname)
-            try:
-                if os.path.getmtime(path) < last_period:
-                    os.unlink(path)
-            except OSError:
-                pass
+        path = getattr(session_store, 'path', None)
+        if path and os.path.isdir(path):
+            for fname in os.listdir(session_store.path):
+                path = os.path.join(session_store.path, fname)
+                try:
+                    if os.path.getmtime(path) < last_period:
+                        os.unlink(path)
+                except OSError:
+                    pass
 
 #----------------------------------------------------------
 # WSGI Layer
@@ -1337,6 +1339,22 @@ class DisableCacheMiddleware(object):
         return self.app(environ, start_wrapped)
 
 
+def SessionStore(path):
+    # type: (str) -> werkzeug.contrib.sessions.SessionStore
+    '''Creates a session store.
+
+    The `path` argument may start with 'redis://', in which case return a
+    RedisSessionStore; otherwise try to return a FilesystemSessionStore.
+
+    '''
+    if path.startswith('redis://'):
+        raise NotImplemented
+    else:
+        return werkzeug.contrib.sessions.FilesystemSessionStore(
+            path, session_class=OpenERPSession
+        )
+
+
 class Root(object):
     """Root WSGI application for the OpenERP Web Client.
     """
@@ -1348,9 +1366,7 @@ class Root(object):
         # Setup http sessions
         path = openerp.tools.config.session_dir
         _logger.debug('HTTP sessions stored in: %s', path)
-        return werkzeug.contrib.sessions.FilesystemSessionStore(
-            path, session_class=OpenERPSession
-        )
+        return SessionStore(path)
 
     @lazy_property
     def nodb_routing_map(self):
