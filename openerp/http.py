@@ -55,8 +55,14 @@ _logger = logging.getLogger(__name__)
 rpc_request = logging.getLogger(__name__ + '.rpc.request')
 rpc_response = logging.getLogger(__name__ + '.rpc.response')
 
+HOUR = 60 * 60
+DAY = 24 * HOUR
+DAYS = lambda d: d * DAY
 # 1 week cache for statics as advised by Google Page Speed
-STATIC_CACHE = 60 * 60 * 24 * 7
+STATIC_CACHE = DAYS(7)
+
+COOKIE_MAX_AGE = DAYS(90)
+
 
 
 class _AccelMixin(object):
@@ -1232,16 +1238,21 @@ class OpenERPSession(werkzeug.contrib.sessions.Session):
 
 
 def session_gc(session_store):
-    if random.random() < 0.001:  # 0.1% approx.
+    # This method is called for every HTTP request (called by setup_session,
+    # which is called by dispatch); so we likely do clean ups about for
+    # 0.001% of calls.
+    if random.random() < 0.001:
         # we keep session 14 hours (8hours + 6 hours - France Cuba)
         last_period = time.time() - 14*3600
-        for fname in os.listdir(session_store.path):
-            path = os.path.join(session_store.path, fname)
-            try:
-                if os.path.getmtime(path) < last_period:
-                    os.unlink(path)
-            except OSError:
-                pass
+        path = getattr(session_store, 'path', None)
+        if path and os.path.isdir(path):
+            for fname in os.listdir(session_store.path):
+                path = os.path.join(session_store.path, fname)
+                try:
+                    if os.path.getmtime(path) < last_period:
+                        os.unlink(path)
+                except OSError:
+                    pass
 
 #----------------------------------------------------------
 # WSGI Layer
@@ -1334,6 +1345,22 @@ class DisableCacheMiddleware(object):
         return self.app(environ, start_wrapped)
 
 
+def SessionStore(path):
+    # type: (str) -> werkzeug.contrib.sessions.SessionStore
+    '''Creates a session store.
+
+    The `path` argument may start with 'redis://', in which case return a
+    RedisSessionStore; otherwise try to return a FilesystemSessionStore.
+
+    '''
+    if path.startswith('redis://'):
+        raise NotImplemented
+    else:
+        return werkzeug.contrib.sessions.FilesystemSessionStore(
+            path, session_class=OpenERPSession
+        )
+
+
 class Root(object):
     """Root WSGI application for the OpenERP Web Client.
     """
@@ -1345,9 +1372,7 @@ class Root(object):
         # Setup http sessions
         path = openerp.tools.config.session_dir
         _logger.debug('HTTP sessions stored in: %s', path)
-        return werkzeug.contrib.sessions.FilesystemSessionStore(
-            path, session_class=OpenERPSession
-        )
+        return SessionStore(path)
 
     @lazy_property
     def nodb_routing_map(self):
@@ -1492,7 +1517,14 @@ class Root(object):
         #   (the one using the cookie). That is a special feature of the Session Javascript class.
         # - It could allow session fixation attacks.
         if not explicit_session and hasattr(response, 'set_cookie'):
-            response.set_cookie('session_id', httprequest.session.sid, max_age=90 * 24 * 60 * 60)
+            get_conf = openerp.tools.config.get
+            response.set_cookie(
+                'session_id',
+                httprequest.session.sid,
+                max_age=COOKIE_MAX_AGE,
+                domain=get_conf('session_cookie_domain', None),
+                secure=get_conf('session_cookie_secure', False),
+            )
 
         return response
 
