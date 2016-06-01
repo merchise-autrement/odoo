@@ -13,7 +13,7 @@
    effort I will keep them at a minimum, but they only show my learning
    process.
 
-   You are entitle to correct me publicly.
+   You are entitled to correct me publicly.
 
    .. image:: http://imgs.xkcd.com/comics/duty_calls.png
 

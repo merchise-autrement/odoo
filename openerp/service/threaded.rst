@@ -13,7 +13,7 @@
    effort I will keep them at a minimum, but they only show my learning
    process.
 
-   You are entitle to correct me publicly.
+   You are entitled to correct me publicly.
 
    .. image:: http://imgs.xkcd.com/comics/duty_calls.png
 
@@ -25,9 +25,10 @@
 The threaded server
 ===================
 
-The threaded server is quite simple.  For instance, we it doesn't have nothing
+The threaded server is quite simple.  For instance, it doesn't have anything
 like ``limit-time-cpu`` for limiting the running time a thread may spent in a
-single request.
+single request.  Requests may end up consuming lot's of resources and take the
+entire application down.
 
 ..
    Local Variables:
