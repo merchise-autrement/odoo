@@ -699,7 +699,8 @@ class Field(object):
 
     def _description_help(self, env):
         if self.help and env.lang:
-            name = "%s,%s" % (self.model_name, self.name)
+            field = self.base_field
+            name = "%s,%s" % (field.model_name, field.name)
             trans = env['ir.translation']._get_source(name, 'help', env.lang)
             return trans or self.help
         return self.help
