@@ -14,6 +14,8 @@ from contextlib import contextmanager
 
 import security
 
+from xoutil.string import safe_encode
+
 _logger = logging.getLogger(__name__)
 
 PG_CONCURRENCY_ERRORS_TO_RETRY = (errorcodes.LOCK_NOT_AVAILABLE, errorcodes.SERIALIZATION_FAILURE, errorcodes.DEADLOCK_DETECTED)
@@ -130,7 +132,7 @@ def check(f):
             except IntegrityError, inst:
                 registry = openerp.registry(dbname)
                 for key in registry._sql_error.keys():
-                    if key in inst[0]:
+                    if safe_encode(key) in safe_encode(inst[0]):
                         raise openerp.osv.orm.except_orm(_('Constraint Error'), tr(registry._sql_error[key], 'sql_constraint') or inst[0])
                 if inst.pgcode in (errorcodes.NOT_NULL_VIOLATION, errorcodes.FOREIGN_KEY_VIOLATION, errorcodes.RESTRICT_VIOLATION):
                     msg = _('The operation cannot be completed, probably due to the following:\n- deletion: you may be trying to delete a record while other records still reference it\n- creation/update: a mandatory field is not correctly set')
