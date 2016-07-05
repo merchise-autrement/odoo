@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # web_celery
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2015-2016 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -14,6 +14,7 @@
 
 dict(
     name='Celery Integration',
+    author='Merchise Autrement [~º/~]',
     category='Hidden',
     description='Web API for Celery Integration',
     summary='Web API for Celery Integration',
