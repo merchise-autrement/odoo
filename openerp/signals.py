@@ -103,8 +103,9 @@ class Signal(object):
 
     Internal attributes:
 
-        receivers
-            [(receriverkey (id), receiver)]
+        ``receivers :: [(receiverkey (id), receiver)]``
+
+
     """
     def __init__(self, action=None, doc=None):
         self.receivers = []
@@ -221,7 +222,10 @@ class Signal(object):
         return responses
 
     def _live_receivers(self, sender):
-        """Filter sequence of receivers to get resolved, live receivers.
+        """Filter sequence of receivers to get resolved (live receivers).
+
+        Live receivers are defined are those that are installed in the DB and
+        it applies to the given sender.
 
         """
         if isinstance(sender, models.Model):
@@ -231,7 +235,7 @@ class Signal(object):
         senderkey = _make_model_id(sender)
         receivers = []
         for (receiverkey, r_senderkey), receiver in self.receivers:
-            if self._installed(sender, receiver) and not r_senderkey or r_senderkey == senderkey:
+            if self._installed(sender, receiver) and (not r_senderkey or r_senderkey == senderkey):
                 if registry_ready or not receiver.require_registry:
                     receivers.append(receiver)
         return receivers
