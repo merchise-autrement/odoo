@@ -147,7 +147,7 @@ class Signal(object):
         :param sender: The registered sender to disconnect
 
         """
-        receiver_item = (_make_id(receiver), sender), receiver
+        receiver_item = (_make_id(receiver), _make_model_id(sender)), receiver
         if receiver_item in self.receivers:
             sender.receivers.remove(receiver_item)
 
