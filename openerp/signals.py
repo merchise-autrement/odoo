@@ -253,6 +253,8 @@ class Signal(object):
 
         '''
         from xoeuf.modules import get_object_module
+        if isinstance(receiver, Receiver):
+            receiver = receiver.receiver
         module = get_object_module(receiver, typed=True)
         env = getattr(sender, 'env', None)
         if module and env:
