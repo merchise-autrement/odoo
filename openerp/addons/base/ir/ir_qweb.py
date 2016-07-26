@@ -465,12 +465,8 @@ class QWeb(orm.AbstractModel):
         bundle = AssetsBundle(xmlid, cr=cr, uid=uid, context=context, registry=self.pool)
         css = self.get_attr_bool(template_attributes.get('css'), default=True)
         js = self.get_attr_bool(template_attributes.get('js'), default=True)
-        if request and (request.is_spdy or request.is_http2):
-            #TODO:Review this solution, when request is spdy or request is
-            #http2 serve the javascript and css files like debug
-            return bundle.to_html(css=css, js=js, debug=bool(qwebcontext.get('debug')), spdy=True)
-        else:
-            return bundle.to_html(css=css, js=js, debug=bool(qwebcontext.get('debug')))
+        spdy = request.is_spdy or request.is_http2
+        return bundle.to_html(css=css, js=js, debug=bool(qwebcontext.get('debug')), spdy=spdy)
 
     def render_tag_set(self, element, template_attributes, generated_attributes, qwebcontext):
         if "value" in template_attributes:
