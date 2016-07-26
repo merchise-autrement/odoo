@@ -1441,6 +1441,15 @@ class WebAsset(object):
             content = self.content
         return '\n/* %s */\n%s' % (self.name, content)
 
+    @property
+    def versionhash(self):
+        self.stat()
+        if self._filename:
+            return os.path.getmtime(self._filename)
+        else:
+            return None
+
+
 class JavascriptAsset(WebAsset):
     def minify(self):
         return self.with_header(rjsmin(self.content))
@@ -1453,9 +1462,14 @@ class JavascriptAsset(WebAsset):
 
     def to_html(self):
         if self.url:
-            return '<script type="text/javascript" src="%s"></script>' % (self.html_url % self.url)
+            vhash = self.versionhash
+            if vhash:
+                return '<script type="text/javascript" src="%s?_h=%s"></script>' % (self.html_url % self.url, vhash)
+            else:
+                return '<script type="text/javascript" src="%s"></script>' % (self.html_url % self.url)
         else:
             return '<script type="text/javascript" charset="utf-8">%s</script>' % self.with_header()
+
 
 class StylesheetAsset(WebAsset):
     rx_import = re.compile(r"""@import\s+('|")(?!'|"|/|https?://)""", re.U)
@@ -1510,7 +1524,11 @@ class StylesheetAsset(WebAsset):
         media = (' media="%s"' % werkzeug.utils.escape(self.media)) if self.media else ''
         if self.url:
             href = self.html_url % self.url
-            return '<link rel="stylesheet" href="%s" type="text/css"%s/>' % (href, media)
+            vhash = self.versionhash
+            if vhash:
+                return '<link rel="stylesheet" href="%s?_h=%s" type="text/css"%s/>' % (href, vhash, media)
+            else:
+                return '<link rel="stylesheet" href="%s" type="text/css"%s/>' % (href, media)
         else:
             return '<style type="text/css"%s>%s</style>' % (media, self.with_header())
 
