@@ -1,4 +1,5 @@
 (function() {
+    'use strict';
 
     // A deferred that resolves after a given `time` in milliseconds.  The
     // returned promise allows to postpone: Useful to implement the pattern of
@@ -16,7 +17,7 @@
 	};
 	if (!stopped)
             id = setTimeout(main, time);
-	result = res.promise();
+	var result = res.promise();
 	result.postpone = postpone;
 	result.start = postpone;
 	return result;
