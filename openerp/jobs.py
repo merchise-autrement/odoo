@@ -94,12 +94,23 @@ def _build_api_function(name, queue, **options):
            **won't** create another background job, but inline the function
            call.
 
+           .. seealso: `DefaultDeferredType`:func:
+
         '''
     ).format(queue=queue.rsplit('.', 1)[-1] if '.' in queue else queue)
     return func
 
 
 def DefaultDeferredType(**options):
+    '''Create a function for a deferred job in the default queue.
+
+    :keyword allow_nested: If True, jobs created with the returning function
+                           will be allowed to run nested (within the context
+                           of another background job).
+
+                           The default is False.
+
+    '''
     return _build_api_function('Deferred', DEFAULT_QUEUE_NAME, **options)
 
 

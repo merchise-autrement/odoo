@@ -10,7 +10,7 @@ openerp.web_celery = function(instance){
         return 'celeryapp:' + job.uuid + ':progress';
     };
 
-    var isOk = function(v) {return _.isNumber(v) && !_.isNaN(v);}
+    var isOk = function(v) {return _.isNumber(v) && !_.isNaN(v);};
 
     /**
      *  Basic poller for background jobs.
