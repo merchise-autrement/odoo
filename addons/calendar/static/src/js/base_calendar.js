@@ -104,7 +104,10 @@ openerp.calendar = function(instance) {
             });
             this.ir_model_m2o.insertAfter($('div.oe_calendar_filter'));
             this.ir_model_m2o.on('change:value', self, function() {
-                self.add_filter();
+                // once selected, we reset the value to false.
+                if (self.ir_model_m2o.get_value()) {
+                    self.add_filter();
+                }
             });
         },
         add_filter: function() {

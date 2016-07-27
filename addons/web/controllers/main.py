@@ -1497,8 +1497,8 @@ class ExportFormat(object):
         returned and this behavior was moved for the respective controller and
         now return the file data needed for the respective behavior.
         """
-        ids = ids or model.search(cr, uid, domain, 0, False, False,
-                                  context)
+        ids = ids or model.search(cr, uid, domain, offset=0, limit=False,
+                                  order=False, context=context)
         field_names = map(operator.itemgetter('name'), fields)
         import_data = model.export_data(cr, uid, ids, field_names,
                                         self.raw_data,
