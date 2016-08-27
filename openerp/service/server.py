@@ -1013,6 +1013,9 @@ class CeleryWorker(Worker):
 
     def run(self):
         self.start()
+        # Close the HTTP socket so that I don't hold it
+        if self.multi.socket:
+            self.multi.socket.close()
         from celery.worker import WorkController
         # TODO: Queue distributions
         self.controller = controller = WorkController(
@@ -1069,6 +1072,9 @@ class CeleryBeatWorker(Worker):
     def run(self):
         from openerp.jobs import app
         self.start()
+        # Close the HTTP socket so that I don't hold it
+        if self.multi.socket:
+            self.multi.socket.close()
         app.Beat().run()
 
 
