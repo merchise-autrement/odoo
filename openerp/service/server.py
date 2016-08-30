@@ -703,6 +703,7 @@ class PreforkServer(CommonServer):
             self.socket.listen(8 * self.population)
 
     def stop(self, graceful=True):
+        from itertools import chain
         if self.long_polling_pid is not None:
             # FIXME make longpolling process handle SIGTERM correctly
             self.worker_kill(self.long_polling_pid, signal.SIGKILL)
@@ -710,7 +711,7 @@ class PreforkServer(CommonServer):
         if graceful:
             _logger.info("Stopping gracefully")
             limit = time.time() + self.timeout
-            for pid in self.workers.keys():
+            for pid in chain(self.workers, self.default_celery_workers, self.highpri_celery_workers, self.lowpri_celery_workers):
                 self.worker_kill(pid, signal.SIGINT)
             while self.workers and time.time() < limit:
                 try:
