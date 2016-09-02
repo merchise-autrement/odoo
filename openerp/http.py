@@ -58,9 +58,8 @@ rpc_response = logging.getLogger(__name__ + '.rpc.response')
 HOUR = 60 * 60
 DAY = 24 * HOUR
 DAYS = lambda d: d * DAY
-# 365 days: we put a modification-based tag in the URLs so the cache
-# may be really long lived.  TODO: Images?
-STATIC_CACHE = DAYS(365)
+# 1 week cache for statics as advised by Google Page Speed
+STATIC_CACHE = DAYS(7)
 
 COOKIE_MAX_AGE = DAYS(90)
 
