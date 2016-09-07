@@ -1526,11 +1526,28 @@ class Root(object):
                 'session_id',
                 httprequest.session.sid,
                 max_age=COOKIE_MAX_AGE,
-                domain=get_conf('session_cookie_domain', None),
+                domain=self._get_matching_domain(httprequest, get_conf('session_cookie_domain', None)),
                 secure=get_conf('session_cookie_secure', False),
             )
-
         return response
+
+    @staticmethod
+    def _get_matching_domain(request, allowed_domains):
+        from xoutil.eight import string_types
+        from xoutil.string import cut_prefix
+        if isinstance(allowed_domains, string_types):
+            allowed_domains = allowed_domains.split(' ')
+        host = request.host
+        if not host:
+            return None
+        if ':' in host:
+            host = host.rsplit(':', 1)[0]
+        return next(
+            (domain for domain in allowed_domains
+             if domain.startswith('.') and host.endswith(domain)
+                or cut_prefix(domain, '.') == host),
+            None
+        )
 
     def dispatch(self, environ, start_response):
         """
