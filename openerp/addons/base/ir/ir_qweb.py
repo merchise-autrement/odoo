@@ -1445,7 +1445,14 @@ class WebAsset(object):
     def versionhash(self):
         self.stat()
         if self._filename:
-            return os.path.getmtime(self._filename)
+            try:
+                return os.path.getmtime(self._filename)
+            except:
+                _logger.exception(
+                    "Error while hashing asset '%s'",
+                    self._filename
+                )
+                return None
         else:
             return None
 
