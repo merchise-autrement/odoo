@@ -1525,7 +1525,7 @@ class Root(object):
             response.set_cookie(
                 'session_id',
                 httprequest.session.sid,
-                max_age=COOKIE_MAX_AGE,
+                max_age=get_conf('session_cookie_age', COOKIE_MAX_AGE),
                 domain=self._get_matching_domain(httprequest, get_conf('session_cookie_domain', '')),
                 secure=get_conf('session_cookie_secure', False),
             )
