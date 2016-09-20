@@ -8,12 +8,13 @@
 # Kari Lindgren <kari.lindgren@emsystems.fi>, 2015
 # Kari Lindgren <karisatu@gmail.com>, 2015
 # Miku Laitinen <miku.laitinen@gmail.com>, 2015
+# Veikko Väätäjä <veikko.vaataja@gmail.com>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo 8.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-19 06:31+0000\n"
-"PO-Revision-Date: 2016-08-03 10:10+0000\n"
+"PO-Revision-Date: 2016-09-09 10:42+0000\n"
 "Last-Translator: Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>\n"
 "Language-Team: Finnish (http://www.transifex.com/odoo/odoo-8/language/fi/)\n"
 "MIME-Version: 1.0\n"
@@ -12112,7 +12113,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,summary:base.module_website_crm_partner_assign
 msgid "Publish Your Channel of Resellers"
-msgstr ""
+msgstr "Julkaise kanavasi jälleenmyyjille"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_website_customer
@@ -15892,7 +15893,7 @@ msgstr "koodin pitää olla uniikki"
 #. module: base
 #: view:res.partner:base.res_partner_kanban_view
 msgid "at"
-msgstr "sijainnissa"
+msgstr ","
 
 #. module: base
 #: model:res.partner.bank.type.field,name:base.bank_normal_field_bic
@@ -16103,7 +16104,7 @@ msgstr "käännösfunktiota kielelle '%s' ei löytynyt"
 #: view:ir.actions.server:base.view_server_action_form
 msgid ""
 "object or obj: browse_record of the record on which the action is triggered"
-msgstr ""
+msgstr "laukaisun tekevän tietueen objekti tai obj: browse_record"
 
 #. module: base
 #: view:ir.actions.server:base.view_server_action_form
