@@ -2345,6 +2345,9 @@ class stock_move(osv.osv):
                     domain = main_domain[move.id] + self.pool.get('stock.move.operation.link').get_specific_domain(cr, uid, record, context=context)
                     qty = record.qty
                     if qty:
+                        # TODO: Pass the move by the context to process the characteristics and dates of the benefit
+                        context = context.copy()
+                        context['move'] = move
                         quants = quant_obj.quants_get_prefered_domain(cr, uid, ops.location_id, move.product_id, qty, domain=domain, prefered_domain_list=[], restrict_lot_id=move.restrict_lot_id.id, restrict_partner_id=move.restrict_partner_id.id, context=context)
                         quant_obj.quants_reserve(cr, uid, quants, move, record, context=context)
         for move in todo_moves:
@@ -2352,6 +2355,9 @@ class stock_move(osv.osv):
             if move.state != 'assigned':
                 qty_already_assigned = move.reserved_availability
                 qty = move.product_qty - qty_already_assigned
+                # TODO: Pass the move by the context to process the characteristics and dates of the benefit
+                context = context.copy()
+                context['move'] = move
                 quants = quant_obj.quants_get_prefered_domain(cr, uid, move.location_id, move.product_id, qty, domain=main_domain[move.id], prefered_domain_list=[], restrict_lot_id=move.restrict_lot_id.id, restrict_partner_id=move.restrict_partner_id.id, context=context)
                 quant_obj.quants_reserve(cr, uid, quants, move, context=context)
 
@@ -2462,6 +2468,9 @@ class stock_move(osv.osv):
                 fallback_domain2 = ['&', ('reservation_id', '!=', move.id), ('reservation_id', '!=', False)]
                 prefered_domain_list = [prefered_domain] + [fallback_domain] + [fallback_domain2]
                 dom = main_domain + self.pool.get('stock.move.operation.link').get_specific_domain(cr, uid, record, context=context)
+                # TODO: Pass the move by the context to process the characteristics and dates of the benefit
+                context = context.copy()
+                context['move'] = move
                 quants = quant_obj.quants_get_prefered_domain(cr, uid, ops.location_id, move.product_id, record.qty, domain=dom, prefered_domain_list=prefered_domain_list,
                                                           restrict_lot_id=move.restrict_lot_id.id, restrict_partner_id=move.restrict_partner_id.id, context=context)
                 if ops.product_id:
@@ -2493,6 +2502,9 @@ class stock_move(osv.osv):
                 prefered_domain_list = [prefered_domain] + [fallback_domain] + [fallback_domain2]
                 self.check_tracking(cr, uid, move, move.restrict_lot_id.id, context=context)
                 qty = move_qty[move.id]
+                # TODO: Pass the move by the context to process the characteristics and dates of the benefit
+                context = context.copy()
+                context['move'] = move
                 quants = quant_obj.quants_get_prefered_domain(cr, uid, move.location_id, move.product_id, qty, domain=main_domain, prefered_domain_list=prefered_domain_list, restrict_lot_id=move.restrict_lot_id.id, restrict_partner_id=move.restrict_partner_id.id, context=context)
                 quant_obj.quants_move(cr, uid, quants, move, move.location_dest_id, lot_id=move.restrict_lot_id.id, owner_id=move.restrict_partner_id.id, context=context)
 
@@ -2582,6 +2594,9 @@ class stock_move(osv.osv):
             if move.state == 'done' and scrap_move.location_id.usage not in ('supplier', 'inventory', 'production'):
                 domain = [('qty', '>', 0), ('history_ids', 'in', [move.id])]
                 # We use scrap_move data since a reservation makes sense for a move not already done
+                # TODO: Pass the move by the context to process the characteristics and dates of the benefit
+                context = context.copy()
+                context['move'] = move
                 quants = quant_obj.quants_get_prefered_domain(cr, uid, scrap_move.location_id,
                         scrap_move.product_id, quantity, domain=domain, prefered_domain_list=[],
                         restrict_lot_id=scrap_move.restrict_lot_id.id, restrict_partner_id=scrap_move.restrict_partner_id.id, context=context)
@@ -3027,6 +3042,9 @@ class stock_inventory_line(osv.osv):
             domain = [('qty', '>', 0.0), ('package_id', '=', inventory_line.package_id.id), ('lot_id', '=', inventory_line.prod_lot_id.id), ('location_id', '=', inventory_line.location_id.id)]
             preferred_domain_list = [[('reservation_id', '=', False)], [('reservation_id.inventory_id', '!=', inventory_line.inventory_id.id)]]
             quants = quant_obj.quants_get_prefered_domain(cr, uid, move.location_id, move.product_id, move.product_qty, domain=domain, prefered_domain_list=preferred_domain_list, restrict_partner_id=move.restrict_partner_id.id, context=context)
+            # TODO: Pass the move by the context to process the characteristics and dates of the benefit
+            context = context.copy()
+            context['move'] = move
             quant_obj.quants_reserve(cr, uid, quants, move, context=context)
         elif inventory_line.package_id:
             stock_move_obj.action_done(cr, uid, move_id, context=context)
