@@ -91,59 +91,23 @@ def _get_valid_version(versions, date):
                 return v
 
 
-def _get_categories(products):
-    # TODO: Do this by product
-    categ_ids = {}
-    for p in products:
-        categ = p.categ_id
-        while categ:
-            categ_ids[categ.id] = True
-            categ = categ.parent_id
-    return categ_ids.keys()
+def _get_categories(product):
+    categ_ids = []
+    categ = product.categ_id
+    while categ:
+        categ_ids.append(categ.id)
+        categ = categ.parent_id
+    return categ_ids
 
 
-def _get_product_ids(products, is_product_template):
-    if is_product_template:
-        prod_tmpl_ids = [tmpl.id for tmpl in products]
-        # all variants of all products
-        prod_ids = [p.id for p in
-                    list(chain.from_iterable(
-                        [t.product_variant_ids for t in products]))]
+def _get_product_ids(product):
+    if product._name == "product.template":
+        prod_tmpl_id = product.id
+        prod_ids = [p.id for p in product.product_variant_ids]
     else:
-        prod_ids = [product.id for product in products]
-        prod_tmpl_ids = [product.product_tmpl_id.id for product in
-                         products]
-    return prod_tmpl_ids, prod_ids
-
-
-def rule_is_valid(rule, product, is_product_template,
-                  qty_in_product_uom):
-    if rule.min_quantity and qty_in_product_uom < rule.min_quantity:
-        return False
-    if is_product_template:
-        if rule.product_tmpl_id and product.id != rule.product_tmpl_id.id:
-            return False
-        if rule.product_id and not (
-                        product.product_variant_count == 1 and
-                        product.product_variant_ids[
-                            0].id == rule.product_id.id):
-            # product rule acceptable on template if has only one variant
-            return False
-    else:
-        if rule.product_tmpl_id and product.product_tmpl_id.id != rule.product_tmpl_id.id:
-            return False
-        if rule.product_id and product.id != rule.product_id.id:
-            return False
-
-    if rule.categ_id:
-        cat = product.categ_id
-        while cat:
-            if cat.id == rule.categ_id.id:
-                break
-            cat = cat.parent_id
-        if not cat:
-            return False
-    return True
+        prod_ids = [product.id]
+        prod_tmpl_id = product.product_tmpl_id.id
+    return prod_tmpl_id, prod_ids
 
 
 class product_pricelist(osv.osv):
@@ -257,26 +221,28 @@ class product_pricelist(osv.osv):
     def _price_get_multi(self, cr, uid, pricelist, products_by_qty_by_partner, context=None):
         return dict((key, price[0]) for key, price in self._price_rule_get_multi(cr, uid, pricelist, products_by_qty_by_partner, context=context).items())
 
-    def _get_rules(self, cr, uid, products, version, is_product_template,
-                   context=None):
-        categ_ids = _get_categories(products)
-        prod_tmpl_ids, prod_ids = _get_product_ids(products,
-                                                   is_product_template)
+    def _get_rule(self, cr, uid, product, version, qty_in_product_uom,
+                  context=None):
+        categ_ids = _get_categories(product)
+        prod_tmpl_id, prod_ids = _get_product_ids(product)
         cr.execute(
             'SELECT i.id '
             'FROM product_pricelist_item AS i '
-            'WHERE (product_tmpl_id IS NULL OR product_tmpl_id = ANY(%s)) '
+            'WHERE (product_tmpl_id IS NULL '
+            'OR product_tmpl_id = %s) '
             'AND (product_id IS NULL OR (product_id = ANY(%s))) '
             'AND ((categ_id IS NULL) OR (categ_id = ANY(%s))) '
             'AND (price_version_id = %s) '
-            'ORDER BY sequence, min_quantity DESC',
-            (prod_tmpl_ids, prod_ids, categ_ids, version.id))
-
-        item_ids = [x[0] for x in cr.fetchall()]
-        items = self.pool.get('product.pricelist.item').browse(cr, uid,
-                                                               item_ids,
-                                                               context=context)
-        return items
+            'AND min_quantity <= %s'
+            'ORDER BY sequence, min_quantity DESC '
+            'LIMIT 1',
+            (prod_tmpl_id, prod_ids, categ_ids, version.id,
+             qty_in_product_uom))
+        row = cr.fetchone()
+        if row:
+            return self.pool.get('product.pricelist.item').browse(
+                cr, uid, row[0], context=context
+            )
 
     def get_base_price(self, cr, uid, product, rule, qty,
                        qty_uom_id, price_types, price_uom_id, currency_id,
@@ -371,32 +337,21 @@ class product_pricelist(osv.osv):
         context = context or {}
         date = context.get('date') or time.strftime('%Y-%m-%d')
         date = date[0:10]
-
-        products = map(lambda x: x[0], products_by_qty_by_partner)
         product_uom_obj = self.pool.get('product.uom')
-
-        if not products:
+        if not products_by_qty_by_partner:
             return {}
-
         version = _get_valid_version(pricelist.version_id, date)
         if not version:
             raise osv.except_osv(
                 _('Warning!'),
                 _("%s does not have an active season to date %s !\n"
                   "Please create or activate one." % (pricelist.name, date)))
-        is_product_template = products[0]._name == "product.template"
         # Load all rules
-        items = self._get_rules(cr, uid, products, version,
-                                is_product_template, context=context)
-
         price_types = {}
-
         results = {}
         for product, qty, partner in products_by_qty_by_partner:
-            results[product.id] = 0.0
             rule_id = False
             price = False
-
             # Final unit price is computed according to `qty` in the `qty_uom_id` UoM.
             # An intermediary unit price may be computed according to a different UoM, in
             # which case the price_uom_id contains that UoM.
@@ -412,12 +367,9 @@ class product_pricelist(osv.osv):
                 except except_orm:
                     # Ignored - incompatible UoM in context, use default product UoM
                     pass
-
-            for rule in items:
-                if not rule_is_valid(rule, product,
-                                     is_product_template,
-                                     qty_in_product_uom):
-                    continue
+            rule = self._get_rule(cr, uid, product, version,
+                                  qty_in_product_uom, context=context)
+            if rule:
                 price, price_uom_id = self.get_base_price(
                     cr, uid, product, rule, qty, qty_uom_id,
                     price_types, price_uom_id, pricelist.currency_id.id,
@@ -427,11 +379,8 @@ class product_pricelist(osv.osv):
                     price = self.get_final_price(cr, uid, product, rule,
                                                   price, price_uom_id)
                     rule_id = rule.id
-                break
-
             # Final price conversion to target UoM
             price = product_uom_obj._compute_price(cr, uid, price_uom_id, price, qty_uom_id)
-
             results[product.id] = (price, rule_id)
         return results
 
