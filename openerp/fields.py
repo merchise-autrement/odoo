@@ -1045,6 +1045,7 @@ class Integer(Field):
     }
 
     _related_group_operator = property(attrgetter('group_operator'))
+    _description_group_operator = property(attrgetter('group_operator'))
     _column_group_operator = property(attrgetter('group_operator'))
 
     def convert_to_cache(self, value, record, validate=True):
@@ -1105,6 +1106,7 @@ class Float(Field):
     _related_group_operator = property(attrgetter('group_operator'))
 
     _description_digits = property(attrgetter('digits'))
+    _description_group_operator = property(attrgetter('group_operator'))
 
     _column_digits = property(lambda self: not callable(self._digits) and self._digits)
     _column_digits_compute = property(lambda self: callable(self._digits) and self._digits)
