@@ -1626,7 +1626,12 @@ class product_template(osv.Model):
 
     _columns = {
         'purchase_ok': fields.boolean('Can be Purchased', help="Specify if the product can be selected in a purchase order line."),
-        'purchase_count': fields.function(_purchase_count, string='# Purchases', type='integer'),
+        'purchase_count': fields.function(
+            _purchase_count,
+            string='# Purchases',
+            type='integer',
+            store=True
+        ),
     }
 
     _defaults = {

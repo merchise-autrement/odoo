@@ -1386,7 +1386,12 @@ class product_template(osv.Model):
     
     
     _columns = {
-        'sales_count': fields.function(_sales_count, string='# Sales', type='integer'),
+        'sales_count': fields.function(
+            _sales_count,
+            string='# Sales',
+            type='integer',
+            store=True
+        ),
 
     }
 
