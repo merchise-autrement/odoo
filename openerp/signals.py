@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoeuf.signals
+# signals
 # ---------------------------------------------------------------------
 # Copyright (c) 2015-2016 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
@@ -225,7 +225,7 @@ class Signal(object):
         """Filter sequence of receivers to get resolved (live receivers).
 
         Live receivers are defined are those that are installed in the DB and
-        it applies to the given sender.
+        apply to the given sender.
 
         """
         if isinstance(sender, models.Model):
@@ -237,6 +237,16 @@ class Signal(object):
         for (receiverkey, r_senderkey), receiver in self.receivers:
             if self._installed(sender, receiver) and (not r_senderkey or r_senderkey == senderkey):
                 if registry_ready or not receiver.require_registry:
+                    logger.debug(
+                        'Accepting receiver %s as live',
+                        receiver,
+                        extra=dict(
+                            registry_ready=registry_ready,
+                            registry_required=receiver.require_registry,
+                            r_senderkey=r_senderkey,
+                            senderkey=senderkey,
+                        )
+                    )
                     receivers.append(receiver)
         return receivers
 
@@ -275,6 +285,9 @@ class Receiver(object):
             self.__dict__,
             defaults={'require_registry': True, }
         )
+
+    def __repr__(self):
+        return '<Receiver for %r>' % self.receiver
 
     def __call__(self, *args, **kwargs):
         return self.receiver(*args, **kwargs)
