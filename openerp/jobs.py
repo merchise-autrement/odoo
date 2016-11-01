@@ -38,10 +38,12 @@ from celery import Celery as _CeleryApp
 
 import openerp.tools.config as config
 
-from openerp.release import version
+from openerp.release import version_info
 from openerp.api import Environment
 from openerp.modules.registry import RegistryManager
 from openerp.http import serialize_exception as _serialize_exception
+
+from psycopg2 import OperationalError, errorcodes
 
 
 # The queues are named using the version info.  This is to avoid clashes with
@@ -49,16 +51,14 @@ from openerp.http import serialize_exception as _serialize_exception
 # being routed to one of workers.
 
 # TODO: Write an auto-migration of task routed to older queue names.
-
-_VERSION_INFO = version.replace('.', '_').replace('+', '__')
-ROUTE_NS = 'odoo-{}'.format(_VERSION_INFO)
+ROUTE_NS = 'odoo-{}'.format('.'.join(str(x) for x in version_info[:2]))
 ROUTE_KEY = '{}.#'.format(ROUTE_NS)
 
 DEFAULT_QUEUE_NAME = '{}.default'.format(ROUTE_NS)
 LOWPRI_QUEUE_NAME = '{}.low'.format(ROUTE_NS)
 HIGHPRI_QUEUE_NAME = '{}.high'.format(ROUTE_NS)
 
-del _VERSION_INFO
+del version_info
 
 
 def _build_api_function(name, queue, **options):
@@ -175,7 +175,7 @@ class Configuration(object):
     BROKER_URL = config.get('celery.broker', 'redis://localhost/9')
     # We don't use the backend to store results, but send results via another
     # message.  However to check the job status the backend is used.
-    CELERY_RESULT_BACKEND = config.get('celery.backend', BROKER_URL)
+    CELERY_RESULT_BACKEND = config.get('celery.backend', None)
 
     CELERY_DEFAULT_QUEUE = DEFAULT_QUEUE_NAME
     CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
@@ -232,7 +232,6 @@ app.config_from_object(Configuration)
 CELERY_JOB = object()
 
 
-from psycopg2 import OperationalError, errorcodes
 PG_CONCURRENCY_ERRORS_TO_RETRY = (
     errorcodes.LOCK_NOT_AVAILABLE,
     errorcodes.SERIALIZATION_FAILURE,
@@ -307,7 +306,7 @@ def _report_success(self, dbname, uid, job_uuid, result=None):
             _send(get_progress_channel(job_uuid),
                   dict(status='success', result=result),
                   registry=registry, cr=cr, uid=uid)
-    except Exception as error:
+    except Exception:
         self.retry(args=(dbname, uid, job_uuid))
 
 
@@ -318,13 +317,12 @@ def _report_failure(self, dbname, uid, job_uuid, tb=None, message=''):
             _send(get_progress_channel(job_uuid),
                   dict(status='failure', traceback=tb, message=message),
                   registry=registry, cr=cr, uid=uid)
-    except Exception as error:
+    except Exception:
         self.retry(args=(dbname, uid, job_uuid, tb),
                    kwargs={'message': message})
 
 
 def _report_current_failure(dbname, uid, job_uuid, error):
-    import traceback
     data = _serialize_exception(error)
     _report_failure.delay(dbname, uid, job_uuid, message=data)
     logger.exception('Unhandled exception in task')

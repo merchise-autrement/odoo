@@ -51,7 +51,7 @@ def WAIT_FOR_TASK(job, next_action=None):
     '''
     return dict(
         type='ir.actions.client',
-        tag='wait_for_background_job' if job.status in ('STARTED', 'PENDING') else next_action['tag'],
+        tag='wait_for_background_job',
         params=dict(
             uuid=job.id,
             next_action=next_action,
