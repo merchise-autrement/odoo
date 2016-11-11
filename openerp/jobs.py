@@ -254,17 +254,12 @@ def task(self, model, methodname, dbname, uid, args, kwargs):
                 if self.request.id:
                     _report_success.delay(dbname, uid, self.request.id,
                                           result=res)
-            except celery.exceptions.SoftTimeLimitExceeded as error:
-                cr.rollback()
-                if self.request.id:
-                    _report_current_failure(dbname, uid, self.request.id,
-                                            error)
-                raise
             except OperationalError as error:
                 cr.rollback()
                 if error.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
-                    _report_current_failure(dbname, uid, self.request.id,
-                                            error)
+                    if self.request.id:
+                        _report_current_failure(dbname, uid, self.request.id,
+                                                error)
                     raise
                 else:
                     # This method raises celery.exceptions.Retry
@@ -272,8 +267,9 @@ def task(self, model, methodname, dbname, uid, args, kwargs):
                                      args, kwargs))
             except Exception as error:
                 cr.rollback()
-                _report_current_failure(dbname, uid, self.request.id,
-                                        error)
+                if self.request.id:
+                    _report_current_failure(dbname, uid, self.request.id,
+                                            error)
                 raise
         else:
             raise TypeError(
