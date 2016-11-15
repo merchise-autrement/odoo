@@ -106,7 +106,7 @@ def py2exe_options():
                         'yaml',
 
                         # Merchise
-                        'celery',
+                        'celery>=3.1.19,<4.0.0',
                         'flower',
                         'hiredis',
                         'redis',
