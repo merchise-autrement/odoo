@@ -207,8 +207,16 @@ class Configuration(object):
         # Avoid infinite prefetching
         pass
     else:
-        worker_prefetch_multiplier = CELERYD_PREFETCH_MULTIPLIER = int(_CELERYD_PREFETCH_MULTIPLIER)
+        worker_prefetch_multiplier = CELERYD_PREFETCH_MULTIPLIER = int(_CELERYD_PREFETCH_MULTIPLIER)  # noqa
     del _CELERYD_PREFETCH_MULTIPLIER
+
+    _CELERYBEAT_SCHEDULE_FILENAME = config.get(
+        'celery.beat_schedule_filename',
+        None
+    )
+    if _CELERYBEAT_SCHEDULE_FILENAME is not None:
+        beat_schedule_filename = CELERYBEAT_SCHEDULE_FILENAME = _CELERYBEAT_SCHEDULE_FILENAME  # noqa
+    del _CELERYBEAT_SCHEDULE_FILENAME
 
 app = _CeleryApp(__name__)
 app.config_from_object(Configuration)

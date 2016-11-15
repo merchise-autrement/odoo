@@ -620,7 +620,7 @@ class PreforkServer(CommonServer):
             # Avoid checking for time limits, celery manages those.
             self.workers.pop(worker.pid, None)
 
-        beat = config.get('celery.beat', False)
+        beat = config.get('celery.beat', True)
         if beat and not self.celery_beat_workers:
             worker = self.worker_spawn(CeleryBeatWorker,
                                        self.celery_beat_workers)
