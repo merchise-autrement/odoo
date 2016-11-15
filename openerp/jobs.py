@@ -172,20 +172,20 @@ def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
 
 
 class Configuration(object):
-    BROKER_URL = config.get('celery.broker', 'redis://localhost/9')
+    broker_url = BROKER_URL = config.get('celery.broker', 'redis://localhost/9')
     # We don't use the backend to store results, but send results via another
     # message.  However to check the job status the backend is used.
-    CELERY_RESULT_BACKEND = config.get('celery.backend', None)
+    result_backend = CELERY_RESULT_BACKEND = config.get('celery.backend', None)
 
-    CELERY_DEFAULT_QUEUE = DEFAULT_QUEUE_NAME
-    CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
-    CELERY_DEFAULT_ROUTING_KEY = DEFAULT_QUEUE_NAME
+    task_default_queue = CELERY_DEFAULT_QUEUE = DEFAULT_QUEUE_NAME
+    task_default_exchange_type = CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
+    task_default_routing_key = CELERY_DEFAULT_ROUTING_KEY = DEFAULT_QUEUE_NAME
 
-    CELERY_SEND_EVENTS = True
-    CELERYD_MAX_TASKS_PER_CHILD = 2000
+    worker_send_task_events = CELERYD_SEND_EVENTS = True
+    worker_max_tasks_per_child = CELERYD_MAX_TASKS_PER_CHILD = 2000
 
     # TODO: Take queues from configuration.
-    CELERY_QUEUES = (
+    task_queues = CELERY_QUEUES = (
         Queue(DEFAULT_QUEUE_NAME, Exchange(DEFAULT_QUEUE_NAME),
               routing_key=DEFAULT_QUEUE_NAME),
         Queue(LOWPRI_QUEUE_NAME, Exchange(LOWPRI_QUEUE_NAME),
@@ -193,15 +193,15 @@ class Configuration(object):
         Queue(HIGHPRI_QUEUE_NAME, Exchange(HIGHPRI_QUEUE_NAME),
               routing_key=HIGHPRI_QUEUE_NAME),
     )
-    CELERY_CREATE_MISSING_QUEUES = False
+    task_create_missing_queues = CELERY_CREATE_MISSING_QUEUES = False
 
-    CELERYD_TASK_TIME_LIMIT = 600  # 10 minutes
-    CELERYD_TASK_SOFT_TIME_LIMIT = 540  # 9 minutes
+    task_time_limit = CELERYD_TASK_TIME_LIMIT = 600  # 10 minutes
+    task_soft_time_limit = CELERYD_TASK_SOFT_TIME_LIMIT = 540  # 9 minutes
 
-    CELERY_ENABLE_REMOTE_CONTROL = True
+    worker_enable_remote_control = CELERY_ENABLE_REMOTE_CONTROL = True
 
-    CELERY_ENABLE_UTC = True
-    CELERY_ALWAYS_EAGER = False
+    enable_utc = CELERY_ENABLE_UTC = True
+    task_always_eager = CELERY_ALWAYS_EAGER = False
 
     # Since our workers are embedded in the Odoo process, we can't turn off
     # the server without shutting the workers down.  So it's probably best to
@@ -215,14 +215,14 @@ class Configuration(object):
     # WARNING! You may do otherwise, but then you have to consider shutting
     # down the HTTP downstream server first, wait for all jobs to finish and
     # then shutdown then server.
-    CELERY_ACKS_LATE = True
+    task_acks_late = CELERY_ACKS_LATE = True
 
     _CELERYD_PREFETCH_MULTIPLIER = config.get('celery.prefetch_multiplier', 0)
     if not _CELERYD_PREFETCH_MULTIPLIER:
         # Avoid infinite prefetching
         pass
     else:
-        CELERYD_PREFETCH_MULTIPLIER = int(_CELERYD_PREFETCH_MULTIPLIER)
+        worker_prefetch_multiplier = CELERYD_PREFETCH_MULTIPLIER = int(_CELERYD_PREFETCH_MULTIPLIER)
     del _CELERYD_PREFETCH_MULTIPLIER
 
 app = _CeleryApp(__name__)
