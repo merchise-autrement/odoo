@@ -33,7 +33,6 @@ from xoutil.objects import extract_attrs
 
 from kombu import Exchange, Queue
 
-import celery.exceptions
 from celery import Celery as _CeleryApp
 
 import openerp.tools.config as config
