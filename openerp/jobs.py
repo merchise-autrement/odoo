@@ -55,8 +55,7 @@ ROUTE_NS = 'odoo-{}'.format('.'.join(str(x) for x in version_info[:2]))
 ROUTE_KEY = '{}.#'.format(ROUTE_NS)
 
 DEFAULT_QUEUE_NAME = '{}.default'.format(ROUTE_NS)
-LOWPRI_QUEUE_NAME = '{}.low'.format(ROUTE_NS)
-HIGHPRI_QUEUE_NAME = '{}.high'.format(ROUTE_NS)
+LOWPRI_QUEUE_NAME = HIGHPRI_QUEUE_NAME = DEFAULT_QUEUE_NAME
 
 del version_info
 
@@ -114,19 +113,10 @@ def DefaultDeferredType(**options):
     return _build_api_function('Deferred', DEFAULT_QUEUE_NAME, **options)
 
 
-def HighPriorityDeferredType(**options):
-    return _build_api_function('HighPriorityDeferred', HIGHPRI_QUEUE_NAME,
-                               **options)
-
-
-def LowPriorityDeferredType(**options):
-    return _build_api_function('LowPriorityDeferred', LOWPRI_QUEUE_NAME,
-                               **options)
-
+HighPriorityDeferredType = LowPriorityDeferredType = DefaultDeferredType
 
 Deferred = DefaultDeferredType()
-HighPriorityDeferred = HighPriorityDeferredType()
-LowPriorityDeferred = LowPriorityDeferredType()
+LowPriorityDeferred = HighPriorityDeferred = Deferred
 
 
 def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
@@ -188,10 +178,6 @@ class Configuration(object):
     task_queues = CELERY_QUEUES = (
         Queue(DEFAULT_QUEUE_NAME, Exchange(DEFAULT_QUEUE_NAME),
               routing_key=DEFAULT_QUEUE_NAME),
-        Queue(LOWPRI_QUEUE_NAME, Exchange(LOWPRI_QUEUE_NAME),
-              routing_key=LOWPRI_QUEUE_NAME),
-        Queue(HIGHPRI_QUEUE_NAME, Exchange(HIGHPRI_QUEUE_NAME),
-              routing_key=HIGHPRI_QUEUE_NAME),
     )
     task_create_missing_queues = CELERY_CREATE_MISSING_QUEUES = False
 

@@ -470,8 +470,6 @@ class PreforkServer(CommonServer):
         self.workers_cron = {}
         self.workers = {}
         self.default_celery_workers = {}
-        self.highpri_celery_workers = {}
-        self.lowpri_celery_workers = {}
         self.celery_beat_workers = {}
         self.generation = 0
         self.queue = []
@@ -535,8 +533,6 @@ class PreforkServer(CommonServer):
                 self.workers_http.pop(pid, None)
                 self.workers_cron.pop(pid, None)
                 self.default_celery_workers.pop(pid, None)
-                self.highpri_celery_workers.pop(pid, None)
-                self.lowpri_celery_workers.pop(pid, None)
                 self.celery_beat_workers.pop(pid, None)
                 u = self.workers.pop(pid)
                 u.close()
@@ -609,32 +605,17 @@ class PreforkServer(CommonServer):
         self.spawn_celery_workers()
 
     def spawn_celery_workers(self):
-        workers = int(config.get('celery.default_workers', 1))
+        workers = config.get('celery.default_workers', 1)
+        if workers != 'auto':
+            try:
+                workers = int(workers)
+            except ValueError:
+                workers = 'auto'
         if workers and not len(self.default_celery_workers):
             worker = self.worker_spawn(
                 DefaultCeleryWorker,
                 self.default_celery_workers,
-                concurrency=workers
-            )
-            # Avoid checking for time limits, celery manages those.
-            self.workers.pop(worker.pid, None)
-
-        workers = int(config.get('celery.highpri_workers', 2))
-        if workers and not len(self.highpri_celery_workers):
-            worker = self.worker_spawn(
-                HighPriorityCeleryWorker,
-                self.highpri_celery_workers,
-                concurrency=workers
-            )
-            # Avoid checking for time limits, celery manages those.
-            self.workers.pop(worker.pid, None)
-
-        workers = int(config.get('celery.lowpri_workers', 1))
-        if workers and not len(self.lowpri_celery_workers):
-            worker = self.worker_spawn(
-                LowPriorityCeleryWorker,
-                self.lowpri_celery_workers,
-                concurrency=workers
+                concurrency=workers if workers != 'auto' else None
             )
             # Avoid checking for time limits, celery manages those.
             self.workers.pop(worker.pid, None)
@@ -711,7 +692,7 @@ class PreforkServer(CommonServer):
         if graceful:
             _logger.info("Stopping gracefully")
             limit = time.time() + self.timeout
-            for pid in chain(self.workers, self.default_celery_workers, self.highpri_celery_workers, self.lowpri_celery_workers):
+            for pid in chain(self.workers, self.default_celery_workers, self.celery_beat_workers):
                 self.worker_kill(pid, signal.SIGINT)
             while self.workers and time.time() < limit:
                 try:
@@ -1046,27 +1027,8 @@ class CeleryWorker(Worker):
 class DefaultCeleryWorker(CeleryWorker):
     @classproperty
     def queues(cls):
-        from openerp.jobs import DEFAULT_QUEUE_NAME, HIGHPRI_QUEUE_NAME
-        return '{},{}'.format(DEFAULT_QUEUE_NAME, HIGHPRI_QUEUE_NAME)
-
-
-class HighPriorityCeleryWorker(CeleryWorker):
-    @classproperty
-    def queues(cls):
-        from openerp.jobs import HIGHPRI_QUEUE_NAME
-        return HIGHPRI_QUEUE_NAME
-
-
-class LowPriorityCeleryWorker(CeleryWorker):
-    @classproperty
-    def queues(cls):
-        from openerp.jobs import (DEFAULT_QUEUE_NAME, HIGHPRI_QUEUE_NAME,
-                                  LOWPRI_QUEUE_NAME)
-        return '{},{},{}'.format(
-            LOWPRI_QUEUE_NAME,
-            HIGHPRI_QUEUE_NAME,
-            DEFAULT_QUEUE_NAME,
-        )
+        from openerp.jobs import DEFAULT_QUEUE_NAME
+        return DEFAULT_QUEUE_NAME
 
 
 class CeleryBeatWorker(Worker):
