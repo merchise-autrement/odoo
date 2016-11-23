@@ -80,19 +80,23 @@ class account_fiscalyear_close(osv.osv_memory):
 
         if context is None:
             context = {}
-        fy_id = data[0].fy_id.id
+        closing_fy_id = data[0].fy_id.id
+        opening_fy_id = data[0].fy2_id.id
 
-        cr.execute("SELECT id FROM account_period WHERE date_stop < (SELECT date_start FROM account_fiscalyear WHERE id = %s)", (str(data[0].fy2_id.id),))
-        fy_period_set = ','.join(map(lambda id: str(id[0]), cr.fetchall()))
-        cr.execute("SELECT id FROM account_period WHERE date_start > (SELECT date_stop FROM account_fiscalyear WHERE id = %s)", (str(fy_id),))
-        fy2_period_set = ','.join(map(lambda id: str(id[0]), cr.fetchall()))
+        cr.execute("SELECT id FROM account_period WHERE date_stop < (SELECT date_start FROM account_fiscalyear WHERE id = %s)", (str(opening_fy_id),))
+        # All the periods previous to the opening fiscal year
+        previous_period_set = ','.join(map(lambda id: str(id[0]), cr.fetchall()))
 
-        if not fy_period_set or not fy2_period_set:
+        # All the the periods after the closing fiscal year.
+        cr.execute("SELECT id FROM account_period WHERE date_start > (SELECT date_stop FROM account_fiscalyear WHERE id = %s)", (str(closing_fy_id),))
+        next_period_set = ','.join(map(lambda id: str(id[0]), cr.fetchall()))
+
+        if not previous_period_set or not next_period_set:
             raise osv.except_osv(_('User Error!'), _('The periods to generate opening entries cannot be found.'))
 
         period = obj_acc_period.browse(cr, uid, data[0].period_id.id, context=context)
-        new_fyear = obj_acc_fiscalyear.browse(cr, uid, data[0].fy2_id.id, context=context)
-        old_fyear = obj_acc_fiscalyear.browse(cr, uid, fy_id, context=context)
+        new_fyear = obj_acc_fiscalyear.browse(cr, uid, opening_fy_id, context=context)
+        old_fyear = obj_acc_fiscalyear.browse(cr, uid, closing_fy_id, context=context)
 
         new_journal = data[0].journal_id.id
         new_journal = obj_acc_journal.browse(cr, uid, new_journal, context=context)
@@ -105,7 +109,9 @@ class account_fiscalyear_close(osv.osv_memory):
             raise osv.except_osv(_('User Error!'),
                     _('The journal must have centralized counterpart without the Skipping draft state option checked.'))
 
-        #delete existing move and move lines if any
+        # delete existing move and move lines if any
+        # merchise: ^ This does not happen because the wizard forces you to
+        # delete them your self, but better safe than sorry.
         move_ids = obj_acc_move.search(cr, uid, [
             ('journal_id', '=', new_journal.id), ('period_id', '=', period.id)])
         if move_ids:
@@ -117,8 +123,12 @@ class account_fiscalyear_close(osv.osv_memory):
         cr.execute("SELECT id FROM account_fiscalyear WHERE date_stop < %s", (str(new_fyear.date_start),))
         result = cr.dictfetchall()
         fy_ids = [x['id'] for x in result]
-        query_line = obj_acc_move_line._query_get(cr, uid,
-                obj='account_move_line', context={'fiscalyear': fy_ids})
+        # merchise: The following returns the WHERE clause that selects all
+        # journal items *posted* in any of the previous fiscal years.  This
+        # WHERE clause will be further filtered.
+        query_line = obj_acc_move_line._query_get(
+            cr, uid,
+            obj='account_move_line', context={'fiscalyear': fy_ids})
         #create the opening move
         vals = {
             'name': '/',
@@ -148,16 +158,29 @@ class account_fiscalyear_close(osv.osv_memory):
                      ref, account_id, period_id, date, move_id, amount_currency,
                      quantity, product_id, company_id)
                   (SELECT name, create_uid, create_date, write_uid, write_date,
-                     statement_id, %s,currency_id, date_maturity, partner_id,
+                     statement_id, %(journal)s,currency_id, date_maturity, partner_id,
                      blocked, credit, 'draft', debit, ref, account_id,
-                     %s, (%s) AS date, %s, amount_currency, quantity, product_id, company_id
+                     %(period)s, (%(date)s) AS date, %(move)s, amount_currency, quantity, product_id, company_id
                    FROM account_move_line
-                   WHERE account_id IN %s
+                   WHERE account_id IN %(accounts)s
                      AND ''' + query_line + '''
-                     AND reconcile_id IS NULL)''', (new_journal.id, period.id, period.date_start, move_id, tuple(account_ids),))
+                     AND reconcile_id IS NULL)''',
+                       dict(journal=new_journal.id,
+                            period=period.id,
+                            date=period.date_start,
+                            move=move_id,
+                            accounts=tuple(account_ids)))
 
-            #We have also to consider all move_lines that were reconciled
-            #on another fiscal year, and report them too
+
+            # We have also to consider all move_lines that were reconciled
+            # on another fiscal year, and report them too
+            # merchise:
+            #   This is the case where we have some entry in the Year we're
+            #   closing that's already conciliated BUT with an entry in a
+            #   following Year.  The Opening Entry must have these copied
+            #   because otherwise when getting the Chart of Accounts the
+            #   account balance might be mis-computed.
+            # end
             cr.execute('''
                 INSERT INTO account_move_line (
                      name, create_uid, create_date, write_uid, write_date,
@@ -167,17 +190,22 @@ class account_fiscalyear_close(osv.osv_memory):
                      quantity, product_id, company_id)
                   (SELECT
                      b.name, b.create_uid, b.create_date, b.write_uid, b.write_date,
-                     b.statement_id, %s, b.currency_id, b.date_maturity,
+                     b.statement_id, %(journal)s, b.currency_id, b.date_maturity,
                      b.partner_id, b.blocked, b.credit, 'draft', b.debit,
-                     b.ref, b.account_id, %s, (%s) AS date, %s, b.amount_currency,
+                     b.ref, b.account_id, %(period)s, (%(date)s) AS date, %(move)s, b.amount_currency,
                      b.quantity, b.product_id, b.company_id
                      FROM account_move_line b
-                     WHERE b.account_id IN %s
+                     WHERE b.account_id IN %(accounts)s
                        AND b.reconcile_id IS NOT NULL
-                       AND b.period_id IN ('''+fy_period_set+''')
+                       AND b.period_id IN ('''+previous_period_set+''')
                        AND b.reconcile_id IN (SELECT DISTINCT(reconcile_id)
                                           FROM account_move_line a
-                                          WHERE a.period_id IN ('''+fy2_period_set+''')))''', (new_journal.id, period.id, period.date_start, move_id, tuple(account_ids),))
+                                          WHERE a.period_id IN ('''+next_period_set+''')))''',
+                       dict(journal=new_journal.id,
+                            period=period.id,
+                            date=period.date_start,
+                            move=move_id,
+                            accounts=tuple(account_ids)))
 
             self.invalidate_cache(cr, uid, context=context)
 
@@ -228,7 +256,7 @@ class account_fiscalyear_close(osv.osv_memory):
         """
         query_2nd_part = ""
         query_2nd_part_args = []
-        for account in obj_acc_account.browse(cr, uid, account_ids, context={'fiscalyear': fy_id}):
+        for account in obj_acc_account.browse(cr, uid, account_ids, context={'fiscalyear': closing_fy_id}):
             company_currency_id = self.pool.get('res.users').browse(cr, uid, uid).company_id.currency_id
             if not currency_obj.is_zero(cr, uid, company_currency_id, abs(account.balance)):
                 if query_2nd_part:
