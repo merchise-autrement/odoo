@@ -178,6 +178,7 @@ class account_fiscalyear_close(osv.osv_memory):
                        AND b.reconcile_id IN (SELECT DISTINCT(reconcile_id)
                                           FROM account_move_line a
                                           WHERE a.period_id IN ('''+fy2_period_set+''')))''', (new_journal.id, period.id, period.date_start, move_id, tuple(account_ids),))
+
             self.invalidate_cache(cr, uid, context=context)
 
         #2. report of the accounts with defferal method == 'detail'
