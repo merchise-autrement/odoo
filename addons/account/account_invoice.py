@@ -232,8 +232,10 @@ class account_invoice(models.Model):
              " * The 'Cancelled' status is used when user cancel invoice.")
     sent = fields.Boolean(readonly=True, default=False, copy=False,
         help="It indicates that the invoice has been sent.")
-    date_invoice = fields.Date(string='Invoice Date',
+    date_invoice = fields.Date(
+        string='Invoice Date',
         readonly=True, states={'draft': [('readonly', False)]}, index=True,
+        track_visibility='onchange',
         help="Keep empty to use the current date", copy=False)
     date_due = fields.Date(string='Due Date',
         readonly=True, states={'draft': [('readonly', False)]}, index=True, copy=False,
