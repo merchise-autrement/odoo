@@ -55,6 +55,9 @@ class account_fiscalyear_close(osv.osv_memory):
             through psql. It's necessary to do it this way because the usual `reconcile()´ function on account.move.line
             object is really resource greedy (not supposed to work on reconciliation between thousands of records) and
             it does a lot of different computation that are useless in this particular case.
+
+            merchise: besides the normal reconciliation can happen only on the
+            same account, and these lines will have many different accounts.
             """
             #check that the reconcilation concern journal entries from only one company
             cr.execute('select distinct(company_id) from account_move_line where id in %s',(tuple(ids),))
@@ -171,7 +174,6 @@ class account_fiscalyear_close(osv.osv_memory):
                             move=move_id,
                             accounts=tuple(account_ids)))
 
-
             # We have also to consider all move_lines that were reconciled
             # on another fiscal year, and report them too
             # merchise:
@@ -179,7 +181,8 @@ class account_fiscalyear_close(osv.osv_memory):
             #   closing that's already conciliated BUT with an entry in a
             #   following Year.  The Opening Entry must have these copied
             #   because otherwise when getting the Chart of Accounts the
-            #   account balance might be mis-computed.
+            #   account balance might be mis-computed.  We have to copy *only*
+            #   the items belonging to the closing (or past) periods.
             # end
             cr.execute('''
                 INSERT INTO account_move_line (
@@ -196,8 +199,13 @@ class account_fiscalyear_close(osv.osv_memory):
                      b.quantity, b.product_id, b.company_id
                      FROM account_move_line b
                      WHERE b.account_id IN %(accounts)s
+
+                       -- reconciled belonging to the previous periods, but...
                        AND b.reconcile_id IS NOT NULL
                        AND b.period_id IN ('''+previous_period_set+''')
+
+                       -- but only if there's a move a future period in the
+                       -- same reconciliation object.
                        AND b.reconcile_id IN (SELECT DISTINCT(reconcile_id)
                                           FROM account_move_line a
                                           WHERE a.period_id IN ('''+next_period_set+''')))''',
@@ -248,35 +256,38 @@ class account_fiscalyear_close(osv.osv_memory):
               AND a.company_id = %s
               AND t.close_method = %s''', (company_id, 'balance', ))
         account_ids = map(lambda x: x[0], cr.fetchall())
-
-        query_1st_part = """
-                INSERT INTO account_move_line (
-                     debit, credit, name, date, move_id, journal_id, period_id,
-                     account_id, currency_id, amount_currency, company_id, state) VALUES
-        """
-        query_2nd_part = ""
-        query_2nd_part_args = []
-        for account in obj_acc_account.browse(cr, uid, account_ids, context={'fiscalyear': closing_fy_id}):
+        if account_ids:
+            query_1st_part = """
+                    INSERT INTO account_move_line (
+                         debit, credit, name, date, move_id, journal_id, period_id,
+                         account_id, currency_id, amount_currency, company_id, state) VALUES
+            """
+            query_2nd_part = []
+            query_2nd_part_args = []
             company_currency_id = self.pool.get('res.users').browse(cr, uid, uid).company_id.currency_id
-            if not currency_obj.is_zero(cr, uid, company_currency_id, abs(account.balance)):
-                if query_2nd_part:
-                    query_2nd_part += ','
-                query_2nd_part += "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                query_2nd_part_args += (account.balance > 0 and account.balance or 0.0,
-                       account.balance < 0 and -account.balance or 0.0,
-                       data[0].report_name,
-                       period.date_start,
-                       move_id,
-                       new_journal.id,
-                       period.id,
-                       account.id,
-                       account.currency_id and account.currency_id.id or None,
-                       account.foreign_balance if account.currency_id else 0.0,
-                       account.company_id.id,
-                       'draft')
-        if query_2nd_part:
-            cr.execute(query_1st_part + query_2nd_part, tuple(query_2nd_part_args))
-            self.invalidate_cache(cr, uid, context=context)
+            for account in obj_acc_account.browse(cr, uid, account_ids, context={'fiscalyear': closing_fy_id}):
+                if not currency_obj.is_zero(cr, uid, company_currency_id, abs(account.balance)):
+                    query_2nd_part.append("(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)")
+                    query_2nd_part_args += (
+                        account.balance > 0 and account.balance or 0.0,
+                        account.balance < 0 and -account.balance or 0.0,
+                        data[0].report_name,
+                        period.date_start,
+                        move_id,
+                        new_journal.id,
+                        period.id,
+                        account.id,
+                        account.currency_id and account.currency_id.id or None,
+                        account.foreign_balance if account.currency_id else 0.0,
+                        account.company_id.id,
+                        'draft'
+                    )
+            if query_2nd_part:
+                cr.execute(
+                    query_1st_part + ', '.join(query_2nd_part),
+                    tuple(query_2nd_part_args)
+                )
+                self.invalidate_cache(cr, uid, context=context)
 
         #validate and centralize the opening move
         obj_acc_move.validate(cr, uid, [move_id], context=context)
