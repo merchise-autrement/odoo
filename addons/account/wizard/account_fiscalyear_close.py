@@ -160,12 +160,14 @@ class account_fiscalyear_close(osv.osv_memory):
                      partner_id, blocked, credit, state, debit,
                      ref, account_id, period_id, date, move_id, amount_currency,
                      quantity, product_id, company_id)
-                  (SELECT name, create_uid, create_date, write_uid, write_date,
+                  (WITH posted AS (SELECT id FROM account_move WHERE state='posted' AND period_id IN ('''+previous_period_set+'''))
+                   SELECT name, create_uid, create_date, write_uid, write_date,
                      statement_id, %(journal)s,currency_id, date_maturity, partner_id,
                      blocked, credit, 'draft', debit, ref, account_id,
                      %(period)s, (%(date)s) AS date, %(move)s, amount_currency, quantity, product_id, company_id
                    FROM account_move_line
                    WHERE account_id IN %(accounts)s
+                     AND move_id IN (SELECT id FROM posted)
                      AND ''' + query_line + '''
                      AND reconcile_id IS NULL)''',
                        dict(journal=new_journal.id,
@@ -191,7 +193,8 @@ class account_fiscalyear_close(osv.osv_memory):
                      partner_id, blocked, credit, state, debit,
                      ref, account_id, period_id, date, move_id, amount_currency,
                      quantity, product_id, company_id)
-                  (SELECT
+                  (WITH posted AS (SELECT id FROM account_move WHERE state='posted' AND period_id IN ('''+previous_period_set+'''))
+                   SELECT
                      b.name, b.create_uid, b.create_date, b.write_uid, b.write_date,
                      b.statement_id, %(journal)s, b.currency_id, b.date_maturity,
                      b.partner_id, b.blocked, b.credit, 'draft', b.debit,
@@ -203,6 +206,7 @@ class account_fiscalyear_close(osv.osv_memory):
                        -- reconciled belonging to the previous periods, but...
                        AND b.reconcile_id IS NOT NULL
                        AND b.period_id IN ('''+previous_period_set+''')
+                       AND b.move_id IN (SELECT id FROM posted)
 
                        -- but only if there's a move a future period in the
                        -- same reconciliation object.
