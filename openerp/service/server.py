@@ -811,9 +811,11 @@ class Worker(object):
         cpu_time = r.ru_utime + r.ru_stime
         def time_expired(n, stack):
             # We dont suicide in such case, this will raise the exception at
-            # the point of the
+            # the point in the code where the Python process was when it
+            # received the signal.
             error = WorkerLimitException('CPU time limit exceeded.')
             error._sentry_fingerprint = ['cpu']
+            raise error
         signal.signal(signal.SIGXCPU, time_expired)
         soft, hard = resource.getrlimit(resource.RLIMIT_CPU)
         resource.setrlimit(resource.RLIMIT_CPU, (cpu_time + config['limit_time_cpu'], hard))
