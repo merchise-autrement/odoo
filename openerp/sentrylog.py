@@ -43,9 +43,39 @@ from xoutil.objects import setdefaultattr
 
 from openerp import models
 
+from xoutil import Unset
+from xoutil.logical import Logical
+Bail = Logical('Bail', False)
+del Logical
+
+
 # A dictionary holding the Raven's client keyword arguments.  You should
 # modify this dictionary before patching the logging.
-conf = {}
+conf = {
+    # The Sentry DSN.  If Bail no logging will be done to Sentry.  This should
+    # be string like 'http://12345abc:091bacfe@sentry.example.com/0'.
+    'dsn': Bail,
+
+    # The release to be reported to Sentry.  If Unset, the openerp.release
+    # version will be used.
+    'release': Unset,
+
+    # A tag that will be appended to the release.  Only if 'release' is Unset.
+    'sentrylog.release-tag': '',
+
+    # The Raven transport to use to connect to Sentry. One of 'sync',
+    # 'gevent', or 'threaded'.  If set to None, default to 'threaded'.  In
+    # fact any value other than 'sync', or 'gevent' will be regarded as
+    # 'threaded'.
+    'transport': 'threaded',
+
+    # Only report errors with at least this level.
+    'report_level': 'ERROR',
+
+    # Other keyword arguments are passed unchanged to the Raven Client
+    # object.  The following are interesting: environment, auto_log_stacks,
+    # and capture_locals.
+}
 
 # The name of the context to the logger to avoid logging sentry-related
 # errors.
@@ -58,10 +88,10 @@ _sentry_client = None
 
 def get_client():
     global _sentry_client
-    if not _sentry_client and 'dsn' in conf:
+    if not _sentry_client and conf.get('dsn', Bail):
         releasetag = conf.pop('sentrylog.release-tag', '')
-        if 'release' not in conf:
-            from openerp.release import version
+        if not conf.get('release'):
+            from .release import version
             conf['release'] = '%s/%s' % (version, releasetag)
         transport = conf.get('transport', None)
         if transport == 'sync':
