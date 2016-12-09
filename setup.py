@@ -111,6 +111,8 @@ def py2exe_options():
                         'hiredis',
                         'redis',
                         'xoutil',
+                        'raven>=5.31.0',
+                        'raven-sanitize-openerp',
                     ],
                     'excludes': ['Tkconstants', 'Tkinter', 'tcl'],
                 }
@@ -177,6 +179,9 @@ setup(
         'flower',
         'redis',
         'xoutil',
+        'raven>=5.31.0',
+        'raven-sanitize-openerp',
+
     ],
     extras_require={
         'SSL': ['pyopenssl'],
