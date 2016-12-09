@@ -105,7 +105,7 @@ def get_client():
     return _sentry_client
 
 
-def patch_logging(override=True):
+def patch_logging():
     '''Patch openerp's logging.
 
     :param override: If True suppress all normal logging.  All logs will be
@@ -273,11 +273,13 @@ def patch_logging(override=True):
     if not client:
         return
 
-    level = conf.get('report_level', 'ERROR')
+    loglevel = conf.get('report_level', 'ERROR')
+    level = getattr(logging, loglevel.upper(), logging.ERROR)
+    override = conf.get('sentrylog.override', False)
 
     def sethandler(logger, override=override, level=level):
         handler = SentryHandler(client=client)
-        handler.setLevel(getattr(logging, level.upper(), logging.ERROR))
+        handler.setLevel(level)
         if override or not logger.handlers:
             logger.handlers = [handler]
         else:
