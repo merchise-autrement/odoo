@@ -84,7 +84,6 @@
                 <li><a href="#" data-menu="about">About</a></li>
                 <li class="divider"/>
                 <li><a href="#" data-menu="settings">Preferences</a></li>
-                <li><a href="#" data-menu="account">My Odoo.com account</a></li>
                 <li><a href="#" data-menu="logout">Log out</a></li>
             </ul>
         </li>
@@ -117,6 +116,28 @@
                                 <p>Odoo is a trademark of <a target="_blank" href="https://www.odoo.com" style="text-decoration: underline;">Odoo S.A.</a></p>
                                 <p>Licenced under the terms of <a target="_blank" href="http://www.gnu.org/licenses/lgpl.html" style="text-decoration: underline;">GNU Lesser General Public License</a></p>
                                 <p>For more information visit <a target="_blank" href="https://www.odoo.com" style="text-decoration: underline;">Odoo.com</a></p>
+                                <div class="mechise-legal">
+                                  <p>
+                                    This version of Odoo is distributed by <a
+                                    href="https://github.com/merchise-autrement/odoo">Merchise
+                                    Autrement, Ltd</a>.  All modifications to
+                                    the Odoo core are published in <a
+                                    href="https://github.com/merchise-autrement/odoo/tree/merchise-8.0">github.com</a>.
+                                  </p>
+
+                                  <p>
+                                    Merchise Autrement is not a partner of
+                                    Odoo SA.
+                                  </p>
+                                  <p>
+                                    This program comes with ABSOLUTELY NO
+                                    WARRANTY.  This is free software, and you
+                                    are welcome to redistribute it under the
+                                    terms of the GNU Affero General Public
+                                    License.
+                                  </p>
+                                </div>
+
                                 <p>
                                   <a href="https://www.odoo.com/web/about/facebook"><i class="fa fa-facebook-square fa-3x social-fb"></i></a>
                                   <a href="https://www.odoo.com/web/about/twitter"><i class="fa fa-twitter-square fa-3x social-tw"></i></a>
@@ -188,7 +209,7 @@
 <t t-name="ViewManager.switch-buttons">
     <t t-foreach="views" t-as="view">
         <button type="button" t-att-accesskey="view.accesskey"
-            t-attf-class="btn btn-default fa #{view.icon} oe-cp-switch-#{view.type}" 
+            t-attf-class="btn btn-default fa #{view.icon} oe-cp-switch-#{view.type}"
             t-att-data-view-type="view.type" t-att-title="view.label"/>
     </t>
 </t>
@@ -217,8 +238,8 @@
     <t t-if="is_admin">
         <li class="oe_translate"><a href="#" data-action="translate">Technical Translation</a></li>
         <li class="oe_edit_view"><a href="#" data-action="edit" data-model="ir.ui.view" t-att-data-id="active_view.controller.fields_view.view_id">Edit <t t-esc="_.str.capitalize(view.fields_view.type)"/> View</a></li>
-        <li class="oe_edit_searchview" t-if="searchview"><a href="#" data-action="edit" data-model="ir.ui.view" t-att-data-id="searchview.view_id">Edit SearchView</a></li> 
-        <li class="oe_edit_action" t-if="action"><a href="#" data-action="edit" t-att-data-model="action.type" t-att-data-id="action.id">Edit Action</a></li> 
+        <li class="oe_edit_searchview" t-if="searchview"><a href="#" data-action="edit" data-model="ir.ui.view" t-att-data-id="searchview.view_id">Edit SearchView</a></li>
+        <li class="oe_edit_action" t-if="action"><a href="#" data-action="edit" t-att-data-model="action.type" t-att-data-id="action.id">Edit Action</a></li>
         <li class="oe_edit_workflow"><a href="#" data-action="edit_workflow">Edit Workflow</a></li>
         <li class="oe_print_workflow"><a href="#" data-action="print_workflow">Print Workflow</a></li>
         <li class="divider"/>

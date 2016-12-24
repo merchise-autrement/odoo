@@ -166,13 +166,17 @@ class Field(object):
         :param groups: comma-separated list of group xml ids (string); this
             restricts the field access to the users of the given groups only
 
-        :param bool copy: whether the field value should be copied when the record
+        :param copy: whether the field value should be copied when the record
             is duplicated (default: ``True`` for normal fields, ``False`` for
             ``one2many`` and computed fields, including property fields and
             related fields)
 
-        :param string oldname: the previous name of this field, so that ORM can rename
+        :type copy: bool
+
+        :param oldname: the previous name of this field, so that ORM can rename
             it automatically at migration
+
+        :type oldname: A string
 
         .. _field-computed:
 

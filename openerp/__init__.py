@@ -66,12 +66,15 @@ import sql_db
 import tools
 import workflow
 
+
 #----------------------------------------------------------
 # Model classes, fields, api decorators, and translations
 #----------------------------------------------------------
 from . import models
 from . import fields
 from . import api
+from . import signals  # noqa
+
 from openerp.tools.translate import _
 
 #----------------------------------------------------------

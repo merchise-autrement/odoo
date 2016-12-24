@@ -775,7 +775,7 @@ class survey_question(osv.Model):
             elif question.matrix_subtype == 'multiple':
                 answer_number = len(set([sk.rsplit('_', 1)[0] for sk in answer_candidates.keys()]))
             else:
-                raise RuntimeError("Invalid matrix subtype")
+                raise AssertionError("Invalid matrix subtype")
             # Validate that each line has been answered
             if answer_number != lines_number:
                 errors.update({answer_tag: question.constr_error_msg})

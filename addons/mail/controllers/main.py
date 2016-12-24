@@ -103,7 +103,8 @@ class MailController(http.Controller):
                 registry = openerp.registry(db)
                 with registry.cursor() as cr:
                     mail_thread = registry['mail.thread']
-                    mail_thread.message_process(cr, SUPERUSER_ID, None, message)
+                    mail_thread.message_process(cr, SUPERUSER_ID, None,
+                                                message)
             except psycopg2.Error:
                 pass
         return True

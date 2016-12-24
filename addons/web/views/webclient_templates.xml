@@ -54,6 +54,9 @@
             <link rel="stylesheet" href="/web/static/lib/select2/select2.css"/>
             <link rel="stylesheet" href="/web/static/lib/select2-bootstrap-css/select2-bootstrap.css"/>
             <script type="text/javascript" src="/web/static/lib/select2/select2.js"></script>
+
+            <!-- Xopgi -->
+	    <script type="text/javascript" src="/web/static/lib/xopgi/js/xopgi.js"></script>
         </template>
 
         <template id="web.bootstrap">
@@ -264,7 +267,7 @@
                 <t t-foreach="menu_data['children']" t-as="menu">
                     <div style="display: none" class="oe_secondary_menu" t-att-data-menu-parent="menu['id']">
                         <t t-foreach="menu['children']" t-as="menu">
-                            <div class="oe_secondary_menu_section">                                
+                            <div class="oe_secondary_menu_section">
                                 <t t-if="menu['children']"><t t-esc="menu['name']"/></t>
                                 <t t-if="not menu['children']"><t t-call="web.menu_link"/></t>
                             </div>

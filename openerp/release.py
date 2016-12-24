@@ -12,7 +12,23 @@ RELEASE_LEVELS_DISPLAY = {ALPHA: ALPHA,
 # properly comparable using normal operarors, for example:
 #  (6,1,0,'beta',0) < (6,1,0,'candidate',1) < (6,1,0,'candidate',2)
 #  (6,1,0,'candidate',2) < (6,1,0,'final',0) < (6,1,2,'final',0)
-version_info = (9, 0, 0, FINAL, 0, 'c')
+import os, subprocess   # noqa
+_cwd = os.getcwd()
+try:
+    _c = subprocess.check_output
+    _d = os.path.dirname
+    os.chdir(_d(__file__))  # So that git commands work
+    RELEASE = _c(['git', 'log', '-1', '--pretty=%h']).strip()
+    COMMITER_DATE = _c(['git', 'log', '-1', '--pretty=%cd', '--date=iso']).strip()
+    STAMP = _c(['date', '--date=%s' % COMMITER_DATE, '+.%Y%m%d.%H%M%S']).strip()
+    STAMP += '+' + RELEASE
+except:
+    STAMP = 0
+finally:
+    os.chdir(_cwd)
+    del _cwd
+
+version_info = (9, 0, 0, FINAL, STAMP, '')
 version = '.'.join(map(str, version_info[:2])) + RELEASE_LEVELS_DISPLAY[version_info[3]] + str(version_info[4] or '') + version_info[5]
 series = serie = major_version = '.'.join(map(str, version_info[:2]))
 

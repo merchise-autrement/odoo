@@ -133,6 +133,11 @@ ExtendedSearchProposition.Field = Widget.extend({
         switch (operator.value) {
         case '∃': return this.make_domain(field.name, '!=', false);
         case '∄': return this.make_domain(field.name, '=', false);
+        case '=ilike': return this.make_domain(
+            field.name,
+            operator.value,
+            this.get_value() + '%'
+        );
         default: return this.make_domain(
             field.name, operator.value, this.get_value());
         }
@@ -158,6 +163,7 @@ ExtendedSearchProposition.Char = ExtendedSearchProposition.Field.extend({
     template: 'SearchView.extended_search.proposition.char',
     operators: [
         {value: "ilike", text: _lt("contains")},
+        {value: "=ilike", text: _lt("starts with")},
         {value: "not ilike", text: _lt("doesn't contain")},
         {value: "=", text: _lt("is equal to")},
         {value: "!=", text: _lt("is not equal to")},

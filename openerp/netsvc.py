@@ -194,6 +194,9 @@ def init_logger():
     for logconfig_item in logging_configurations:
         _logger.debug('logger level set: "%s"', logconfig_item)
 
+    from .sentrylog import patch_logging
+    patch_logging()
+
 DEFAULT_LOG_CONFIGURATION = [
     'openerp.workflow.workitem:WARNING',
     'openerp.http.rpc.request:INFO',

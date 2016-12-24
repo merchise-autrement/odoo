@@ -49,12 +49,78 @@ from openerp.service import security, model as service_model
 from openerp.tools.func import lazy_property
 from openerp.tools import ustr, consteq
 
+from openerp.modules.module import load_information_from_description_file
+
 _logger = logging.getLogger(__name__)
 rpc_request = logging.getLogger(__name__ + '.rpc.request')
 rpc_response = logging.getLogger(__name__ + '.rpc.response')
 
-# 1 week cache for statics as advised by Google Page Speed
-STATIC_CACHE = 60 * 60 * 24 * 7
+HOUR = 60 * 60
+DAY = 24 * HOUR
+DAYS = lambda d: d * DAY
+# 365 days: we put a modification-based tag in the URLs so the cache
+# may be really long lived.
+STATIC_CACHE = DAYS(365)
+
+COOKIE_MAX_AGE = DAYS(90)
+
+
+
+class _AccelMixin(object):
+    '''A mixin for classes with an :attr:`~BaseResponse.environ` attribute
+    that tests for SPDY/HTTP2 proxies/accelerators.
+
+    '''
+    spdy_version = werkzeug.utils.environ_property(
+        'HTTP_X_SPDY_VERSION', '',
+        doc='''The provided negotiated version of SPDY.
+
+        Proxies or accelerators should be configured to provide
+        this header when using SPDY.
+
+        ''')
+
+    http2_proto = werkzeug.utils.environ_property(
+        'HTTP_X_HTTP2_PROTO', '',
+        doc='''The provided negotiated protocol for HTTP/2 connections.
+
+        Proxies or accelerator should be configured to provide this header
+        when using HTTP/2.
+
+        ''')
+
+    @werkzeug.utils.cached_property
+    def is_spdy(self):
+        return bool(self.spdy_version)
+
+    @werkzeug.utils.cached_property
+    def is_http2(self):
+        return bool(self.http2_proto)
+
+
+class WerkzeugOdooRequest(werkzeug.wrappers.Request, _AccelMixin):
+    pass
+
+
+def IgnoreWeaknessEtagsMiddleware(app):
+    '''Middleware that remove weakness mark in etags.
+
+    Useful when serving proxied via Nginx with gzip active for
+    large response.  Nginx automatically weakens etags in gzipped
+    responses.  So the etag that browsers actually get is 'w/"my-etag"'.
+    Afterwards, when the browser requests the same resource with
+    weak etag in If-None-Match, we wouldn't get a match.
+
+    '''
+    def _call_(environ, start_response):
+        # TODO: several etags
+        gziped = environ.get('HTTP_X_')
+        etags = environ.get('HTTP_IF_NONE_MATCH')
+        if etags and etags.lower().startswith('w/'):
+            environ['HTTP_IF_NONE_MATCH'] = etags[2:]
+        return app(environ, start_response)
+    return _call_
+
 
 #----------------------------------------------------------
 # RequestHandler
@@ -75,6 +141,14 @@ def replace_request_password(args):
         args[2] = '*'
     return tuple(args)
 
+
+class AuthenticationError(Exception):
+    pass
+
+class SessionExpiredException(Exception):
+    pass
+
+
 # don't trigger debugger for those exceptions, they carry user-facing warnings
 # and indications, they're not necessarily indicative of anything being
 # *broken*
@@ -84,7 +158,9 @@ NO_POSTMORTEM = (openerp.osv.orm.except_orm,
                  openerp.exceptions.MissingError,
                  openerp.exceptions.AccessDenied,
                  openerp.exceptions.Warning,
-                 openerp.exceptions.RedirectWarning)
+                 openerp.exceptions.RedirectWarning,
+                 AuthenticationError,
+                 SessionExpiredException)
 def dispatch_rpc(service_name, method, params):
     """ Handle a RPC call.
 
@@ -280,7 +356,7 @@ class WebRequest(object):
     def _handle_exception(self, exception):
         """Called within an except block to allow converting exceptions
            to abitrary responses. Anything returned (except None) will
-           be used as response.""" 
+           be used as response."""
         self._failed = exception # prevent tx commit
         if not isinstance(exception, NO_POSTMORTEM) \
                 and not isinstance(exception, werkzeug.exceptions.HTTPException):
@@ -583,7 +659,7 @@ class JsonRequest(WebRequest):
         self.jsonp = jsonp
         request = None
         request_id = args.get('id')
-        
+
         if jsonp and self.httprequest.method == 'POST':
             # jsonp 2 steps step1 POST: save call
             def handler():
@@ -740,7 +816,7 @@ def to_jsonable(o):
     return ustr(o)
 
 def jsonrequest(f):
-    """ 
+    """
         .. deprecated:: 8.0
             Use the :func:`~openerp.http.route` decorator instead.
     """
@@ -893,7 +969,7 @@ more details.
         return werkzeug.exceptions.NotFound(description)
 
 def httprequest(f):
-    """ 
+    """
         .. deprecated:: 8.0
 
         Use the :func:`~openerp.http.route` decorator instead.
@@ -1017,15 +1093,10 @@ def routing_map(modules, nodb_only, converters=None):
                             routing_map.add(werkzeug.routing.Rule(url, endpoint=endpoint, methods=routing['methods'], **kw))
     return routing_map
 
-#----------------------------------------------------------
+
+# ---------------------------------------------------------
 # HTTP Sessions
-#----------------------------------------------------------
-class AuthenticationError(Exception):
-    pass
-
-class SessionExpiredException(Exception):
-    pass
-
+# ---------------------------------------------------------
 class Service(object):
     """
         .. deprecated:: 8.0
@@ -1040,6 +1111,7 @@ class Service(object):
             result = dispatch_rpc(self.service_name, method, args)
             return result
         return proxy_method
+
 
 class Model(object):
     """
@@ -1059,7 +1131,7 @@ class Model(object):
             if not request.db or not request.uid or self.session.db != request.db \
                 or self.session.uid != request.uid:
                 raise Exception("Trying to use Model with badly configured database or user.")
-                
+
             if method.startswith('_'):
                 raise Exception("Access denied")
             mod = request.registry[self.model]
@@ -1076,6 +1148,7 @@ class Model(object):
                     result = [index[x] for x in args[0] if x in index]
             return result
         return proxy
+
 
 class OpenERPSession(werkzeug.contrib.sessions.Session):
     def __init__(self, *args, **kwargs):
@@ -1362,17 +1435,23 @@ class OpenERPSession(werkzeug.contrib.sessions.Session):
                     pass
 
 
+
 def session_gc(session_store):
+    # This method is called for every HTTP request (called by setup_session,
+    # which is called by dispatch); so we likely do clean ups about for
+    # 0.001% of calls.
     if random.random() < 0.001:
-        # we keep session one week
-        last_week = time.time() - 60*60*24*7
-        for fname in os.listdir(session_store.path):
-            path = os.path.join(session_store.path, fname)
-            try:
-                if os.path.getmtime(path) < last_week:
-                    os.unlink(path)
-            except OSError:
-                pass
+        # we keep session 14 hours (8hours + 6 hours - France Cuba)
+        last_period = time.time() - 14*3600
+        path = getattr(session_store, 'path', None)
+        if path and os.path.isdir(path):
+            for fname in os.listdir(session_store.path):
+                path = os.path.join(session_store.path, fname)
+                try:
+                    if os.path.getmtime(path) < last_period:
+                        os.unlink(path)
+                except OSError:
+                    pass
 
 #----------------------------------------------------------
 # WSGI Layer
@@ -1468,6 +1547,23 @@ class DisableCacheMiddleware(object):
             start_response(status, new_headers)
         return self.app(environ, start_wrapped)
 
+
+def SessionStore(path):
+    # type: (str) -> werkzeug.contrib.sessions.SessionStore
+    '''Creates a session store.
+
+    The `path` argument may start with 'redis://', in which case return a
+    RedisSessionStore; otherwise try to return a FilesystemSessionStore.
+
+    '''
+    if path.startswith('redis://'):
+        raise NotImplemented
+    else:
+        return werkzeug.contrib.sessions.FilesystemSessionStore(
+            path, session_class=OpenERPSession
+        )
+
+
 class Root(object):
     """Root WSGI application for the OpenERP Web Client.
     """
@@ -1479,7 +1575,7 @@ class Root(object):
         # Setup http sessions
         path = openerp.tools.config.session_dir
         _logger.debug('HTTP sessions stored in: %s', path)
-        return werkzeug.contrib.sessions.FilesystemSessionStore(path, session_class=OpenERPSession)
+        return SessionStore(path)
 
     @lazy_property
     def nodb_routing_map(self):
@@ -1506,7 +1602,7 @@ class Root(object):
                     manifest_path = os.path.join(addons_path, module, '__openerp__.py')
                     path_static = os.path.join(addons_path, module, 'static')
                     if os.path.isfile(manifest_path) and os.path.isdir(path_static):
-                        manifest = ast.literal_eval(open(manifest_path).read())
+                        manifest = load_information_from_description_file(module)
                         if not manifest.get('installable', True):
                             continue
                         manifest['addons_path'] = addons_path
@@ -1521,8 +1617,35 @@ class Root(object):
 
         if statics:
             _logger.info("HTTP Configuring static files")
-        app = werkzeug.wsgi.SharedDataMiddleware(self.dispatch, statics, cache_timeout=STATIC_CACHE)
-        self.dispatch = DisableCacheMiddleware(app)
+
+        def build_static_app(dispatch_app):
+            def static_app(environ, start_response):
+                # See bug: https://github.com/mitsuhiko/werkzeug/issues/379
+                try:
+                    cleaned_path = werkzeug.wsgi.get_path_info(environ)
+                    cleaned_path = cleaned_path.encode(
+                        sys.getfilesystemencoding()
+                    )
+                except UnicodeError:
+                    # Avoid the SharedDataMiddleware if it is going to
+                    # fail.  We STRONGLY recommend static assets don't use
+                    # any char outside ASCII, so this SHOULD NOT happen
+                    # unless this recommendation is not followed.
+                    #
+                    # This way custom controllers may include URLs, which does
+                    # not comply with this but it's their task to properly
+                    # handle the encoding in the URL.
+                    return dispatch_app(environ, start_response)
+                return werkzeug.wsgi.SharedDataMiddleware(
+                    dispatch_app,
+                    statics,
+                    cache_timeout=STATIC_CACHE
+                )(environ, start_response)
+            return static_app
+
+        self.dispatch = DisableCacheMiddleware(
+            IgnoreWeaknessEtagsMiddleware(build_static_app(self.dispatch))
+        )
 
     def setup_session(self, httprequest):
         # recover or create session
@@ -1608,16 +1731,40 @@ class Root(object):
         #   (the one using the cookie). That is a special feature of the Session Javascript class.
         # - It could allow session fixation attacks.
         if not explicit_session and hasattr(response, 'set_cookie'):
-            response.set_cookie('session_id', httprequest.session.sid, max_age=90 * 24 * 60 * 60)
-
+            get_conf = openerp.tools.config.get
+            response.set_cookie(
+                'session_id',
+                httprequest.session.sid,
+                max_age=get_conf('session_cookie_age', COOKIE_MAX_AGE),
+                domain=self._get_matching_domain(httprequest, get_conf('session_cookie_domain', '')),
+                secure=get_conf('session_cookie_secure', False),
+            )
         return response
+
+    @staticmethod
+    def _get_matching_domain(request, allowed_domains):
+        from xoutil.eight import string_types
+        from xoutil.string import cut_prefix
+        if isinstance(allowed_domains, string_types):
+            allowed_domains = allowed_domains.split(' ')
+        host = request.host
+        if not host:
+            return None
+        if ':' in host:
+            host = host.rsplit(':', 1)[0]
+        return next(
+            (domain for domain in allowed_domains
+             if domain.startswith('.') and host.endswith(domain)
+                or cut_prefix(domain, '.') == host),
+            None
+        )
 
     def dispatch(self, environ, start_response):
         """
         Performs the actual WSGI dispatching for the application.
         """
         try:
-            httprequest = werkzeug.wrappers.Request(environ)
+            httprequest = WerkzeugOdooRequest(environ)
             httprequest.app = self
 
             explicit_session = self.setup_session(httprequest)

@@ -465,7 +465,13 @@ class QWeb(orm.AbstractModel):
         return res
 
     def render_tag_call_assets(self, element, template_attributes, generated_attributes, qwebcontext):
-        """ This special 't-call' tag can be used in order to aggregate/minify javascript and css assets"""
+        """This special 't-call' tag can be used in order to aggregate/minify javascript and css assets.
+
+        When deployed proxied via a HTTP/2 or SPDY accelerator (e.g NGINX), this may behave as 't-call', i.e no bundling nor minification is
+        performed.
+
+        """
+        request = getattr(qwebcontext.get('request'), 'httprequest', None)
         if len(element):
             # An asset bundle is rendered in two differents contexts (when genereting html and
             # when generating the bundle itself) so they must be qwebcontext free
@@ -477,8 +483,16 @@ class QWeb(orm.AbstractModel):
         bundle = AssetsBundle(xmlid, cr=cr, uid=uid, context=context, registry=self.pool)
         css = self.get_attr_bool(template_attributes.get('css'), default=True)
         js = self.get_attr_bool(template_attributes.get('js'), default=True)
+        spdy = request.is_spdy or request.is_http2
         async = self.get_attr_bool(template_attributes.get('async'), default=False)
-        return bundle.to_html(css=css, js=js, debug=bool(qwebcontext.get('debug')), async=async, qwebcontext=qwebcontext)
+        return bundle.to_html(
+            css=css,
+            js=js,
+            debug=bool(qwebcontext.get('debug')),
+            async=async,
+            qwebcontext=qwebcontext,
+            spdy=spdy
+        )
 
     def render_tag_set(self, element, template_attributes, generated_attributes, qwebcontext):
         if "value" in template_attributes:
@@ -1179,14 +1193,15 @@ class AssetsBundle(object):
     def can_aggregate(self, url):
         return not urlparse(url).netloc and not url.startswith('/web/content')
 
-    def to_html(self, sep=None, css=True, js=True, debug=False, async=False, qwebcontext=None):
+    def to_html(self, sep=None, css=True, js=True, debug=False, async=False,
+                qwebcontext=None, spdy=False):
         if sep is None:
             sep = '\n            '
         response = []
-        if debug:
+        if debug or spdy:
             if css and self.stylesheets:
                 if not self.is_css_preprocessed():
-                    self.preprocess_css(debug=debug)
+                    self.preprocess_css(debug=debug, spdy=spdy)
                     if self.css_errors:
                         msg = '\n'.join(self.css_errors)
                         self.stylesheets.append(StylesheetAsset(self, inline=self.css_message(msg)))
@@ -1378,7 +1393,7 @@ class AssetsBundle(object):
 
         return preprocessed
 
-    def preprocess_css(self, debug=False):
+    def preprocess_css(self, debug=False, spdy=False):
         """
             Checks if the bundle contains any sass/less content, then compiles it to css.
             Returns the bundle's flat css.
@@ -1400,7 +1415,7 @@ class AssetsBundle(object):
                     asset = next(asset for asset in self.stylesheets if asset.id == asset_id)
                     asset._content = fragments.pop(0)
 
-                    if debug:
+                    if debug or spdy:
                         try:
                             ira = self.registry['ir.attachment']
                             fname = os.path.basename(asset.url)
@@ -1558,6 +1573,22 @@ class WebAsset(object):
             content = self.content
         return '\n/* %s */\n%s' % (self.name, content)
 
+    @property
+    def versionhash(self):
+        self.stat()
+        if self._filename:
+            try:
+                return os.path.getmtime(self._filename)
+            except:
+                _logger.exception(
+                    "Error while hashing asset '%s'",
+                    self._filename
+                )
+                return None
+        else:
+            return None
+
+
 class JavascriptAsset(WebAsset):
     def minify(self):
         return self.with_header(rjsmin(self.content))
@@ -1570,9 +1601,14 @@ class JavascriptAsset(WebAsset):
 
     def to_html(self):
         if self.url:
-            return '<script type="text/javascript" src="%s"></script>' % (self.html_url)
+            vhash = self.versionhash
+            if vhash:
+                return '<script type="text/javascript" src="%s?_h=%s"></script>' % (self.html_url, vhash)
+            else:
+                return '<script type="text/javascript" src="%s"></script>' % self.html_url
         else:
             return '<script type="text/javascript" charset="utf-8">%s</script>' % self.with_header()
+
 
 class StylesheetAsset(WebAsset):
     rx_import = re.compile(r"""@import\s+('|")(?!'|"|/|https?://)""", re.U)
@@ -1631,7 +1667,11 @@ class StylesheetAsset(WebAsset):
         media = (' media="%s"' % werkzeug.utils.escape(self.media)) if self.media else ''
         if self.url:
             href = self.html_url
-            return '<link rel="stylesheet" href="%s" type="text/css"%s/>' % (href, media)
+            vhash = self.versionhash
+            if vhash:
+                return '<link rel="stylesheet" href="%s?_h=%s" type="text/css"%s/>' % (href, vhash, media)
+            else:
+                return '<link rel="stylesheet" href="%s" type="text/css"%s/>' % (href, media)
         else:
             return '<style type="text/css"%s>%s</style>' % (media, self.with_header())
 

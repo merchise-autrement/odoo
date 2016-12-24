@@ -15,8 +15,10 @@ _logger = logging.getLogger(__name__)
 
 def get_db_and_pool(db_name, force_demo=False, status=None, update_module=False):
     """Create and return a database connection and a newly initialized registry."""
+    import inspect
     assert openerp.conf.deprecation.openerp_pooler
-    _logger.warning('openerp.pooler.get_db_and_pool() is deprecated.')
+    _logger.warning('openerp.pooler.get_db_and_pool() is deprecated.',
+                    extra=dict(runtime_stack=inspect.stack()))
     registry = RegistryManager.get(db_name, force_demo, status, update_module)
     return registry._db, registry
 

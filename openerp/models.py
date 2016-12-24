@@ -580,12 +580,21 @@ class BaseModel(object):
         cls._local_constraints = cls.__dict__.get('_constraints', [])
         cls._local_sql_constraints = cls.__dict__.get('_sql_constraints', [])
 
+        import sys
+        if sys.version_info < (3, 0):
+            _encode = lambda s: s.encode('utf-8')
+        else:
+            _encode = lambda s: s
+        del sys
+
         # determine inherited models
         parents = getattr(cls, '_inherit', [])
         parents = [parents] if isinstance(parents, basestring) else (parents or [])
+        parents = [_encode(parent) for parent in parents]
 
         # determine the model's name
         name = cls._name or (len(parents) == 1 and parents[0]) or cls.__name__
+        name = _encode(name)
 
         # determine the module that introduced the model
         original_module = pool[name]._original_module if name in parents else cls._module
@@ -1186,7 +1195,7 @@ class BaseModel(object):
                 'to': index + len(record_span) - 1
             }}
             index += len(record_span)
-    
+
     def _convert_records(self, cr, uid, records,
                          context=None, log=lambda a: None):
         """ Converts records from the source iterable (recursive dicts of
@@ -1444,7 +1453,7 @@ class BaseModel(object):
     def _get_default_pivot_view(self, cr, user, context=None):
         view = etree.Element('pivot', string=self._description)
         return view
-        
+
     def _get_default_calendar_view(self, cr, user, context=None):
         """ Generates a default calendar view by trying to infer
         calendar fields from a number of pre-set attribute names
@@ -1883,7 +1892,7 @@ class BaseModel(object):
     def _read_group_prepare(self, orderby, aggregated_fields, annotated_groupbys, query):
         """
         Prepares the GROUP BY and ORDER BY terms for the read_group method. Adds the missing JOIN clause
-        to the query if order should be computed against m2o field. 
+        to the query if order should be computed against m2o field.
         :param orderby: the orderby definition in the form "%(field)s %(order)s"
         :param aggregated_fields: list of aggregated fields in the query
         :param annotated_groupbys: list of dictionaries returned by _read_group_process_groupby
@@ -1965,9 +1974,9 @@ class BaseModel(object):
         return {
             'field': split[0],
             'groupby': gb,
-            'type': field_type, 
+            'type': field_type,
             'display_format': display_formats[gb_function or 'month'] if temporal else None,
-            'interval': time_intervals[gb_function or 'month'] if temporal else None,                
+            'interval': time_intervals[gb_function or 'month'] if temporal else None,
             'tz_convert': tz_convert,
             'qualified_field': qualified_field
         }
@@ -1990,7 +1999,7 @@ class BaseModel(object):
 
     def _read_group_get_domain(self, groupby, value):
         """
-            Helper method to construct the domain corresponding to a groupby and 
+            Helper method to construct the domain corresponding to a groupby and
             a given value. This is mostly relevant for date/datetime.
         """
         if groupby['type'] in ('date', 'datetime') and value:
@@ -2008,9 +2017,9 @@ class BaseModel(object):
 
     def _read_group_format_result(self, data, annotated_groupbys, groupby, groupby_dict, domain, context):
         """
-            Helper method to format the data contained in the dictionary data by 
-            adding the domain corresponding to its values, the groupbys in the 
-            context and by properly formatting the date/datetime values. 
+            Helper method to format the data contained in the dictionary data by
+            adding the domain corresponding to its values, the groupbys in the
+            context and by properly formatting the date/datetime values.
         """
         domain_group = [dom for gb in annotated_groupbys for dom in self._read_group_get_domain(gb, data[gb['groupby']])]
         for k,v in data.iteritems():
@@ -2018,7 +2027,7 @@ class BaseModel(object):
             if gb and gb['type'] in ('date', 'datetime') and v:
                 data[k] = babel.dates.format_date(v, format=gb['display_format'], locale=context.get('lang', 'en_US'))
 
-        data['__domain'] = domain_group + domain 
+        data['__domain'] = domain_group + domain
         if len(groupby) - len(annotated_groupbys) >= 1:
             data['__context'] = { 'group_by': groupby[len(annotated_groupbys):]}
         del data['id']
@@ -2032,19 +2041,19 @@ class BaseModel(object):
         :param uid: current user id
         :param domain: list specifying search criteria [['field_name', 'operator', 'value'], ...]
         :param list fields: list of fields present in the list view specified on the object
-        :param list groupby: list of groupby descriptions by which the records will be grouped.  
+        :param list groupby: list of groupby descriptions by which the records will be grouped.
                 A groupby description is either a field (then it will be grouped by that field)
                 or a string 'field:groupby_function'.  Right now, the only functions supported
-                are 'day', 'week', 'month', 'quarter' or 'year', and they only make sense for 
+                are 'day', 'week', 'month', 'quarter' or 'year', and they only make sense for
                 date/datetime fields.
         :param int offset: optional number of records to skip
         :param int limit: optional max number of records to return
-        :param dict context: context arguments, like lang, time zone. 
+        :param dict context: context arguments, like lang, time zone.
         :param list orderby: optional ``order by`` specification, for
                              overriding the natural sort ordering of the
                              groups, see also :py:meth:`~osv.osv.osv.search`
                              (supported only for many2one fields currently)
-        :param bool lazy: if true, the results are only grouped by the first groupby and the 
+        :param bool lazy: if true, the results are only grouped by the first groupby and the
                 remaining groupbys are put in the __context key.  If false, all the groupbys are
                 done in one call.
         :return: list of dictionaries(one dictionary for each record) containing:
@@ -2059,7 +2068,7 @@ class BaseModel(object):
         if context is None:
             context = {}
         self.check_access_rights(cr, uid, 'read')
-        query = self._where_calc(cr, uid, domain, context=context) 
+        query = self._where_calc(cr, uid, domain, context=context)
         fields = fields or self._columns.keys()
 
         groupby = [groupby] if isinstance(groupby, basestring) else groupby
@@ -2140,7 +2149,7 @@ class BaseModel(object):
         if many2onefields:
             data_ids = [r['id'] for r in fetched_data]
             many2onefields = list(set(many2onefields))
-            data_dict = {d['id']: d for d in self.read(cr, uid, data_ids, many2onefields, context=context)} 
+            data_dict = {d['id']: d for d in self.read(cr, uid, data_ids, many2onefields, context=context)}
             for d in fetched_data:
                 d.update(data_dict[d['id']])
 
@@ -2150,7 +2159,7 @@ class BaseModel(object):
             # Right now, read_group only fill results in lazy mode (by default).
             # If you need to have the empty groups in 'eager' mode, then the
             # method _read_group_fill_results need to be completely reimplemented
-            # in a sane way 
+            # in a sane way
             result = self._read_group_fill_results(cr, uid, domain, groupby_fields[0], groupby[len(annotated_groupbys):],
                                                        aggregated_fields, count_field, result, read_group_order=order,
                                                        context=context)
@@ -5290,11 +5299,11 @@ class BaseModel(object):
         # read() ignores active_test, but it would forward it to any downstream search call
         # (e.g. for x2m or function fields), and this is not the desired behavior, the flag
         # was presumably only meant for the main search().
-        # TODO: Move this to read() directly?                                                                                                
-        read_ctx = dict(context or {})                                                                                                       
-        read_ctx.pop('active_test', None)                                                                                                    
-                                                                                                                                             
-        result = self.read(cr, uid, record_ids, fields, context=read_ctx) 
+        # TODO: Move this to read() directly?
+        read_ctx = dict(context or {})
+        read_ctx.pop('active_test', None)
+
+        result = self.read(cr, uid, record_ids, fields, context=read_ctx)
         if len(result) <= 1:
             return result
 

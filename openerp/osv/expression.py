@@ -367,10 +367,16 @@ def normalize_leaf(element):
     if operator == '<>':
         operator = '!='
     if isinstance(right, bool) and operator in ('in', 'not in'):
-        _logger.warning("The domain term '%s' should use the '=' or '!=' operator." % ((left, original, right),))
+        _logger.warning(
+            "The domain term '%s' should use the '=' or '!=' operator.",
+            left, original, right
+        )
         operator = '=' if operator == 'in' else '!='
     if isinstance(right, (list, tuple)) and operator in ('=', '!='):
-        _logger.warning("The domain term '%s' should use the 'in' or 'not in' operator." % ((left, original, right),))
+        _logger.warning(
+            "The domain term '%s' should use the 'in' or 'not in' operator.",
+            left, original, right
+        )
         operator = 'in' if operator == '=' else 'not in'
     return left, operator, right
 

@@ -386,4 +386,3 @@ odoo.define_section('list.edition.onwrite', ['web.data', 'web.ListView'], functi
         });
     });
 });
-

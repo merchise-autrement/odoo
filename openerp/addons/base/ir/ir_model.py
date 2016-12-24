@@ -626,7 +626,7 @@ class ir_model_constraint(Model):
     def _module_data_uninstall(self, cr, uid, ids, context=None):
         """
         Delete PostgreSQL foreign keys and constraints tracked by this model.
-        """ 
+        """
 
         if uid != SUPERUSER_ID and not self.pool['ir.model.access'].check_groups(cr, uid, "base.group_system"):
             raise AccessError(_('Administrator access is required to uninstall a module'))
@@ -690,7 +690,7 @@ class ir_model_relation(Model):
     def _module_data_uninstall(self, cr, uid, ids, context=None):
         """
         Delete PostgreSQL many2many relations tracked by this model.
-        """ 
+        """
 
         if uid != SUPERUSER_ID and not self.pool['ir.model.access'].check_groups(cr, uid, "base.group_system"):
             raise AccessError(_('Administrator access is required to uninstall a module'))
@@ -998,7 +998,7 @@ class ir_model_data(osv.osv):
         if not res['res_id']:
             raise ValueError('External ID not found in the system: %s' % (xmlid))
         return ids[0], res['model'], res['res_id']
-    
+
     def xmlid_to_res_model_res_id(self, cr, uid, xmlid, raise_if_not_found=False):
         """ Return (res_model, res_id)"""
         try:
@@ -1015,7 +1015,7 @@ class ir_model_data(osv.osv):
     def xmlid_to_object(self, cr, uid, xmlid, raise_if_not_found=False, context=None):
         """ Return a browse_record
         if not found and raise_if_not_found is False return None
-        """ 
+        """
         t = self.xmlid_to_res_model_res_id(cr, uid, xmlid, raise_if_not_found)
         res_model, res_id = t
 
@@ -1203,11 +1203,11 @@ class ir_model_data(osv.osv):
         ``ids`` along with their corresponding database backed (including
         dropping tables, columns, FKs, etc, as long as there is no other
         ir.model.data entry holding a reference to them (which indicates that
-        they are still owned by another module). 
+        they are still owned by another module).
         Attempts to perform the deletion in an appropriate order to maximize
         the chance of gracefully deleting all records.
         This step is performed as part of the full uninstallation of a module.
-        """ 
+        """
 
         ids = self.search(cr, uid, [('module', 'in', modules_to_remove)])
 

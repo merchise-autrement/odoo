@@ -335,7 +335,7 @@ class res_users(osv.osv):
         user_id = super(res_users, self).create(cr, uid, vals, context=context)
         user = self.browse(cr, uid, user_id, context=context)
         user.partner_id.active = user.active
-        if user.partner_id.company_id: 
+        if user.partner_id.company_id:
             user.partner_id.write({'company_id': user.company_id.id})
         return user_id
 
@@ -365,7 +365,7 @@ class res_users(osv.osv):
         if 'company_id' in values:
             for user in self.browse(cr, uid, ids, context=context):
                 # if partner is global we keep it that way
-                if user.partner_id.company_id and user.partner_id.company_id.id != values['company_id']: 
+                if user.partner_id.company_id and user.partner_id.company_id.id != values['company_id']:
                     user.partner_id.write({'company_id': user.company_id.id})
             # clear default ir values when company changes
             self.pool['ir.values'].get_defaults_dict.clear_cache(self.pool['ir.values'])
@@ -675,7 +675,7 @@ class users_implied(osv.osv):
         return res
 
 #----------------------------------------------------------
-# Vitrual checkbox and selection for res.user form view
+# Virtual checkbox and selection for res.user form view
 #
 # Extension of res.groups and res.users for the special groups view in the users
 # form.  This extension presents groups with selection and boolean widgets:

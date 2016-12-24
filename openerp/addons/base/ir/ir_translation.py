@@ -294,6 +294,7 @@ class ir_translation(osv.osv):
             cr.commit()
 
         if 'ir_translation_ltn' not in indexes:
+            _logger.debug('Creating ir_translation_ltn index')
             cr.execute('CREATE INDEX ir_translation_ltn ON ir_translation (name, lang, type)')
             cr.commit()
 
@@ -370,7 +371,7 @@ class ir_translation(osv.osv):
                         AND name=%s"""
 
             params = (lang or '', types, tools.ustr(name))
-        
+
         return (query, params)
 
     @tools.ormcache('name', 'types', 'lang', 'source', 'res_id')
