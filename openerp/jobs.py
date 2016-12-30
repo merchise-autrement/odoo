@@ -248,7 +248,6 @@ def task(self, model, methodname, dbname, uid, args, kwargs):
                     _report_success.delay(dbname, uid, self.request.id,
                                           result=res)
             except OperationalError as error:
-                cr.rollback()
                 if error.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
                     if self.request.id:
                         _report_current_failure(dbname, uid, self.request.id,
@@ -259,7 +258,6 @@ def task(self, model, methodname, dbname, uid, args, kwargs):
                     self.retry(args=(model, methodname, dbname, uid,
                                      args, kwargs))
             except Exception as error:
-                cr.rollback()
                 if self.request.id:
                     _report_current_failure(dbname, uid, self.request.id,
                                             error)
@@ -272,20 +270,22 @@ def task(self, model, methodname, dbname, uid, args, kwargs):
 
 @contextlib.contextmanager
 def _single_registry(dbname, uid):
-    RegistryManager.check_registry_signaling(dbname)
-    registry = RegistryManager.get(dbname)
-    # Several pieces of OpenERP code expect this attributes to be set in the
-    # current thread.
-    threading.current_thread().uid = uid
-    threading.current_thread().dbname = dbname
-    try:
-        with registry.cursor() as cr, Environment.manage():
-            yield registry, cr
-    finally:
-        if hasattr(threading.current_thread(), 'uid'):
-            del threading.current_thread().uid
-        if hasattr(threading.current_thread(), 'dbname'):
-            del threading.current_thread().dbname
+    __traceback_hide__ = True  # noqa: hide from Celery Tracebacks
+    with Environment.manage():
+        registry = RegistryManager.get(dbname)
+        RegistryManager.check_registry_signaling(dbname)
+        # Several pieces of OpenERP code expect this attributes to be set in the
+        # current thread.
+        threading.current_thread().uid = uid
+        threading.current_thread().dbname = dbname
+        try:
+            with registry.cursor() as cr:
+                yield registry, cr
+        finally:
+            if hasattr(threading.current_thread(), 'uid'):
+                del threading.current_thread().uid
+            if hasattr(threading.current_thread(), 'dbname'):
+                del threading.current_thread().dbname
 
 
 @app.task(bind=True, max_retries=5)
