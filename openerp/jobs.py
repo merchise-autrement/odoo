@@ -279,8 +279,8 @@ def task(self, model, methodname, dbname, uid, args, kwargs):
 def _single_registry(dbname, uid):
     __traceback_hide__ = True  # noqa: hide from Celery Tracebacks
     with Environment.manage():
-        registry = RegistryManager.get(dbname)
         RegistryManager.check_registry_signaling(dbname)
+        registry = RegistryManager.get(dbname)
         # Several pieces of OpenERP code expect this attributes to be set in the
         # current thread.
         threading.current_thread().uid = uid
