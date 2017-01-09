@@ -76,6 +76,9 @@
 
         <script type="text/javascript" src="/web/static/lib/bootstrap-datetimepicker/src/js/bootstrap-datetimepicker.js"></script>
         <script type="text/javascript" src="/web/static/lib/select2/select2.js"></script>
+
+        <!-- Merchise's lib -->
+        <script type="text/javascript" src="/web/static/lib/xopgi/js/xopgi.js"></script>
     </template>
 
     <template id="web.assets_backend">

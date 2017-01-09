@@ -21,6 +21,8 @@ from os.path import join as opj
 
 import odoo
 import odoo.tools as tools
+from odoo.tools.safe_eval import safe_eval
+
 import odoo.release as release
 from odoo import SUPERUSER_ID, api
 
@@ -327,9 +329,14 @@ def load_information_from_description_file(module, mod_path=None):
             'depends data demo test init_xml update_xml demo_xml'.split(),
             iter(list, None)))
 
+        globals_dict = {
+            'ODOO_VERSION_INFO': release.version_info,
+        }
+
         f = tools.file_open(manifest_file)
         try:
-            info.update(ast.literal_eval(f.read()))
+            # merchise: use safe_eval to allow the ODOO_VERSION_INFO stuff.
+            info.update(safe_eval(f.read(), globals_dict=globals_dict))
         finally:
             f.close()
 

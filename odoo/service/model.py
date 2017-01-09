@@ -15,6 +15,9 @@ from odoo.tools.translate import _
 
 import security
 
+from xoutil.string import safe_encode
+
+
 _logger = logging.getLogger(__name__)
 
 PG_CONCURRENCY_ERRORS_TO_RETRY = (errorcodes.LOCK_NOT_AVAILABLE, errorcodes.SERIALIZATION_FAILURE, errorcodes.DEADLOCK_DETECTED)
@@ -128,7 +131,7 @@ def check(f):
                 if e.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
                     raise
                 if tries >= MAX_TRIES_ON_CONCURRENCY_FAILURE:
-                    _logger.info("%s, maximum number of tries reached" % errorcodes.lookup(e.pgcode))
+                    _logger.warn("%s, maximum number of tries reached" % errorcodes.lookup(e.pgcode))
                     raise
                 wait_time = random.uniform(0.0, 2 ** tries)
                 tries += 1
@@ -137,7 +140,7 @@ def check(f):
             except IntegrityError, inst:
                 registry = odoo.registry(dbname)
                 for key in registry._sql_error.keys():
-                    if key in inst[0]:
+                    if safe_encode(key) in safe_encode(inst[0]):
                         raise ValidationError(tr(registry._sql_error[key], 'sql_constraint') or inst[0])
                 if inst.pgcode in (errorcodes.NOT_NULL_VIOLATION, errorcodes.FOREIGN_KEY_VIOLATION, errorcodes.RESTRICT_VIOLATION):
                     msg = _('The operation cannot be completed, probably due to the following:\n- deletion: you may be trying to delete a record while other records still reference it\n- creation/update: a mandatory field is not correctly set')

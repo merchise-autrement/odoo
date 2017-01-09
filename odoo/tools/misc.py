@@ -38,7 +38,7 @@ except ImportError:
 
 from config import config
 from cache import *
-from .parse_version import parse_version 
+from .parse_version import parse_version
 
 import odoo
 # get_encodings, ustr and exception_to_unicode were originally from tools.misc.
@@ -138,7 +138,7 @@ def file_open(name, mode="r", subdir='addons', pathinfo=False):
     """Open a file from the OpenERP root, using a subdir folder.
 
     Example::
-    
+
     >>> file_open('hr/report/timesheer.xsl')
     >>> file_open('addons/hr/report/timesheet.xsl')
     >>> file_open('../../base/report/rml_template.xsl', subdir='addons/hr/report', pathinfo=True)
@@ -278,7 +278,7 @@ def flatten(list):
 
 def reverse_enumerate(l):
     """Like enumerate but in the other sens
-    
+
     Usage::
     >>> a = ['a', 'b', 'c']
     >>> it = reverse_enumerate(a)
@@ -649,6 +649,16 @@ DEFAULT_SERVER_DATETIME_FORMAT = "%s %s" % (
     DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_TIME_FORMAT)
 
+# The following format time by leaving seconds to 00.  This is useful in
+# applications where sub-minute timings are not really useful (e.g Instant
+# Messaging).
+DEFAULT_SERVER_TIME_FORMAT_IN_MINUTES = '%H:%M:00'
+DEFAULT_SERVER_DATETIME_FORMAT_IN_MINUTES = '%s %s' % (
+    DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_TIME_FORMAT_IN_MINUTES
+)
+
+
 # Python's strftime supports only the format directives
 # that are available on the platform's libc, so in order to
 # be cross-platform we map to the directives required by
@@ -780,24 +790,21 @@ if __name__ == '__main__':
     import doctest
     doctest.testmod()
 
+
 class upload_data_thread(threading.Thread):
     def __init__(self, email, data, type):
-        self.args = [('email',email),('type',type),('data',data)]
-        super(upload_data_thread,self).__init__()
+        self.args = [('email', email), ('type', type), ('data', data)]
+        super(upload_data_thread, self).__init__()
+
     def run(self):
-        try:
-            import urllib
-            args = urllib.urlencode(self.args)
-            fp = urllib.urlopen('http://www.openerp.com/scripts/survey.php', args)
-            fp.read()
-            fp.close()
-        except Exception:
-            pass
+        # No, thanks
+        pass
+
 
 def upload_data(email, data, type='SURVEY'):
-    a = upload_data_thread(email, data, type)
-    a.start()
+    # No, thanks
     return True
+
 
 def get_and_group_by_field(cr, uid, obj, ids, field, context=None):
     """ Read the values of ``field´´ for the given ``ids´´ and group ids by value.
@@ -852,7 +859,7 @@ class unquote(str):
         return self
 
 class UnquoteEvalContext(defaultdict):
-    """Defaultdict-based evaluation context that returns 
+    """Defaultdict-based evaluation context that returns
        an ``unquote`` string for any missing name used during
        the evaluation.
        Mostly useful for evaluating OpenERP domains/contexts that

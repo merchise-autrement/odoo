@@ -110,6 +110,15 @@ def py2exe_options():
                         'xlwt',
                         'xml', 'xml.dom',
                         'yaml',
+
+                        # Merchise
+                        'celery>=3.1.19,<5.0.0',
+                        'flower',
+                        'hiredis',
+                        'redis',
+                        'xoutil',
+                        'raven>=5.31.0',
+                        'raven-sanitize-openerp',
                     ],
                     'excludes': ['Tkconstants', 'Tkinter', 'tcl'],
                 }
@@ -134,6 +143,7 @@ setup(
     packages=find_packages(),
     package_dir={'%s' % lib_name: 'odoo'},
     include_package_data=True,
+    zip_safe=False,
     install_requires=[
         'babel >= 1.0',
         'decorator',
@@ -170,6 +180,15 @@ setup(
         'werkzeug',
         'xlsxwriter',
         'xlwt',
+
+        # Merchise
+        'celery',
+        'flower',
+        'redis',
+        'xoutil',
+        'raven>=5.31.0',
+        'raven-sanitize-openerp',
+
     ],
     extras_require={
         'SSL': ['pyopenssl'],

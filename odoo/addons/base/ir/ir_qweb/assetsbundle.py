@@ -100,14 +100,15 @@ class AssetsBundle(object):
             elif f['atype'] == 'text/javascript':
                 self.javascripts.append(JavascriptAsset(self, url=f['url'], filename=f['filename'], inline=f['content']))
 
-    def to_html(self, sep=None, css=True, js=True, debug=False, async=False, url_for=(lambda url: url)):
+    def to_html(self, sep=None, css=True, js=True, debug=False, async=False,
+                url_for=(lambda url: url), spdy=False):
         if sep is None:
             sep = '\n            '
         response = []
-        if debug == 'assets':
+        if debug == 'assets' or spdy:
             if css and self.stylesheets:
                 if not self.is_css_preprocessed():
-                    self.preprocess_css(debug=debug)
+                    self.preprocess_css(debug=debug, spdy=spdy)
                     if self.css_errors:
                         msg = '\n'.join(self.css_errors)
                         self.stylesheets.append(StylesheetAsset(self, inline=self.css_message(msg)))
@@ -311,7 +312,7 @@ class AssetsBundle(object):
 
         return preprocessed
 
-    def preprocess_css(self, debug=False):
+    def preprocess_css(self, debug=False, spdy=False):
         """
             Checks if the bundle contains any sass/less content, then compiles it to css.
             Returns the bundle's flat css.
@@ -333,7 +334,7 @@ class AssetsBundle(object):
                     asset = next(asset for asset in self.stylesheets if asset.id == asset_id)
                     asset._content = fragments.pop(0)
 
-                    if debug:
+                    if debug or spdy:
                         try:
                             fname = os.path.basename(asset.url)
                             url = asset.html_url
@@ -496,6 +497,21 @@ class WebAsset(object):
             content = self.content
         return '\n/* %s */\n%s' % (self.name, content)
 
+    @property
+    def versionhash(self):
+        self.stat()
+        if self._filename:
+            try:
+                return os.path.getmtime(self._filename)
+            except:
+                _logger.exception(
+                    "Error while hashing asset '%s'",
+                    self._filename
+                )
+                return None
+        else:
+            return None
+
 
 class JavascriptAsset(WebAsset):
     def minify(self):
@@ -509,7 +525,11 @@ class JavascriptAsset(WebAsset):
 
     def to_html(self):
         if self.url:
-            return '<script type="text/javascript" src="%s"></script>' % (self.html_url)
+            vhash = self.versionhash
+            if vhash:
+                return '<script type="text/javascript" src="%s?_h=%s"></script>' % (self.html_url, vhash)
+            else:
+                return '<script type="text/javascript" src="%s"></script>' % (self.html_url)
         else:
             return '<script type="text/javascript" charset="utf-8">%s</script>' % self.with_header()
 
@@ -571,7 +591,11 @@ class StylesheetAsset(WebAsset):
         media = (' media="%s"' % werkzeug.utils.escape(self.media)) if self.media else ''
         if self.url:
             href = self.html_url
-            return '<link rel="stylesheet" href="%s" type="text/css"%s/>' % (href, media)
+            vhash = self.versionhash
+            if vhash:
+                return '<link rel="stylesheet" href="%s?_h=%s" type="text/css"%s/>' % (href, vhash, media)
+            else:
+                return '<link rel="stylesheet" href="%s" type="text/css"%s/>' % (href, media)
         else:
             return '<style type="text/css"%s>%s</style>' % (media, self.with_header())
 

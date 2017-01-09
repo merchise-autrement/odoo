@@ -125,6 +125,11 @@ ExtendedSearchProposition.Field = Widget.extend({
         switch (operator.value) {
         case '∃': return [[field.name, '!=', false]];
         case '∄': return [[field.name, '=', false]];
+        case '=ilike': return this.make_domain(
+            field.name,
+            operator.value,
+            this.get_value() + '%'
+        );
         default: return [[field.name, operator.value, this.get_value()]];
         }
     },
@@ -160,6 +165,7 @@ ExtendedSearchProposition.Char = ExtendedSearchProposition.Field.extend({
     },
     operators: [
         {value: "ilike", text: _lt("contains")},
+        {value: "=ilike", text: _lt("starts with")},
         {value: "not ilike", text: _lt("doesn't contain")},
         {value: "=", text: _lt("is equal to")},
         {value: "!=", text: _lt("is not equal to")},
@@ -193,13 +199,13 @@ ExtendedSearchProposition.DateTime = ExtendedSearchProposition.Field.extend({
     },
     get_domain: function (field, operator) {
         switch (operator.value) {
-        case '∃': 
+        case '∃':
             return [[field.name, '!=', false]];
-        case '∄': 
+        case '∄':
             return [[field.name, '=', false]];
         case 'between':
             return [[field.name, '>=', this.datewidget_1.get_value()], [field.name,'<=', this.datewidget_2.get_value()]];
-        default: 
+        default:
             return [[field.name, operator.value, this.get_value()]];
         }
     },

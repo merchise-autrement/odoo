@@ -24,12 +24,11 @@ import zlib
 from xml.etree import ElementTree
 from cStringIO import StringIO
 
-
 import odoo
 import odoo.modules.registry
 from odoo.api import call_kw, Environment
 from odoo.modules import get_resource_path
-from odoo.tools import topological_sort
+from odoo.tools import topological_sort, config
 from odoo.tools.translate import _
 from odoo.tools.misc import str2bool, xlwt
 from odoo import http
@@ -462,6 +461,7 @@ class Home(http.Controller):
         except odoo.exceptions.AccessDenied:
             values['databases'] = None
 
+        values['disable_database_manager'] = config.get('disable_database_manager', False)
         if request.httprequest.method == 'POST':
             old_uid = request.uid
             uid = request.session.authenticate(request.session.db, request.params['login'], request.params['password'])
@@ -601,108 +601,110 @@ class Proxy(http.Controller):
             return client.post('/' + path, base_url=base_url, query_string=query_string,
                                headers=headers, data=data)
 
-class Database(http.Controller):
 
-    def _render_template(self, **d):
-        d.setdefault('manage',True)
-        d['insecure'] = odoo.tools.config['admin_passwd'] == 'admin'
-        d['list_db'] = odoo.tools.config['list_db']
-        d['langs'] = odoo.service.db.exp_list_lang()
-        d['countries'] = odoo.service.db.exp_list_countries()
-        # databases list
-        d['databases'] = []
-        try:
-            d['databases'] = http.db_list()
-        except odoo.exceptions.AccessDenied:
-            monodb = db_monodb()
-            if monodb:
-                d['databases'] = [monodb]
-        return env.get_template("database_manager.html").render(d)
+if not config.get('disable_database_manager', False):
+    class Database(http.Controller):
+        def _render_template(self, **d):
+            d.setdefault('manage',True)
+            d['insecure'] = odoo.tools.config['admin_passwd'] == 'admin'
+            d['list_db'] = odoo.tools.config['list_db']
+            d['langs'] = odoo.service.db.exp_list_lang()
+            d['countries'] = odoo.service.db.exp_list_countries()
+            # databases list
+            d['databases'] = []
+            try:
+                d['databases'] = http.db_list()
+            except odoo.exceptions.AccessDenied:
+                monodb = db_monodb()
+                if monodb:
+                    d['databases'] = [monodb]
+            return env.get_template("database_manager.html").render(d)
 
-    @http.route('/web/database/selector', type='http', auth="none")
-    def selector(self, **kw):
-        return self._render_template(manage=False)
+        @http.route('/web/database/selector', type='http', auth="none")
+        def selector(self, **kw):
+            return self._render_template(manage=False)
 
-    @http.route('/web/database/manager', type='http', auth="none")
-    def manager(self, **kw):
-        return self._render_template()
+        @http.route('/web/database/manager', type='http', auth="none")
+        def manager(self, **kw):
+            return self._render_template()
 
-    @http.route('/web/database/create', type='http', auth="none", methods=['POST'], csrf=False)
-    def create(self, master_pwd, name, lang, password, **post):
-        try:
-            # country code could be = "False" which is actually True in python
-            country_code = post.get('country_code') or False
-            dispatch_rpc('db', 'create_database', [master_pwd, name, bool(post.get('demo')), lang, password, post['login'], country_code])
-            request.session.authenticate(name, post['login'], password)
-            return http.local_redirect('/web/')
-        except Exception, e:
-            error = "Database creation error: %s" % e
-        return self._render_template(error=error)
-
-    @http.route('/web/database/duplicate', type='http', auth="none", methods=['POST'], csrf=False)
-    def duplicate(self, master_pwd, name, new_name):
-        try:
-            dispatch_rpc('db', 'duplicate_database', [master_pwd, name, new_name])
-            return http.local_redirect('/web/database/manager')
-        except Exception, e:
-            error = "Database duplication error: %s" % e
+        @http.route('/web/database/create', type='http', auth="none", methods=['POST'], csrf=False)
+        def create(self, master_pwd, name, lang, password, **post):
+            try:
+                # country code could be = "False" which is actually True in python
+                country_code = post.get('country_code') or False
+                dispatch_rpc('db', 'create_database', [master_pwd, name, bool(post.get('demo')), lang, password, post['login'], country_code])
+                request.session.authenticate(name, post['login'], password)
+                return http.local_redirect('/web/')
+            except Exception, e:
+                error = "Database creation error: %s" % e
             return self._render_template(error=error)
 
-    @http.route('/web/database/drop', type='http', auth="none", methods=['POST'], csrf=False)
-    def drop(self, master_pwd, name):
-        try:
-            dispatch_rpc('db','drop', [master_pwd, name])
-            request._cr = None  # dropping a database leads to an unusable cursor
-            return http.local_redirect('/web/database/manager')
-        except Exception, e:
-            error = "Database deletion error: %s" % e
-            return self._render_template(error=error)
+        @http.route('/web/database/duplicate', type='http', auth="none", methods=['POST'], csrf=False)
+        def duplicate(self, master_pwd, name, new_name):
+            try:
+                dispatch_rpc('db', 'duplicate_database', [master_pwd, name, new_name])
+                return http.local_redirect('/web/database/manager')
+            except Exception, e:
+                error = "Database duplication error: %s" % e
+                return self._render_template(error=error)
 
-    @http.route('/web/database/backup', type='http', auth="none", methods=['POST'], csrf=False)
-    def backup(self, master_pwd, name, backup_format = 'zip'):
-        try:
-            odoo.service.db.check_super(master_pwd)
-            ts = datetime.datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S")
-            filename = "%s_%s.%s" % (name, ts, backup_format)
-            headers = [
-                ('Content-Type', 'application/octet-stream; charset=binary'),
-                ('Content-Disposition', content_disposition(filename)),
-            ]
-            dump_stream = odoo.service.db.dump_db(name, None, backup_format)
-            response = werkzeug.wrappers.Response(dump_stream, headers=headers, direct_passthrough=True)
-            return response
-        except Exception, e:
-            _logger.exception('Database.backup')
-            error = "Database backup error: %s" % e
-            return self._render_template(error=error)
+        @http.route('/web/database/drop', type='http', auth="none", methods=['POST'], csrf=False)
+        def drop(self, master_pwd, name):
+            try:
+                dispatch_rpc('db','drop', [master_pwd, name])
+                request._cr = None  # dropping a database leads to an unusable cursor
+                return http.local_redirect('/web/database/manager')
+            except Exception, e:
+                error = "Database deletion error: %s" % e
+                return self._render_template(error=error)
 
-    @http.route('/web/database/restore', type='http', auth="none", methods=['POST'], csrf=False)
-    def restore(self, master_pwd, backup_file, name, copy=False):
-        try:
-            data = base64.b64encode(backup_file.read())
-            dispatch_rpc('db', 'restore', [master_pwd, name, data, str2bool(copy)])
-            return http.local_redirect('/web/database/manager')
-        except Exception, e:
-            error = "Database restore error: %s" % e
-            return self._render_template(error=error)
+        @http.route('/web/database/backup', type='http', auth="none", methods=['POST'], csrf=False)
+        def backup(self, master_pwd, name, backup_format = 'zip'):
+            try:
+                odoo.service.db.check_super(master_pwd)
+                ts = datetime.datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S")
+                filename = "%s_%s.%s" % (name, ts, backup_format)
+                headers = [
+                    ('Content-Type', 'application/octet-stream; charset=binary'),
+                    ('Content-Disposition', content_disposition(filename)),
+                ]
+                dump_stream = odoo.service.db.dump_db(name, None, backup_format)
+                response = werkzeug.wrappers.Response(dump_stream, headers=headers, direct_passthrough=True)
+                return response
+            except Exception, e:
+                _logger.exception('Database.backup')
+                error = "Database backup error: %s" % e
+                return self._render_template(error=error)
 
-    @http.route('/web/database/change_password', type='http', auth="none", methods=['POST'], csrf=False)
-    def change_password(self, master_pwd, master_pwd_new):
-        try:
-            dispatch_rpc('db', 'change_admin_password', [master_pwd, master_pwd_new])
-            return http.local_redirect('/web/database/manager')
-        except Exception, e:
-            error = "Master password update error: %s" % e
-            return self._render_template(error=error)
+        @http.route('/web/database/restore', type='http', auth="none", methods=['POST'], csrf=False)
+        def restore(self, master_pwd, backup_file, name, copy=False):
+            try:
+                data = base64.b64encode(backup_file.read())
+                dispatch_rpc('db', 'restore', [master_pwd, name, data, str2bool(copy)])
+                return http.local_redirect('/web/database/manager')
+            except Exception, e:
+                error = "Database restore error: %s" % e
+                return self._render_template(error=error)
 
-    @http.route('/web/database/list', type='json', auth='none')
-    def list(self):
-        """
-        Used by Mobile application for listing database
-        :return: List of databases
-        :rtype: list
-        """
-        return http.db_list()
+        @http.route('/web/database/change_password', type='http', auth="none", methods=['POST'], csrf=False)
+        def change_password(self, master_pwd, master_pwd_new):
+            try:
+                dispatch_rpc('db', 'change_admin_password', [master_pwd, master_pwd_new])
+                return http.local_redirect('/web/database/manager')
+            except Exception, e:
+                error = "Master password update error: %s" % e
+                return self._render_template(error=error)
+
+        @http.route('/web/database/list', type='json', auth='none')
+        def list(self):
+            """
+            Used by Mobile application for listing database
+            :return: List of databases
+            :rtype: list
+            """
+            return http.db_list()
+
 
 class Session(http.Controller):
 

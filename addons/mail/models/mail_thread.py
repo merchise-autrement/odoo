@@ -218,7 +218,13 @@ class MailThread(models.AbstractModel):
             - log a creation message
         """
         if self._context.get('tracking_disable'):
-            return super(MailThread, self).create(values)
+            thread = super(MailThread, self).create(values)
+            # merchise: Ensure to have the unique index before trying to
+            # create notifications, so that those notification have the proper
+            # thread index.
+            if thread:
+                thread._ensure_index()
+            return thread
 
         # subscribe uid unless asked not to
         if not self._context.get('mail_create_nosubscribe'):
@@ -226,6 +232,12 @@ class MailThread(models.AbstractModel):
             message_follower_ids += self.env['mail.followers']._add_follower_command(self._name, [], {self.env.user.partner_id.id: None}, {}, force=True)[0]
             values['message_follower_ids'] = message_follower_ids
         thread = super(MailThread, self).create(values)
+
+        # merchise: Ensure to have the unique index before trying to
+        # create notifications, so that those notification have the proper
+        # thread index.
+        if thread:
+            thread._ensure_index()
 
         # automatic logging unless asked not to (mainly for various testing purpose)
         if not self._context.get('mail_create_nolog'):
@@ -1447,9 +1459,27 @@ class MailThread(models.AbstractModel):
                         body = html
                     else:
                         body = tools.append_content_to_html(body, html, plaintext=False)
-                # 4) Anything else -> attachment
+                # 4) if message/* we will do mostly like text/plain but Python
+                # handles message/* as multipart and thus
+                # get_payload(decode=True) is None.  Letting the "attachment"
+                # catch-all facility to proceed would only result in several
+                # 4-bytes attachments with "None".
+                elif part.get_content_maintype() == 'message':
+                    payload = ''.join(
+                        subpart.as_string() for subpart in part.get_payload()
+                    )
+                    body = tools.append_content_to_html(
+                        body, tools.ustr(payload, encoding, errors='replace'),
+                        preserve=True
+                    )
+                # *) Anything else is ignored. Some MUAs don't include the
+                # "Content-Disposition: inline", but simply omit it.  The
+                # "Content-Disposition: attachment" is already dealt in the
+                # item 1) and other stuff like message/reports should not be
+                # considered attachments.  Furthermore, message/ parts are
+                # "is_multipart()", and the payload is None.
                 else:
-                    attachments.append(self._Attachment(filename or 'attachment', part.get_payload(decode=True), {}))
+                    pass
 
         body, attachments = self._message_extract_payload_postprocess(message, body, attachments)
         return body, attachments

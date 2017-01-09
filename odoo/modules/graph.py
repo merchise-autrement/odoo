@@ -117,19 +117,12 @@ class Graph(dict):
             _logger.warning('Some modules were not loaded.')
         return result
 
-
     def __iter__(self):
-        level = 0
-        done = set(self.keys())
-        while done:
-            level_modules = sorted((name, module) for name, module in self.items() if module.depth==level)
-            for name, module in level_modules:
-                done.remove(name)
-                yield module
-            level += 1
+        return (module for _, module in sorted(self.items(), key=lambda (n, m): (m.depth, n)))
 
     def __str__(self):
         return '\n'.join(str(n) for n in self if n.depth == 0)
+
 
 class Node(object):
     """ One module in the modules dependency graph.
