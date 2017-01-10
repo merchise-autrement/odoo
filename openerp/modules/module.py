@@ -88,9 +88,12 @@ def initialize_sys_path():
     if base_path not in ad_paths:
         ad_paths.append(base_path)
 
+    ad_paths.extend(find_external_addons())
+
     if not hooked:
         sys.meta_path.append(AddonsImportHook())
         hooked = True
+
 
 def get_module_path(module, downloaded=False, display_warning=True):
     """Return the path of the given module.
@@ -501,3 +504,47 @@ def unwrap_suite(test):
     for item in itertools.chain.from_iterable(
             itertools.imap(unwrap_suite, subtests)):
         yield item
+
+
+from xoutil.functools import lru_cache
+XOEUF_EXTERNAL_ADDON_GROUP = 'xoeuf.addons'
+__xoeuf_patched__ = True
+
+
+@lru_cache(1)
+def find_external_addons():
+    '''Finds all externally installed addons.
+
+    Externally installed addons are modules that are distributed with
+    setuptools' distributions.
+
+    An externally addon is defined in a package that defines an `entry
+    point`__ in the group "xoeuf.addons" which points to a standard package
+    (i.e loadable without any specific loader).
+
+    :returns:  A dictionary from addons to it's a tuple of `(container's path,
+               entry_point)`.
+
+    Example::
+
+       [xoeuf.addons]
+       xopgi_account = xopgi.addons.xopgi_account
+
+    '''
+    import os
+    from pkg_resources import iter_entry_points
+    from xoutil.iterators import delete_duplicates
+    res = []
+    for entry in iter_entry_points(XOEUF_EXTERNAL_ADDON_GROUP):
+        if not entry.attrs:
+            # The entry-point is a whole module.  We can't load the module
+            # here, cause the whole point is to grab the paths before openerp
+            # is configured, but if you load an OpenERP addon you will be
+            # importing openerp somehow and enacting configuration
+            loc = entry.dist.location
+            relpath = entry.module_name.replace('.', os.path.sep)
+            # The parent directory is the one!
+            abspath = os.path.abspath(os.path.join(loc, relpath, '..'))
+            if os.path.isdir(abspath):
+                res.append(abspath)
+    return delete_duplicates(res)
