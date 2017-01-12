@@ -46,6 +46,7 @@ class Environment(dict):
     the provided ID) attributes.
     """
     def __init__(self, session, record):
+        super(Environment, self).__init__()  # why not?
         self.cr = session.cr
         self.uid = session.uid
         self.model = record.model
@@ -54,10 +55,10 @@ class Environment(dict):
         self.obj = openerp.registry(self.cr.dbname)[self.model]
 
     def __getitem__(self, key):
-        records = self.obj.browse(self.cr, self.uid, self.ids)
-        if hasattr(records, key):
+        try:
+            records = self.obj.browse(self.cr, self.uid, self.ids)
             return getattr(records, key)
-        else:
+        except AttributeError:
             return super(Environment, self).__getitem__(key)
 
 
@@ -334,4 +335,3 @@ class WorkflowItem(object):
         return self.wkf_expr_eval_expr(transition['condition'])
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-
