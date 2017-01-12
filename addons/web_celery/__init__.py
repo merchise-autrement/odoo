@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # web_celery
 # ---------------------------------------------------------------------
-# Copyright (c) 2015, 2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -25,13 +25,6 @@ Features:
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
-
-
-from xoutil.context import context
-
-from openerp.jobs import CELERY_JOB, HighPriorityDeferred, report_progress
-from openerp.models import Model
-from openerp.tools.translate import _
 
 
 def WAIT_FOR_TASK(job, next_action=None):

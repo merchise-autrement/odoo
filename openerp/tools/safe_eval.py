@@ -153,7 +153,7 @@ def test_expr(expr, allowed_codes, mode="eval"):
         code_obj = compile(expr, "", mode)
     except (SyntaxError, TypeError, ValueError):
         raise
-    except Exception, e:
+    except Exception as e:
         import sys
         exc_info = sys.exc_info()
         raise ValueError, '"%s" while compiling\n%r' % (ustr(e), expr), exc_info[2]
@@ -312,7 +312,7 @@ def safe_eval(expr, globals_dict=None, locals_dict=None, mode="eval", nocopy=Fal
         raise
     except openerp.exceptions.MissingError:
         raise
-    except Exception, e:
+    except Exception as e:
         import sys
         exc_info = sys.exc_info()
         raise ValueError, '"%s" while evaluating\n%r' % (ustr(e), expr), exc_info[2]
