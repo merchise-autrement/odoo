@@ -52,8 +52,6 @@ spawned automatically unless in preforking mode::
 You should see some logs about the workers being started::
 
     INFO ? openerp.service.server: Worker DefaultCeleryWorker (9396) alive
-    INFO ? openerp.service.server: Worker HighPriorityCeleryWorker (9397) alive
-    INFO ? openerp.service.server: Worker LowPriorityCeleryWorker (9398) alive
 
 If you don't see that something has gone bad or your configuration has
 disabled the workers.  If you see that, then you may start to send jobs to the
@@ -67,8 +65,6 @@ The ``openerp.jobs`` module exposes three functions to request backgrounds
 jobs:
 
 - ``Deferred``
-- ``HighPriorityDeferred``
-- ``LowPriorityDeferred``
 
 They put the background job request in the one of the queues we mentioned
 above.
@@ -95,13 +91,11 @@ the `apply_async` method for calling tasks in celery).  If you need to pass
 options, for instance, to delay a job for a given amount of time (ETA or
 countdown), you may use one of these instead.
 
-- ``DefaultDeferredType``
-- ``HighPriorityDeferredType``
-- ``LowPriorityDeferredType``
+- ``DeferredType``
 
 The signature for all of those functions is the same:
 
-.. function:: DefaultDeferredType(**options)
+.. function:: DeferredType(**options)
 
    Return a function to create background jobs.  The returned function has the
    signature explained in the `Deferred`:func: function documentation.
@@ -145,10 +139,10 @@ The signature for all of those functions is the same:
 
 Example: Delay the execution of the task by passing a countdown::
 
-  >>> from openerp.jobs import DefaultDeferredType
+  >>> from openerp.jobs import DeferredType
   >>> for i in range(1000):
-  ...     res = DefaultDeferredType(countdown=i + 10)('res.users', 'mercurio',
-  ...                                                 1, 'search', [])
+  ...     res = DeferredType(countdown=i + 10)('res.users', 'mercurio',
+  ...                                          1, 'search', [])
 
 
 
