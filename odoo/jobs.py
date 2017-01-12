@@ -36,6 +36,7 @@ from kombu import Exchange, Queue
 from celery import Celery as _CeleryApp
 
 import odoo.tools.config as config
+
 from odoo.release import version_info
 from odoo.api import Environment
 from odoo.modules.registry import RegistryManager
@@ -53,27 +54,26 @@ ROUTE_NS = 'odoo-{}'.format('.'.join(str(x) for x in version_info[:2]))
 ROUTE_KEY = '{}.#'.format(ROUTE_NS)
 
 DEFAULT_QUEUE_NAME = '{}.default'.format(ROUTE_NS)
-LOWPRI_QUEUE_NAME = HIGHPRI_QUEUE_NAME = DEFAULT_QUEUE_NAME
 
 del version_info
 
 
-def _build_api_function(name, queue, **options):
-    disallow_nested = not options.pop('allow_nested', False)
+def DeferredType(**options):
+    '''Create a function for a deferred job in the default queue.
 
-    def func(model, cr, uid, method, *args, **kwargs):
-        args = _getargs(model, method, cr, uid, *args, **kwargs)
-        if disallow_nested and CELERY_JOB in _exec_context:
-            logger.warn('Nested background call detected for model %s '
-                        'and method %s', model, method, extra=dict(
-                            model=model, method=method, uid=uid,
-                            args_=args
-                        ))
-            return task(*args)
-        else:
-            return task.apply_async(queue=queue, args=args, **options)
-    func.__name__ = name
-    func.__doc__ = (
+    :keyword allow_nested: If True, jobs created with the returning function
+                           will be allowed to run nested (within the contex/t
+                           of another background job).
+
+                           The default is False.
+
+    :keyword queue: The name of the queue.
+
+    '''
+    disallow_nested = not options.pop('allow_nested', False)
+    options.setdefault('queue', DEFAULT_QUEUE_NAME)
+
+    def Deferred(model, cr, uid, method, *args, **kwargs):
         '''Request to run a method in a celery worker.
 
         The job will be routed to the '{queue}' priority queue.
@@ -94,27 +94,35 @@ def _build_api_function(name, queue, **options):
            .. seealso: `DefaultDeferredType`:func:
 
         '''
-    ).format(queue=queue.rsplit('.', 1)[-1] if '.' in queue else queue)
-    return func
+        args = _getargs(model, method, cr, uid, *args, **kwargs)
+        if disallow_nested and CELERY_JOB in _exec_context:
+            logger.warn('Nested background call detected for model %s '
+                        'and method %s', model, method, extra=dict(
+                            model=model, method=method, uid=uid,
+                            args_=args
+                        ))
+            return task(*args)
+        else:
+            return task.apply_async(args=args, **options)
+
+    return Deferred
+
+Deferred = DeferredType()
 
 
-def DefaultDeferredType(**options):
-    '''Create a function for a deferred job in the default queue.
-
-    :keyword allow_nested: If True, jobs created with the returning function
-                           will be allowed to run nested (within the context
-                           of another background job).
-
-                           The default is False.
-
-    '''
-    return _build_api_function('Deferred', DEFAULT_QUEUE_NAME, **options)
-
-
-HighPriorityDeferredType = LowPriorityDeferredType = DefaultDeferredType
-
-Deferred = DefaultDeferredType()
-LowPriorityDeferred = HighPriorityDeferred = Deferred
+from xoutil.deprecation import deprecated   # noqa
+DefaultDeferredType = deprecated(DeferredType)(DeferredType)
+LowPriorityDeferredType = HighPriorityDeferredType = deprecated(
+    DeferredType,
+    'LowPriorityDeferredType and HighPriorityDeferredType '
+    'are deprecated, use DeferredType'
+)(DeferredType)
+LowPriorityDeferrred = HighPriorityDeferred = deprecated(
+    Deferred,
+    'LowPriorityDeferred and HighPriorityDeferred '
+    'are deprecated, use Deferred'
+)(Deferred)
+del deprecated
 
 
 def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
@@ -247,7 +255,6 @@ def task(self, model, methodname, dbname, uid, args, kwargs):
                     _report_success.delay(dbname, uid, self.request.id,
                                           result=res)
             except OperationalError as error:
-                cr.rollback()
                 if error.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
                     if self.request.id:
                         _report_current_failure(dbname, uid, self.request.id,
@@ -258,7 +265,6 @@ def task(self, model, methodname, dbname, uid, args, kwargs):
                     self.retry(args=(model, methodname, dbname, uid,
                                      args, kwargs))
             except Exception as error:
-                cr.rollback()
                 if self.request.id:
                     _report_current_failure(dbname, uid, self.request.id,
                                             error)
@@ -271,29 +277,30 @@ def task(self, model, methodname, dbname, uid, args, kwargs):
 
 @contextlib.contextmanager
 def _single_registry(dbname, uid):
-    RegistryManager.check_registry_signaling(dbname)
-    registry = RegistryManager.get(dbname)
-    # Several pieces of OpenERP code expect this attributes to be set in the
-    # current thread.
-    threading.current_thread().uid = uid
-    threading.current_thread().dbname = dbname
-    try:
-        with registry.cursor() as cr, Environment.manage():
-            yield registry, cr
-    finally:
-        if hasattr(threading.current_thread(), 'uid'):
-            del threading.current_thread().uid
-        if hasattr(threading.current_thread(), 'dbname'):
-            del threading.current_thread().dbname
+    __traceback_hide__ = True  # noqa: hide from Celery Tracebacks
+    with Environment.manage():
+        RegistryManager.check_registry_signaling(dbname)
+        registry = RegistryManager.get(dbname)
+        # Several pieces of OpenERP code expect this attributes to be set in the
+        # current thread.
+        threading.current_thread().uid = uid
+        threading.current_thread().dbname = dbname
+        try:
+            with registry.cursor() as cr:
+                yield registry, cr
+        finally:
+            if hasattr(threading.current_thread(), 'uid'):
+                del threading.current_thread().uid
+            if hasattr(threading.current_thread(), 'dbname'):
+                del threading.current_thread().dbname
 
 
 @app.task(bind=True, max_retries=5)
 def _report_success(self, dbname, uid, job_uuid, result=None):
     try:
-        with _single_registry(dbname, uid) as (registry, cr):
-            _send(get_progress_channel(job_uuid),
-                  dict(status='success', result=result),
-                  registry=registry, cr=cr, uid=uid)
+        _send(get_progress_channel(job_uuid),
+              dict(status='success', result=result),
+              dbname=dbname, uid=uid)
     except Exception:
         self.retry(args=(dbname, uid, job_uuid))
 
@@ -301,10 +308,9 @@ def _report_success(self, dbname, uid, job_uuid, result=None):
 @app.task(bind=True, max_retries=5)
 def _report_failure(self, dbname, uid, job_uuid, tb=None, message=''):
     try:
-        with _single_registry(dbname, uid) as (registry, cr):
-            _send(get_progress_channel(job_uuid),
-                  dict(status='failure', traceback=tb, message=message),
-                  registry=registry, cr=cr, uid=uid)
+        _send(get_progress_channel(job_uuid),
+              dict(status='failure', traceback=tb, message=message),
+              dbname=dbname, uid=uid)
     except Exception:
         self.retry(args=(dbname, uid, job_uuid, tb),
                    kwargs={'message': message})
@@ -317,9 +323,9 @@ def _report_current_failure(dbname, uid, job_uuid, error):
 
 
 def _getargs(model, method, cr, uid, *args, **kwargs):
-    from openerp.models import BaseModel
-    from openerp.sql_db import Cursor
-    from openerp.tools import frozendict
+    from odoo.models import BaseModel
+    from odoo.sql_db import Cursor
+    from odoo.tools import frozendict
     if isinstance(model, BaseModel):
         model = model._name
     elif isinstance(model, type(BaseModel)):
@@ -356,10 +362,22 @@ def get_status_channel(job):
     return 'celeryapp:%s:status' % uuid
 
 
-def _send(channel, message, registry=None, cr=None, uid=None):
-    if registry is None or cr is None or uid is None:
-        _context = _exec_context[CELERY_JOB]
-        registry = _context['registry']
-        cr = _context['cr']
-        uid = _context['uid']
-    registry['bus.bus'].sendone(cr, uid, channel, message)
+def _send(channel, message, dbname=None, uid=None):
+    if dbname is None or uid is None:
+        context = _exec_context[CELERY_JOB]
+        cr = context['cr']
+        dbname = dbname or cr.dbname
+        uid = uid or context['uid']
+    else:
+        cr = None  # for the assert cr is not cr2
+    assert dbname
+    with _single_registry(dbname, uid) as (r, cr2):
+        # The bus waits until the COMMIT to actually NOTIFY listening clients,
+        # this means that all progress reports, would not be visible to clients
+        # until the whole transaction commits:
+        #
+        # We can't commit the proper task's cr, because errors may happen
+        # after a report.
+        #
+        # Solution a dedicated cursors for bus messages.
+        r['bus.bus'].sendone(cr2, uid, channel, message)

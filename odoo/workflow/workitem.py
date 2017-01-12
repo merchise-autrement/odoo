@@ -27,6 +27,7 @@ class Environment(dict):
     the provided ID) attributes.
     """
     def __init__(self, session, record):
+        super(Environment, self).__init__()  # why not?
         self.cr = session.cr
         self.uid = session.uid
         self.model = record.model
@@ -34,11 +35,11 @@ class Environment(dict):
         self.ids = [record.id]
 
     def __getitem__(self, key):
-        env = odoo.api.Environment(self.cr, self.uid, {})
-        records = env[self.model].browse(self.ids)
-        if hasattr(records, key):
+        try:
+            env = odoo.api.Environment(self.cr, self.uid, {})
+            records = env[self.model].browse(self.ids)
             return getattr(records, key)
-        else:
+        except AttributeError:
             return super(Environment, self).__getitem__(key)
 
 
