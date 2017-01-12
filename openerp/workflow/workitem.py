@@ -33,7 +33,8 @@ from openerp.workflow.helpers import WorkflowActivity
 logger = logging.getLogger(__name__)
 
 import openerp
-from openerp.tools.safe_eval import safe_eval as eval
+from openerp.tools.safe_eval import safe_eval
+
 
 class Environment(dict):
     """
@@ -288,7 +289,7 @@ class WorkflowItem(object):
                 result = False
             else:
                 env = Environment(self.session, self.record)
-                result = eval(line, env, nocopy=True)
+                result = safe_eval(line, env, nocopy=True)
         return result
 
     def wkf_expr_execute_action(self, activity):
