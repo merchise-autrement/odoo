@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # celeryapp
 # ---------------------------------------------------------------------
-# Copyright (c) 2015, 2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -27,7 +27,10 @@ from __future__ import (division as _py3_division,
 import contextlib
 import threading
 
-from xoutil import logger  # noqa
+import logging
+logger = logging.getLogger(__name__)
+del logging
+
 from xoutil.context import context as _exec_context
 from xoutil.objects import extract_attrs
 
@@ -54,27 +57,26 @@ ROUTE_NS = 'odoo-{}'.format('.'.join(str(x) for x in version_info[:2]))
 ROUTE_KEY = '{}.#'.format(ROUTE_NS)
 
 DEFAULT_QUEUE_NAME = '{}.default'.format(ROUTE_NS)
-LOWPRI_QUEUE_NAME = HIGHPRI_QUEUE_NAME = DEFAULT_QUEUE_NAME
 
 del version_info
 
 
-def _build_api_function(name, queue, **options):
-    disallow_nested = not options.pop('allow_nested', False)
+def DeferredType(**options):
+    '''Create a function for a deferred job in the default queue.
 
-    def func(model, cr, uid, method, *args, **kwargs):
-        args = _getargs(model, method, cr, uid, *args, **kwargs)
-        if disallow_nested and CELERY_JOB in _exec_context:
-            logger.warn('Nested background call detected for model %s '
-                        'and method %s', model, method, extra=dict(
-                            model=model, method=method, uid=uid,
-                            args_=args
-                        ))
-            return task(*args)
-        else:
-            return task.apply_async(queue=queue, args=args, **options)
-    func.__name__ = name
-    func.__doc__ = (
+    :keyword allow_nested: If True, jobs created with the returning function
+                           will be allowed to run nested (within the contex/t
+                           of another background job).
+
+                           The default is False.
+
+    :keyword queue: The name of the queue.
+
+    '''
+    disallow_nested = not options.pop('allow_nested', False)
+    options.setdefault('queue', DEFAULT_QUEUE_NAME)
+
+    def Deferred(model, cr, uid, method, *args, **kwargs):
         '''Request to run a method in a celery worker.
 
         The job will be routed to the '{queue}' priority queue.
@@ -95,27 +97,35 @@ def _build_api_function(name, queue, **options):
            .. seealso: `DefaultDeferredType`:func:
 
         '''
-    ).format(queue=queue.rsplit('.', 1)[-1] if '.' in queue else queue)
-    return func
+        args = _getargs(model, method, cr, uid, *args, **kwargs)
+        if disallow_nested and CELERY_JOB in _exec_context:
+            logger.warn('Nested background call detected for model %s '
+                        'and method %s', model, method, extra=dict(
+                            model=model, method=method, uid=uid,
+                            args_=args
+                        ))
+            return task(*args)
+        else:
+            return task.apply_async(args=args, **options)
+
+    return Deferred
+
+Deferred = DeferredType()
 
 
-def DefaultDeferredType(**options):
-    '''Create a function for a deferred job in the default queue.
-
-    :keyword allow_nested: If True, jobs created with the returning function
-                           will be allowed to run nested (within the context
-                           of another background job).
-
-                           The default is False.
-
-    '''
-    return _build_api_function('Deferred', DEFAULT_QUEUE_NAME, **options)
-
-
-HighPriorityDeferredType = LowPriorityDeferredType = DefaultDeferredType
-
-Deferred = DefaultDeferredType()
-LowPriorityDeferred = HighPriorityDeferred = Deferred
+from xoutil.deprecation import deprecated   # noqa
+DefaultDeferredType = deprecated(DeferredType)(DeferredType)
+LowPriorityDeferredType = HighPriorityDeferredType = deprecated(
+    DeferredType,
+    'LowPriorityDeferredType and HighPriorityDeferredType '
+    'are deprecated, use DeferredType'
+)(DeferredType)
+LowPriorityDeferrred = HighPriorityDeferred = deprecated(
+    Deferred,
+    'LowPriorityDeferred and HighPriorityDeferred '
+    'are deprecated, use Deferred'
+)(Deferred)
+del deprecated
 
 
 def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
@@ -248,7 +258,6 @@ def task(self, model, methodname, dbname, uid, args, kwargs):
                     _report_success.delay(dbname, uid, self.request.id,
                                           result=res)
             except OperationalError as error:
-                cr.rollback()
                 if error.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
                     if self.request.id:
                         _report_current_failure(dbname, uid, self.request.id,
@@ -259,7 +268,6 @@ def task(self, model, methodname, dbname, uid, args, kwargs):
                     self.retry(args=(model, methodname, dbname, uid,
                                      args, kwargs))
             except Exception as error:
-                cr.rollback()
                 if self.request.id:
                     _report_current_failure(dbname, uid, self.request.id,
                                             error)
@@ -272,20 +280,22 @@ def task(self, model, methodname, dbname, uid, args, kwargs):
 
 @contextlib.contextmanager
 def _single_registry(dbname, uid):
-    RegistryManager.check_registry_signaling(dbname)
-    registry = RegistryManager.get(dbname)
-    # Several pieces of OpenERP code expect this attributes to be set in the
-    # current thread.
-    threading.current_thread().uid = uid
-    threading.current_thread().dbname = dbname
-    try:
-        with registry.cursor() as cr, Environment.manage():
-            yield registry, cr
-    finally:
-        if hasattr(threading.current_thread(), 'uid'):
-            del threading.current_thread().uid
-        if hasattr(threading.current_thread(), 'dbname'):
-            del threading.current_thread().dbname
+    __traceback_hide__ = True  # noqa: hide from Celery Tracebacks
+    with Environment.manage():
+        RegistryManager.check_registry_signaling(dbname)
+        registry = RegistryManager.get(dbname)
+        # Several pieces of OpenERP code expect this attributes to be set in the
+        # current thread.
+        threading.current_thread().uid = uid
+        threading.current_thread().dbname = dbname
+        try:
+            with registry.cursor() as cr:
+                yield registry, cr
+        finally:
+            if hasattr(threading.current_thread(), 'uid'):
+                del threading.current_thread().uid
+            if hasattr(threading.current_thread(), 'dbname'):
+                del threading.current_thread().dbname
 
 
 @app.task(bind=True, max_retries=5)

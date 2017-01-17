@@ -47,16 +47,23 @@ class ImBus(osv.Model):
 
     def sendmany(self, cr, uid, notifications):
         channels = set()
-        for channel, message in notifications:
-            channels.add(channel)
-            values = {
-                "channel" : json_dump(channel),
-                "message" : json_dump(message)
-            }
-            self.pool['bus.bus'].create(cr, openerp.SUPERUSER_ID, values)
-            cr.commit()
+        with self.pool.cursor() as cr2:
+            # Use a different cursor so that ROLLBACKS may happen but messages
+            # be delivered.
+            #
+            # Don't forward port: Odoo 9 and Odoo 10 don't issue a cr.commit,
+            # so we don't need this port.  Furthermore, Odoo 9 and 10 use an
+            # cr.after (which is not available in Odoo 8) to only send the
+            # notification after the cursor has been committed.
+            for channel, message in notifications:
+                channels.add(channel)
+                values = {
+                    "channel" : json_dump(channel),
+                    "message" : json_dump(message)
+                }
+                self.create(cr2, openerp.SUPERUSER_ID, values)
             if random.random() < 0.01:
-                self.gc(cr, uid)
+                self.gc(cr2, uid)
         if channels:
             with openerp.sql_db.db_connect('postgres').cursor() as cr2:
                 cr2.execute("notify imbus, %s", (json_dump(list(channels)),))
