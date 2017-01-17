@@ -107,7 +107,10 @@ def initialize_sys_path():
     if base_path not in ad_paths:
         ad_paths.append(base_path)
 
-    ad_paths.extend(find_external_addons())
+    if not _xoeuf_external_addons:
+        _xoeuf_external_addons.extend(find_external_addons())
+        ad_paths.extend(_xoeuf_external_addons)
+        ad_paths[:] = list(set(ad_paths))
 
     if not hooked:
         sys.meta_path.append(AddonsImportHook())
@@ -493,6 +496,7 @@ def unwrap_suite(test):
 from xoutil.functools import lru_cache
 XOEUF_EXTERNAL_ADDON_GROUP = 'xoeuf.addons'
 __xoeuf_patched__ = True
+_xoeuf_external_addons = []
 
 
 @lru_cache(1)
