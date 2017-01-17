@@ -27,7 +27,10 @@ from __future__ import (division as _py3_division,
 import contextlib
 import threading
 
-from xoutil import logger  # noqa
+import logging
+logger = logging.getLogger(__name__)
+del logging
+
 from xoutil.context import context as _exec_context
 from xoutil.objects import extract_attrs
 
