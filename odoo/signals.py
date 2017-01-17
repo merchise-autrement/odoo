@@ -67,7 +67,9 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-from xoutil import logger
+import logging
+logger = logging.getLogger(__name__)
+del logging
 
 from odoo import api, models
 
