@@ -1050,11 +1050,17 @@ class Binary(http.Controller):
                 retag = hashlib.md5(res.get(last_update)).hexdigest()
                 image_base64 = res.get(field)
 
-            if kw.get('resize'):
-                resize = kw.get('resize').split(',')
-                if len(resize) == 2 and int(resize[0]) and int(resize[1]):
-                    width = int(resize[0])
-                    height = int(resize[1])
+            resize = kw.get('resize', '')
+            if resize:
+                resize = urllib2.unquote(resize).split(',')
+                if len(resize) == 2:
+                    try:
+                        width = int(resize[0])
+                        height = int(resize[1])
+                    except ValueError:
+                        width = 0
+                        height = 0
+                if width and height:
                     # resize maximum 500*500
                     if width > 500: width = 500
                     if height > 500: height = 500
