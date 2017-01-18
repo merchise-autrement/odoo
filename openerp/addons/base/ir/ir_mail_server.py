@@ -496,10 +496,15 @@ class ir_mail_server(osv.osv):
                 if smtp is not None:
                     smtp.quit()
         except Exception, e:
+            _logger.exception(
+                "Mail delivery failed via SMTP server '%s'.\n%s: %s",
+                tools.ustr(smtp_server), e.__class__.__name__,
+                tools.ustr(e)
+            )
             msg = _("Mail delivery failed via SMTP server '%s'.\n%s: %s") % (tools.ustr(smtp_server),
                                                                              e.__class__.__name__,
                                                                              tools.ustr(e))
-            _logger.error(msg)
+
             raise MailDeliveryException(_("Mail Delivery Failed"), msg)
         return message_id
 
