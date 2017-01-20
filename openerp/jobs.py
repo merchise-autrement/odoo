@@ -128,6 +128,55 @@ LowPriorityDeferrred = HighPriorityDeferred = deprecated(
 del deprecated
 
 
+def iter_and_report(iterator, valuemax=None, report_rate=1,
+                    messagetmpl='Progress: {progress}'):
+    '''Iterate over 'iterator' while reporting progress.
+
+    In the context of a background (celery) job you may wish to iterate over a
+    sequence of objects and, at the same time, report progress.
+
+    Return a generator that consumes and produces the same values as
+    `iterator`.
+
+    Report progress is disabled if `valuemax` is not a positive integral
+    value.
+
+    `report_rate` regulates the rate at which reports are issued: Reports are
+    issued only when then progress is an integral multiple of `rate` (or when
+    it's zero).
+
+    When the `iterator` is fully consumed, despite the value of `report_rate`,
+    we issue a final report making progress=valuemax (i.e. 100%).
+
+    The `messagetmpl` is a string template to format the message to be
+    reported.  The allowed keywords in the template are 'progress' and
+    'valuemax' (the provided argument).
+
+    .. rubric:: Co-routine behavior
+
+    At each step if you send back a value, it should be a string with a new
+    message template.
+
+    '''
+    from xoutil.eight import integer_types, string_types
+    if not all(isinstance(x, integer_types) for x in (valuemax, report_rate)):
+        raise TypeError('valuemax and step most be integers')
+    if not isinstance(messagetmpl, string_types):
+        raise TypeError('messagetmpl must a string')
+    for progress, x in enumerate(iterator):
+        if valuemax and progress % report_rate == 0:
+            report_progress(
+                message=messagetmpl.format(progress=progress,
+                                           valuemax=valuemax),
+                progress=progress, valuemax=valuemax
+            )
+        msg = yield x
+        if msg and isinstance(msg, string_types):
+            messagetmpl = msg
+    if valuemax:
+        report_progress(progress=valuemax)  # 100%
+
+
 def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
                     status=None):
     '''Send a progress notification to whomever is polling the current job.
