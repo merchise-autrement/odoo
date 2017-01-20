@@ -459,8 +459,11 @@ class IrMailServer(models.Model):
                     smtp.quit()
         except Exception as e:
             params = (ustr(smtp_server), e.__class__.__name__, ustr(e))
+            _logger.exception(
+                "Mail delivery failed via SMTP server '%s'.\n%s: %s",
+                *params
+            )
             msg = _("Mail delivery failed via SMTP server '%s'.\n%s: %s") % params
-            _logger.info(msg)
             raise MailDeliveryException(_("Mail Delivery Failed"), msg)
         return message_id
 

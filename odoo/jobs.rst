@@ -158,6 +158,23 @@ You may report progress changes by using the function
 documentation.
 
 
+Reporting progress in a iterator-based implementation
+-----------------------------------------------------
+
+If you task can be decomposed into a chain of iterators::
+
+  consumer(producer(...))
+
+and you want to report progress whenever an item (or a group of items) are
+consumed, you may use the function ``iter_and_report``::
+
+  consumer(iter_and_report(producer(...), valuemax=...))
+
+Notice we need the maximum possible value which is the maximum possible number
+of elements we'll **consume**.  The documentation of `iter_and_report`:func:
+is quite comprehensive.
+
+
 Best practices for background jobs writing
 ==========================================
 
