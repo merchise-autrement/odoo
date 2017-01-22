@@ -23,7 +23,6 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
-from odoo import SUPERUSER_ID
 from odoo.models import AbstractModel, Model
 from odoo import fields, api
 
