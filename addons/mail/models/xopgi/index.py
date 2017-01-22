@@ -101,7 +101,9 @@ class MailThreadIndex(AbstractModel):
     @api.multi
     def _get_message_index(self):
         for record in self:
-            record.thread_index = record._message_index()
+            index = record._message_index().get(record.id, None)
+            if index:
+                record.thread_index = index
 
     thread_index = fields.Char(compute='_get_message_index', store=False)
 
@@ -135,20 +137,20 @@ class MailThreadIndex(AbstractModel):
         self.env.cr.execute(query, params)
         self.invalidate_cache()
 
-    @api.multi
-    def _thread_by_index(self):
+    @api.model
+    def _thread_by_index(self, index):
         '''Return the message that matches the X-Thread-Index.'''
         self.ensure_one()
         imd = self.env['ir.model.data']
-        name = '%s.%s' % (MODULE_NAME, self.id)
+        name = '%s.%s' % (MODULE_NAME, index)
         return imd.xmlid_to_object(name)
 
-    @api.multi
-    def _threadref_by_index(self):
+    @api.model
+    def _threadref_by_index(self, index):
         '''Return the (model, res_id) thread that matches X-Thread-Index.'''
         self.ensure_one()
         imd = self.env['ir.model.data']
-        name = '%s.%s' % (MODULE_NAME, self.id)
+        name = '%s.%s' % (MODULE_NAME, index)
         return imd.xmlid_to_res_model_res_id(name)
 
     @api.multi
@@ -172,7 +174,7 @@ class MailThreadIndex(AbstractModel):
         for thread in self:
             if not thread.thread_index:
                 imd = self.env['ir.model.data']
-                search = lambda r: r._thread_by_index()  # noqa: E731
+                search = lambda r: self._thread_by_index(r)  # noqa: E731
                 reference = generate_reference(search)
                 if reference:
                     imd.create(
