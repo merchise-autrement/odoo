@@ -806,7 +806,10 @@ class MailThread(models.AbstractModel):
         database_uuid = self.env['ir.config_parameter'].get_param('database.uuid')
         return {'headers': repr({
             'X-Odoo-Objects': "%s-%s" % (self._name, self.id),
-            'X-Odoo-db-uuid': database_uuid
+            'X-Odoo-db-uuid': database_uuid,
+            # merchise: This should be in xopgi/index.py but it's far more
+            # easier here, because of the whole repr-ing and eval for headers.
+            'X-Odoo-Index': self.thread_index,
         })}
 
     @api.multi
