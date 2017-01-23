@@ -8,7 +8,17 @@ from setuptools import find_packages, setup
 from os.path import join, dirname
 
 
-execfile(join(dirname(__file__), 'odoo', 'release.py'))  # Load release variables
+RELEASE_PY = join(dirname(__file__), 'odoo', 'release.py')
+# release.py depends on __file__ to be properly setup in order to construct
+# the version stamp (localpart).  We can't simply pass a new dict to execfile
+# cause then we'd have to fill our locals with the 'version'... So, let's play
+# with __file__ and restore it afterwards.
+__filebak__ = __file__
+__file__ = RELEASE_PY
+try:
+    execfile(RELEASE_PY)  # Load release variables
+finally:
+    __file__ = __filebak__
 lib_name = 'odoo'
 
 
