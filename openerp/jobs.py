@@ -239,8 +239,8 @@ class Configuration(object):
     )
     task_create_missing_queues = CELERY_CREATE_MISSING_QUEUES = False
 
-    task_time_limit = CELERYD_TASK_TIME_LIMIT = 600  # 10 minutes
-    task_soft_time_limit = CELERYD_TASK_SOFT_TIME_LIMIT = 540  # 9 minutes
+    task_time_limit = CELERYD_TASK_TIME_LIMIT = config.get('celery.task_time_limit', 600)  # 10 minutes
+    task_soft_time_limit = CELERYD_TASK_SOFT_TIME_LIMIT = config.get('celery.task_soft_time_limit', 540)  # 9 minutes
 
     worker_enable_remote_control = CELERY_ENABLE_REMOTE_CONTROL = True
 
