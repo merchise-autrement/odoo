@@ -38,6 +38,7 @@ import server
 import deploy
 import scaffold
 import start
+from . import celery  # noqa
 
 def main():
     args = sys.argv[1:]
