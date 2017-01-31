@@ -54,7 +54,6 @@ from psycopg2 import OperationalError, errorcodes
 
 # TODO: Write an auto-migration of task routed to older queue names.
 ROUTE_NS = 'odoo-{}'.format('.'.join(str(x) for x in version_info[:2]))
-ROUTE_KEY = '{}.#'.format(ROUTE_NS)
 
 DEFAULT_QUEUE_NAME = '{}.default'.format(ROUTE_NS)
 
