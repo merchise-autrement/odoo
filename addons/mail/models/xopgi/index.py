@@ -140,7 +140,6 @@ class MailThreadIndex(AbstractModel):
     @api.model
     def _thread_by_index(self, index):
         '''Return the message that matches the X-Thread-Index.'''
-        self.ensure_one()
         imd = self.env['ir.model.data']
         name = '%s.%s' % (MODULE_NAME, index)
         return imd.xmlid_to_object(name)
@@ -148,7 +147,6 @@ class MailThreadIndex(AbstractModel):
     @api.model
     def _threadref_by_index(self, index):
         '''Return the (model, res_id) thread that matches X-Thread-Index.'''
-        self.ensure_one()
         imd = self.env['ir.model.data']
         name = '%s.%s' % (MODULE_NAME, index)
         return imd.xmlid_to_res_model_res_id(name)
