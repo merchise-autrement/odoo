@@ -211,6 +211,6 @@ class MailMessage(Model):
             if message.model:
                 model = self.env[message.model]
                 record = model.browse(message.res_id)
-                record.thread_index = record.thread_index
+                message.thread_index = record.thread_index
 
     thread_index = fields.Char(compute='_get_thread_index')
