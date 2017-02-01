@@ -54,10 +54,31 @@ from psycopg2 import OperationalError, errorcodes
 
 # TODO: Write an auto-migration of task routed to older queue names.
 ROUTE_NS = 'odoo-{}'.format('.'.join(str(x) for x in version_info[:2]))
-ROUTE_KEY = '{}.#'.format(ROUTE_NS)
 
-DEFAULT_QUEUE_NAME = '{}.default'.format(ROUTE_NS)
 
+def queue(name):
+    '''Return the fully qualified queue `name`.
+
+    All queue names must be obtained from this function.  Passing a 'bare'
+    queue name in any of the methods can be done, but it's not adviced.
+
+    This function is idempotent::
+
+    >>> queue(queue('x')) == queue('x')
+    True
+
+    '''
+    if not name.startswith(ROUTE_NS + '.'):
+        return '{}.{}'.format(ROUTE_NS, name)
+    else:
+        return name
+
+# The default pre-created queue.  Although we will allows several queues, we
+# strongly advice against creating any-more than the ones defined below.  If
+# unsure, just use the default queue.
+#
+# WARNING: You must run the workers for the non-default queues yourself.
+DEFAULT_QUEUE_NAME = queue('default')
 del version_info
 
 
@@ -237,7 +258,10 @@ class Configuration(object):
         Queue(DEFAULT_QUEUE_NAME, Exchange(DEFAULT_QUEUE_NAME),
               routing_key=DEFAULT_QUEUE_NAME),
     )
-    task_create_missing_queues = CELERY_CREATE_MISSING_QUEUES = False
+    task_create_missing_queues = CELERY_CREATE_MISSING_QUEUES = config.get(
+        'celery.create_missing_queues',
+        True
+    )
 
     task_time_limit = CELERYD_TASK_TIME_LIMIT = config.get('celery.task_time_limit', 600)  # 10 minutes
     _softtime = config.get('celery.task_soft_time_limit', None)
