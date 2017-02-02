@@ -54,10 +54,29 @@ from psycopg2 import OperationalError, errorcodes
 
 # TODO: Write an auto-migration of task routed to older queue names.
 ROUTE_NS = 'odoo-{}'.format('.'.join(str(x) for x in version_info[:2]))
-ROUTE_KEY = '{}.#'.format(ROUTE_NS)
+def queue(name):
+    '''Return the fully qualified queue `name`.
 
-DEFAULT_QUEUE_NAME = '{}.default'.format(ROUTE_NS)
+    All queue names must be obtained from this function.  Passing a 'bare'
+    queue name in any of the methods can be done, but it's not adviced.
 
+    This function is idempotent::
+
+    >>> queue(queue('x')) == queue('x')
+    True
+
+    '''
+    if not name.startswith(ROUTE_NS + '.'):
+        return '{}.{}'.format(ROUTE_NS, name)
+    else:
+        return name
+
+# The default pre-created queue.  Although we will allows several queues, we
+# strongly advice against creating any-more than the ones defined below.  If
+# unsure, just use the default queue.
+#
+# WARNING: You must run the workers for the non-default queues yourself.
+DEFAULT_QUEUE_NAME = queue('default')
 del version_info
 
 
@@ -168,7 +187,7 @@ def iter_and_report(iterator, valuemax=None, report_rate=1,
             report_progress(
                 message=messagetmpl.format(progress=progress,
                                            valuemax=valuemax),
-                progress=progress, valuemax=valuemax
+                progress=progress, valuemax=valuemax, valuemin=0
             )
         msg = yield x
         if msg and isinstance(msg, string_types):
@@ -237,29 +256,23 @@ class Configuration(object):
         Queue(DEFAULT_QUEUE_NAME, Exchange(DEFAULT_QUEUE_NAME),
               routing_key=DEFAULT_QUEUE_NAME),
     )
-    task_create_missing_queues = CELERY_CREATE_MISSING_QUEUES = False
+    task_create_missing_queues = CELERY_CREATE_MISSING_QUEUES = config.get(
+        'celery.create_missing_queues',
+        True
+    )
 
-    task_time_limit = CELERYD_TASK_TIME_LIMIT = 600  # 10 minutes
-    task_soft_time_limit = CELERYD_TASK_SOFT_TIME_LIMIT = 540  # 9 minutes
+    task_time_limit = CELERYD_TASK_TIME_LIMIT = config.get('celery.task_time_limit', 600)  # 10 minutes
+    _softtime = config.get('celery.task_soft_time_limit', None)
+    if _softtime is not None:
+        task_soft_time_limit = CELERYD_TASK_SOFT_TIME_LIMIT = _softtime
+    del _softtime
 
     worker_enable_remote_control = CELERY_ENABLE_REMOTE_CONTROL = True
 
     enable_utc = CELERY_ENABLE_UTC = True
     task_always_eager = CELERY_ALWAYS_EAGER = False
 
-    # Since our workers are embedded in the Odoo process, we can't turn off
-    # the server without shutting the workers down.  So it's probably best to
-    # keep the tasks in the broker until a worker has finished with them.
-    #
-    #                                .
-    #                               / \
-    #                              / ! \
-    #                             -------
-    #
-    # WARNING! You may do otherwise, but then you have to consider shutting
-    # down the HTTP downstream server first, wait for all jobs to finish and
-    # then shutdown then server.
-    task_acks_late = CELERY_ACKS_LATE = True
+    task_acks_late = CELERY_ACKS_LATE = config.get('celery.acks_late', True)
 
     _CELERYD_PREFETCH_MULTIPLIER = config.get('celery.prefetch_multiplier', 0)
     if not _CELERYD_PREFETCH_MULTIPLIER:
