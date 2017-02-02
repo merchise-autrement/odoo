@@ -189,7 +189,7 @@ def iter_and_report(iterator, valuemax=None, report_rate=1,
             report_progress(
                 message=messagetmpl.format(progress=progress,
                                            valuemax=valuemax),
-                progress=progress, valuemax=valuemax
+                progress=progress, valuemax=valuemax, valuemix=0
             )
         msg = yield x
         if msg and isinstance(msg, string_types):
