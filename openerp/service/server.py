@@ -469,8 +469,6 @@ class PreforkServer(CommonServer):
         self.workers_http = {}
         self.workers_cron = {}
         self.workers = {}
-        self.default_celery_workers = {}
-        self.celery_beat_workers = {}
         self.generation = 0
         self.queue = []
         self.long_polling_pid = None
@@ -532,8 +530,6 @@ class PreforkServer(CommonServer):
             try:
                 self.workers_http.pop(pid, None)
                 self.workers_cron.pop(pid, None)
-                self.default_celery_workers.pop(pid, None)
-                self.celery_beat_workers.pop(pid, None)
                 u = self.workers.pop(pid)
                 u.close()
             except OSError:
@@ -602,30 +598,6 @@ class PreforkServer(CommonServer):
                 self.long_polling_spawn()
         while len(self.workers_cron) < config['max_cron_threads']:
             self.worker_spawn(WorkerCron, self.workers_cron)
-        self.spawn_celery_workers()
-
-    def spawn_celery_workers(self):
-        workers = config.get('celery.default_workers', 1)
-        if workers != 'auto':
-            try:
-                workers = int(workers)
-            except ValueError:
-                workers = 'auto'
-        if workers and not len(self.default_celery_workers):
-            worker = self.worker_spawn(
-                DefaultCeleryWorker,
-                self.default_celery_workers,
-                concurrency=workers if workers != 'auto' else None
-            )
-            # Avoid checking for time limits, celery manages those.
-            self.workers.pop(worker.pid, None)
-
-        beat = config.get('celery.beat', True)
-        if beat and not self.celery_beat_workers:
-            worker = self.worker_spawn(CeleryBeatWorker,
-                                       self.celery_beat_workers)
-            # Avoid checking for time limits, celery manages those.
-            self.workers.pop(worker.pid, None)
 
     def sleep(self):
         try:
@@ -692,7 +664,7 @@ class PreforkServer(CommonServer):
         if graceful:
             _logger.info("Stopping gracefully")
             limit = time.time() + self.timeout
-            for pid in list(chain(self.workers, self.default_celery_workers, self.celery_beat_workers)):
+            for pid in self.workers:
                 self.worker_kill(pid, signal.SIGINT)
             while self.workers and time.time() < limit:
                 try:
@@ -985,62 +957,6 @@ class WorkerCron(Worker):
         Worker.start(self)
         if self.multi.socket:
             self.multi.socket.close()
-
-
-class CeleryWorker(Worker):
-    # Bridges the Odoo preforking server with the Celery Worker.
-    def __init__(self, server, profile=False, concurrency=None):
-        from openerp.jobs import app
-        self.app = app
-        self.concurrency = concurrency
-        super(CeleryWorker, self).__init__(server, profile=profile)
-
-    def run(self):
-        self.start()
-        # Close the HTTP socket so that I don't hold it
-        if self.multi.socket:
-            self.multi.socket.close()
-        from celery.worker import WorkController
-        # TODO: Queue distributions
-        self.controller = controller = WorkController(
-            app=self.app,
-            queues=self.queues,
-            concurrency=self.concurrency,
-            hostname=self.hostname,
-            without_mingle=True,
-            without_gossip=True,
-            send_events=True,
-        )
-        controller.start()
-
-    def signal_handler(self, sig, frame):
-        super(CeleryWorker, self).signal_handler(sig, frame)
-        if not self.alive:
-            _logger.debug('Raising KeyboardInterrupt inside the celery worker')
-            raise KeyboardInterrupt
-
-    @property
-    def hostname(self):
-        import socket
-        queue = self.queues.split(',')[0]
-        return queue + '.' + socket.gethostname()
-
-
-class DefaultCeleryWorker(CeleryWorker):
-    @classproperty
-    def queues(cls):
-        from openerp.jobs import DEFAULT_QUEUE_NAME
-        return DEFAULT_QUEUE_NAME
-
-
-class CeleryBeatWorker(Worker):
-    def run(self):
-        from openerp.jobs import app
-        self.start()
-        # Close the HTTP socket so that I don't hold it
-        if self.multi.socket:
-            self.multi.socket.close()
-        app.Beat().run()
 
 
 # ---------------------------------------------------------
