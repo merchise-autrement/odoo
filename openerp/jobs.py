@@ -273,20 +273,7 @@ class Configuration(object):
 
     enable_utc = CELERY_ENABLE_UTC = True
     task_always_eager = CELERY_ALWAYS_EAGER = False
-
-    # Since our workers are embedded in the Odoo process, we can't turn off
-    # the server without shutting the workers down.  So it's probably best to
-    # keep the tasks in the broker until a worker has finished with them.
-    #
-    #                                .
-    #                               / \
-    #                              / ! \
-    #                             -------
-    #
-    # WARNING! You may do otherwise, but then you have to consider shutting
-    # down the HTTP downstream server first, wait for all jobs to finish and
-    # then shutdown then server.
-    task_acks_late = CELERY_ACKS_LATE = True
+    task_acks_late = CELERY_ACKS_LATE = config.get('celery.acks_late', True)
 
     _CELERYD_PREFETCH_MULTIPLIER = config.get('celery.prefetch_multiplier', 0)
     if not _CELERYD_PREFETCH_MULTIPLIER:
