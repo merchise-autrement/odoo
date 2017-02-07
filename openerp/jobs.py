@@ -198,6 +198,42 @@ def iter_and_report(iterator, valuemax=None, report_rate=1,
         report_progress(progress=valuemax)  # 100%
 
 
+def until_timeout(iterator):
+    '''Iterate and yield from `iter` while the job has time to work.
+
+    Celery can be configured to raise a SoftTimeLimitExceeded exception when a
+    soft time limit is reached.
+
+    This function integrates such signal into a background job that does its
+    work by yielding each *partially complete* unit of progress.
+
+    It's expected that it will be more likely for StopTimeLimitExceeded to be
+    raised while `iterator` it's performing work, than the the consumers.  In
+    other word, you should enclose as much work as possible within a single
+    call to `until_timeout`.
+
+    .. note:: This requires xoutil 1.7.2.  If that version of xoutil is not
+       installed `until_timeout` simply returns `iterator` unchanged.
+
+    '''
+    from celery.exceptions import SoftTimeLimitExceeded
+    try:
+        from xoutil.bound import until
+
+        @until(errors=(SoftTimeLimitExceeded, ))
+        def _iterate():
+            for x in iterator:
+                yield x
+
+        # We need to expose the generator, not the last value.  Yes, it's
+        # possible StopTimeLimitExceeded to be raised outside this generator,
+        # but you have been warned to put this as farther as possible from the
+        # true computation.
+        return _iterate.generate()
+    except ImportError:
+        return iterator
+
+
 def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
                     status=None):
     '''Send a progress notification to whomever is polling the current job.
