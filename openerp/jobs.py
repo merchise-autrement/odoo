@@ -266,7 +266,7 @@ class Configuration(object):
     task_time_limit = CELERYD_TASK_TIME_LIMIT = config.get('celery.task_time_limit', 600)  # 10 minutes
     _softtime = config.get('celery.task_soft_time_limit', None)
     if _softtime is not None:
-        task_soft_time_limit = CELERYD_TASK_SOFT_TIME_LIMIT = _softtime
+        task_soft_time_limit = CELERYD_TASK_SOFT_TIME_LIMIT = int(_softtime)
     del _softtime
 
     worker_enable_remote_control = CELERY_ENABLE_REMOTE_CONTROL = True
