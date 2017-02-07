@@ -18,10 +18,10 @@ from __future__ import (division as _py3_division,
 
 
 from . import Command
-from celery.bin.celery import main as _main
-from openerp.jobs import app  # noqa: ensure Celery can discover the app
 
 
 class Celery(Command):
     def run(self, cmdargs):
+        from celery.bin.celery import main as _main
+        from openerp.jobs import app  # noqa: discover the app
         _main(argv=['celery', ] + cmdargs)
