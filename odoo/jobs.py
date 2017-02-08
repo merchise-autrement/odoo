@@ -71,6 +71,7 @@ def queue(name):
     else:
         return name
 
+
 # The default pre-created queue.  Although we will allows several queues, we
 # strongly advice against creating any-more than the ones defined below.  If
 # unsure, just use the default queue.
@@ -95,15 +96,16 @@ def DeferredType(**options):
     disallow_nested = not options.pop('allow_nested', False)
     options.setdefault('queue', DEFAULT_QUEUE_NAME)
 
-    def Deferred(model, cr, uid, method, *args, **kwargs):
+    def Deferred(*args, **kwargs):
         '''Request to run a method in a celery worker.
 
-        The job will be routed to the '{queue}' priority queue.
+        The job will be routed to the '{queue}' priority queue.  The signature
+        is like::
 
-        :param model: The Odoo model.
-        :param cr: The cursor or the DB name.
-        :param uid: The user id.
-        :param method: The name of method to run.
+           Deferred(self.search, [], limit=1)
+
+        The first argument must be a *bound method of a record set*.  The rest
+        of the arguments must match the signature of such method.
 
         :returns: An AsyncResult that represents the job.
 
@@ -113,21 +115,21 @@ def DeferredType(**options):
            **won't** create another background job, but inline the function
            call.
 
-           .. seealso: `DefaultDeferredType`:func:
+        .. seealso: `DefaultDeferredType`:func:
 
         '''
-        args = _getargs(model, method, cr, uid, *args, **kwargs)
+        signature = _extract_signature(args, kwargs)
         if disallow_nested and CELERY_JOB in _exec_context:
-            logger.warn('Nested background call detected for model %s '
-                        'and method %s', model, method, extra=dict(
-                            model=model, method=method, uid=uid,
-                            args_=args
+            logger.warn('Nested background call detected for model',
+                        extra=dict(
+                            args_=signature,
                         ))
-            return task(*args)
+            return task(*signature)
         else:
-            return task.apply_async(args=args, **options)
+            return task.apply_async(args=signature, **options)
 
     return Deferred
+
 
 Deferred = DeferredType()
 
@@ -194,6 +196,42 @@ def iter_and_report(iterator, valuemax=None, report_rate=1,
             messagetmpl = msg
     if valuemax:
         report_progress(progress=valuemax)  # 100%
+
+
+def until_timeout(iterator):
+    '''Iterate and yield from `iter` while the job has time to work.
+
+    Celery can be configured to raise a SoftTimeLimitExceeded exception when a
+    soft time limit is reached.
+
+    This function integrates such signal into a background job that does its
+    work by yielding each *partially complete* unit of progress.
+
+    It's expected that it will be more likely for StopTimeLimitExceeded to be
+    raised while `iterator` it's performing work, than the the consumers.  In
+    other word, you should enclose as much work as possible within a single
+    call to `until_timeout`.
+
+    .. note:: This requires xoutil 1.7.2.  If that version of xoutil is not
+       installed `until_timeout` simply returns `iterator` unchanged.
+
+    '''
+    from celery.exceptions import SoftTimeLimitExceeded
+    try:
+        from xoutil.bound import until
+
+        @until(errors=(SoftTimeLimitExceeded, ))
+        def _iterate():
+            for x in iterator:
+                yield x
+
+        # We need to expose the generator, not the last value.  Yes, it's
+        # possible StopTimeLimitExceeded to be raised outside this generator,
+        # but you have been warned to put this as farther as possible from the
+        # true computation.
+        return _iterate.generate()
+    except ImportError:
+        return iterator
 
 
 def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
@@ -264,7 +302,7 @@ class Configuration(object):
     task_time_limit = CELERYD_TASK_TIME_LIMIT = config.get('celery.task_time_limit', 600)  # 10 minutes
     _softtime = config.get('celery.task_soft_time_limit', None)
     if _softtime is not None:
-        task_soft_time_limit = CELERYD_TASK_SOFT_TIME_LIMIT = _softtime
+        task_soft_time_limit = CELERYD_TASK_SOFT_TIME_LIMIT = int(_softtime)
     del _softtime
 
     worker_enable_remote_control = CELERY_ENABLE_REMOTE_CONTROL = True
@@ -290,6 +328,7 @@ class Configuration(object):
         beat_schedule_filename = CELERYBEAT_SCHEDULE_FILENAME = _CELERYBEAT_SCHEDULE_FILENAME  # noqa
     del _CELERYBEAT_SCHEDULE_FILENAME
 
+
 app = _CeleryApp(__name__)
 app.config_from_object(Configuration)
 
@@ -304,18 +343,62 @@ PG_CONCURRENCY_ERRORS_TO_RETRY = (
 )
 
 
+def _extract_signature(args, kwargs):
+    '''Detect the proper signature.
+
+    '''
+    from xoutil import Unset
+    from odoo.models import BaseModel
+    from odoo.sql_db import Cursor
+    from odoo.tools import frozendict
+    method = args[0]
+    self = getattr(method, 'im_self', Unset)
+    env = getattr(self, 'env', Unset)
+    if isinstance(self, BaseModel) and isinstance(env, Environment):
+        db, uid, context = env.args
+        kwargs['context'] = dict(context)
+        model = self
+        methodname = method.__name__
+        ids = self.ids
+        args = args[1:]
+    else:
+        model, db, uid, methodname = args[:4]
+        args = args[4:]
+        ids = None
+    if isinstance(model, BaseModel):
+        model = model._name
+    elif isinstance(model, type(BaseModel)):
+        model = getattr(model, '_name', None) or model._inherit
+    if isinstance(db, Cursor):
+        dbname = db.dbname
+    else:
+        dbname = db
+    odoo_context = kwargs.get('context', None)
+    if isinstance(odoo_context, frozendict):
+        kwargs['context'] = dict(odoo_context)
+    return model, ids, methodname, dbname, uid, args, kwargs
+
+
 # Since a model method may be altered in several addons, we funnel all calls
 # to execute a method in a single Celery task.
 @app.task(bind=True, max_retries=5)
-def task(self, model, methodname, dbname, uid, args, kwargs):
-    with _single_registry(dbname, uid) as (registry, cr):
-        method = getattr(registry[model], methodname)
+def task(self, model, ids, methodname, dbname, uid, args, kwargs):
+    from odoo.models import BaseModel
+    context = kwargs.pop('context', None)
+    with MaybeRecords(dbname, uid, model, ids, context=context) as r:
+        method = getattr(r, methodname)
         if method:
+            if not ids and _require_ids(method):
+                ids = args[0]
+                args = args[1:]
+                method = getattr(r.browse(ids), methodname)
             # It's up to the user to return transferable things.
             try:
-                options = dict(job=self, registry=registry, cr=cr, uid=uid)
+                options = dict(job=self, env=r.env)
                 with _exec_context(CELERY_JOB, **options):
-                    res = method(cr, uid, *args, **kwargs)
+                    res = method(*args, **kwargs)
+                if isinstance(res, BaseModel):
+                    res = res.ids  # downgrade to ids
                 if self.request.id:
                     _report_success.delay(dbname, uid, self.request.id,
                                           result=res)
@@ -341,7 +424,15 @@ def task(self, model, methodname, dbname, uid, args, kwargs):
 
 
 @contextlib.contextmanager
-def _single_registry(dbname, uid):
+def MaybeRecords(dbname, uid, model, ids=None, cr=None, context=None):
+    __traceback_hide__ = True  # noqa: hide from Celery Tracebacks
+    with OdooEnvironment(dbname, uid, cr=cr, context=context) as env:
+        records = env[model].browse(ids)
+        yield records
+
+
+@contextlib.contextmanager
+def OdooEnvironment(dbname, uid, cr=None, context=None):
     __traceback_hide__ = True  # noqa: hide from Celery Tracebacks
     with Environment.manage():
         RegistryManager.check_registry_signaling(dbname)
@@ -351,8 +442,14 @@ def _single_registry(dbname, uid):
         threading.current_thread().uid = uid
         threading.current_thread().dbname = dbname
         try:
-            with registry.cursor() as cr:
-                yield registry, cr
+            if cr is None:
+                cr = registry.cursor()
+                closing = contextlib.closing
+            else:
+                closing = noop
+            with closing(cr) as cr:
+                env = Environment(cr, uid, context or {})
+                yield env
         finally:
             if hasattr(threading.current_thread(), 'uid'):
                 del threading.current_thread().uid
@@ -360,12 +457,27 @@ def _single_registry(dbname, uid):
                 del threading.current_thread().dbname
 
 
+@contextlib.contextmanager
+def noop(c):
+    yield c
+
+
+def _require_ids(method):
+    return getattr(method, '_api', None) in (
+        'multi', 'cr_uid_id', 'cr_uid_id_context', 'cr_uid_ids',
+        'cr_uid_ids_context'
+    )
+
+
 @app.task(bind=True, max_retries=5)
 def _report_success(self, dbname, uid, job_uuid, result=None):
     try:
-        _send(get_progress_channel(job_uuid),
-              dict(status='success', result=result),
-              dbname=dbname, uid=uid)
+        with OdooEnvironment(dbname, uid) as env:
+            _send(
+                get_progress_channel(job_uuid),
+                dict(status='success', result=result),
+                env=env
+            )
     except Exception:
         self.retry(args=(dbname, uid, job_uuid))
 
@@ -373,9 +485,12 @@ def _report_success(self, dbname, uid, job_uuid, result=None):
 @app.task(bind=True, max_retries=5)
 def _report_failure(self, dbname, uid, job_uuid, tb=None, message=''):
     try:
-        _send(get_progress_channel(job_uuid),
-              dict(status='failure', traceback=tb, message=message),
-              dbname=dbname, uid=uid)
+        with OdooEnvironment(dbname, uid) as env:
+            _send(
+                get_progress_channel(job_uuid),
+                dict(status='failure', traceback=tb, message=message),
+                env=env
+            )
     except Exception:
         self.retry(args=(dbname, uid, job_uuid, tb),
                    kwargs={'message': message})
@@ -385,24 +500,6 @@ def _report_current_failure(dbname, uid, job_uuid, error):
     data = _serialize_exception(error)
     _report_failure.delay(dbname, uid, job_uuid, message=data)
     logger.exception('Unhandled exception in task')
-
-
-def _getargs(model, method, cr, uid, *args, **kwargs):
-    from odoo.models import BaseModel
-    from odoo.sql_db import Cursor
-    from odoo.tools import frozendict
-    if isinstance(model, BaseModel):
-        model = model._name
-    elif isinstance(model, type(BaseModel)):
-        model = getattr(model, '_name', None) or model._inherit
-    if isinstance(cr, Cursor):
-        dbname = cr.dbname
-    else:
-        dbname = cr
-    odoo_context = kwargs.get('context', None)
-    if isinstance(odoo_context, frozendict):
-        kwargs['context'] = dict(odoo_context)
-    return (model, method, dbname, uid, args, kwargs)
 
 
 def get_progress_channel(job):
@@ -427,16 +524,12 @@ def get_status_channel(job):
     return 'celeryapp:%s:status' % uuid
 
 
-def _send(channel, message, dbname=None, uid=None):
-    if dbname is None or uid is None:
-        context = _exec_context[CELERY_JOB]
-        cr = context['cr']
-        dbname = dbname or cr.dbname
-        uid = uid or context['uid']
-    else:
-        cr = None  # for the assert cr is not cr2
-    assert dbname
-    with _single_registry(dbname, uid) as (r, cr2):
+def _send(channel, message, env=None):
+    if env is None:
+        _context = _exec_context[CELERY_JOB]
+        env = _context['env']
+    cr, uid, context = env.args
+    with OdooEnvironment(cr.dbname, uid, context=context) as newenv:
         # The bus waits until the COMMIT to actually NOTIFY listening clients,
         # this means that all progress reports, would not be visible to clients
         # until the whole transaction commits:
@@ -445,4 +538,4 @@ def _send(channel, message, dbname=None, uid=None):
         # after a report.
         #
         # Solution a dedicated cursors for bus messages.
-        r['bus.bus'].sendone(cr2, uid, channel, message)
+        newenv['bus.bus'].sendone(channel, message)
