@@ -69,11 +69,13 @@ jobs:
 They put the background job request in the one of the queues we mentioned
 above.
 
+  >>> from xoeuf.pool import db
+  >>> db.salt_shell()
+  >>> self = env['res.users']
 
   >>> from openerp.jobs import Deferred
   >>> for i in range(1000):
-  ...     res = Deferred('res.users', 'mercurio', 1, 'search', [])
-
+  ...     res = Deferred(self.search, [])
 
 Now you should see your CPUs burning while processing all the 1000 jobs.  You
 may watch the whole story using ``flower``::
@@ -81,6 +83,32 @@ may watch the whole story using ``flower``::
   bin/celery flower
 
 It will create a nice dashboard to monitor the Celery Workers.
+
+.. note:: We expect the methods you call return objects that are
+   *transferable*  in JSON.  Exceptionally, if you return a record set, we
+   automatically take the ids.
+
+
+Signature of Deferred
+~~~~~~~~~~~~~~~~~~~~~
+
+The first argument of Deferred (``self``) MUST be a *bound method* of a record
+set obtained from the environment.  The rest of the arguments must match the
+new API signature of such method.
+
+
+Deprecated old API
+~~~~~~~~~~~~~~~~~~
+
+``Deferred`` also has another possible signature that's deprecated in favor of
+the presented above::
+
+  >>> Deferred('res.users', 'mercurio', SUPERUSER_ID, 'search', [])
+
+The first argument is the name of the model (or a record set or the model
+class).  The second argument is the name of the DB (or cursor).  The third is
+the user ID.  The fourth is is *name* of method to execute.  The rest of the
+arguments must match the old API signature of the method.
 
 
 Creating new types of deferreds
