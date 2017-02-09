@@ -444,11 +444,11 @@ def OdooEnvironment(dbname, uid, cr=None, context=None):
         try:
             if cr is None:
                 cr = registry.cursor()
-                closing = contextlib.closing
+                closing = lambda c: c  # noqa
             else:
                 closing = noop
-            with closing(cr) as cr:
-                env = Environment(cr, uid, context or {})
+            with closing(cr) as cr2:
+                env = Environment(cr2, uid, context or {})
                 yield env
         finally:
             if hasattr(threading.current_thread(), 'uid'):
