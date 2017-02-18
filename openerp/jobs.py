@@ -31,7 +31,7 @@ import logging
 logger = logging.getLogger(__name__)
 del logging
 
-from xoutil.context import context as _exec_context
+from xoutil.context import context as ExecutionContext
 from xoutil.objects import extract_attrs
 
 from kombu import Exchange, Queue
@@ -39,6 +39,7 @@ from kombu import Exchange, Queue
 from celery import Celery as _CeleryApp
 
 import openerp.tools.config as config
+from openerp.tools.func import lazy_property
 
 from openerp.release import version_info
 from openerp.api import Environment
@@ -133,7 +134,7 @@ class DeferredType(object):
 
         '''
         signature = _extract_signature(args, kwargs)
-        if self.disallow_nested and CELERY_JOB in _exec_context:
+        if self.disallow_nested and CELERY_JOB in ExecutionContext:
             logger.warn('Nested background call detected for model',
                         extra=dict(
                             args_=signature,
@@ -272,7 +273,7 @@ def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
                     framework module) purposes.
 
     '''
-    _context = _exec_context[CELERY_JOB]
+    _context = ExecutionContext[CELERY_JOB]
     job = _context.get('job')
     if job:
         if valuemin is None or valuemax is None:
@@ -355,8 +356,71 @@ class Configuration(object):
 app = _CeleryApp(__name__)
 app.config_from_object(Configuration)
 
+
 # A context for jobs.  All jobs will be executed in this context.
-CELERY_JOB = object()
+class CELERY_JOB(ExecutionContext):
+    def __new__(cls, **options):
+        context_identifier = cls
+        return super(CELERY_JOB, cls).__new__(
+            cls, context_identifier, **options
+        )
+
+    def __init__(self, **options):
+        super(CELERY_JOB, self).__init__(**options)
+        self.job = options['job']
+        self.env = options['env']
+
+    @lazy_property
+    def request(self):
+        class req(object):
+            # A request-like object.
+            #
+            # ``bool(req())`` is always False.
+            #
+            # ``req().anything`` is another ``req()``, so you can do
+            # ``req().x.y.z``.  This fact, combined with the previous, means
+            # that ``bool(req().anything.not.shown.below)`` is always False.
+            #
+            # This is a technical hack to make parts of Odoo that require a
+            # HTTP request in the `openerp.http.request`:object: to be
+            # available, and many attributes are also freely traversed like
+            # ``request.httprequest.is_spdy``...
+            #
+            env = self.env
+            uid = env.uid
+            context = env.context
+            lang = context.get('lang', 'en_US')
+            cr = env.cr
+            _cr = env.cr
+            db = env.cr.dbname
+
+            def __nonzero__(self):
+                return False
+            __bool__ = __nonzero__
+
+            def __getattr__(self, attr):
+                return req()
+
+            @contextlib.contextmanager
+            def registry_cr(self):
+                import warnings
+                warnings.warn(
+                    'please use request.registry and request.cr directly',
+                    DeprecationWarning
+                )
+                yield (self.registry, self.cr)
+
+        return req()
+
+    def __enter__(self):
+        from openerp.http import _request_stack
+        _request_stack.push(self.request)
+        return super(CELERY_JOB, self).__enter__()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        from openerp.http import _request_stack
+        _request_stack.pop()
+        return super(CELERY_JOB, self).__exit__(exc_type, exc_val, exc_tb)
 
 
 PG_CONCURRENCY_ERRORS_TO_RETRY = (
@@ -418,7 +482,7 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs):
             # It's up to the user to return transferable things.
             try:
                 options = dict(job=self, env=r.env)
-                with _exec_context(CELERY_JOB, **options):
+                with CELERY_JOB(**options):
                     res = method(*args, **kwargs)
                 if isinstance(res, BaseModel):
                     res = res.ids  # downgrade to ids
@@ -553,6 +617,6 @@ def get_status_channel(job):
 
 def _send(channel, message, env=None):
     if env is None:
-        _context = _exec_context[CELERY_JOB]
+        _context = ExecutionContext[CELERY_JOB]
         env = _context['env']
     env['bus.bus'].sendone(channel, message)
