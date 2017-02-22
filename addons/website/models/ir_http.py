@@ -225,7 +225,7 @@ class ir_http(orm.AbstractModel):
                 return exception
 
             if code == 500:
-                logger.error("500 Internal Server Error:\n\n%s", values['traceback'])
+                logger.exception("500 Internal Server Error:\n\n%s", values['traceback'])
                 if 'qweb_exception' in values:
                     view = request.registry.get("ir.ui.view")
                     views = view._views_get(request.cr, request.uid, exception.qweb['template'],
