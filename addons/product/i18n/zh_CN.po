@@ -5,10 +5,10 @@
 # Translators:
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2012,2014
 # glovebx <ruinning@163.com>, 2015
-# Jeffery Chenn <jeffery9@gmail.com>, 2015-2016
-# Jeffery Chenn <jeffery9@gmail.com>, 2016
+# Jeffery CHEN <jeffery9@gmail.com>, 2015-2016
+# Jeffery CHEN <jeffery9@gmail.com>, 2016
 # liAnGjiA <liangjia@qq.com>, 2015
-# liAnGjiA <liangjia@qq.com>, 2016
+# liAnGjiA <liangjia@qq.com>, 2016-2017
 # liyes <bodetools@gmail.com>, 2015
 # mrshelly <mrshelly@hotmail.com>, 2015
 # THL <wt39181819@gmail.com>, 2015
@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: Odoo 8.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-21 14:08+0000\n"
-"PO-Revision-Date: 2016-09-08 16:03+0000\n"
+"PO-Revision-Date: 2017-02-14 04:42+0000\n"
 "Last-Translator: liAnGjiA <liangjia@qq.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/odoo/odoo-8/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
@@ -159,7 +159,7 @@ msgid ""
 "                Hours, Days.\n"
 "              </p>\n"
 "            "
-msgstr "<p class=\"oe_view_nocontent_create\">\n                单击增加一个新的计量单位类别。\n              </p><p>\n                属于相同类别的计量单位能互相转换。例如，，在“时间”类别中，你有下列单位: 小时数、天数。\n\n              </p>\n            "
+msgstr "<p class=\"oe_view_nocontent_create\">\n                单击增加一个新的计量单位类别。\n              </p><p>\n                属于相同类别的计量单位能互相转换。例如，，在<i>'时间'</i>类别中，你有下列单位: 小时数、天数。\n\n              </p>\n            "
 
 #. module: product
 #: model:ir.actions.act_window,help:product.product_uom_form_action
@@ -766,7 +766,7 @@ msgstr "一个传达给供应商的、关于该产品的说明。这个描述将
 msgid ""
 "A precise description of the Product, used only for internal information "
 "purposes."
-msgstr "产品的精确说明，仅用于内部备注。"
+msgstr "产品的详细说明，仅用于内部备注。"
 
 #. module: product
 #: model:product.category,name:product.product_category_7
@@ -877,7 +877,7 @@ msgstr "用于计算的基准价格"
 msgid ""
 "Base price to compute the customer price. Sometimes called the catalog "
 "price."
-msgstr "计算客户报价的基准价格。也叫目录价格"
+msgstr "计算客户报价的基准价格。也叫目录价格（外贸较常见客户电子邮件要求目录和价格表）。"
 
 #. module: product
 #: field:product.pricelist.item,base:0
@@ -1870,7 +1870,7 @@ msgstr "消息"
 #. module: product
 #: help:product.product,message_ids:0 help:product.template,message_ids:0
 msgid "Messages and communication history"
-msgstr "消息和通信历史"
+msgstr "信息和通信历史记录"
 
 #. module: product
 #: view:product.pricelist.item:product.product_pricelist_item_form_view
@@ -2437,7 +2437,7 @@ msgstr "产品价格类型"
 #: model:ir.actions.act_window,name:product.product_category_action
 #: model:ir.ui.menu,name:product.menu_products_category
 msgid "Products by Category"
-msgstr "产品 按类别"
+msgstr "产品类别"
 
 #. module: product
 #: code:addons/product/product.py:841

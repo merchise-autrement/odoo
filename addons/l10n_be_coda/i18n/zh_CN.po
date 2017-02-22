@@ -4,9 +4,9 @@
 # 
 # Translators:
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2014
-# Jeffery Chenn <jeffery9@gmail.com>, 2016
+# Jeffery CHEN <jeffery9@gmail.com>, 2016
 # liAnGjiA <liangjia@qq.com>, 2015
-# liAnGjiA <liangjia@qq.com>, 2016
+# liAnGjiA <liangjia@qq.com>, 2016-2017
 # mrshelly <mrshelly@hotmail.com>, 2015
 # Talway <9010446@qq.com>, 2015
 # Talway <9010446@qq.com>, 2015
@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: Odoo 8.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-11-24 02:53+0000\n"
-"PO-Revision-Date: 2016-09-03 18:13+0000\n"
+"PO-Revision-Date: 2017-02-13 14:11+0000\n"
 "Last-Translator: liAnGjiA <liangjia@qq.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/odoo/odoo-8/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
@@ -181,7 +181,7 @@ msgstr "汇款的保证与供应商的条例草案"
 #. module: l10n_be_coda
 #: model:account.coda.comm.type,description:l10n_be_coda.acct_002
 msgid "Communication of the bank"
-msgstr "银行的沟通"
+msgstr "银行的通信接口"
 
 #. module: l10n_be_coda
 #: field:coda.bank.statement.line,amount:0
@@ -237,7 +237,7 @@ msgstr "对付款人帐户贴水借记卡"
 #: model:ir.actions.act_window,name:l10n_be_coda.action_account_coda_comm_type_form
 #: model:ir.ui.menu,name:l10n_be_coda.menu_action_account_coda_comm_type_form
 msgid "CODA Structured Communication Types"
-msgstr "CODA 结构通信类型"
+msgstr "CODA 结构化通信类型"
 
 #. module: l10n_be_coda
 #: model:account.coda.trans.code,description:l10n_be_coda.actcc_30_50
@@ -435,7 +435,7 @@ msgstr "汇款文件国外-信用后集合"
 #. module: l10n_be_coda
 #: field:coda.bank.statement.line,name:0
 msgid "Communication"
-msgstr "交流"
+msgstr "通信"
 
 #. module: l10n_be_coda
 #: model:account.coda.trans.code,description:l10n_be_coda.actcc_00_35
@@ -1032,7 +1032,7 @@ msgstr "有关拒绝支票的费用"
 #. module: l10n_be_coda
 #: model:account.coda.comm.type,description:l10n_be_coda.acct_101
 msgid "Credit transfer or cash payment with structured format communication"
-msgstr "允许银行转账支付"
+msgstr "具有结构化格式通信的信用转帐或现金支付"
 
 #. module: l10n_be_coda
 #: model:account.coda.comm.type,description:l10n_be_coda.acct_127
@@ -1483,7 +1483,7 @@ msgstr "费用和佣金"
 msgid ""
 "Free Communication:\n"
 " %s"
-msgstr "通讯:\n %s"
+msgstr "免费通信:\n %s"
 
 #. module: l10n_be_coda
 #: model:account.coda.trans.code,description:l10n_be_coda.actcc_43_15
@@ -2183,7 +2183,7 @@ msgstr "与外国支票支付有关的费用"
 #. module: l10n_be_coda
 #: sql_constraint:account.coda.comm.type:0
 msgid "The Structured Communication Code must be unique !"
-msgstr "每个公司的货币代码必须唯一！"
+msgstr "结构化通信代码必须是唯一的！"
 
 #. module: l10n_be_coda
 #: model:account.coda.trans.category,description:l10n_be_coda.actrca_418
@@ -2209,7 +2209,7 @@ msgstr "保險箱"
 #. module: l10n_be_coda
 #: model:account.coda.trans.code,comment:l10n_be_coda.actcc_01_39
 msgid "To be used for issued circular cheques given in consignment"
-msgstr "要用于发出圆的支票，给出了在寄售"
+msgstr "用于签发寄售的循环支票"
 
 #. module: l10n_be_coda
 #: model:account.coda.trans.code,description:l10n_be_coda.actcf_11
@@ -2219,7 +2219,7 @@ msgstr "证券"
 #. module: l10n_be_coda
 #: selection:coda.bank.statement.line,type:0
 msgid "Free Communication"
-msgstr "通讯"
+msgstr "免费通信"
 
 #. module: l10n_be_coda
 #: model:account.coda.trans.type,description:l10n_be_coda.actt_2
@@ -3357,7 +3357,7 @@ msgstr "CODA 交易记录代码"
 #: model:account.coda.trans.category,description:l10n_be_coda.actrca_053
 #: model:account.coda.trans.code,description:l10n_be_coda.actcc_80_43
 msgid "Printing of forms"
-msgstr "Printing of forms"
+msgstr "表单打印"
 
 #. module: l10n_be_coda
 #: help:coda.bank.account,state:0
