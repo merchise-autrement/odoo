@@ -299,7 +299,19 @@ class Configuration(object):
     task_default_routing_key = CELERY_DEFAULT_ROUTING_KEY = DEFAULT_QUEUE_NAME
 
     worker_send_task_events = CELERYD_SEND_EVENTS = True
+
+    # Maximum number of tasks a pool worker process can execute before it’s
+    # replaced with a new one. Default is no limit.
     worker_max_tasks_per_child = CELERYD_MAX_TASKS_PER_CHILD = 2000
+
+    # Maximum amount of resident memory, in kilobytes, that may be consumed by
+    # a worker before it will be replaced by a new worker. If a single task
+    # causes a worker to exceed this limit, the task will be completed, and
+    # the worker will be replaced afterwards.
+    _worker_max_memory_per_child = config.get('celery.worker_max_memory_per_child')
+    if _worker_max_memory_per_child:
+        worker_max_memory_per_child = _worker_max_memory_per_child
+    del _worker_max_memory_per_child
 
     # TODO: Take queues from configuration.
     task_queues = CELERY_QUEUES = (
