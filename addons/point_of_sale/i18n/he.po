@@ -8,10 +8,10 @@
 # Leandro Noijovich <eliel.sorcerer@gmail.com>, 2017
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 10.0c\n"
+"Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-22 13:48+0000\n"
-"PO-Revision-Date: 2016-12-22 13:48+0000\n"
+"POT-Creation-Date: 2017-02-13 09:53+0000\n"
+"PO-Revision-Date: 2017-02-13 09:53+0000\n"
 "Last-Translator: Leandro Noijovich <eliel.sorcerer@gmail.com>, 2017\n"
 "Language-Team: Hebrew (https://www.transifex.com/odoo/teams/41243/he/)\n"
 "MIME-Version: 1.0\n"
@@ -980,7 +980,7 @@ msgstr "הסר לקוח"
 #: code:addons/point_of_sale/static/src/js/chrome.js:53
 #, python-format
 msgid "Destroy Current Order ?"
-msgstr "מחק הזמנה נוכחי ? "
+msgstr "מחק הזמנה נוכחית? "
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_session_cash_register_difference
@@ -999,12 +999,12 @@ msgstr "שוני בין מאזן סגירה תאורטי לאמיתי."
 #: code:addons/point_of_sale/static/src/xml/pos.xml:147
 #, python-format
 msgid "Disc"
-msgstr "דיסק"
+msgstr "הנחה"
 
 #. module: point_of_sale
 #: model:ir.ui.view,arch_db:point_of_sale.report_saledetails
 msgid "Disc:"
-msgstr "דיסק:"
+msgstr "הנחה:"
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_config_settings_module_pos_discount
@@ -2236,7 +2236,6 @@ msgstr "הזמנות נקודת מכירה"
 #. module: point_of_sale
 #: model:ir.actions.act_window,name:point_of_sale.action_pos_config_kanban
 #: model:ir.actions.act_window,name:point_of_sale.action_pos_config_pos
-#: model:ir.model,name:point_of_sale.model_pos_order
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_order_config_id
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_session_config_id
 #: model:ir.model.fields,field_description:point_of_sale.field_report_pos_order_config_id
@@ -2285,6 +2284,7 @@ msgid "Point of Sale Name"
 msgstr "שם נקודת מכירה"
 
 #. module: point_of_sale
+#: model:ir.model,name:point_of_sale.model_pos_order
 #: model:ir.ui.view,arch_db:point_of_sale.view_pos_order_search
 #: model:ir.ui.view,arch_db:point_of_sale.view_pos_pos_form
 msgid "Point of Sale Orders"
@@ -3681,7 +3681,7 @@ msgstr ""
 #: code:addons/point_of_sale/static/src/js/screens.js:1933
 #, python-format
 msgid "You need to select the customer before you can invoice an order."
-msgstr ""
+msgstr "עליך לבחור לקוח לפני שתוכל להנפיק קבלה"
 
 #. module: point_of_sale
 #: code:addons/point_of_sale/models/pos_session.py:138
