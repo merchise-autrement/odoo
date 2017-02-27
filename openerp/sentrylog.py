@@ -109,13 +109,20 @@ def get_client():
     return _sentry_client
 
 
-def patch_logging():
+def patch_logging(override=True, force=True):
     '''Patch openerp's logging.
 
     :param override: If True suppress all normal logging.  All logs will be
            sent to the Sentry instead of being logged to the console.  If
            False, extends the loogers to sent the errors to the Sentry but
            keep the console log as well.
+
+    :param force: Force the patching even if working with an Odoo
+           implementation that supports Sentry.  This is basically useful for
+           scripts like `mailgate` that run custom code but should log the
+           same as the core of Odoo.
+
+           If set to True, `override` will happen has well.
 
     The Sentry will only receive the error-level messages.
 
@@ -279,7 +286,9 @@ def patch_logging():
 
     loglevel = conf.get('report_level', 'ERROR')
     level = getattr(logging, loglevel.upper(), logging.ERROR)
-    override = conf.get('sentrylog.override', False)
+    override = conf.get('sentrylog.override', override)
+    if force:
+        override = True
 
     def sethandler(logger, override=override, level=level):
         handler = SentryHandler(client=client)
