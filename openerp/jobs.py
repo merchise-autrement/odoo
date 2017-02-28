@@ -83,22 +83,34 @@ DEFAULT_QUEUE_NAME = queue('default')
 del version_info
 
 
-def DeferredType(**options):
-    '''Create a function for a deferred job in the default queue.
+class DeferredType(object):
+    __name__ = 'DeferredType'  # needed by deprecation below
 
-    :keyword allow_nested: If True, jobs created with the returning function
-                           will be allowed to run nested (within the contex/t
-                           of another background job).
+    def __init__(self, **options):
+        '''Create a function for a deferred job in the default queue.
 
-                           The default is False.
+        :keyword allow_nested: If True, jobs created with the returning function
+                               will be allowed to run nested (within the contex/t
+                               of another background job).
 
-    :keyword queue: The name of the queue.
+                               The default is False.
 
-    '''
-    disallow_nested = not options.pop('allow_nested', False)
-    options.setdefault('queue', DEFAULT_QUEUE_NAME)
+        :keyword queue: The name of the queue.
 
-    def Deferred(*args, **kwargs):
+        '''
+        self.__disallow_nested = not options.pop('allow_nested', False)
+        options.setdefault('queue', DEFAULT_QUEUE_NAME)
+        self.__options = options
+
+    @property
+    def disallow_nested(self):
+        return self.__disallow_nested
+
+    @property
+    def options(self):
+        return dict(self.__options)
+
+    def __call__(self, *args, **kwargs):
         '''Request to run a method in a celery worker.
 
         The job will be routed to the '{queue}' priority queue.  The signature
@@ -121,16 +133,14 @@ def DeferredType(**options):
 
         '''
         signature = _extract_signature(args, kwargs)
-        if disallow_nested and CELERY_JOB in _exec_context:
+        if self.disallow_nested and CELERY_JOB in _exec_context:
             logger.warn('Nested background call detected for model',
                         extra=dict(
                             args_=signature,
                         ))
             return task(*signature)
         else:
-            return task.apply_async(args=signature, **options)
-
-    return Deferred
+            return task.apply_async(args=signature, **self.options)
 
 
 Deferred = DeferredType()
