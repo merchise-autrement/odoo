@@ -23,9 +23,10 @@ from . import Command
 class Celery(Command):
     def run(self, cmdargs):
         import logging
-        from celery.bin.celery import main as _main
+        import odoo
         from odoo.jobs import app  # noqa: discover the app
         from odoo.sentrylog import get_client
+        from celery.bin.celery import main as _main
         from raven.contrib.celery import register_signal, register_logger_signal
         client = get_client()
         if client:
@@ -41,4 +42,10 @@ class Celery(Command):
             # `ignore_expected` which causes exception classes specified in
             # Task.throws to be ignored
             register_signal(client, ignore_expected=True)
+        odoo.evented = False
+        # Some addons (specially report) think they live inside a cozy and
+        # warm HTTP worker.  This is not True for jobs inside the celery
+        # worker; in fact, this process is not a multi_process (with regards
+        # to Odoo).
+        odoo.multi_process = False
         _main(argv=['celery', ] + cmdargs)
