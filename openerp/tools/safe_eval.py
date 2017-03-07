@@ -40,6 +40,8 @@ from .misc import ustr
 
 import openerp
 
+from celery.exceptions import SoftTimeLimitExceeded
+
 __all__ = ['test_expr', 'safe_eval', 'const_eval']
 
 # The time module is usually already provided in the safe_eval environment
@@ -325,6 +327,8 @@ def safe_eval(expr, globals_dict=None, locals_dict=None, mode="eval", nocopy=Fal
     except OperationalError:
         # Do not hide PostgreSQL low-level exceptions, to let the auto-replay
         # of serialized transactions work its magic
+        raise
+    except SoftTimeLimitExceeded:
         raise
     except Exception as e:
         import sys

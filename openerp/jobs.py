@@ -31,7 +31,7 @@ import logging
 logger = logging.getLogger(__name__)
 del logging
 
-from xoutil.context import context as _exec_context
+from xoutil.context import context as ExecutionContext
 from xoutil.objects import extract_attrs
 
 from kombu import Exchange, Queue
@@ -39,6 +39,7 @@ from kombu import Exchange, Queue
 from celery import Celery as _CeleryApp
 
 import openerp.tools.config as config
+from openerp.tools.func import lazy_property
 
 from openerp.release import version_info
 from openerp.api import Environment
@@ -83,22 +84,34 @@ DEFAULT_QUEUE_NAME = queue('default')
 del version_info
 
 
-def DeferredType(**options):
-    '''Create a function for a deferred job in the default queue.
+class DeferredType(object):
+    __name__ = 'DeferredType'  # needed by deprecation below
 
-    :keyword allow_nested: If True, jobs created with the returning function
-                           will be allowed to run nested (within the contex/t
-                           of another background job).
+    def __init__(self, **options):
+        '''Create a function for a deferred job in the default queue.
 
-                           The default is False.
+        :keyword allow_nested: If True, jobs created with the returning function
+                               will be allowed to run nested (within the contex/t
+                               of another background job).
 
-    :keyword queue: The name of the queue.
+                               The default is False.
 
-    '''
-    disallow_nested = not options.pop('allow_nested', False)
-    options.setdefault('queue', DEFAULT_QUEUE_NAME)
+        :keyword queue: The name of the queue.
 
-    def Deferred(*args, **kwargs):
+        '''
+        self.__disallow_nested = not options.pop('allow_nested', False)
+        options.setdefault('queue', DEFAULT_QUEUE_NAME)
+        self.__options = options
+
+    @property
+    def disallow_nested(self):
+        return self.__disallow_nested
+
+    @property
+    def options(self):
+        return dict(self.__options)
+
+    def __call__(self, *args, **kwargs):
         '''Request to run a method in a celery worker.
 
         The job will be routed to the '{queue}' priority queue.  The signature
@@ -121,16 +134,14 @@ def DeferredType(**options):
 
         '''
         signature = _extract_signature(args, kwargs)
-        if disallow_nested and CELERY_JOB in _exec_context:
+        if self.disallow_nested and CELERY_JOB in ExecutionContext:
             logger.warn('Nested background call detected for model',
                         extra=dict(
                             args_=signature,
                         ))
             return task(*signature)
         else:
-            return task.apply_async(args=signature, **options)
-
-    return Deferred
+            return task.apply_async(args=signature, **self.options)
 
 
 Deferred = DeferredType()
@@ -262,7 +273,7 @@ def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
                     framework module) purposes.
 
     '''
-    _context = _exec_context[CELERY_JOB]
+    _context = ExecutionContext[CELERY_JOB]
     job = _context.get('job')
     if job:
         if valuemin is None or valuemax is None:
@@ -289,7 +300,19 @@ class Configuration(object):
     task_default_routing_key = CELERY_DEFAULT_ROUTING_KEY = DEFAULT_QUEUE_NAME
 
     worker_send_task_events = CELERYD_SEND_EVENTS = True
+
+    # Maximum number of tasks a pool worker process can execute before it’s
+    # replaced with a new one. Default is no limit.
     worker_max_tasks_per_child = CELERYD_MAX_TASKS_PER_CHILD = 2000
+
+    # Maximum amount of resident memory, in kilobytes, that may be consumed by
+    # a worker before it will be replaced by a new worker. If a single task
+    # causes a worker to exceed this limit, the task will be completed, and
+    # the worker will be replaced afterwards.
+    _worker_max_memory_per_child = config.get('celery.worker_max_memory_per_child')
+    if _worker_max_memory_per_child:
+        worker_max_memory_per_child = _worker_max_memory_per_child
+    del _worker_max_memory_per_child
 
     # TODO: Take queues from configuration.
     task_queues = CELERY_QUEUES = (
@@ -333,8 +356,71 @@ class Configuration(object):
 app = _CeleryApp(__name__)
 app.config_from_object(Configuration)
 
+
 # A context for jobs.  All jobs will be executed in this context.
-CELERY_JOB = object()
+class CELERY_JOB(ExecutionContext):
+    def __new__(cls, **options):
+        context_identifier = cls
+        return super(CELERY_JOB, cls).__new__(
+            cls, context_identifier, **options
+        )
+
+    def __init__(self, **options):
+        super(CELERY_JOB, self).__init__(**options)
+        self.job = options['job']
+        self.env = options['env']
+
+    @lazy_property
+    def request(self):
+        class req(object):
+            # A request-like object.
+            #
+            # ``bool(req())`` is always False.
+            #
+            # ``req().anything`` is another ``req()``, so you can do
+            # ``req().x.y.z``.  This fact, combined with the previous, means
+            # that ``bool(req().anything.not.shown.below)`` is always False.
+            #
+            # This is a technical hack to make parts of Odoo that require a
+            # HTTP request in the `openerp.http.request`:object: to be
+            # available, and many attributes are also freely traversed like
+            # ``request.httprequest.is_spdy``...
+            #
+            env = self.env
+            uid = env.uid
+            context = env.context
+            lang = context.get('lang', 'en_US')
+            cr = env.cr
+            _cr = env.cr
+            db = env.cr.dbname
+
+            def __nonzero__(self):
+                return False
+            __bool__ = __nonzero__
+
+            def __getattr__(self, attr):
+                return req()
+
+            @contextlib.contextmanager
+            def registry_cr(self):
+                import warnings
+                warnings.warn(
+                    'please use request.registry and request.cr directly',
+                    DeprecationWarning
+                )
+                yield (self.registry, self.cr)
+
+        return req()
+
+    def __enter__(self):
+        from openerp.http import _request_stack
+        _request_stack.push(self.request)
+        return super(CELERY_JOB, self).__enter__()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        from openerp.http import _request_stack
+        _request_stack.pop()
+        return super(CELERY_JOB, self).__exit__(exc_type, exc_val, exc_tb)
 
 
 PG_CONCURRENCY_ERRORS_TO_RETRY = (
@@ -396,7 +482,7 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs):
             # It's up to the user to return transferable things.
             try:
                 options = dict(job=self, env=r.env)
-                with _exec_context(CELERY_JOB, **options):
+                with CELERY_JOB(**options):
                     res = method(*args, **kwargs)
                 if isinstance(res, BaseModel):
                     res = res.ids  # downgrade to ids
@@ -531,6 +617,6 @@ def get_status_channel(job):
 
 def _send(channel, message, env=None):
     if env is None:
-        _context = _exec_context[CELERY_JOB]
+        _context = ExecutionContext[CELERY_JOB]
         env = _context['env']
     env['bus.bus'].sendone(channel, message)
