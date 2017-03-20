@@ -40,9 +40,9 @@ class ImBus(osv.Model):
     }
 
     def gc(self, cr, uid):
-        timeout_ago = datetime.datetime.utcnow()-datetime.timedelta(seconds=TIMEOUT*2)
+        timeout_ago = datetime.datetime.utcnow() - TIMEOUT_DELTA * 10
         domain = [('create_date', '<', timeout_ago.strftime(DEFAULT_SERVER_DATETIME_FORMAT))]
-        ids  = self.search(cr, openerp.SUPERUSER_ID, domain)
+        ids = self.search(cr, openerp.SUPERUSER_ID, domain)
         self.unlink(cr, openerp.SUPERUSER_ID, ids)
 
     def sendmany(self, cr, uid, notifications):
@@ -74,7 +74,7 @@ class ImBus(osv.Model):
     def poll(self, cr, uid, channels, last=0):
         # first poll return the notification in the 'buffer'
         if last == 0:
-            timeout_ago = datetime.datetime.utcnow()-datetime.timedelta(seconds=TIMEOUT)
+            timeout_ago = datetime.datetime.utcnow() - TIMEOUT_DELTA
             domain = [('create_date', '>', timeout_ago.strftime(DEFAULT_SERVER_DATETIME_FORMAT))]
         else:
             # else returns the unread notifications
