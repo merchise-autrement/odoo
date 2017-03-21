@@ -3114,8 +3114,8 @@ msgid ""
 "                check the details in new worksheet)"
 msgstr ""
 "Gebruik berichten om productie of magazijn medewerkers te waarschuwen over "
-"eventuele veranderingen in de producten, processen, of acties (Bijv; "
-"Waarschuwing, de materiaallijst is veranderd, controleer de details van uw "
+"eventuele wijzigingen in de producten, processen, of acties (Bijv; "
+"Waarschuwing, de materiaallijst is gewijzigd, controleer de details van uw "
 "werk opdracht)."
 
 #. module: mrp
@@ -3498,6 +3498,13 @@ msgid "You cannot cancel a move move having already consumed material"
 msgstr ""
 "Het is niet mogelijk een voorraadmutatie te annuleren welke reeds "
 "grondstoffen heeft verbuikt"
+
+#. module: mrp
+#: code:addons/mrp/models/stock_move.py:40
+#, python-format
+msgid "You cannot use the same serial number in two different lines."
+msgstr ""
+"Het is niet toegestaan om hetzelfde serienummer te gebruiken op twee regels"
 
 #. module: mrp
 #: code:addons/mrp/wizard/change_production_qty.py:44

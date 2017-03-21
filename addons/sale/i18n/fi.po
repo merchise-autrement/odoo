@@ -7,14 +7,13 @@
 # Tuomo Aura <tuomo.aura@web-veistamo.fi>, 2016
 # Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2016
 # Martin Trigaux <mat@odoo.com>, 2016
-# Eino Mäkitalo <eino.makitalo@netitbe.fi>, 2016
+# Veikko Väätäjä <veikko.vaataja@gmail.com>, 2016
 # Sanna Edelman <direct@generare.com>, 2016
 # Jussi Lehto <jussi@gulfeo.com>, 2016
 # Marko Happonen <marko.happonen@sprintit.fi>, 2016
 # Pekko Tuomisto <pekko.tuomisto@web-veistamo.fi>, 2016
 # Miku Laitinen <miku.laitinen@gmail.com>, 2016
 # salmemik <salmemik@gmail.com>, 2016
-# Veikko Väätäjä <veikko.vaataja@gmail.com>, 2016
 # Timo Koukkari <timo.koukkari@seamk.fi>, 2016
 # Svante Suominen <svante.suominen@web-veistamo.fi>, 2016
 # Atte Isopuro <atte.isopuro@web-veistamo.fi>, 2016
@@ -150,6 +149,8 @@ msgid ""
 "<b>Invite salespeople or managers</b> via email.<br/><i>Enter one email per "
 "line.</i>"
 msgstr ""
+"<b>Kutsu myyjiä tai myyntijohtajia</b> sähköpostilla.<br/><i>Lisää yksi "
+"postiosoite per rivi.</i>"
 
 #. module: sale
 #: model:mail.template,body_html:sale.mail_template_data_notification_email_sale_order
@@ -898,7 +899,7 @@ msgstr ""
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_advance_payment_inv_deposit_account_id
 msgid "Income Account"
-msgstr "tulotili"
+msgstr "Tulotili"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_config_settings_group_display_incoterm
@@ -1400,7 +1401,7 @@ msgstr ""
 #: code:addons/sale/static/src/js/tour.js:13
 #, python-format
 msgid "Organize your sales activities with the <b>Sales app</b>."
-msgstr ""
+msgstr "Hoida myyntitoimintojasi <b>Myyntisovelluksella</b>."
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.view_order_form

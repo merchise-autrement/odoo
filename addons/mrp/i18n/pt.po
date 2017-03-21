@@ -2350,7 +2350,7 @@ msgstr "Recurso"
 #. module: mrp
 #: model:ir.ui.menu,name:mrp.menu_view_resource_calendar_leaves_search_mrp
 msgid "Resource Leaves"
-msgstr "Folhas de recursos"
+msgstr "Ausências de Recurso"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workcenter_resource_type
@@ -3395,6 +3395,12 @@ msgstr ""
 #: code:addons/mrp/models/stock_move.py:123
 #, python-format
 msgid "You cannot cancel a move move having already consumed material"
+msgstr ""
+
+#. module: mrp
+#: code:addons/mrp/models/stock_move.py:40
+#, python-format
+msgid "You cannot use the same serial number in two different lines."
 msgstr ""
 
 #. module: mrp
