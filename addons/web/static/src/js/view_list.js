@@ -424,7 +424,8 @@ instance.web.ListView = instance.web.View.extend( /** @lends instance.web.ListVi
             }
             spager = _.str.sprintf(_t("%d-%d of %d"), range_start, range_stop, total);
         }
-
+        if (!this.grouped)
+            this.$pager.find('.oe_pager_group').show();
         this.$pager.find('.oe_list_pager_state').text(spager);
     },
     /**
