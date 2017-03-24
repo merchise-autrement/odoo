@@ -32,11 +32,12 @@ logger = logging.getLogger(__name__)
 del logging
 
 from xoutil.context import context as ExecutionContext
-from xoutil.objects import extract_attrs
+from xoutil.uuid import uuid as new_uuid
 
 from kombu import Exchange, Queue
 
 from celery import Celery as _CeleryApp
+from celery.exceptions import MaxRetriesExceededError,  SoftTimeLimitExceeded
 
 import openerp.tools.config as config
 from openerp.tools.func import lazy_property
@@ -229,7 +230,6 @@ def until_timeout(iterator):
        installed `until_timeout` simply returns `iterator` unchanged.
 
     '''
-    from celery.exceptions import SoftTimeLimitExceeded
     try:
         from xoutil.bound import until
 
@@ -274,13 +274,13 @@ def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
 
     '''
     _context = ExecutionContext[CELERY_JOB]
-    job = _context.get('job')
-    if job:
+    job_uuid = _context.get('job_uuid')
+    if job_uuid:
         if valuemin is None or valuemax is None:
             valuemin = valuemax = None
         elif valuemin >= valuemax:
             valuemin = valuemax = None
-        _send(get_progress_channel(job), dict(
+        _send(get_progress_channel(job_uuid), dict(
             status=status,
             message=message,
             progress=progress,
@@ -298,6 +298,13 @@ class Configuration(object):
     task_default_queue = CELERY_DEFAULT_QUEUE = DEFAULT_QUEUE_NAME
     task_default_exchange_type = CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
     task_default_routing_key = CELERY_DEFAULT_ROUTING_KEY = DEFAULT_QUEUE_NAME
+
+    task_queues = CELERY_QUEUES = [
+        Queue(task_default_queue, Exchange(task_default_queue),
+              routing_key=task_default_routing_key),
+        Queue(queue('notifications'), Exchange(queue('notifications')),
+              routing_key=queue(queue('notifications'))),
+    ]
 
     worker_send_task_events = CELERYD_SEND_EVENTS = True
 
@@ -466,10 +473,31 @@ def _extract_signature(args, kwargs):
     return model, ids, methodname, dbname, uid, args, kwargs
 
 
-# Since a model method may be altered in several addons, we funnel all calls
-# to execute a method in a single Celery task.
-@app.task(bind=True, max_retries=5)
-def task(self, model, ids, methodname, dbname, uid, args, kwargs):
+Unset = object()
+
+
+@app.task(bind=True, max_retries=5, default_retry_delay=0.3)
+def task(self, model, ids, methodname, dbname, uid, args, kwargs,
+         job_uuid=Unset):
+    '''The actual task running all our celery jobs.
+
+    Since a model method may be altered in several addons, we funnel all calls
+    to execute a method in a single Celery task.
+
+    The `job_uuid` argument serves to relate retries with the first request.
+    Since retries have a different request ID than that of the 'actual task'
+    the user is probably monitoring, we need a unique UUID that relates
+    retries.
+
+    `job_uuid` is Unset when Deferred executes the task.  `task`:func: is not
+    part of the API of this module; it's an implementation detail you should
+    only know if you're messing with `task` directly.
+
+    Retries are scheduled with a minimum delay of 300ms.
+
+    '''
+    if job_uuid is Unset:
+        job_uuid = self.request.id if self.request.id else new_uuid()
     from openerp.models import BaseModel
     context = kwargs.pop('context', None)
     with MaybeRecords(dbname, uid, model, ids, context=context) as r:
@@ -481,28 +509,31 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs):
                 method = getattr(r.browse(ids), methodname)
             # It's up to the user to return transferable things.
             try:
-                options = dict(job=self, env=r.env)
+                options = dict(job=self, env=r.env, job_uuid=job_uuid)
                 with CELERY_JOB(**options):
                     res = method(*args, **kwargs)
                 if isinstance(res, BaseModel):
                     res = res.ids  # downgrade to ids
-                if self.request.id:
-                    _report_success.delay(dbname, uid, self.request.id,
-                                          result=res)
+                _report_success.delay(dbname, uid, job_uuid, result=res)
             except OperationalError as error:
                 if error.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
-                    if self.request.id:
-                        _report_current_failure(dbname, uid, self.request.id,
-                                                error)
+                    _report_current_failure(dbname, uid, job_uuid, error)
                     raise
                 else:
-                    # This method raises celery.exceptions.Retry
-                    self.retry(args=(model, methodname, dbname, uid,
-                                     args, kwargs))
+                    arguments = (model, ids, methodname, dbname, uid, args, kwargs)
+                    keywords = dict(job_uuid=job_uuid)
+                    logger.info(
+                        'Maybe retrying task %s',
+                        job_uuid,
+                        extra=dict(arguments=arguments, keywords=keywords)
+                    )
+                    try:
+                        raise self.retry(args=arguments, kwargs=keywords)
+                    except MaxRetriesExceededError:
+                        _report_current_failure(dbname, uid, job_uuid, error)
+                        raise error
             except Exception as error:
-                if self.request.id:
-                    _report_current_failure(dbname, uid, self.request.id,
-                                            error)
+                _report_current_failure(dbname, uid, job_uuid, error)
                 raise
         else:
             raise TypeError(
@@ -559,7 +590,8 @@ def _require_ids(method):
     return False
 
 
-@app.task(bind=True, max_retries=5)
+@app.task(bind=True, max_retries=5, default_retry_delay=0.1,
+          queue=queue('notifications'))
 def _report_success(self, dbname, uid, job_uuid, result=None):
     try:
         with OdooEnvironment(dbname, uid) as env:
@@ -569,10 +601,17 @@ def _report_success(self, dbname, uid, job_uuid, result=None):
                 env=env
             )
     except Exception:
-        self.retry(args=(dbname, uid, job_uuid))
+        try:
+            raise self.retry(args=(dbname, uid, job_uuid),
+                             kwargs=dict(result=result))
+        except MaxRetriesExceededError:
+            logger.exception(
+                'Max retries exceeded with reporting success'
+            )
 
 
-@app.task(bind=True, max_retries=5)
+@app.task(bind=True, max_retries=5, default_retry_delay=0.1,
+          queue=queue('notifications'))
 def _report_failure(self, dbname, uid, job_uuid, tb=None, message=''):
     try:
         with OdooEnvironment(dbname, uid) as env:
@@ -583,36 +622,40 @@ def _report_failure(self, dbname, uid, job_uuid, tb=None, message=''):
 
             )
     except Exception:
-        self.retry(args=(dbname, uid, job_uuid, tb),
-                   kwargs={'message': message})
+        try:
+            raise self.retry(args=(dbname, uid, job_uuid, tb),
+                             kwargs={'message': message})
+        except MaxRetriesExceededError:
+            logger.exception(
+                'Max retries exceeded with reporting success'
+            )
 
 
-def _report_current_failure(dbname, uid, job_uuid, error):
+def _report_current_failure(dbname, uid, job_uuid, error, subtask=True):
     data = _serialize_exception(error)
-    _report_failure.delay(dbname, uid, job_uuid, message=data)
+    if subtask:
+        _report_failure.delay(dbname, uid, job_uuid, message=data)
+    else:
+        _report_failure(dbname, uid, job_uuid, message=data)
     logger.exception('Unhandled exception in task')
 
 
-def get_progress_channel(job):
+def get_progress_channel(job_uuid):
     '''Get the name of the Odoo bus channel for reporting progress.
 
-    :param job: Either the UUID or the job (a bound Task) instance that must
-                have a 'request' attribute.
+    :param job_uuid: The UUID of the job.
 
     '''
-    uuid = extract_attrs(job, 'request.id', default=job)
-    return 'celeryapp:%s:progress' % uuid
+    return 'celeryapp:%s:progress' % job_uuid
 
 
-def get_status_channel(job):
+def get_status_channel(job_uuid):
     '''Get the name of the Odoo bus channel for reporting status.
 
-    :param job: Either the UUID or the job (a bound Task) instance that must
-                have a 'request' attribute.
+    :param job_uuid: The UUID of the job.
 
     '''
-    uuid = extract_attrs(job, 'request.id', default=job)
-    return 'celeryapp:%s:status' % uuid
+    return 'celeryapp:%s:status' % job_uuid
 
 
 def _send(channel, message, env=None):
