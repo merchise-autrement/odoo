@@ -1343,7 +1343,7 @@ class account_move(osv.osv):
 
                 if new_name:
                     self.write(cr, uid, [move.id], {'name':new_name},
-                               context=dict(context, dovalidate=False))
+                               context=dict(context, novalidate=True))
 
         cr.execute('UPDATE account_move '\
                    'SET state=%s '\
@@ -1387,8 +1387,7 @@ class account_move(osv.osv):
         c = context.copy()
         c['novalidate'] = True
         result = super(account_move, self).write(cr, uid, ids, vals, c)
-        dovalidate = context.get('dovalidate', True)
-        if dovalidate:
+        if not context.get('novalidate'):
             self.validate(cr, uid, ids, context=context)
         return result
 
@@ -1424,7 +1423,7 @@ class account_move(osv.osv):
                 # explicitly only here because `button_validate`
                 # unconditionally calls `post`, which in turn calls `validate`
                 # and that would be redundant and highly inefficient.
-                if context.get('dovalidate', True):
+                if not context.get('novalidate'):
                     self.validate(cr, uid, [result], context)
             else:
                 self.button_validate(cr,uid, [result], context)

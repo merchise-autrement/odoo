@@ -50,3 +50,9 @@ def WAIT_FOR_TASK(job, next_action=None):
             next_action=next_action,
         )
     )
+
+
+# The client action for closing the feedback mechanism we're using to show the
+# user the progress of the background job.
+CLOSE_FEEDBACK = None
+CLOSE_PROGRESS_BAR = CLOSE_FEEDBACK

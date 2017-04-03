@@ -939,7 +939,7 @@ class account_invoice(models.Model):
             ctx_nolang.pop('lang', None)
             move = account_move.with_context(
                 ctx_nolang,
-                dovalidate=False,
+                novalidate=True,
             ).create(move_vals)
 
             # make the invoice point to that move
