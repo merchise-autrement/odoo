@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Odoo 8.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-19 06:31+0000\n"
-"PO-Revision-Date: 2017-03-21 21:09+0000\n"
+"PO-Revision-Date: 2017-04-01 19:26+0000\n"
 "Last-Translator: Martin Trigaux\n"
 "Language-Team: Russian (http://www.transifex.com/odoo/odoo-8/language/ru/)\n"
 "MIME-Version: 1.0\n"
@@ -1065,7 +1065,7 @@ msgid ""
 "Generates Intrastat XML report for declaration\n"
 "Based on invoices.\n"
 "    "
-msgstr ""
+msgstr "\nФормирует Интрастат отчет XML для декларации\nНа основе счетов-фактур.\n    "
 
 #. module: base
 #: model:ir.module.module,description:base.module_hr_payroll_account
@@ -1801,7 +1801,7 @@ msgid ""
 "This initially includes chart of accounts of USA translated to Arabic.\n"
 "\n"
 "In future this module will include some payroll rules for ME .\n"
-msgstr ""
+msgstr "\nOdoo Арабская локализация для большинства арабских стран и Саудовской Аравии.\n\nИзначально включает план счетов США, переведенный на арабский.\n\nВ будущем этот модуль будет включать некоторые правила расчета для ME.\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_im_odoo_support
@@ -3632,7 +3632,7 @@ msgid ""
 "This module provides the standard Accounting Chart for Austria which is based on the Template from BMF.gv.at.\n"
 "============================================================================================================= \n"
 "Please keep in mind that you should review and adapt it with your Accountant, before using it in a live Environment.\n"
-msgstr ""
+msgstr "\nЭтот модуль представляет собой стандартный бухгалтерский план счетов для Австрии, который основан на шаблоне BMF.gv.at.\n============================================================================================================= \nПожалуйста, имейте в виду, что вам следует просмотреть и адаптировать его с вашим бухгалтером, прежде чем использовать его в живой среде.\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_account_anglo_saxon
@@ -10953,7 +10953,7 @@ msgstr "Нет курса валют связанного с курсом'%s' н
 #: code:addons/models.py:1543
 #, python-format
 msgid "No default view of type '%s' could be found !"
-msgstr ""
+msgstr "Не может быть найдено представление по умолчанию для типа '%s' !"
 
 #. module: base
 #: selection:ir.sequence,implementation:0
@@ -11554,7 +11554,7 @@ msgstr "Наименование родительского элемента"
 #. module: base
 #: field:ir.actions.report.xml,parser:0
 msgid "Parser Class"
-msgstr ""
+msgstr "Класс парсера"
 
 #. module: base
 #: model:ir.model,name:base.model_res_partner field:res.company,partner_id:0
@@ -11656,7 +11656,7 @@ msgstr "Платежи клиентов: вклад в Adyen"
 #. module: base
 #: model:ir.module.module,summary:base.module_payment_authorize
 msgid "Payment Acquirer: Authorize.net Implementation"
-msgstr ""
+msgstr "Платеж покупателя: Authorize.net осуществлен"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_payment_buckaroo
@@ -11676,7 +11676,7 @@ msgstr "Платежи клиентов: через Paypal"
 #. module: base
 #: model:ir.module.module,summary:base.module_payment_transfer
 msgid "Payment Acquirer: Transfer Implementation"
-msgstr ""
+msgstr "Платеж покупателя: Перевод осуществлен"
 
 #. module: base
 #: model:ir.ui.menu,name:base.menu_sales_followup
@@ -11778,7 +11778,7 @@ msgstr "выражение подстановки"
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_pt
 msgid "Plano de contas SNC para Portugal"
-msgstr ""
+msgstr "План SNC счетов для Португалии"
 
 #. module: base
 #: code:addons/base/ir/ir_model.py:796
@@ -11811,7 +11811,7 @@ msgstr "Пожалуйста, установите основную модель
 msgid ""
 "Please set the Base Model of the action to enable the dynamic expression "
 "buidler."
-msgstr ""
+msgstr "Пожалуйста, установите базовую модель действия, чтобы включить построитель динамических выражений."
 
 #. module: base
 #: code:addons/base/ir/ir_actions.py:832
@@ -11930,7 +11930,7 @@ msgstr "Главная страница PosBox"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_hw_posbox_upgrade
 msgid "PosBox Software Upgrader"
-msgstr ""
+msgstr "Модернизация программного обеспечения PosBox"
 
 #. module: base
 #: help:ir.model.constraint,name:0
@@ -12008,7 +12008,7 @@ msgstr "Шаблон письма о товаре"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_product_extended
 msgid "Product extension to track sales and purchases"
-msgstr ""
+msgstr "Расширение продукта для отслеживания продаж и покупок"
 
 #. module: base
 #: model:ir.ui.menu,name:base.menu_product
@@ -12077,12 +12077,12 @@ msgstr "Перспективный"
 msgid ""
 "Provide an expression that, applied on the current record, gives the field "
 "to update."
-msgstr ""
+msgstr "Предоставьте выражение, которое применяется к текущей записи, дающей поле для обновления."
 
 #. module: base
 #: help:ir.actions.server,link_field_id:0
 msgid "Provide the field where the record id is stored after the operations."
-msgstr ""
+msgstr "Укажите поле, в котором идентификатор записи сохраняется после операций."
 
 #. module: base
 #: model:res.groups,name:base.group_public
@@ -12109,7 +12109,7 @@ msgstr "Общие ассоциации, членства и группы"
 #. module: base
 #: model:ir.module.module,summary:base.module_website_crm_partner_assign
 msgid "Publish Your Channel of Resellers"
-msgstr ""
+msgstr "Опубликуйте свой канал реселлеров"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_website_customer
@@ -12322,7 +12322,7 @@ msgstr "Запись не может быть изменена прямо сей
 #: code:addons/models.py:4894
 #, python-format
 msgid "Record does not exist or has been deleted."
-msgstr ""
+msgstr "Запись не существует или была удалена."
 
 #. module: base
 #: view:ir.rule:base.view_rule_form view:ir.rule:base.view_rule_tree
@@ -12422,7 +12422,7 @@ msgstr "Удалить из меню 'Больше'"
 #. module: base
 #: view:ir.actions.server:base.view_server_action_form
 msgid "Remove the contextual action related to this server action"
-msgstr ""
+msgstr "Удалить контекстное действие, связанное с действием этого сервера."
 
 #. module: base
 #: code:addons/base/ir/ir_model.py:421
@@ -12535,7 +12535,7 @@ msgstr "Посредники"
 #: code:addons/models.py:1085
 #, python-format
 msgid "Resolve other errors first"
-msgstr ""
+msgstr "Сначала разрешите другие ошибки"
 
 #. module: base
 #: field:ir.exports,resource:0
@@ -12575,7 +12575,7 @@ msgstr "Ресторан"
 #. module: base
 #: model:ir.module.module,summary:base.module_pos_restaurant
 msgid "Restaurant extensions for the Point of Sale "
-msgstr ""
+msgstr "Расширение ресторана для точки продажи "
 
 #. module: base
 #: selection:ir.model.fields,on_delete:0
@@ -12650,7 +12650,7 @@ msgstr "Правила не могут быть применены к време
 #. module: base
 #: constraint:ir.rule:0
 msgid "Rules can not be applied on the Record Rules model."
-msgstr ""
+msgstr "Правила не могут применяться к модели правил записи."
 
 #. module: base
 #: code:addons/base/ir/ir_actions.py:809
@@ -12723,7 +12723,7 @@ msgstr "Путь SXW"
 #. module: base
 #: model:res.country,name:base.bl
 msgid "Saint Barthélémy"
-msgstr ""
+msgstr "Святой Варфоломей"
 
 #. module: base
 #: model:res.country,name:base.sh
@@ -12842,7 +12842,7 @@ msgstr "Саудовская Аравия"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_sa
 msgid "Saudi Arabia - Accounting"
-msgstr ""
+msgstr "Саудовская Аравия - Бухгалтерский учет"
 
 #. module: base
 #: view:res.users:base.view_users_form_simple_modif
@@ -12966,12 +12966,12 @@ msgstr "Выбор целевого поля из связанной модел�
 #. module: base
 #: help:ir.actions.server,action_id:0
 msgid "Select the client action that has to be executed."
-msgstr ""
+msgstr "Выберите действие клиента, которое должно быть выполнено."
 
 #. module: base
 #: help:ir.actions.server,wkf_transition_id:0
 msgid "Select the workflow signal to trigger."
-msgstr ""
+msgstr "Выберите сигнал рабочего процесса для запуска."
 
 #. module: base
 #: help:res.partner,use_parent_address:0
@@ -13093,7 +13093,7 @@ msgstr "Поле сериализации"
 #: code:addons/models.py:418
 #, python-format
 msgid "Serialization field `%s` not found for sparse field `%s`!"
-msgstr ""
+msgstr "Поле сериализации `% s` не найдено для разреженного поля`% s`!"
 
 #. module: base
 #: selection:ir.logging,type:0
@@ -13225,7 +13225,7 @@ msgstr "Серебро"
 #. module: base
 #: model:ir.module.module,summary:base.module_pos_discount
 msgid "Simple Discounts in the Point of Sale "
-msgstr ""
+msgstr "Простые скидки в точке продажи"
 
 #. module: base
 #: model:res.country,name:base.sg
@@ -13352,7 +13352,7 @@ msgstr "К сожалению, вы не можете изменять этот 
 #: code:addons/models.py:4618
 #, python-format
 msgid "Sorting field %s not found on model %s"
-msgstr ""
+msgstr "Поле сортировки %s не найдено в модели %s"
 
 #. module: base
 #: field:ir.translation,source:0
@@ -13965,7 +13965,7 @@ msgstr "Шаблон плана счетов"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_test_new_api
 msgid "Test API"
-msgstr ""
+msgstr "Тест API"
 
 #. module: base
 #: view:ir.mail_server:base.ir_mail_server_form
@@ -13975,7 +13975,7 @@ msgstr "Проверка подключения"
 #. module: base
 #: model:ir.module.module,description:base.module_test_access_rights
 msgid "Testing of access restrictions"
-msgstr ""
+msgstr "Тестирование ограничений доступа"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_tests
@@ -13986,7 +13986,7 @@ msgstr "Тесты"
 #. module: base
 #: model:ir.module.module,description:base.module_test_converter
 msgid "Tests of field conversions"
-msgstr ""
+msgstr "Тест конверсий поля"
 
 #. module: base
 #: field:ir.actions.todo,note:0 selection:ir.property,type:0
@@ -14143,21 +14143,21 @@ msgstr "Внутренний пользователь, который отвеч
 #. module: base
 #: help:ir.model,inherited_model_ids:0
 msgid "The list of models that extends the current model."
-msgstr ""
+msgstr "Список моделей, расширяющих текущую модель."
 
 #. module: base
 #: help:ir.filters,action_id:0
 msgid ""
 "The menu action this filter applies to. When left empty the filter applies "
 "to all menus for this model."
-msgstr ""
+msgstr "Действие меню, к которому относится этот фильтр. Когда он остается пустым, фильтр применяется ко всем меню для этой модели."
 
 #. module: base
 #: help:ir.actions.server,wkf_model_id:0
 msgid ""
 "The model that will receive the workflow signal. Note that it should have a "
 "workflow associated with it."
-msgstr ""
+msgstr "Модель, которая получит сигнал рабочего процесса. Обратите внимание, что должен быть связанный с ним рабочий процесс."
 
 #. module: base
 #: help:ir.model.fields,model_id:0
@@ -14178,7 +14178,7 @@ msgstr "Название группы не может начинаться с \"
 #. module: base
 #: sql_constraint:res.groups:0
 msgid "The name of the group must be unique within an application!"
-msgstr ""
+msgstr "Имя группы должно быть уникальным в приложении!"
 
 #. module: base
 #: sql_constraint:res.lang:0
@@ -14334,7 +14334,7 @@ msgstr "Пользователь фильтра. Если оставить пу�
 #: code:addons/models.py:6079
 #, python-format
 msgid "The value for the field '%s' already exists."
-msgstr ""
+msgstr "Значение поля '%s' уже существует."
 
 #. module: base
 #: code:addons/base/ir/ir_filters.py:97
@@ -14796,7 +14796,7 @@ msgstr "Украинский / Українська"
 #, python-format
 msgid ""
 "Unable to delete this document because it is used as a default property"
-msgstr ""
+msgstr "Невозможно удалить этот документ, поскольку он используется, как свойство по умолчанию"
 
 #. module: base
 #: code:addons/base/module/module.py:372
@@ -14868,7 +14868,7 @@ msgstr "Соединенные Штаты - бухгалтерский учет"
 #: code:addons/models.py:1230
 #, python-format
 msgid "Unknown database identifier '%s'"
-msgstr ""
+msgstr "Неизвестные идентификаторы базы данных '%s'"
 
 #. module: base
 #: code:addons/models.py:1083
@@ -15172,7 +15172,7 @@ msgstr "Вануату"
 msgid ""
 "Various fields may use Python code or Python expressions. The following "
 "variables can be used:"
-msgstr ""
+msgstr "Различные поля могут использовать код Python или выражения Python. Могут использоваться следующие переменные:"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_fleet
@@ -15328,7 +15328,7 @@ msgstr "Управление складом"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_stock_picking_wave
 msgid "Warehouse Management: Waves"
-msgstr ""
+msgstr "Управление складом: волны"
 
 #. module: base
 #: code:addons/base/ir/ir_actions.py:827
@@ -15440,12 +15440,12 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_gengo
 msgid "Website Gengo Translator"
-msgstr ""
+msgstr "Веб-сайт Gengo переводчик"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_google_map
 msgid "Website Google Map"
-msgstr ""
+msgstr "Веб-сайт Google Map"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_instantclick
@@ -15460,17 +15460,17 @@ msgstr "Вебсайт поддержка"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_mail
 msgid "Website Mail"
-msgstr ""
+msgstr "Почта веб-сайта"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_website_mail
 msgid "Website Module for Mail"
-msgstr ""
+msgstr "Модуль веб-сайта для почты"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_partner
 msgid "Website Partner"
-msgstr ""
+msgstr "Партнер сайта"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_report
@@ -15594,7 +15594,7 @@ msgstr "Мастера для запуска"
 #. module: base
 #: view:ir.actions.server:base.view_server_action_form
 msgid "Worflow Signal"
-msgstr ""
+msgstr "Сигнал рабочего процесса"
 
 #. module: base
 #: selection:ir.cron,interval_type:0
@@ -15785,7 +15785,7 @@ msgstr "Вы не можете удалить активный язык!\nПож
 #: code:addons/base/res/res_lang.py:205
 #, python-format
 msgid "You cannot delete the language which is User's Preferred Language!"
-msgstr ""
+msgstr "Вы не можете удалить язык, который является предпочитаемым для пользователя!"
 
 #. module: base
 #: sql_constraint:ir.model.data:0
@@ -15904,7 +15904,7 @@ msgstr "выбрать"
 #. module: base
 #: view:ir.actions.server:base.view_server_action_form
 msgid "condition: True"
-msgstr ""
+msgstr "состояние: Правда"
 
 #. module: base
 #: view:ir.actions.server:base.view_server_action_form
@@ -15914,12 +15914,12 @@ msgstr ""
 #. module: base
 #: view:ir.actions.server:base.view_server_action_form
 msgid "context: current context"
-msgstr ""
+msgstr "Контекст: текущий контекст"
 
 #. module: base
 #: view:ir.actions.server:base.view_server_action_form
 msgid "cr: database cursor"
-msgstr ""
+msgstr "Cr: указатель базы данных"
 
 #. module: base
 #: code:addons/models.py:4299
@@ -15984,12 +15984,12 @@ msgstr "Электронная коммерция"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_sale_delivery
 msgid "eCommerce Delivery"
-msgstr ""
+msgstr "Доставка электронной коммерции"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_sale_options
 msgid "eCommerce Optional Products"
-msgstr ""
+msgstr "Дополнительные продукты электронной коммерции"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account
@@ -16252,7 +16252,7 @@ msgstr "пользователь будет иметь доступ к наст�
 #. module: base
 #: view:ir.actions.server:base.view_server_action_form
 msgid "time: Python time module"
-msgstr ""
+msgstr "время: Python модуль time"
 
 #. module: base
 #: view:res.config.installer:base.res_config_installer
