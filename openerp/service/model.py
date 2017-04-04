@@ -14,7 +14,10 @@ from contextlib import contextmanager
 
 import security
 
-from xoutil.string import safe_encode
+try:
+    from xoutil.future.string import safe_encode
+except ImportError:
+    from xoutil.string import safe_encode
 
 _logger = logging.getLogger(__name__)
 

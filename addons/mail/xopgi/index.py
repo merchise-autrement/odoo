@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # index
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise Autrement and Contributors
+# Copyright (c) 2015-2017 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -188,10 +188,11 @@ class MailThreadIndex(AbstractModel):
                     )
 
     def unlink(self, cr, uid, ids, context=None):
-        from xoutil.types import is_collection
         imd = self.pool['ir.model.data']
-        if not is_collection(ids):
-            ids = tuple(ids)
+        try:
+            iter(ids)
+        except TypeError:
+            ids = (ids, )
         refs = imd.search(
             cr, SUPERUSER_ID,
             [('module', '=', MODULE_NAME),
