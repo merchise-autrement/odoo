@@ -32,7 +32,10 @@ logger = logging.getLogger(__name__)
 del logging
 
 from xoutil.context import context as ExecutionContext
-from xoutil.uuid import uuid as new_uuid
+try:
+    from xoutil.cl.ids import str_uuid as new_uuid
+except ImportError:
+    from xoutil.uuid import uuid as new_uuid
 
 from kombu import Exchange, Queue
 
@@ -441,7 +444,10 @@ def _extract_signature(args, kwargs):
     '''Detect the proper signature.
 
     '''
-    from xoutil import Unset
+    try:
+        from xoutil.symbols import Unset
+    except ImportError:
+        from xoutil import Unset
     from openerp.models import BaseModel
     from openerp.sql_db import Cursor
     from openerp.tools import frozendict
