@@ -294,9 +294,25 @@ def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
 
 class Configuration(object):
     broker_url = BROKER_URL = config.get('celery.broker', 'redis://localhost/9')
-    # We don't use the backend to store results, but send results via another
-    # message.  However to check the job status the backend is used.
-    result_backend = CELERY_RESULT_BACKEND = config.get('celery.backend', None)
+
+    # We don't use the backend to **store** results, but send results via
+    # another message.
+    #
+    # However to check the job status the backend is used
+    # and to be able to detect if a job was killed or finished we need to
+    # configure the backend.
+    #
+    # This forces us to periodically clean the backend.  Fortunately Celery
+    # automatically schedules the 'celery.backend_cleanup' to be run every day
+    # at 4am.
+    #
+    # This change can allow to strengthen the usability for very short tasks.
+    # This is rare in our case because even setting up the Odoo registry
+    # in our main `task`:func: takes longer than the expected round-trip from
+    # the browser to the server.
+    result_backend = CELERY_RESULT_BACKEND = config.get('celery.backend',
+                                                        broker_url)
+    task_ignore_result = CELERY_IGNORE_RESULT = True
 
     task_default_queue = CELERY_DEFAULT_QUEUE = DEFAULT_QUEUE_NAME
     task_default_exchange_type = CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
