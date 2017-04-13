@@ -40,7 +40,13 @@ except ImportError:
 from kombu import Exchange, Queue
 
 from celery import Celery as _CeleryApp
-from celery.exceptions import MaxRetriesExceededError,  SoftTimeLimitExceeded
+from celery import Task as BaseTask
+
+from celery.exceptions import (
+    MaxRetriesExceededError,
+    SoftTimeLimitExceeded,
+    TimeLimitExceeded
+)
 
 import openerp.tools.config as config
 from openerp.tools.func import lazy_property
@@ -498,7 +504,13 @@ def _extract_signature(args, kwargs):
 Unset = object()
 
 
-@app.task(bind=True, max_retries=5, default_retry_delay=0.3)
+class Task(BaseTask):
+    # See the notes below on the 'Hacking' section.
+    # See also: https://github.com/celery/celery/pull/3977
+    Request = 'openerp.jobs:Request'
+
+
+@app.task(base=Task, bind=True, max_retries=5, default_retry_delay=0.3)
 def task(self, model, ids, methodname, dbname, uid, args, kwargs,
          job_uuid=Unset):
     '''The actual task running all our celery jobs.
@@ -685,3 +697,81 @@ def _send(channel, message, env=None):
         _context = ExecutionContext[CELERY_JOB]
         env = _context['env']
     env['bus.bus'].sendone(channel, message)
+
+
+# Hacking.  The hard timeout signal is not easily captured.  The
+# celery.worker.request.Request is the one that handles the hard timeout.
+# However, it is not easily customized.
+#
+# We can totally replace the Strategy class of our task class.  But they are
+# not easy to override (they say that).
+#
+# Our approach:  Monkey-patch the create_request_cls function.
+from celery.worker.request import Request as BaseRequest
+
+
+class Request(BaseRequest):
+    def on_timeout(self, soft, timeout):
+        """Handler called if the task times out."""
+        super(Request, self).on_timeout(soft, timeout)
+        try:
+            if self.task.name == task.name and not soft:
+                # hard timeout on our main `openerp.jobs.task`.
+                data = _serialize_exception(TimeLimitExceeded(timeout))
+                task_args, task_kwargs = self.message.payload[:2]
+                model, ids, methodname, dbname, uid, pos_args, kw_args = task_args
+                job_uuid = task_kwargs.get('job_uuid', self.id)
+                if job_uuid != self.id:
+                    msg = 'Hard timeout detected for job %s with id %s',
+                    msg_args = job_uuid, self.id,
+                else:
+                    msg = 'Hard timeout detected for job %s'
+                    msg_args = (job_uuid, )
+                logger.error(
+                    msg,
+                    *msg_args,
+                    extra=dict(model=model, ids=ids, methodname=methodname,
+                               dbname=dbname, uid=uid, pos_args=pos_args,
+                               kw_args=kw_args,
+                               payload=self.message.payload)
+                )
+                _report_failure.delay(dbname, uid, job_uuid, message=data)
+        except:
+            pass
+
+
+if not getattr(BaseTask, 'Request', None):
+    # So this is a celery that has not accepted our patch
+    # (https://github.com/celery/celery/pull/3977).  Let's proceed to
+    # monkey-patch the Request.
+    from celery.worker import request
+    _super_create_request_cls = request.create_request_cls
+
+    def create_request_cls(base, task, pool, hostname, eventer,
+                           ref=request.ref,
+                           revoked_tasks=request.revoked_tasks,
+                           task_ready=request.task_ready,
+                           trace=request.trace_task_ret):
+
+        if base is BaseRequest:
+            Base = Request
+        else:
+            class Base(base, Request):
+                pass
+
+        class PatchedRequest(Base):
+            pass
+
+        return _super_create_request_cls(
+            PatchedRequest,
+            task,
+            pool,
+            hostname,
+            eventer,
+            ref=ref,
+            revoked_tasks=revoked_tasks,
+            task_ready=task_ready,
+            trace=trace
+        )
+
+    request.create_request_cls = create_request_cls
