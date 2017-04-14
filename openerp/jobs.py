@@ -45,7 +45,9 @@ from celery import Task as BaseTask
 from celery.exceptions import (
     MaxRetriesExceededError,
     SoftTimeLimitExceeded,
-    TimeLimitExceeded
+    TimeLimitExceeded,
+    WorkerLostError,
+    Terminated
 )
 
 import openerp.tools.config as config
@@ -711,33 +713,51 @@ from celery.worker.request import Request as BaseRequest
 
 
 class Request(BaseRequest):
+    def on_failure(self, exc_info, send_failed_event=True, return_ok=False):
+        super(Request, self).on_failure(
+            exc_info,
+            send_failed_event=send_failed_event,
+            return_ok=return_ok
+        )
+        exc = exc_info.exception
+        if isinstance(exc, (WorkerLostError, Terminated)):
+            _report_failure_for_request(self, exc)
+
     def on_timeout(self, soft, timeout):
         """Handler called if the task times out."""
         super(Request, self).on_timeout(soft, timeout)
-        try:
-            if self.task.name == task.name and not soft:
-                # hard timeout on our main `openerp.jobs.task`.
-                data = _serialize_exception(TimeLimitExceeded(timeout))
-                task_args, task_kwargs = self.message.payload[:2]
-                model, ids, methodname, dbname, uid, pos_args, kw_args = task_args
-                job_uuid = task_kwargs.get('job_uuid', self.id)
-                if job_uuid != self.id:
-                    msg = 'Hard timeout detected for job %s with id %s',
-                    msg_args = job_uuid, self.id,
-                else:
-                    msg = 'Hard timeout detected for job %s'
-                    msg_args = (job_uuid, )
-                logger.error(
-                    msg,
-                    *msg_args,
-                    extra=dict(model=model, ids=ids, methodname=methodname,
-                               dbname=dbname, uid=uid, pos_args=pos_args,
-                               kw_args=kw_args,
-                               payload=self.message.payload)
-                )
-                _report_failure.delay(dbname, uid, job_uuid, message=data)
-        except:
-            pass
+        if not soft:
+            _report_failure_for_request(self, TimeLimitExceeded(timeout))
+
+
+def _report_failure_for_request(self, exc, delay=None):
+    try:
+        if self.task.name == task.name:
+            data = _serialize_exception(exc)
+            task_args, task_kwargs = self.message.payload[:2]
+            model, ids, methodname, dbname, uid, pos_args, kw_args = task_args
+            job_uuid = task_kwargs.get('job_uuid', self.id)
+            if job_uuid != self.id:
+                msg = 'Job failure detected. job: %s with id %s',
+                msg_args = job_uuid, self.id,
+            else:
+                msg = 'Job failure detected. job: %s'
+                msg_args = (job_uuid, )
+            logger.error(
+                msg,
+                *msg_args,
+                extra=dict(model=model, ids=ids, methodname=methodname,
+                           dbname=dbname, uid=uid, pos_args=pos_args,
+                           kw_args=kw_args,
+                           payload=self.message.payload)
+            )
+            _report_failure.apply_async(
+                args=(dbname, uid, job_uuid),
+                kwargs=dict(message=data),
+                countdown=delay
+            )
+    except:
+        pass
 
 
 if not getattr(BaseTask, 'Request', None):
