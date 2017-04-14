@@ -548,7 +548,10 @@ def unwrap_suite(test):
         yield item
 
 
-from xoutil.functools import lru_cache
+try:
+    from xoutil.future.functools import lru_cache
+except ImportError:
+    from xoutil.functools import lru_cache
 XOEUF_EXTERNAL_ADDON_GROUP = 'xoeuf.addons'
 __xoeuf_patched__ = True
 _xoeuf_external_addons = []

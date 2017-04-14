@@ -27,6 +27,32 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
+def QUIETLY_WAIT_FOR_TASK(job, next_action=None):
+    '''The client action that waits quietly for a background job to complete.
+
+    In this context *quietly* means just displaying the usual AJAX spinner.
+
+    :param job:  The AsyncResult that represents the background job.
+    :type job:  Any type compatible with celery's AsyncResult.
+
+    :param next_action: The dictionary that represents the next action to
+                        perform.  If None the background job is expected to
+                        have returned a dictionary with the action to perform.
+
+    .. warning:: Reloading after waiting for a background job will make the UI
+                 to wait again for a job that's already finished and the UI
+                 will stale.
+    '''
+    return dict(
+        type='ir.actions.client',
+        tag='quietly_wait_for_background_job',
+        params=dict(
+            uuid=job.id,
+            next_action=next_action,
+        )
+    )
+
+
 def WAIT_FOR_TASK(job, next_action=None):
     '''The client action for waiting for a background job to complete.
 
@@ -50,3 +76,9 @@ def WAIT_FOR_TASK(job, next_action=None):
             next_action=next_action,
         )
     )
+
+
+# The client action for closing the feedback mechanism we're using to show the
+# user the progress of the background job.
+CLOSE_FEEDBACK = None
+CLOSE_PROGRESS_BAR = CLOSE_FEEDBACK

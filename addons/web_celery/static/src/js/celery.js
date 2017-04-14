@@ -103,8 +103,10 @@ openerp.web_celery = function(instance){
                         type: "warning",
                         kind: "timeout"
                     });
+                    self.bus.stop_polling();
+                } else {
+                    self.stop_waiting();
                 }
-                self.stop_waiting();
             });
         },
 
@@ -124,55 +126,10 @@ openerp.web_celery = function(instance){
 
         show_success: function() {
             throw ('Not implemented');
-        }
+        },
     });
 
-
-    openerp.ProgressBarThrobber = openerp.JobThrobber.extend({
-        template: "BackgroundJobProgress",
-
-        show: function() {
-            return this.appendTo($("body"));
-        },
-
-        start: function() {
-            var res = $.Deferred();
-            this.$el.on('show.bs.modal', function(){
-                res.resolve();
-            });
-            this.$el.modal('show');
-            return res.promise();
-        },
-
-        updateView: function() {
-            if (this.message) {
-                this.$('.message').text(this.message);
-            }
-            var $progressbar = this.$('.progress-bar');
-            if (isOk(this.valuemin) && !$progressbar.attr('aria-valuemin')) {
-                $progressbar.attr('aria-valuemin', this.valuemin);
-            }
-            if (isOk(this.valuemax) && !$progressbar.attr('aria-valuemax')) {
-                $progressbar.attr('aria-valuemax', this.valuemax);
-            }
-            if (isOk(this.progress)) {
-                $progressbar.attr('aria-valuenow', this.progress);
-            }
-            // percent should be always ok, but will show only a progress bar
-            // if there's a progress value.
-            if (isOk(this.percent) && isOk(this.progress)) {
-                $progressbar.attr('style', 'width: ' + this.percent + '%');
-                var $pmsg = $progressbar.find('.percent-message');
-                if ($pmsg.length){
-                    $pmsg.text(this.percent + '%');
-                } else {
-                    $msg = $progressbar.find('.progress-bar');
-                    $msg.add('<span aria-hidden="true" class="percent-message">' +
-                             this.percent + '%</span>');
-                }
-            }
-        },
-
+    var FailureSuccessReporting = openerp.JobThrobber.extend({
         show_success: function(message) {
             var next_action = message.result,
                 parent = this.getParent(),
@@ -225,6 +182,52 @@ openerp.web_celery = function(instance){
                 parent.do_action('history_back');
                 self.destroy();
             });
+        }
+    });
+
+    var ProgressBarThrobber = FailureSuccessReporting.extend({
+        template: "BackgroundJobProgress",
+
+        show: function() {
+            return this.appendTo($("body"));
+        },
+
+        start: function() {
+            var res = $.Deferred();
+            this.$el.on('show.bs.modal', function(){
+                res.resolve();
+            });
+            this.$el.modal('show');
+            return res.promise();
+        },
+
+        updateView: function() {
+            if (this.message) {
+                this.$('.message').text(this.message);
+            }
+            var $progressbar = this.$('.progress-bar');
+            if (isOk(this.valuemin) && !$progressbar.attr('aria-valuemin')) {
+                $progressbar.attr('aria-valuemin', this.valuemin);
+            }
+            if (isOk(this.valuemax) && !$progressbar.attr('aria-valuemax')) {
+                $progressbar.attr('aria-valuemax', this.valuemax);
+            }
+            if (isOk(this.progress)) {
+                $progressbar.attr('aria-valuenow', this.progress);
+            }
+            // percent should be always ok, but will show only a progress bar
+            // if there's a progress value.
+            if (isOk(this.percent) && isOk(this.progress)) {
+                $progressbar.attr('style', 'width: ' + this.percent + '%');
+                var $pmsg = $progressbar.find('.percent-message');
+                if ($pmsg.length){
+                    $pmsg.text(this.percent + '%');
+                } else {
+                    $msg = $progressbar.find('.progress-bar');
+                    $msg.add('<span aria-hidden="true" class="percent-message">' +
+                             this.percent + '%</span>');
+                }
+            }
         },
 
         destroy: function() {
@@ -239,10 +242,62 @@ openerp.web_celery = function(instance){
         }
     });
 
+    openerp.ProgressBarThrobber = ProgressBarThrobber;
+
+    openerp.SpinnerThrobber = FailureSuccessReporting.extend({
+        SPINNER_WAIT: 250,
+
+        show: function() {
+            var res = $.Deferred();
+            res.resolve();
+            return res.promise();
+        },
+
+        start_waiting: function() {
+            this._super.apply(this, arguments);
+            this.active = false;
+            // Wait at most 250ms (asumming the default value of SPINNER_WAIT)
+            // to show the spinner.  If the job does not send any report, the
+            // spinner will be showed after this amount of time.  If the job
+            // sends a report before 250ms (which is rare) the spinner will
+            // show at that moment.
+            //
+            // But we must not depend on the job to send a report to show the
+            // spinner.
+            _.delay(_.bind(this.updateView, this), this.SPINNER_WAIT);
+        },
+
+        updateView: function() {
+            if (!this.active) {
+                instance.web.blockUI();
+                this.active = true;
+            }
+        },
+
+        show_success: function() {
+            if (this.active) {
+                instance.web.unblockUI();
+                this.active = false;
+            }
+            this._super.apply(this, arguments);
+        },
+
+        show_failure: function() {
+            if (this.active) {
+                instance.web.unblockUI();
+                this.active = false;
+            }
+            this._super.apply(this, arguments);
+        }
+
+    });
+
     if (!!instance){
         if(!!instance.hasOwnProperty('web')){
             instance.web.client_actions.add('wait_for_background_job',
                                             'openerp.ProgressBarThrobber');
+            instance.web.client_actions.add('quietly_wait_for_background_job',
+                                            'openerp.SpinnerThrobber');
         }
     }
 };

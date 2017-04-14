@@ -17,8 +17,6 @@ import threading
 import time
 import unittest
 
-from xoutil.objects import classproperty
-
 try:
     from cProfile import Profile
 except ImportError:
