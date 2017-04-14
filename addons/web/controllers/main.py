@@ -620,6 +620,7 @@ class Proxy(http.Controller):
 
 if not config.get('disable_database_manager', False):
     class Database(http.Controller):
+
         def _render_template(self, **d):
             d.setdefault('manage',True)
             d['insecure'] = odoo.tools.config['admin_passwd'] == 'admin'
@@ -647,6 +648,8 @@ if not config.get('disable_database_manager', False):
         @http.route('/web/database/create', type='http', auth="none", methods=['POST'], csrf=False)
         def create(self, master_pwd, name, lang, password, **post):
             try:
+                if not re.match('^[a-zA-Z][a-zA-Z0-9_]+$', name):
+                    raise Exception(_('Invalid database name. Only alphanumerical characters and underscore are allowed.'))
                 # country code could be = "False" which is actually True in python
                 country_code = post.get('country_code') or False
                 dispatch_rpc('db', 'create_database', [master_pwd, name, bool(post.get('demo')), lang, password, post['login'], country_code])
@@ -659,6 +662,8 @@ if not config.get('disable_database_manager', False):
         @http.route('/web/database/duplicate', type='http', auth="none", methods=['POST'], csrf=False)
         def duplicate(self, master_pwd, name, new_name):
             try:
+                if not re.match('^[a-zA-Z][a-zA-Z0-9_]+$', new_name):
+                    raise Exception(_('Invalid database name. Only alphanumerical characters and underscore are allowed.'))
                 dispatch_rpc('db', 'duplicate_database', [master_pwd, name, new_name])
                 return http.local_redirect('/web/database/manager')
             except Exception, e:
@@ -692,34 +697,6 @@ if not config.get('disable_database_manager', False):
                 _logger.exception('Database.backup')
                 error = "Database backup error: %s" % e
                 return self._render_template(error=error)
-
-        @http.route('/web/database/restore', type='http', auth="none", methods=['POST'], csrf=False)
-        def restore(self, master_pwd, backup_file, name, copy=False):
-            try:
-                data = base64.b64encode(backup_file.read())
-                dispatch_rpc('db', 'restore', [master_pwd, name, data, str2bool(copy)])
-                return http.local_redirect('/web/database/manager')
-            except Exception, e:
-                error = "Database restore error: %s" % e
-                return self._render_template(error=error)
-
-        @http.route('/web/database/change_password', type='http', auth="none", methods=['POST'], csrf=False)
-        def change_password(self, master_pwd, master_pwd_new):
-            try:
-                dispatch_rpc('db', 'change_admin_password', [master_pwd, master_pwd_new])
-                return http.local_redirect('/web/database/manager')
-            except Exception, e:
-                error = "Master password update error: %s" % e
-                return self._render_template(error=error)
-
-        @http.route('/web/database/list', type='json', auth='none')
-        def list(self):
-            """
-            Used by Mobile application for listing database
-            :return: List of databases
-            :rtype: list
-            """
-            return http.db_list()
 
 
 class Session(http.Controller):
