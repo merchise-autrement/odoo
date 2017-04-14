@@ -23,8 +23,13 @@ from . import Command
 class Celery(Command):
     def run(self, cmdargs):
         import openerp
+        # We need to bootstrap the Odoo logging and addons, so we must parse
+        # the args.  Otherwise errors won't get logged to Sentry even if it's
+        # configured.  TODO: Actually pass odoo's arguments to Odoo so that
+        # --log-level and --addons are taken into account.
+        openerp.tools.config.parse_config(args=[])
+
         from openerp.jobs import app  # noqa: discover the app
-        from openerp.sentrylog import get_client
         from celery.bin.celery import main as _main
         openerp.evented = False
         # Some addons (specially report) think they live inside a cozy and
