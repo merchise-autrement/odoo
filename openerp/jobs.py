@@ -536,45 +536,43 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs,
         job_uuid = self.request.id if self.request.id else new_uuid()
     from openerp.models import BaseModel
     context = kwargs.pop('context', None)
-    with MaybeRecords(dbname, uid, model, ids, context=context) as r:
-        method = getattr(r, methodname)
-        if method:
-            if not ids and _require_ids(method):
-                ids = args[0]
-                args = args[1:]
-                method = getattr(r.browse(ids), methodname)
-            # It's up to the user to return transferable things.
-            try:
+    try:
+        with MaybeRecords(dbname, uid, model, ids, context=context) as r:
+            method = getattr(r, methodname, None)
+            if method:
+                if not ids and _require_ids(method):
+                    ids, args = args[0], args[1:]
+                    method = getattr(r.browse(ids), methodname)
                 options = dict(job=self, env=r.env, job_uuid=job_uuid)
                 with CELERY_JOB(**options):
                     res = method(*args, **kwargs)
                 if isinstance(res, BaseModel):
                     res = res.ids  # downgrade to ids
                 _report_success.delay(dbname, uid, job_uuid, result=res)
-            except OperationalError as error:
-                if error.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
-                    _report_current_failure(dbname, uid, job_uuid, error)
-                    raise
-                else:
-                    arguments = (model, ids, methodname, dbname, uid, args, kwargs)
-                    keywords = dict(job_uuid=job_uuid)
-                    logger.info(
-                        'Maybe retrying task %s',
-                        job_uuid,
-                        extra=dict(arguments=arguments, keywords=keywords)
-                    )
-                    try:
-                        raise self.retry(args=arguments, kwargs=keywords)
-                    except MaxRetriesExceededError:
-                        _report_current_failure(dbname, uid, job_uuid, error)
-                        raise error
-            except Exception as error:
-                _report_current_failure(dbname, uid, job_uuid, error)
-                raise
+            else:
+                raise TypeError(
+                    'Invalid method name %r for model %r' % (methodname, model)
+                )
+    except OperationalError as error:
+        if error.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
+            _report_current_failure(dbname, uid, job_uuid, error)
+            raise
         else:
-            raise TypeError(
-                'Invalid method name %r for model %r' % (methodname, model)
+            arguments = (model, ids, methodname, dbname, uid, args, kwargs)
+            keywords = dict(job_uuid=job_uuid)
+            logger.info(
+                'Maybe retrying task %s',
+                job_uuid,
+                extra=dict(arguments=arguments, keywords=keywords)
             )
+            try:
+                raise self.retry(args=arguments, kwargs=keywords)
+            except MaxRetriesExceededError:
+                _report_current_failure(dbname, uid, job_uuid, error)
+                raise error
+    except Exception as error:
+        _report_current_failure(dbname, uid, job_uuid, error)
+        raise
 
 
 @contextlib.contextmanager
@@ -756,7 +754,7 @@ def _report_failure_for_request(self, exc, delay=None):
                 kwargs=dict(message=data),
                 countdown=delay
             )
-    except:
+    except Exception:  # Yes! I know what I'm doing.
         pass
 
 
