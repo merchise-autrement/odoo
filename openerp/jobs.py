@@ -50,6 +50,8 @@ from celery.exceptions import (
     Terminated
 )
 
+from functools import total_ordering
+
 import openerp.tools.config as config
 from openerp.tools.func import lazy_property
 
@@ -223,7 +225,7 @@ def iter_and_report(iterator, valuemax=None, report_rate=1,
         report_progress(progress=valuemax)  # 100%
 
 
-def until_timeout(iterator):
+def until_timeout(iterator, on_timeout=None):
     '''Iterate and yield from `iter` while the job has time to work.
 
     Celery can be configured to raise a SoftTimeLimitExceeded exception when a
@@ -237,25 +239,109 @@ def until_timeout(iterator):
     other word, you should enclose as much work as possible within a single
     call to `until_timeout`.
 
-    .. note:: This requires xoutil 1.7.2.  If that version of xoutil is not
-       installed `until_timeout` simply returns `iterator` unchanged.
+    :param on_timeout: A callable that will only be called if we exit the
+                       iteration because of a SoftTimeLimitExceeded error.
 
     '''
+    errors = (SoftTimeLimitExceeded, )
+    from xoutil.bound import boundary, until
     try:
-        from xoutil.bound import until
+        _until_timeout = until(errors=errors, on_error=on_timeout)
+        # xoutil < 1.7.5 don't support the `on_error` argument of `until`.
+    except TypeError:
+        def _until_timeout(f):
 
-        @until(errors=(SoftTimeLimitExceeded, ))
-        def _iterate():
-            for x in iterator:
-                yield x
+            @boundary(errors=errors)
+            def _catch():
+                yield False
+                try:
+                    while True:
+                        yield False
+                except errors:
+                    if on_timeout is not None:
+                        on_timeout()
+                    yield True
 
-        # We need to expose the generator, not the last value.  Yes, it's
-        # possible StopTimeLimitExceeded to be raised outside this generator,
-        # but you have been warned to put this as farther as possible from the
-        # true computation.
-        return _iterate.generate()
-    except ImportError:
-        return iterator
+            return _catch()(f)
+
+    @_until_timeout
+    def _iterate():
+        for x in iterator:
+            yield x
+
+    return _iterate.generate()
+
+
+# TODO (med, manu):  Should we have this in xoutil?
+@total_ordering
+class EventCounter(object):
+    '''A simple counter of an event.
+
+    Instances are callables that you can call to count the times an event
+    happens.
+
+    Example::
+
+       timed_out = EventCounter()
+       until_timeout(iterable, on_timeout=timed_out)
+
+       if timed_out:
+          # the jobs has timed out.
+
+    This event counter is **not** thread-safe.
+
+    Instances support casting to `int` (and long in Python 2) and it's
+    comparable with numbers and other counters.
+
+       >>> e = EventCounter()
+       >>> int(e)
+       0
+
+       >>> bool(e)
+       False
+
+       >>> e()
+       1
+
+       >>> bool(e)
+       True
+
+       >>> int(e)
+       1
+
+       >>> 1 <= e < 2
+       True
+
+       >>> e > e
+       False
+
+    '''
+    __slots__ = ('seen', 'name')
+
+    def __init__(self, name=None):
+        self.name = name
+        self.seen = 0
+
+    def __bool__(self):
+        return self.seen > 0
+    __nonzero__ = __bool__
+
+    def __call__(self):
+        self.seen += 1
+        return self.seen
+
+    def __lt__(self, o):
+        from xoutil.eight import integer_types
+        Int = integer_types[-1]
+        return self.seen < Int(o)
+
+    def __eq__(self, o):
+        from xoutil.eight import integer_types
+        Int = integer_types[-1]
+        return self.seen == Int(o)
+
+    def __trunc__(self):
+        return self.seen
 
 
 def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
