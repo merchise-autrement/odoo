@@ -235,9 +235,8 @@ def until_timeout(iterator, on_timeout=None):
     work by yielding each *partially complete* unit of progress.
 
     It's expected that it will be more likely for StopTimeLimitExceeded to be
-    raised while `iterator` it's performing work, than the the consumers.  In
-    other word, you should enclose as much work as possible within a single
-    call to `until_timeout`.
+    raised while `iterator` is performing its work.  In other word, you should
+    enclose as much work as possible within a single call to `until_timeout`.
 
     :param on_timeout: A callable that will only be called if we exit the
                        iteration because of a SoftTimeLimitExceeded error.
