@@ -120,7 +120,7 @@ def py2exe_options():
                         'flower',
                         'hiredis',
                         'redis',
-                        'xoutil>=1.7.1,<1.8',
+                        'xoutil>=1.7.4,<1.8',
                         'raven>=5.31.0,<6.1.0',
                         'raven-sanitize-openerp',
                     ],
@@ -188,7 +188,7 @@ setup(
         'celery',
         'flower',
         'redis',
-        'xoutil',
+        'xoutil>=1.7.4,<1.8',
         'raven>=5.31.0',
         'raven-sanitize-openerp',
 

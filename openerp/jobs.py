@@ -45,8 +45,12 @@ from celery import Task as BaseTask
 from celery.exceptions import (
     MaxRetriesExceededError,
     SoftTimeLimitExceeded,
-    TimeLimitExceeded
+    TimeLimitExceeded,
+    WorkerLostError,
+    Terminated
 )
+
+from functools import total_ordering
 
 import openerp.tools.config as config
 from openerp.tools.func import lazy_property
@@ -221,8 +225,8 @@ def iter_and_report(iterator, valuemax=None, report_rate=1,
         report_progress(progress=valuemax)  # 100%
 
 
-def until_timeout(iterator):
-    '''Iterate and yield from `iter` while the job has time to work.
+def until_timeout(iterator, on_timeout=None):
+    '''Iterate and yield from `iterator` while the job has time to work.
 
     Celery can be configured to raise a SoftTimeLimitExceeded exception when a
     soft time limit is reached.
@@ -231,29 +235,123 @@ def until_timeout(iterator):
     work by yielding each *partially complete* unit of progress.
 
     It's expected that it will be more likely for StopTimeLimitExceeded to be
-    raised while `iterator` it's performing work, than the the consumers.  In
-    other word, you should enclose as much work as possible within a single
-    call to `until_timeout`.
+    raised while `iterator` is performing its work.  In other word, you should
+    enclose as much work as possible within a single call to `until_timeout`.
 
-    .. note:: This requires xoutil 1.7.2.  If that version of xoutil is not
-       installed `until_timeout` simply returns `iterator` unchanged.
+    :param on_timeout: A callable that will only be called if we exit the
+                       iteration because of a SoftTimeLimitExceeded error.
+
+    .. warning:: You must not call `until_timeout`:func: inside another call
+       to `until_timeout`:func:.
+
+       If you happen to have something like::
+
+           until_timeout(... until_timeout(...) ...)
+
+       the inner `until_timeout`:func: may swallow the SoftTimeLimitExceeded
+       exception.  The outer `until_timeout`:func: cannot know that timeout
+       happened.
 
     '''
+    errors = (SoftTimeLimitExceeded, )
+    from xoutil.bound import boundary, until
     try:
-        from xoutil.bound import until
+        _until_timeout = until(errors=errors, on_error=on_timeout)
+        # xoutil < 1.7.5 don't support the `on_error` argument of `until`.
+    except TypeError:
+        def _until_timeout(f):
 
-        @until(errors=(SoftTimeLimitExceeded, ))
-        def _iterate():
-            for x in iterator:
-                yield x
+            @boundary(errors=errors)
+            def _catch():
+                yield False
+                try:
+                    while True:
+                        yield False
+                except errors:
+                    if on_timeout is not None:
+                        on_timeout()
+                    yield True
 
-        # We need to expose the generator, not the last value.  Yes, it's
-        # possible StopTimeLimitExceeded to be raised outside this generator,
-        # but you have been warned to put this as farther as possible from the
-        # true computation.
-        return _iterate.generate()
-    except ImportError:
-        return iterator
+            return _catch()(f)
+
+    @_until_timeout
+    def _iterate():
+        for x in iterator:
+            yield x
+
+    return _iterate.generate()
+
+
+# TODO (med, manu):  Should we have this in xoutil?
+@total_ordering
+class EventCounter(object):
+    '''A simple counter of an event.
+
+    Instances are callables that you can call to count the times an event
+    happens.
+
+    Example::
+
+       timed_out = EventCounter()
+       until_timeout(iterable, on_timeout=timed_out)
+
+       if timed_out:
+          # the jobs has timed out.
+
+    This event counter is **not** thread-safe.
+
+    Instances support casting to `int` (and long in Python 2) and it's
+    comparable with numbers and other counters.
+
+       >>> e = EventCounter()
+       >>> int(e)
+       0
+
+       >>> bool(e)
+       False
+
+       >>> e()
+       1
+
+       >>> bool(e)
+       True
+
+       >>> int(e)
+       1
+
+       >>> 1 <= e < 2
+       True
+
+       >>> e > e
+       False
+
+    '''
+    __slots__ = ('seen', 'name')
+
+    def __init__(self, name=None):
+        self.name = name
+        self.seen = 0
+
+    def __bool__(self):
+        return self.seen > 0
+    __nonzero__ = __bool__
+
+    def __call__(self):
+        self.seen += 1
+        return self.seen
+
+    def __lt__(self, o):
+        from xoutil.eight import integer_types
+        Int = integer_types[-1]
+        return self.seen < Int(o)
+
+    def __eq__(self, o):
+        from xoutil.eight import integer_types
+        Int = integer_types[-1]
+        return self.seen == Int(o)
+
+    def __trunc__(self):
+        return self.seen
 
 
 def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
@@ -534,45 +632,43 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs,
         job_uuid = self.request.id if self.request.id else new_uuid()
     from openerp.models import BaseModel
     context = kwargs.pop('context', None)
-    with MaybeRecords(dbname, uid, model, ids, context=context) as r:
-        method = getattr(r, methodname)
-        if method:
-            if not ids and _require_ids(method):
-                ids = args[0]
-                args = args[1:]
-                method = getattr(r.browse(ids), methodname)
-            # It's up to the user to return transferable things.
-            try:
+    try:
+        with MaybeRecords(dbname, uid, model, ids, context=context) as r:
+            method = getattr(r, methodname, None)
+            if method:
+                if not ids and _require_ids(method):
+                    ids, args = args[0], args[1:]
+                    method = getattr(r.browse(ids), methodname)
                 options = dict(job=self, env=r.env, job_uuid=job_uuid)
                 with CELERY_JOB(**options):
                     res = method(*args, **kwargs)
                 if isinstance(res, BaseModel):
                     res = res.ids  # downgrade to ids
                 _report_success.delay(dbname, uid, job_uuid, result=res)
-            except OperationalError as error:
-                if error.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
-                    _report_current_failure(dbname, uid, job_uuid, error)
-                    raise
-                else:
-                    arguments = (model, ids, methodname, dbname, uid, args, kwargs)
-                    keywords = dict(job_uuid=job_uuid)
-                    logger.info(
-                        'Maybe retrying task %s',
-                        job_uuid,
-                        extra=dict(arguments=arguments, keywords=keywords)
-                    )
-                    try:
-                        raise self.retry(args=arguments, kwargs=keywords)
-                    except MaxRetriesExceededError:
-                        _report_current_failure(dbname, uid, job_uuid, error)
-                        raise error
-            except Exception as error:
-                _report_current_failure(dbname, uid, job_uuid, error)
-                raise
+            else:
+                raise TypeError(
+                    'Invalid method name %r for model %r' % (methodname, model)
+                )
+    except OperationalError as error:
+        if error.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
+            _report_current_failure(dbname, uid, job_uuid, error)
+            raise
         else:
-            raise TypeError(
-                'Invalid method name %r for model %r' % (methodname, model)
+            arguments = (model, ids, methodname, dbname, uid, args, kwargs)
+            keywords = dict(job_uuid=job_uuid)
+            logger.info(
+                'Maybe retrying task %s',
+                job_uuid,
+                extra=dict(arguments=arguments, keywords=keywords)
             )
+            try:
+                raise self.retry(args=arguments, kwargs=keywords)
+            except MaxRetriesExceededError:
+                _report_current_failure(dbname, uid, job_uuid, error)
+                raise error
+    except Exception as error:
+        _report_current_failure(dbname, uid, job_uuid, error)
+        raise
 
 
 @contextlib.contextmanager
@@ -711,33 +807,51 @@ from celery.worker.request import Request as BaseRequest
 
 
 class Request(BaseRequest):
+    def on_failure(self, exc_info, send_failed_event=True, return_ok=False):
+        super(Request, self).on_failure(
+            exc_info,
+            send_failed_event=send_failed_event,
+            return_ok=return_ok
+        )
+        exc = exc_info.exception
+        if isinstance(exc, (WorkerLostError, Terminated)):
+            _report_failure_for_request(self, exc)
+
     def on_timeout(self, soft, timeout):
         """Handler called if the task times out."""
         super(Request, self).on_timeout(soft, timeout)
-        try:
-            if self.task.name == task.name and not soft:
-                # hard timeout on our main `openerp.jobs.task`.
-                data = _serialize_exception(TimeLimitExceeded(timeout))
-                task_args, task_kwargs = self.message.payload[:2]
-                model, ids, methodname, dbname, uid, pos_args, kw_args = task_args
-                job_uuid = task_kwargs.get('job_uuid', self.id)
-                if job_uuid != self.id:
-                    msg = 'Hard timeout detected for job %s with id %s',
-                    msg_args = job_uuid, self.id,
-                else:
-                    msg = 'Hard timeout detected for job %s'
-                    msg_args = (job_uuid, )
-                logger.error(
-                    msg,
-                    *msg_args,
-                    extra=dict(model=model, ids=ids, methodname=methodname,
-                               dbname=dbname, uid=uid, pos_args=pos_args,
-                               kw_args=kw_args,
-                               payload=self.message.payload)
-                )
-                _report_failure.delay(dbname, uid, job_uuid, message=data)
-        except:
-            pass
+        if not soft:
+            _report_failure_for_request(self, TimeLimitExceeded(timeout))
+
+
+def _report_failure_for_request(self, exc, delay=None):
+    try:
+        if self.task.name == task.name:
+            data = _serialize_exception(exc)
+            task_args, task_kwargs = self.message.payload[:2]
+            model, ids, methodname, dbname, uid, pos_args, kw_args = task_args
+            job_uuid = task_kwargs.get('job_uuid', self.id)
+            if job_uuid != self.id:
+                msg = 'Job failure detected. job: %s with id %s',
+                msg_args = job_uuid, self.id,
+            else:
+                msg = 'Job failure detected. job: %s'
+                msg_args = (job_uuid, )
+            logger.error(
+                msg,
+                *msg_args,
+                extra=dict(model=model, ids=ids, methodname=methodname,
+                           dbname=dbname, uid=uid, pos_args=pos_args,
+                           kw_args=kw_args,
+                           payload=self.message.payload)
+            )
+            _report_failure.apply_async(
+                args=(dbname, uid, job_uuid),
+                kwargs=dict(message=data),
+                countdown=delay
+            )
+    except Exception:  # Yes! I know what I'm doing.
+        pass
 
 
 if not getattr(BaseTask, 'Request', None):
