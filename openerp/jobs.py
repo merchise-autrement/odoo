@@ -226,7 +226,7 @@ def iter_and_report(iterator, valuemax=None, report_rate=1,
 
 
 def until_timeout(iterator, on_timeout=None):
-    '''Iterate and yield from `iter` while the job has time to work.
+    '''Iterate and yield from `iterator` while the job has time to work.
 
     Celery can be configured to raise a SoftTimeLimitExceeded exception when a
     soft time limit is reached.
@@ -240,6 +240,17 @@ def until_timeout(iterator, on_timeout=None):
 
     :param on_timeout: A callable that will only be called if we exit the
                        iteration because of a SoftTimeLimitExceeded error.
+
+    .. warning:: You must not call `until_timeout`:func: inside another call
+       to `until_timeout`:func:.
+
+       If you happen to have something like::
+
+           until_timeout(... until_timeout(...) ...)
+
+       the inner `until_timeout`:func: may swallow the SoftTimeLimitExceeded
+       exception.  The outer `until_timeout`:func: cannot know that timeout
+       happened.
 
     '''
     errors = (SoftTimeLimitExceeded, )
