@@ -56,6 +56,9 @@ import dateutil.relativedelta
 import psycopg2
 from lxml import etree
 
+from celery.exceptions import SoftTimeLimitExceeded
+
+
 import openerp
 from . import SUPERUSER_ID
 from . import api
@@ -1288,7 +1291,7 @@ class BaseModel(object):
             if set(check._constrains) & field_names:
                 try:
                     check(self)
-                except ValidationError, e:
+                except (ValidationError, SoftTimeLimitExceeded):
                     raise
                 except Exception, e:
                     raise ValidationError("Error while validating constraint\n\n%s" % tools.ustr(e))
