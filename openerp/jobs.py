@@ -276,8 +276,13 @@ def until_timeout(iterator, on_timeout=None):
 
     @_until_timeout
     def _iterate():
-        for x in iterator:
-            yield x
+        try:
+            for x in iterator:
+                yield x
+        except GeneratorExit:
+            close = getattr(iterator, 'close', None)
+            if close:
+                close()
 
     return _iterate.generate()
 
