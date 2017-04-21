@@ -39,6 +39,8 @@ import psycopg2
 from lxml import etree
 from lxml.builder import E
 
+from celery.exceptions import SoftTimeLimitExceeded
+
 import odoo
 from . import SUPERUSER_ID
 from . import api
@@ -1077,7 +1079,7 @@ class BaseModel(object):
             if set(check._constrains) & field_names:
                 try:
                     check(self)
-                except ValidationError, e:
+                except (SoftTimeLimitExceeded, ValidationError):
                     raise
                 except Exception, e:
                     raise ValidationError("%s\n\n%s" % (_("Error while validating constraint"), tools.ustr(e)))

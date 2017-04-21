@@ -90,7 +90,7 @@ Questions
 
   But, normally I would send the SIGHUP to the parent to make it reload.
 
-  Does the SIGHUP in the parent kill the childs?
+  Does the SIGHUP in the parent kill the children?
 
 
 Integrity

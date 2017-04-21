@@ -45,8 +45,12 @@ from celery import Task as BaseTask
 from celery.exceptions import (
     MaxRetriesExceededError,
     SoftTimeLimitExceeded,
-    TimeLimitExceeded
+    TimeLimitExceeded,
+    WorkerLostError,
+    Terminated
 )
+
+from functools import total_ordering
 
 import odoo.tools.config as config
 from odoo.tools.func import lazy_property
@@ -219,8 +223,8 @@ def iter_and_report(iterator, valuemax=None, report_rate=1,
         report_progress(progress=valuemax)  # 100%
 
 
-def until_timeout(iterator):
-    '''Iterate and yield from `iter` while the job has time to work.
+def until_timeout(iterator, on_timeout=None):
+    '''Iterate and yield from `iterator` while the job has time to work.
 
     Celery can be configured to raise a SoftTimeLimitExceeded exception when a
     soft time limit is reached.
@@ -229,29 +233,255 @@ def until_timeout(iterator):
     work by yielding each *partially complete* unit of progress.
 
     It's expected that it will be more likely for StopTimeLimitExceeded to be
-    raised while `iterator` it's performing work, than the the consumers.  In
-    other word, you should enclose as much work as possible within a single
-    call to `until_timeout`.
+    raised while `iterator` is performing its work.  In other word, you should
+    enclose as much work as possible within a single call to `until_timeout`.
 
-    .. note:: This requires xoutil 1.7.2.  If that version of xoutil is not
-       installed `until_timeout` simply returns `iterator` unchanged.
+    :param on_timeout: A callable that will only be called if we exit the
+                       iteration because of a SoftTimeLimitExceeded error.
+
+    Although you may call `until_timeout`:func: inside another call to
+    `until_timeout`:func: we strongly advice againts it.
+
+    In a iterator pattern like::
+
+       until_timeout(... until_timeout(...) ...)
+
+    .. note::The ellipsis above indicate that the nesting could an indirect
+       consequence of several modules of your system.
+
+    both calls could have been provided a `on_timeout` argument.  In *linear*
+    patterns the behaviour is well established: only the instances enclosing
+    the point where the exceptions happens will be called its timeout.
+
+    However in tree-like structures an automatic 'linearzation' of the tree
+    nodes is performed and as such, a timeout in one branch of the tree may be
+    signaled to the other branch.
+
+    Notice that these signals are not exceptions.  Only the first
+    SoftTimeLimitExceeded is an exception thrown by celery in the middle of
+    running code.
 
     '''
+    from xoutil.context import context
+    # Allow linear nested calls`: ``until_timeout(... until_timeout(...))``.
+    #
+    # Each call to until_timeout sets an event counter (which may be `wrapped
+    # counter` of on_timeout).  We look in the execution context for a
+    # 'parent' counter and chain with it.  The iterator will be consumed in a
+    # context where this chain is parent counter.
+    signal_timeout = _WrappedCounter(on_timeout)
+    parent = context[_UNTIL_TIMEOUT_CONTEXT].get('counter')
+    timed_out = parent | signal_timeout
     try:
-        from xoutil.bound import until
+        with context(_UNTIL_TIMEOUT_CONTEXT, counter=timed_out):
+            i = iter(iterator)
+            while not timed_out:
+                yield next(i)  # StopIteration possible, but that's ok
+    except SoftTimeLimitExceeded:
+        # At this point the local value of `timed_out` is `parent | me`, I
+        # must signal both my parent and myself.
+        timed_out()
+    finally:
+        close = getattr(iterator, 'close', None)
+        if close:
+            close()
 
-        @until(errors=(SoftTimeLimitExceeded, ))
-        def _iterate():
-            for x in iterator:
-                yield x
 
-        # We need to expose the generator, not the last value.  Yes, it's
-        # possible StopTimeLimitExceeded to be raised outside this generator,
-        # but you have been warned to put this as farther as possible from the
-        # true computation.
-        return _iterate.generate()
-    except ImportError:
-        return iterator
+_UNTIL_TIMEOUT_CONTEXT = object()
+
+
+# TODO (med, manu):  Should we have this in xoutil?
+@total_ordering
+class EventCounter(object):
+    '''A simple counter of an event.
+
+    Instances are callables that you can call to count the times an event
+    happens.
+
+    Example::
+
+       timed_out = EventCounter()
+       until_timeout(iterable, on_timeout=timed_out)
+
+       if timed_out:
+          # the jobs has timed out.
+
+    This event counter is **not** thread-safe.
+
+    Instances support casting to `int` (and long in Python 2) and it's
+    comparable with numbers and other counters.
+
+       >>> e = EventCounter()
+       >>> int(e)
+       0
+
+       >>> bool(e)
+       False
+
+       >>> e()
+
+       >>> bool(e)
+       True
+
+       >>> int(e)
+       1
+
+       >>> 1 <= e < 2
+       True
+
+       >>> e > e
+       False
+
+    Two event counters can be chained together:
+
+       >>> e1 = EventCounter()
+       >>> e2 = EventCounter()
+       >>> e = e1 | e2
+       >>> e()
+
+       >>> bool(e1 and e2)
+       True
+
+    However signaling one event would not reflect to the other:
+
+       >>> e1 = EventCounter()
+       >>> e2 = EventCounter()
+       >>> e3 = EventCounter()
+       >>> e = e1 | e2 | e3
+
+       >>> e2()
+
+       >>> bool(e and e2 and not e1 and not e3)
+
+    Chaining with None is a no-op:
+
+       >>> e1 | None is None | e1 is e1
+       True
+
+    '''
+    __slots__ = ('seen', 'name', )
+
+    def __init__(self, name=None):
+        self.name = name
+        self.seen = 0
+
+    def __bool__(self):
+        return self.seen > 0
+    __nonzero__ = __bool__
+
+    def __call__(self):
+        logger.debug('Signaling %r' % self)
+        self.seen += 1
+
+    def __lt__(self, o):
+        from xoutil.eight import integer_types
+        Int = integer_types[-1]
+        return self.seen < Int(o)
+
+    def __eq__(self, o):
+        from xoutil.eight import integer_types
+        Int = integer_types[-1]
+        return self.seen == Int(o)
+
+    def __trunc__(self):
+        return self.seen
+
+    def __or__(self, o):
+        if o is None:
+            return self
+        else:
+            return EventCounterChain(self, o)
+    __ror__ = __or__
+
+    def __repr__(self):
+        from xoutil.string import safe_str
+        if self.name:
+            name = safe_str(self.name)
+        else:
+            name = super(EventCounter, self).__repr__()[1:-1]
+        if self:
+            return '<**%s**>' % name
+        else:
+            return '<%s>' % name
+
+
+class _WrappedCounter(EventCounter):
+    '''An event counter that wraps another callable.
+
+    Example:
+
+       >>> def evented():
+       ...     print('The event happened')
+
+       >>> e = _WrappedCounter(evented)
+       >>> e()
+       The event happened
+
+    If the first argument is already an event counter return the same event
+    counter unchanged:
+
+        >>> e = EventCounter()
+        >>> _WrappedCounter(e) is e
+        True
+
+    If provided argument is None, creates an EventCounter instead:
+
+        >>> type(_WrappedCounter(None)) is EventCounter
+        True
+
+    '''
+    __slots__ = ('_target', )
+
+    def __new__(cls, what, name=None):
+        if isinstance(what, EventCounter):
+            return what
+        elif what is None:
+            return EventCounter(name=name)
+        else:
+            return super(_WrappedCounter, cls).__new__(cls, what, name=name)
+
+    def __init__(self, what, name=None):
+        super(_WrappedCounter, self).__init__(name=name)
+        self._target = what
+
+    def __call__(self):
+        super(_WrappedCounter, self).__call__()
+        self._target()
+
+    def __repr__(self):
+        return '_WrappedCounter(%r, name=%r)' % (self._target, self.name)
+
+
+class EventCounterChain(object):
+    __slots__ = ('events', )
+
+    def __init__(self, e1, e2):
+        self.events = e1, e2
+
+    def __call__(self):
+        for e in self.events:
+            e()
+
+    def __bool__(self):
+        return any(self.events)
+    __nonzero__ = __bool__
+
+    def __or__(self, o):
+        if o is None:
+            return self
+        else:
+            return type(self)(self, o)
+    __ror__ = __or__
+
+    def __sub__(self, o):
+        pos = self.events.index(o)  # ValueError possible
+        o._unclaim(self)
+        events = self.events[:pos] + self.events[pos + 1:]
+        if len(events) > 1:
+            return type(self)(*events)
+
+    def __repr__(self):
+        return '(%s)' % ' | '.join(repr(e) for e in self.events)
 
 
 def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
@@ -506,7 +736,7 @@ Unset = object()
 class Task(BaseTask):
     # See the notes below on the 'Hacking' section.
     # See also: https://github.com/celery/celery/pull/3977
-    Request = 'openerp.jobs:Request'
+    Request = 'odoo.jobs:Request'
 
 
 @app.task(base=Task, bind=True, max_retries=5, default_retry_delay=0.3)
@@ -533,45 +763,43 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs,
         job_uuid = self.request.id if self.request.id else new_uuid()
     from odoo.models import BaseModel
     context = kwargs.pop('context', None)
-    with MaybeRecords(dbname, uid, model, ids, context=context) as r:
-        method = getattr(r, methodname)
-        if method:
-            if not ids and _require_ids(method):
-                ids = args[0]
-                args = args[1:]
-                method = getattr(r.browse(ids), methodname)
-            # It's up to the user to return transferable things.
-            try:
+    try:
+        with MaybeRecords(dbname, uid, model, ids, context=context) as r:
+            method = getattr(r, methodname, None)
+            if method:
+                if not ids and _require_ids(method):
+                    ids, args = args[0], args[1:]
+                    method = getattr(r.browse(ids), methodname)
                 options = dict(job=self, env=r.env, job_uuid=job_uuid)
                 with CELERY_JOB(**options):
                     res = method(*args, **kwargs)
                 if isinstance(res, BaseModel):
                     res = res.ids  # downgrade to ids
                 _report_success.delay(dbname, uid, job_uuid, result=res)
-            except OperationalError as error:
-                if error.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
-                    _report_current_failure(dbname, uid, job_uuid, error)
-                    raise
-                else:
-                    arguments = (model, ids, methodname, dbname, uid, args, kwargs)
-                    keywords = dict(job_uuid=job_uuid)
-                    logger.info(
-                        'Maybe retrying task %s',
-                        job_uuid,
-                        extra=dict(arguments=arguments, keywords=keywords)
-                    )
-                    try:
-                        raise self.retry(args=arguments, kwargs=keywords)
-                    except MaxRetriesExceededError:
-                        _report_current_failure(dbname, uid, job_uuid, error)
-                        raise error
-            except Exception as error:
-                _report_current_failure(dbname, uid, job_uuid, error)
-                raise
+            else:
+                raise TypeError(
+                    'Invalid method name %r for model %r' % (methodname, model)
+                )
+    except OperationalError as error:
+        if error.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
+            _report_current_failure(dbname, uid, job_uuid, error)
+            raise
         else:
-            raise TypeError(
-                'Invalid method name %r for model %r' % (methodname, model)
+            arguments = (model, ids, methodname, dbname, uid, args, kwargs)
+            keywords = dict(job_uuid=job_uuid)
+            logger.info(
+                'Maybe retrying task %s',
+                job_uuid,
+                extra=dict(arguments=arguments, keywords=keywords)
             )
+            try:
+                raise self.retry(args=arguments, kwargs=keywords)
+            except MaxRetriesExceededError:
+                _report_current_failure(dbname, uid, job_uuid, error)
+                raise error
+    except Exception as error:
+        _report_current_failure(dbname, uid, job_uuid, error)
+        raise
 
 
 @contextlib.contextmanager
@@ -716,33 +944,51 @@ from celery.worker.request import Request as BaseRequest
 
 
 class Request(BaseRequest):
+    def on_failure(self, exc_info, send_failed_event=True, return_ok=False):
+        super(Request, self).on_failure(
+            exc_info,
+            send_failed_event=send_failed_event,
+            return_ok=return_ok
+        )
+        exc = exc_info.exception
+        if isinstance(exc, (WorkerLostError, Terminated)):
+            _report_failure_for_request(self, exc)
+
     def on_timeout(self, soft, timeout):
         """Handler called if the task times out."""
         super(Request, self).on_timeout(soft, timeout)
-        try:
-            if self.task.name == task.name and not soft:
-                # hard timeout on our main `odoo.jobs.task`.
-                data = _serialize_exception(TimeLimitExceeded(timeout))
-                task_args, task_kwargs = self.message.payload[:2]
-                model, ids, methodname, dbname, uid, pos_args, kw_args = task_args
-                job_uuid = task_kwargs.get('job_uuid', self.id)
-                if job_uuid != self.id:
-                    msg = 'Hard timeout detected for job %s with id %s',
-                    msg_args = job_uuid, self.id,
-                else:
-                    msg = 'Hard timeout detected for job %s'
-                    msg_args = (job_uuid, )
-                logger.error(
-                    msg,
-                    *msg_args,
-                    extra=dict(model=model, ids=ids, methodname=methodname,
-                               dbname=dbname, uid=uid, pos_args=pos_args,
-                               kw_args=kw_args,
-                               payload=self.message.payload)
-                )
-                _report_failure.delay(dbname, uid, job_uuid, message=data)
-        except:
-            pass
+        if not soft:
+            _report_failure_for_request(self, TimeLimitExceeded(timeout))
+
+
+def _report_failure_for_request(self, exc, delay=None):
+    try:
+        if self.task.name == task.name:
+            data = _serialize_exception(exc)
+            task_args, task_kwargs = self.message.payload[:2]
+            model, ids, methodname, dbname, uid, pos_args, kw_args = task_args
+            job_uuid = task_kwargs.get('job_uuid', self.id)
+            if job_uuid != self.id:
+                msg = 'Job failure detected. job: %s with id %s',
+                msg_args = job_uuid, self.id,
+            else:
+                msg = 'Job failure detected. job: %s'
+                msg_args = (job_uuid, )
+            logger.error(
+                msg,
+                *msg_args,
+                extra=dict(model=model, ids=ids, methodname=methodname,
+                           dbname=dbname, uid=uid, pos_args=pos_args,
+                           kw_args=kw_args,
+                           payload=self.message.payload)
+            )
+            _report_failure.apply_async(
+                args=(dbname, uid, job_uuid),
+                kwargs=dict(message=data),
+                countdown=delay
+            )
+    except Exception:  # Yes! I know what I'm doing.
+        pass
 
 
 if not getattr(BaseTask, 'Request', None):
