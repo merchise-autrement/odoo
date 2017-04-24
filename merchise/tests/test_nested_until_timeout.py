@@ -23,11 +23,20 @@ import contextlib
 from xoutil.objects import extract_attrs
 from xoutil.collections import opendict
 
-from openerp.jobs import (
-    SoftTimeLimitExceeded,
-    EventCounter,
-    until_timeout
-)
+try:
+    from odoo.jobs import (
+        SoftTimeLimitExceeded,
+        EventCounter,
+        until_timeout,
+        _UNTIL_TIMEOUT_CONTEXT,  # not a public API
+    )
+except ImportError:
+    from openerp.jobs import (
+        SoftTimeLimitExceeded,
+        EventCounter,
+        until_timeout,
+        _UNTIL_TIMEOUT_CONTEXT,  # not a public API
+    )
 
 
 def job(iterator, timeout=None):
@@ -227,7 +236,6 @@ def test_closing_a_lone_branch3():
 
 
 def test_closing_a_lone_branch4():
-    from openerp.jobs import _UNTIL_TIMEOUT_CONTEXT
     from xoutil.context import context
     assert not context[_UNTIL_TIMEOUT_CONTEXT]
     with complex_tree(mirror=True) as state:
@@ -244,7 +252,6 @@ def test_closing_a_lone_branch4():
 
 @pytest.mark.xfail()
 def test_closing_a_lone_branch5():
-    from openerp.jobs import _UNTIL_TIMEOUT_CONTEXT
     from xoutil.context import context
     assert not context[_UNTIL_TIMEOUT_CONTEXT]
     with complex_tree(mirror=True) as state:
