@@ -24,12 +24,12 @@ var GanttView = View.extend({
         this.has_been_loaded = $.Deferred();
         this.chart_id = _.uniqueId();
     },
-    view_loading: function(r) {
-        return this.load_gantt(r);
+    start: function() {
+        this.load_gantt();
+        return this._super.apply(this, arguments);
     },
-    load_gantt: function(fields_view_get, fields_get) {
+    load_gantt: function() {
         var self = this;
-        this.fields_view = fields_view_get;
         this.$el.addClass(this.fields_view.arch.attrs['class']);
         return self.alive(new Model(this.dataset.model)
             .call('fields_get')).then(function (fields) {
