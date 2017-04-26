@@ -119,19 +119,41 @@ class ir_cron(models.Model):
                 numbercall = job['numbercall']
 
                 ok = False
+                result = False
                 while nextcall < now and numbercall:
                     if numbercall > 0:
                         numbercall -= 1
                     if not ok or job['doall']:
-                        cron._callback(job['cron_name'], job['ir_actions_server_id'], job['id'])
+                        result = cron._callback(
+                            job['cron_name'],
+                            job['ir_actions_server_id'],
+                            job['id']
+                        )
                     if numbercall:
                         nextcall += _intervalTypes[job['interval_type']](job['interval_number'])
                     ok = True
-                addsql = ''
-                if not numbercall:
-                    addsql = ', active=False'
-                cron_cr.execute("UPDATE ir_cron SET nextcall=%s, numbercall=%s"+addsql+" WHERE id=%s",
-                                (fields.Datetime.to_string(nextcall.astimezone(pytz.UTC)), numbercall, job['id']))
+                cron_values = dict(
+                    nextcall=fields.Datetime.to_string(nextcall.astimezone(pytz.UTC)),
+                    numbercall=numbercall,
+                    active=bool(numbercall)
+                )
+                if result and isinstance(result, dict):
+                    cron_values.update({
+                        key: value
+                        for key, value in result.items()
+                        if key in cls._columns
+                    })
+                # Use dict.items() to make guarantees about the proper
+                # matching of keys and values in the update query.
+                cron_values = list(cron_values.items())
+                cols = ['%s=%%s' % col for col, _val in cron_values]
+                query = (
+                    "UPDATE ir_cron SET %s WHERE id=%%s" % ', '.join(cols)
+                )
+                cron_cr.execute(
+                    query,
+                    [val for _, val in cron_values] + [job['id']]
+                )
                 cron.invalidate_cache()
 
         finally:

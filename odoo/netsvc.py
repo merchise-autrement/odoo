@@ -188,6 +188,10 @@ def init_logger():
     for logconfig_item in logging_configurations:
         _logger.debug('logger level set: "%s"', logconfig_item)
 
+    from .sentrylog import patch_logging
+    patch_logging()
+
+
 DEFAULT_LOG_CONFIGURATION = [
     'odoo.http.rpc.request:INFO',
     'odoo.http.rpc.response:INFO',

@@ -171,7 +171,8 @@ class Cursor(object):
         self.autocommit(False)
         self.__closer = False
 
-        self._default_log_exceptions = True
+        # merchise's view: too much logging
+        self._default_log_exceptions = False
 
         self.cache = {}
 

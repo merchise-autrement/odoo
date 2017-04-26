@@ -1,0 +1,56 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* web_celery
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 8.0.20151001.212047+528a90f\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-10-02 03:16+0000\n"
+"PO-Revision-Date: 2015-10-02 03:16+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: web_celery
+#. openerp-web
+#: code:addons/web_celery/static/src/js/celery.js:118
+#, python-format
+msgid "Ask for help"
+msgstr ""
+
+#. module: web_celery
+#: code:addons/web_celery/__init__.py:81
+#, python-format
+msgid "Installing has begun, wait for a minute or two to finish."
+msgstr ""
+
+#. module: web_celery
+#: model:ir.model,name:web_celery.model_ir_module_module
+msgid "Module"
+msgstr ""
+
+#. module: web_celery
+#. openerp-web
+#: code:addons/web_celery/static/src/js/celery.js:23
+#, python-format
+msgid "Working"
+msgstr ""
+
+#. module: web_celery
+#. openerp-web
+#: code:addons/web_celery/static/src/js/celery.js:119
+#, python-format
+msgid "You're stuck waiting for a job that is taking forever.  Grab the next IT guy and ask help."
+msgstr ""
+
+#. module: web_celery
+#. openerp-web
+#: code:addons/web_celery/static/src/js/celery.js:24
+#, python-format
+msgid "Your request is being processed (or about to be processed.)  Please wait."
+msgstr ""
+

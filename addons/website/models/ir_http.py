@@ -303,7 +303,7 @@ class Http(models.AbstractModel):
                     code = 403
 
             if code == 500:
-                logger.error("500 Internal Server Error:\n\n%s", values['traceback'])
+                logger.exception("500 Internal Server Error:\n\n%s", values['traceback'])
                 if 'qweb_exception' in values:
                     view = request.env["ir.ui.view"]
                     views = view._views_get(exception.qweb['template'])

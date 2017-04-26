@@ -191,11 +191,15 @@ class IrQWeb(models.AbstractModel, QWeb):
     def _get_asset(self, xmlid, options, css=True, js=True, debug=False, async=False, values=None):
         files, remains = self._get_asset_content(xmlid, options)
         asset = AssetsBundle(xmlid, files, remains, env=self.env)
-        return asset.to_html(css=css, js=js, debug=debug, async=async, url_for=(values or {}).get('url_for', lambda url: url))
+        spdy = request.httprequest.is_spdy or request.httprequest.is_http2
+        return asset.to_html(
+            css=css, js=js, debug=debug, async=async,
+            url_for=(values or {}).get('url_for', lambda url: url), spdy=spdy)
 
     @tools.ormcache('xmlid', 'options.get("lang", "en_US")')
     def _get_asset_content(self, xmlid, options):
-        options = dict(options,
+        options = dict(
+            options,
             inherit_branding=False, inherit_branding_auto=False,
             edit_translations=False, translatable=False,
             rendering_bundle=True)
