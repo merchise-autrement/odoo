@@ -9,15 +9,16 @@
   En el programa de promoción las prestaciones se muestran agrupadas por día y
   dentro de cada día por el momento del día en que ocurren (Ejemplo: mañana,
   mediodía, tarde, noche).  Hoy eso no es posible pues no se tienen las
-  prestaciones desglosadas, solo el producto combo como paquete.  Un programa
-  de promoción debe contener una caraterizacion general: Caracterización
-  general de los tipos de prestaciones:alojamiento, transporte, actividades,
-  la fecha de inicio y fin del programa (fecha de inicio de la primera
-  prestación y fecha de fin de la ultima prestación del programa) Un programa
-  de promoción puede requerir presentar una lista de prestaciones concretas y
-  prestaciones concretas alternativas (Como opciones para que el prospecto de
-  cliente tenga la noción de que puede escoger y conformar su programa a su
-  medida).
+  prestaciones desglosadas, solo el producto combo como paquete.
+
+  Un programa de promoción debe contener una caracterización general:
+  Caracterización general de los tipos de prestaciones: alojamiento,
+  transporte, actividades, la fecha de inicio y fin del programa (fecha de
+  inicio de la primera prestación y fecha de fin de la ultima prestación del
+  programa).  Un programa de promoción puede requerir presentar una lista de
+  prestaciones concretas y prestaciones concretas alternativas (Como opciones
+  para que el prospecto de cliente tenga la noción de que puede escoger y
+  conformar su programa a su medida).
 
   Cuando el programa de promoción tiene variantes de prestaciones el programa
   se debe igualmente agrupados por día y momento del día, pero mostrar
