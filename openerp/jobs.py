@@ -241,45 +241,55 @@ def until_timeout(iterator, on_timeout=None):
     :param on_timeout: A callable that will only be called if we exit the
                        iteration because of a SoftTimeLimitExceeded error.
 
-    .. warning:: You must not call `until_timeout`:func: inside another call
-       to `until_timeout`:func:.
+    Although you may call `until_timeout`:func: inside another call to
+    `until_timeout`:func: we strongly advice againts it.
 
-       If you happen to have something like::
+    In a iterator pattern like::
 
-           until_timeout(... until_timeout(...) ...)
+       until_timeout(... until_timeout(...) ...)
 
-       the inner `until_timeout`:func: may swallow the SoftTimeLimitExceeded
-       exception.  The outer `until_timeout`:func: cannot know that timeout
-       happened.
+    .. note::The ellipsis above indicate that the nesting could an indirect
+       consequence of several modules of your system.
+
+    both calls could have been provided a `on_timeout` argument.  In *linear*
+    patterns the behaviour is well established: only the instances enclosing
+    the point where the exceptions happens will be called its timeout.
+
+    However in tree-like structures an automatic 'linearzation' of the tree
+    nodes is performed and as such, a timeout in one branch of the tree may be
+    signaled to the other branch.
+
+    Notice that these signals are not exceptions.  Only the first
+    SoftTimeLimitExceeded is an exception thrown by celery in the middle of
+    running code.
 
     '''
-    errors = (SoftTimeLimitExceeded, )
-    from xoutil.bound import boundary, until
+    from xoutil.context import context
+    # Allow linear nested calls`: ``until_timeout(... until_timeout(...))``.
+    #
+    # Each call to until_timeout sets an event counter (which may be `wrapped
+    # counter` of on_timeout).  We look in the execution context for a
+    # 'parent' counter and chain with it.  The iterator will be consumed in a
+    # context where this chain is parent counter.
+    signal_timeout = _WrappedCounter(on_timeout)
+    parent = context[_UNTIL_TIMEOUT_CONTEXT].get('counter')
+    timed_out = parent | signal_timeout
     try:
-        _until_timeout = until(errors=errors, on_error=on_timeout)
-        # xoutil < 1.7.5 don't support the `on_error` argument of `until`.
-    except TypeError:
-        def _until_timeout(f):
+        with context(_UNTIL_TIMEOUT_CONTEXT, counter=timed_out):
+            i = iter(iterator)
+            while not timed_out:
+                yield next(i)  # StopIteration possible, but that's ok
+    except SoftTimeLimitExceeded:
+        # At this point the local value of `timed_out` is `parent | me`, I
+        # must signal both my parent and myself.
+        timed_out()
+    finally:
+        close = getattr(iterator, 'close', None)
+        if close:
+            close()
 
-            @boundary(errors=errors)
-            def _catch():
-                yield False
-                try:
-                    while True:
-                        yield False
-                except errors:
-                    if on_timeout is not None:
-                        on_timeout()
-                    yield True
 
-            return _catch()(f)
-
-    @_until_timeout
-    def _iterate():
-        for x in iterator:
-            yield x
-
-    return _iterate.generate()
+_UNTIL_TIMEOUT_CONTEXT = object()
 
 
 # TODO (med, manu):  Should we have this in xoutil?
@@ -311,7 +321,6 @@ class EventCounter(object):
        False
 
        >>> e()
-       1
 
        >>> bool(e)
        True
@@ -325,8 +334,34 @@ class EventCounter(object):
        >>> e > e
        False
 
+    Two event counters can be chained together:
+
+       >>> e1 = EventCounter()
+       >>> e2 = EventCounter()
+       >>> e = e1 | e2
+       >>> e()
+
+       >>> bool(e1 and e2)
+       True
+
+    However signaling one event would not reflect to the other:
+
+       >>> e1 = EventCounter()
+       >>> e2 = EventCounter()
+       >>> e3 = EventCounter()
+       >>> e = e1 | e2 | e3
+
+       >>> e2()
+
+       >>> bool(e and e2 and not e1 and not e3)
+
+    Chaining with None is a no-op:
+
+       >>> e1 | None is None | e1 is e1
+       True
+
     '''
-    __slots__ = ('seen', 'name')
+    __slots__ = ('seen', 'name', )
 
     def __init__(self, name=None):
         self.name = name
@@ -337,8 +372,8 @@ class EventCounter(object):
     __nonzero__ = __bool__
 
     def __call__(self):
+        logger.debug('Signaling %r' % self)
         self.seen += 1
-        return self.seen
 
     def __lt__(self, o):
         from xoutil.eight import integer_types
@@ -352,6 +387,103 @@ class EventCounter(object):
 
     def __trunc__(self):
         return self.seen
+
+    def __or__(self, o):
+        if o is None:
+            return self
+        else:
+            return EventCounterChain(self, o)
+    __ror__ = __or__
+
+    def __repr__(self):
+        from xoutil.string import safe_str
+        if self.name:
+            name = safe_str(self.name)
+        else:
+            name = super(EventCounter, self).__repr__()[1:-1]
+        if self:
+            return '<**%s**>' % name
+        else:
+            return '<%s>' % name
+
+
+class _WrappedCounter(EventCounter):
+    '''An event counter that wraps another callable.
+
+    Example:
+
+       >>> def evented():
+       ...     print('The event happened')
+
+       >>> e = _WrappedCounter(evented)
+       >>> e()
+       The event happened
+
+    If the first argument is already an event counter return the same event
+    counter unchanged:
+
+        >>> e = EventCounter()
+        >>> _WrappedCounter(e) is e
+        True
+
+    If provided argument is None, creates an EventCounter instead:
+
+        >>> type(_WrappedCounter(None)) is EventCounter
+        True
+
+    '''
+    __slots__ = ('_target', )
+
+    def __new__(cls, what, name=None):
+        if isinstance(what, EventCounter):
+            return what
+        elif what is None:
+            return EventCounter(name=name)
+        else:
+            return super(_WrappedCounter, cls).__new__(cls, what, name=name)
+
+    def __init__(self, what, name=None):
+        super(_WrappedCounter, self).__init__(name=name)
+        self._target = what
+
+    def __call__(self):
+        super(_WrappedCounter, self).__call__()
+        self._target()
+
+    def __repr__(self):
+        return '_WrappedCounter(%r, name=%r)' % (self._target, self.name)
+
+
+class EventCounterChain(object):
+    __slots__ = ('events', )
+
+    def __init__(self, e1, e2):
+        self.events = e1, e2
+
+    def __call__(self):
+        for e in self.events:
+            e()
+
+    def __bool__(self):
+        return any(self.events)
+    __nonzero__ = __bool__
+
+    def __or__(self, o):
+        if o is None:
+            return self
+        else:
+            return type(self)(self, o)
+    __ror__ = __or__
+
+    def __sub__(self, o):
+        pos = self.events.index(o)  # ValueError possible
+        o._unclaim(self)
+        events = self.events[:pos] + self.events[pos + 1:]
+        if len(events) > 1:
+            return type(self)(*events)
+
+    def __repr__(self):
+        return '(%s)' % ' | '.join(repr(e) for e in self.events)
 
 
 def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
