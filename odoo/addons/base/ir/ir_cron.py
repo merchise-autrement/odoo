@@ -91,11 +91,12 @@ class ir_cron(models.Model):
             start_time = False
             if _logger.isEnabledFor(logging.DEBUG):
                 start_time = time.time()
-            self.env['ir.actions.server'].browse(server_action_id).run()
+            result = self.env['ir.actions.server'].browse(server_action_id).run()
             if start_time and _logger.isEnabledFor(logging.DEBUG):
                 end_time = time.time()
                 _logger.debug('%.3fs (cron %s, server action %d with uid %d)', end_time - start_time, cron_name, server_action_id, self.env.uid)
             self.pool.signal_caches_change()
+            return result
         except Exception as e:
             self._handle_callback_exception(cron_name, server_action_id, job_id, e)
 
