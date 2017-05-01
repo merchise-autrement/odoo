@@ -200,6 +200,7 @@ class Signal(object):
         receiver.
 
         """
+        from celery.exceptions import SoftTimeLimitExceeded
         responses = []
         if thrown and not isinstance(thrown, (list, tuple)):
             thrown = (thrown, )
@@ -208,6 +209,8 @@ class Signal(object):
         for receiver in self._live_receivers(sender):
             try:
                 response = receiver(sender, signal=self, **kwargs)
+            except SoftTimeLimitExceeded:
+                raise
             except catched as err:
                 if thrown and isinstance(err, thrown):
                     # Don't log: I expect you'll log where you actually catch
