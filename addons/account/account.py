@@ -1450,7 +1450,6 @@ class account_move(osv.osv):
             line_ids = map(lambda x: x.id, move.line_id)
             context['journal_id'] = move.journal_id.id
             context['period_id'] = move.period_id.id
-            obj_move_line._update_check(cr, uid, line_ids, context)
             obj_move_line.unlink(cr, uid, line_ids, context=context)
             toremove.append(move.id)
         result = super(account_move, self).unlink(cr, uid, toremove, context)
@@ -1601,24 +1600,6 @@ class account_move(osv.osv):
                     'state': 'valid'
                 }, context=context, check=False)
 
-                account = {}
-                account2 = {}
-
-                if journal.type in ('purchase','sale'):
-                    for line in move.line_id:
-                        code = amount = 0
-                        key = (line.account_id.id, line.tax_code_id.id)
-                        if key in account2:
-                            code = account2[key][0]
-                            amount = account2[key][1] * (line.debit + line.credit)
-                        elif line.account_id.id in account:
-                            code = account[line.account_id.id][0]
-                            amount = account[line.account_id.id][1] * (line.debit + line.credit)
-                        if (code or amount) and not (line.tax_code_id or line.tax_amount):
-                            obj_move_line.write(cr, uid, [line.id], {
-                                'tax_code_id': code,
-                                'tax_amount': amount
-                            }, context=context, check=False)
             elif journal.centralisation:
                 # If the move is not balanced, it must be centralised...
 
