@@ -64,7 +64,7 @@ function reload_favorite_list(result) {
 
             self.all_filters = sidebar_items;
             self.now_filter_ids = $.map(self.all_filters, function(o) { return o.value; });
-            
+
             self.sidebar.filter.events_loaded(self.get_all_filters_ordered());
             self.sidebar.filter.set_filters();
             self.sidebar.filter.add_favorite_calendar();
@@ -237,17 +237,18 @@ WebClient.include({
     },
     check_notifications: function() {
         var self = this;
+        var FIVE_MINUTES = 5*60*1000;  // In ms for setTimeout.
         this.get_next_notif();
         this.intervalNotif = setInterval(function() {
             self.get_next_notif();
-        }, 5 * 60 * 1000);
+        }, FIVE_MINUTES);
     },
-    //Override the show_application of addons/web/static/src/js/chrome.js       
+    //Override the show_application of addons/web/static/src/js/chrome.js
     show_application: function() {
         this._super();
         this.check_notifications();
     },
-    //Override addons/web/static/src/js/chrome.js       
+    //Override addons/web/static/src/js/chrome.js
     on_logout: function() {
         this._super();
         clearInterval(this.intervalNotif);

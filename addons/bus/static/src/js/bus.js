@@ -397,12 +397,13 @@ var tab_manager = {
 // if supporting LocalStorage, there will be only one tab polling
 if(typeof Storage !== "undefined"){
     bus.bus = new CrossTabBus();
+    bus.BusClass = CrossTabBus;
 } else {
     bus.bus = new bus.Bus();
+    bus.BusClass = bus.Bus;
 }
 
 return bus;
 
 
 });
-

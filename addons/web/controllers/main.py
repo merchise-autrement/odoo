@@ -16,7 +16,14 @@ import re
 import json
 import sys
 import time
+import urllib2
+try:
+    import urlparse
+except ImportError:
+    from urllib import parse as urlparse  # Py3k
+
 import zlib
+import mimetypes
 from xml.etree import ElementTree
 from cStringIO import StringIO
 
@@ -33,6 +40,7 @@ from openerp.tools import topological_sort
 from openerp.tools.translate import _
 from openerp.tools import ustr
 from openerp.tools.misc import str2bool, xlwt
+from openerp.tools.config import config
 from openerp import http
 from openerp.http import request, serialize_exception as _serialize_exception, content_disposition
 from openerp.exceptions import AccessError
@@ -472,6 +480,7 @@ class Home(http.Controller):
         except openerp.exceptions.AccessDenied:
             values['databases'] = None
 
+        values['disable_database_manager'] = config.get('disable_database_manager', False)
         if request.httprequest.method == 'POST':
             old_uid = request.uid
             uid = request.session.authenticate(request.session.db, request.params['login'], request.params['password'])
@@ -723,7 +732,6 @@ class Database(http.Controller):
             return self._render_template(error=error)
 
 class Session(http.Controller):
-
     def session_info(self):
         request.session.ensure_valid()
         return {
@@ -1306,6 +1314,7 @@ class Export(http.Controller):
             (prefix + '/' + k, prefix_string + '/' + v)
             for k, v in self.fields_info(model, export_fields).iteritems())
 
+
 class ExportFormat(object):
     raw_data = False
 
@@ -1346,26 +1355,22 @@ class ExportFormat(object):
             fields = [field for field in fields if field['name'] != 'id']
 
         field_names = map(operator.itemgetter('name'), fields)
-        import_data = Model.export_data(ids, field_names, self.raw_data, context=context).get('datas',[])
-
+        import_data = model.export_data(cr, uid, ids, field_names,
+                                        self.raw_data,
+                                        context=context).get('datas', [])
         if import_compat:
             columns_headers = field_names
         else:
             columns_headers = [val['label'].strip() for val in fields]
+        from_data = self.from_data(columns_headers, import_data)
+        return from_data
 
 
-        return request.make_response(self.from_data(columns_headers, import_data),
-            headers=[('Content-Disposition',
-                            content_disposition(self.filename(model))),
-                     ('Content-Type', self.content_type)],
-            cookies={'fileToken': token})
-
-class CSVExport(ExportFormat, http.Controller):
-
-    @http.route('/web/export/csv', type='http', auth="user")
-    @serialize_exception
-    def index(self, data, token):
-        return self.base(data, token)
+class CSVExport(ExportFormat):
+    """The old class `CSVExport` was isolated in two class
+    `CSVExportController` and `this` for be able to export without calling a
+    controller class only.
+    """
 
     @property
     def content_type(self):
@@ -1402,14 +1407,14 @@ class CSVExport(ExportFormat, http.Controller):
         fp.close()
         return data
 
-class ExcelExport(ExportFormat, http.Controller):
+
+class ExcelExport(ExportFormat):
+    """The old class `ExcelExport` was isolated in two class
+    `ExcelExportController` and `this` for be able to export without calling a
+    controller class only.
+    """
     # Excel needs raw data to correctly handle numbers and date values
     raw_data = True
-
-    @http.route('/web/export/xls', type='http', auth="user")
-    @serialize_exception
-    def index(self, data, token):
-        return self.base(data, token)
 
     @property
     def content_type(self):
@@ -1424,11 +1429,13 @@ class ExcelExport(ExportFormat, http.Controller):
 
         for i, fieldname in enumerate(fields):
             worksheet.write(0, i, fieldname)
-            worksheet.col(i).width = 8000 # around 220 pixels
+            worksheet.col(i).width = 8000  # around 220 pixels
 
         base_style = xlwt.easyxf('align: wrap yes')
-        date_style = xlwt.easyxf('align: wrap yes', num_format_str='YYYY-MM-DD')
-        datetime_style = xlwt.easyxf('align: wrap yes', num_format_str='YYYY-MM-DD HH:mm:SS')
+        date_style = xlwt.easyxf('align: wrap yes',
+                                 num_format_str='YYYY-MM-DD')
+        datetime_style = xlwt.easyxf('align: wrap yes',
+                                     num_format_str='YYYY-MM-DD HH:mm:SS')
 
         for row_index, row in enumerate(rows):
             for cell_index, cell_value in enumerate(row):
@@ -1439,7 +1446,8 @@ class ExcelExport(ExportFormat, http.Controller):
                     cell_style = datetime_style
                 elif isinstance(cell_value, datetime.date):
                     cell_style = date_style
-                worksheet.write(row_index + 1, cell_index, cell_value, cell_style)
+                worksheet.write(row_index + 1, cell_index, cell_value,
+                                cell_style)
 
         fp = StringIO()
         workbook.save(fp)
@@ -1447,6 +1455,99 @@ class ExcelExport(ExportFormat, http.Controller):
         data = fp.read()
         fp.close()
         return data
+
+
+class CSVExportController(http.Controller):
+    """This class was introduced for set apart the controller behavior and
+    export behavior.
+    """
+
+    def get_params(self, data, token, export_instance):
+        '''This method process the arguments supplied and return the needed
+        variables for export a file.
+        TODO: Revisar con Manu pues se intento poner este método en la clase
+        `Export` y las dos clases 'CSVExportController'
+        'ExcelExportController' heredar de ella para para reutilizar pero da
+        un error relacionado al token, que no pude resolver.
+        '''
+        params = simplejson.loads(data)
+        aux = operator.itemgetter('model', 'fields', 'ids', 'domain',
+                                  'import_compat')(params)
+        model, fields, ids, domain, import_compat = aux
+
+        Model = request.session.model(model)
+        context = dict(request.context or {}, **params.get('context', {}))
+        if not request.env[model]._is_an_ordinary_table():
+            fields = [field for field in fields if field['name'] != 'id']
+        aux = export_instance.filename(model)
+        headers = [('Content-Disposition', content_disposition(aux)),
+                   ('Content-Type', export_instance.content_type)]
+        cookies = {'fileToken': token}
+        cr = request.env.cr
+        uid = request.env.uid
+        return (cr, uid, Model, domain, fields, context, import_compat, ids,
+                headers, cookies)
+
+    @http.route('/web/export/csv', type='http', auth="user")
+    @serialize_exception
+    def index(self, data, token):
+        csv_export = CSVExport()
+        aux = self.get_params(data, token, csv_export)
+        (cr, uid, Model, domain, fields, context, import_compat, ids, headers,
+         cookies) = aux
+        from_data = csv_export.base(cr, uid, request.registry[Model.model],
+                                    domain, fields, context, import_compat,
+                                    ids)
+        return request.make_response(from_data, headers=headers,
+                                     cookies=cookies)
+
+
+class ExcelExportController(http.Controller):
+    """This class was introduced for set apart the controller behavior and
+    export behavior.
+    """
+    # Excel needs raw data to correctly handle numbers and date values
+    raw_data = True
+
+    def get_params(self, data, token, export_instance):
+        '''This method process the arguments supplied and return the needed
+        variables for export a file.
+        TODO: Revisar con Manu pues se intento poner este método en la clase
+        `Export` y las dos clases 'CSVExportController'
+        'ExcelExportController' heredar de ella para para reutilizar pero da
+        un error relacionado al token, que no pude resolver.
+        '''
+        params = simplejson.loads(data)
+        aux = operator.itemgetter('model', 'fields', 'ids', 'domain',
+                                  'import_compat')(params)
+        model, fields, ids, domain, import_compat = aux
+
+        Model = request.session.model(model)
+        context = dict(request.context or {}, **params.get('context', {}))
+        if not request.env[model]._is_an_ordinary_table():
+            fields = [field for field in fields if field['name'] != 'id']
+        aux = export_instance.filename(model)
+        headers = [('Content-Disposition', content_disposition(aux)),
+                   ('Content-Type', export_instance.content_type)]
+        cookies = {'fileToken': token}
+        cr = request.env.cr
+        uid = request.env.uid
+        return (cr, uid, Model, domain, fields, context, import_compat, ids,
+                headers, cookies)
+
+    @http.route('/web/export/xls', type='http', auth="user")
+    @serialize_exception
+    def index(self, data, token):
+        excel_export = ExcelExport()
+        aux = self.get_params(data, token, excel_export)
+        (cr, uid, Model, domain, fields, context, import_compat, ids, headers,
+         cookies) = aux
+        from_data = excel_export.base(cr, uid, request.registry[Model.model],
+                                      domain, fields, context, import_compat,
+                                      ids)
+        return request.make_response(from_data, headers=headers,
+                                     cookies=cookies)
+
 
 class Reports(http.Controller):
     POLLING_DELAY = 0.25

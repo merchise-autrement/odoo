@@ -8,7 +8,17 @@ from setuptools import find_packages, setup
 from os.path import join, dirname
 
 
-execfile(join(dirname(__file__), 'openerp', 'release.py'))  # Load release variables
+RELEASE_PY = join(dirname(__file__), 'openerp', 'release.py')
+# release.py depends on __file__ to be properly setup in order to construct
+# the version stamp (localpart).  We can't simply pass a new dict to execfile
+# cause then we'd have to fill our locals with the 'version'... So, let's play
+# with __file__ and restore it afterwards.
+__filebak__ = __file__
+__file__ = RELEASE_PY
+try:
+    execfile(RELEASE_PY)  # Load release variables
+finally:
+    __file__ = __filebak__
 lib_name = 'openerp'
 
 
@@ -111,6 +121,15 @@ def py2exe_options():
                         'xlwt',
                         'xml', 'xml.dom',
                         'yaml',
+
+                        # Merchise
+                        'celery>=3.1.19,<5.0.0',
+                        'flower',
+                        'hiredis',
+                        'redis',
+                        'xoutil>=1.7.4,<1.8',
+                        'raven>=5.31.0,<6.1.0',
+                        'raven-sanitize-openerp',
                     ],
                     'excludes': ['Tkconstants', 'Tkinter', 'tcl'],
                 }
@@ -135,6 +154,7 @@ setup(
     packages=find_packages(),
     package_dir={'%s' % lib_name: 'openerp'},
     include_package_data=True,
+    zip_safe=False,
     install_requires=[
         'babel >= 1.0',
         'decorator',
@@ -170,6 +190,15 @@ setup(
         'vobject',
         'werkzeug',
         'xlwt',
+
+        # Merchise
+        'celery',
+        'flower',
+        'redis',
+        'xoutil>=1.7.4,<1.8',
+        'raven>=5.31.0',
+        'raven-sanitize-openerp',
+
     ],
     extras_require={
         'SSL': ['pyopenssl'],

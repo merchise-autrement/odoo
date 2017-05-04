@@ -225,7 +225,13 @@ class MailThread(models.AbstractModel):
             - log a creation message
         """
         if self._context.get('tracking_disable'):
-            return super(MailThread, self).create(values)
+            thread = super(MailThread, self).create(values)
+            # merchise: Ensure to have the unique index before trying to
+            # create notifications, so that those notification have the proper
+            # thread index.
+            if thread:
+                thread._ensure_index()
+            return thread
 
         # subscribe uid unless asked not to
         if not self._context.get('mail_create_nosubscribe'):
@@ -233,6 +239,12 @@ class MailThread(models.AbstractModel):
             message_follower_ids += self.env['mail.followers']._add_follower_command(self._name, [], {self.env.user.partner_id.id: None}, {}, force=True)[0]
             values['message_follower_ids'] = message_follower_ids
         thread = super(MailThread, self).create(values)
+
+        # merchise: Ensure to have the unique index before trying to
+        # create notifications, so that those notification have the proper
+        # thread index.
+        if thread:
+            thread._ensure_index()
 
         # automatic logging unless asked not to (mainly for various testing purpose)
         if not self._context.get('mail_create_nolog'):

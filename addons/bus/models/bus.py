@@ -15,6 +15,8 @@ _logger = logging.getLogger(__name__)
 
 # longpolling timeout connection
 TIMEOUT = 50
+TIMEOUT_DELTA = datetime.timedelta(seconds=TIMEOUT)
+
 
 #----------------------------------------------------------
 # Bus
@@ -38,7 +40,7 @@ class ImBus(models.Model):
 
     @api.model
     def gc(self):
-        timeout_ago = datetime.datetime.utcnow()-datetime.timedelta(seconds=TIMEOUT*2)
+        timeout_ago = datetime.datetime.utcnow() - TIMEOUT_DELTA * 10
         domain = [('create_date', '<', timeout_ago.strftime(DEFAULT_SERVER_DATETIME_FORMAT))]
         return self.sudo().search(domain).unlink()
 
@@ -75,7 +77,7 @@ class ImBus(models.Model):
             options = {}
         # first poll return the notification in the 'buffer'
         if last == 0:
-            timeout_ago = datetime.datetime.utcnow()-datetime.timedelta(seconds=TIMEOUT)
+            timeout_ago = datetime.datetime.utcnow() - TIMEOUT_DELTA
             domain = [('create_date', '>', timeout_ago.strftime(DEFAULT_SERVER_DATETIME_FORMAT))]
         else:  # else returns the unread notifications
             domain = [('id', '>', last)]
@@ -125,7 +127,9 @@ class ImDispatch(object):
 
         # immediatly returns if past notifications exist
         with registry.cursor() as cr:
-            notifications = registry['bus.bus'].poll(cr, openerp.SUPERUSER_ID, channels, last, options)
+            notifications = registry['bus.bus'].poll(
+                cr, openerp.SUPERUSER_ID, channels, last, options
+            )
         # or wait for future ones
         if not notifications:
             event = self.Event()
@@ -134,46 +138,55 @@ class ImDispatch(object):
             try:
                 event.wait(timeout=timeout)
                 with registry.cursor() as cr:
-                    notifications = registry['bus.bus'].poll(cr, openerp.SUPERUSER_ID, channels, last, options, force_status=True)
+                    notifications = registry['bus.bus'].poll(
+                        cr, openerp.SUPERUSER_ID, channels, last, options,
+                        force_status=True
+                    )
             except Exception:
                 # timeout
                 pass
         return notifications
 
     def loop(self):
-        """ Dispatch postgres notifications to the relevant polling threads/greenlets """
+        """Dispatch postgres notifications to the relevant polling threads/greenlets"""
+        def on_db_notification(conn):
+            def callback(*a, **kw):
+                conn.poll()
+                channels = []
+                while conn.notifies:
+                    channels.extend(json.loads(conn.notifies.pop().payload))
+                # dispatch to local threads/greenlets
+                events = set()
+                for channel in channels:
+                    events.update(self.channels.pop(hashable(channel), []))
+                for event in events:
+                    event.set()
+            return callback
+
         _logger.info("Bus.loop listen imbus on db postgres")
+        from kombu.async.hub import Hub
+
         with openerp.sql_db.db_connect('postgres').cursor() as cr:
             conn = cr._cnx
             cr.execute("listen imbus")
-            cr.commit();
-            while True:
-                if select.select([conn], [], [], TIMEOUT) == ([], [], []):
-                    pass
-                else:
-                    conn.poll()
-                    channels = []
-                    while conn.notifies:
-                        channels.extend(json.loads(conn.notifies.pop().payload))
-                    # dispatch to local threads/greenlets
-                    events = set()
-                    for channel in channels:
-                        events.update(self.channels.pop(hashable(channel), []))
-                    for event in events:
-                        event.set()
+            cr.commit()
+
+            hub = Hub()
+            hub.add_reader(conn, on_db_notification(conn))
+            hub.run_forever()
 
     def run(self):
         while True:
             try:
                 self.loop()
-            except Exception, e:
+            except Exception:
                 _logger.exception("Bus.loop error, sleep and retry")
                 time.sleep(TIMEOUT)
 
     def start(self):
         if openerp.evented:
             # gevent mode
-            import gevent
+            import gevent.event
             self.Event = gevent.event.Event
             gevent.spawn(self.run)
         elif openerp.multi_process:

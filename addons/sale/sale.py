@@ -884,7 +884,11 @@ class ProductProduct(models.Model):
             product.sales_count = r.get(product.id, 0)
         return r
 
-    sales_count = fields.Integer(compute='_sales_count', string='# Sales')
+    sales_count = fields.Integer(
+        compute='_sales_count',
+        string='# Sales',
+        store=True,
+    )
 
 
 class ProductTemplate(models.Model):

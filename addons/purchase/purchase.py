@@ -998,7 +998,11 @@ class ProductTemplate(models.Model):
         'account.account', string="Price Difference Account", company_dependent=True,
         help="This account will be used to value price difference between purchase price and cost price.")
     purchase_ok = fields.Boolean('Can be Purchased', default=True)
-    purchase_count = fields.Integer(compute='_purchase_count', string='# Purchases')
+    purchase_count = fields.Integer(
+        compute='_purchase_count',
+        string='# Purchases',
+        store=True
+    )
     purchase_method = fields.Selection([
         ('purchase', 'On ordered quantities'),
         ('receive', 'On received quantities'),

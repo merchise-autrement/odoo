@@ -111,26 +111,24 @@ class Graph(dict):
 
         for package in later:
             unmet_deps = filter(lambda p: p not in self, dependencies[package])
-            _logger.error('module %s: Unmet dependencies: %s', package, ', '.join(unmet_deps))
+            _logger.error(
+                'module %s: Unmet dependencies: %s',
+                package,
+                ', '.join(unmet_deps),
+                extra=dict(stack=True),
+            )
 
         result = len(self) - len_graph
         if result != len(module_list):
             _logger.warning('Some modules were not loaded.')
         return result
 
-
     def __iter__(self):
-        level = 0
-        done = set(self.keys())
-        while done:
-            level_modules = sorted((name, module) for name, module in self.items() if module.depth==level)
-            for name, module in level_modules:
-                done.remove(name)
-                yield module
-            level += 1
+        return (module for _, module in sorted(self.items(), key=lambda (n, m): (m.depth, n)))
 
     def __str__(self):
         return '\n'.join(str(n) for n in self if n.depth == 0)
+
 
 class Node(object):
     """ One module in the modules dependency graph.

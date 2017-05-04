@@ -171,7 +171,7 @@ class Cursor(object):
         self.autocommit(False)
         self.__closer = False
 
-        self._default_log_exceptions = True
+        self._default_log_exceptions = False
 
         self.cache = {}
 

@@ -11,3 +11,4 @@ import scaffold
 import server
 import shell
 import start
+from . import celery  # noqa

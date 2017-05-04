@@ -58,9 +58,13 @@ class AddonsImportHook(object):
         _1, _2, module_part = module_name.split('.')
         # Note: we don't support circular import.
         f, path, descr = imp.find_module(module_part, ad_paths)
-        mod = imp.load_module('openerp.addons.' + module_part, f, path, descr)
-        sys.modules['openerp.addons.' + module_part] = mod
-        return mod
+        try:
+            mod = imp.load_module('openerp.addons.' + module_part, f, path, descr)
+            sys.modules['openerp.addons.' + module_part] = mod
+            return mod
+        finally:
+            if f:
+                f.close()
 
 def initialize_sys_path():
     """
@@ -88,9 +92,15 @@ def initialize_sys_path():
     if base_path not in ad_paths:
         ad_paths.append(base_path)
 
+    if not _xoeuf_external_addons:
+        _xoeuf_external_addons.extend(find_external_addons())
+        ad_paths.extend(_xoeuf_external_addons)
+        ad_paths[:] = list(set(ad_paths))
+
     if not hooked:
         sys.meta_path.append(AddonsImportHook())
         hooked = True
+
 
 def get_module_path(module, downloaded=False, display_warning=True):
     """Return the path of the given module.
@@ -260,9 +270,12 @@ def load_information_from_description_file(module, mod_path=None):
                 'depends data demo test init_xml update_xml demo_xml'.split(),
                 iter(list, None)))
 
+            globals_dict = {
+                'ODOO_VERSION_INFO': release.version_info,
+            }
             f = tools.file_open(terp_file)
             try:
-                info.update(eval(f.read()))
+                info.update(eval(f.read(), globals_dict=globals_dict))
             finally:
                 f.close()
 
@@ -498,3 +511,51 @@ def unwrap_suite(test):
     for item in itertools.chain.from_iterable(
             itertools.imap(unwrap_suite, subtests)):
         yield item
+
+
+try:
+    from xoutil.future.functools import lru_cache
+except ImportError:
+    from xoutil.functools import lru_cache
+XOEUF_EXTERNAL_ADDON_GROUP = 'xoeuf.addons'
+__xoeuf_patched__ = True
+_xoeuf_external_addons = []
+
+
+@lru_cache(1)
+def find_external_addons():
+    '''Finds all externally installed addons.
+
+    Externally installed addons are modules that are distributed with
+    setuptools' distributions.
+
+    An externally addon is defined in a package that defines an `entry
+    point`__ in the group "xoeuf.addons" which points to a standard package
+    (i.e loadable without any specific loader).
+
+    :returns:  A dictionary from addons to it's a tuple of `(container's path,
+               entry_point)`.
+
+    Example::
+
+       [xoeuf.addons]
+       xopgi_account = xopgi.addons.xopgi_account
+
+    '''
+    import os
+    from pkg_resources import iter_entry_points
+    from xoutil.iterators import delete_duplicates
+    res = []
+    for entry in iter_entry_points(XOEUF_EXTERNAL_ADDON_GROUP):
+        if not entry.attrs:
+            # The entry-point is a whole module.  We can't load the module
+            # here, cause the whole point is to grab the paths before openerp
+            # is configured, but if you load an OpenERP addon you will be
+            # importing openerp somehow and enacting configuration
+            loc = entry.dist.location
+            relpath = entry.module_name.replace('.', os.path.sep)
+            # The parent directory is the one!
+            abspath = os.path.abspath(os.path.join(loc, relpath, '..'))
+            if os.path.isdir(abspath):
+                res.append(abspath)
+    return delete_duplicates(res)

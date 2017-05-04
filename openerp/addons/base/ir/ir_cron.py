@@ -114,6 +114,7 @@ class ir_cron(osv.osv):
         :param method_name: name of the method to call when this job is processed.
         :param args: arguments of the method (without the usual self, cr, uid).
         :param job_id: job id.
+        :return the called method return values.
         """
         try:
             args = str2tuple(args)
@@ -126,11 +127,12 @@ class ir_cron(osv.osv):
                     netsvc.log(_logger, logging.DEBUG, 'cron.object.execute', (cr.dbname,uid,'*',model_name,method_name)+tuple(args), depth=log_depth)
                     if _logger.isEnabledFor(logging.DEBUG):
                         start_time = time.time()
-                    getattr(model, method_name)(cr, uid, *args)
+                    result = getattr(model, method_name)(cr, uid, *args)
                     if _logger.isEnabledFor(logging.DEBUG):
                         end_time = time.time()
                         _logger.debug('%.3fs (%s, %s)' % (end_time - start_time, model_name, method_name))
                     openerp.modules.registry.RegistryManager.signal_caches_change(cr.dbname)
+                    return result
                 else:
                     msg = "Method `%s.%s` does not exist." % (model_name, method_name)
                     _logger.warning(msg)
@@ -147,6 +149,9 @@ class ir_cron(osv.osv):
         :param job: job to be run (as a dictionary).
         :param cron_cr: cursor holding lock on the cron job row, to use to update the next exec date,
             must not be committed/rolled back!
+
+            If self._callback call return a dict used it to update the
+            executed cron.
         """
         try:
             with api.Environment.manage():
@@ -155,21 +160,41 @@ class ir_cron(osv.osv):
                 numbercall = job['numbercall']
 
                 ok = False
+                result = False
                 while nextcall < now and numbercall:
                     if numbercall > 0:
                         numbercall -= 1
                     if not ok or job['doall']:
-                        self._callback(job_cr, job['user_id'], job['model'], job['function'], job['args'], job['id'])
+                        result =self._callback(job_cr, job['user_id'],
+                                               job['model'], job['function'],
+                                               job['args'], job['id'])
                     if numbercall:
                         nextcall += _intervalTypes[job['interval_type']](job['interval_number'])
                     ok = True
-                addsql = ''
-                if not numbercall:
-                    addsql = ', active=False'
-                cron_cr.execute("UPDATE ir_cron SET nextcall=%s, numbercall=%s"+addsql+" WHERE id=%s",
-                           (nextcall.astimezone(pytz.UTC).strftime(DEFAULT_SERVER_DATETIME_FORMAT), numbercall, job['id']))
+                cron_values = dict(
+                    nextcall=nextcall.astimezone(pytz.UTC).strftime(
+                        DEFAULT_SERVER_DATETIME_FORMAT),
+                    numbercall=numbercall,
+                    active=bool(numbercall)
+                )
+                if result and isinstance(result, dict):
+                    cron_values.update({
+                        key: value
+                        for key, value in result.items()
+                        if key in self._columns
+                    })
+                # Use dict.items() to make guarantees about the proper
+                # matching of keys and values in the update query.
+                cron_values = list(cron_values.items())
+                cols = ['%s=%%s' % col for col, _val in cron_values]
+                query = (
+                    "UPDATE ir_cron SET %s WHERE id=%%s" % ', '.join(cols)
+                )
+                cron_cr.execute(
+                    query,
+                    [val for _, val in cron_values] + [job['id']]
+                )
                 self.invalidate_cache(job_cr, SUPERUSER_ID)
-
         finally:
             job_cr.commit()
             cron_cr.commit()
