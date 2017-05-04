@@ -41,6 +41,7 @@ def migrate_tags_on_taxes(cr, registry):
         if len(tax_id.ids) == 1:
             tax_id.sudo().write({'tag_ids': [(6, 0, tax_template.tag_ids.ids)]})
 
+
 #  ---------------------------------------------------------------
 #   Account Templates: Account, Tax, Tax Code and chart. + Wizard
 #  ---------------------------------------------------------------
@@ -161,6 +162,8 @@ class AccountChartTemplate(models.Model):
             journal = JournalObj.create(vals_journal)
             if vals_journal['type'] == 'general' and vals_journal['code'] == _('EXCH'):
                 company.write({'currency_exchange_journal_id': journal.id})
+            if vals_journal['type'] == 'general' and vals_journal['code'] == _('CABA'):
+                company.write({'tax_cash_basis_journal_id': journal.id})
         return True
 
     @api.multi
@@ -182,7 +185,8 @@ class AccountChartTemplate(models.Model):
         journals = [{'name': _('Customer Invoices'), 'type': 'sale', 'code': _('INV'), 'favorite': True, 'sequence': 5},
                     {'name': _('Vendor Bills'), 'type': 'purchase', 'code': _('BILL'), 'favorite': True, 'sequence': 6},
                     {'name': _('Miscellaneous Operations'), 'type': 'general', 'code': _('MISC'), 'favorite': False, 'sequence': 7},
-                    {'name': _('Exchange Difference'), 'type': 'general', 'code': _('EXCH'), 'favorite': False, 'sequence': 9},]
+                    {'name': _('Exchange Difference'), 'type': 'general', 'code': _('EXCH'), 'favorite': False, 'sequence': 9},
+                    {'name': _('Cash Basis Tax Journal'), 'type': 'general', 'code': _('CABA'), 'favorite': False, 'sequence': 10}]
         if journals_dict != None:
             journals.extend(journals_dict)
 
@@ -428,12 +432,28 @@ class AccountChartTemplate(models.Model):
         """
         self.ensure_one()
         account_reconcile_models = self.env['account.reconcile.model.template'].search([
-            ('account_id.chart_template_id', '=', self.id)
+            ('chart_template_id', '=', self.id)
         ])
         for account_reconcile_model in account_reconcile_models:
             vals = self._prepare_reconcile_model_vals(company, account_reconcile_model, acc_template_ref, tax_template_ref)
             self.create_record_with_xmlid(company, account_reconcile_model, 'account.reconcile.model', vals)
         return True
+
+    @api.multi
+    def _get_fp_vals(self, company, position):
+        return {
+            'company_id': company.id,
+            'sequence': position.sequence,
+            'name': position.name,
+            'note': position.note,
+            'auto_apply': position.auto_apply,
+            'vat_required': position.vat_required,
+            'country_id': position.country_id.id,
+            'country_group_id': position.country_group_id.id,
+            'state_ids': position.state_ids and [(6,0, position.state_ids.ids)] or [],
+            'zip_from': position.zip_from,
+            'zip_to': position.zip_to,
+        }
 
     @api.multi
     def generate_fiscal_position(self, tax_template_ref, acc_template_ref, company):
@@ -448,7 +468,8 @@ class AccountChartTemplate(models.Model):
         self.ensure_one()
         positions = self.env['account.fiscal.position.template'].search([('chart_template_id', '=', self.id)])
         for position in positions:
-            new_fp = self.create_record_with_xmlid(company, position, 'account.fiscal.position', {'company_id': company.id, 'name': position.name, 'note': position.note})
+            fp_vals = self._get_fp_vals(company, position)
+            new_fp = self.create_record_with_xmlid(company, position, 'account.fiscal.position', fp_vals)
             for tax in position.tax_ids:
                 self.create_record_with_xmlid(company, tax, 'account.fiscal.position.tax', {
                     'tax_src_id': tax_template_ref[tax.tax_src_id.id],
@@ -583,11 +604,21 @@ class AccountFiscalPositionTemplate(models.Model):
     _name = 'account.fiscal.position.template'
     _description = 'Template for Fiscal Position'
 
+    sequence = fields.Integer()
     name = fields.Char(string='Fiscal Position Template', required=True)
     chart_template_id = fields.Many2one('account.chart.template', string='Chart Template', required=True)
     account_ids = fields.One2many('account.fiscal.position.account.template', 'position_id', string='Account Mapping')
     tax_ids = fields.One2many('account.fiscal.position.tax.template', 'position_id', string='Tax Mapping')
     note = fields.Text(string='Notes')
+    auto_apply = fields.Boolean(string='Detect Automatically', help="Apply automatically this fiscal position.")
+    vat_required = fields.Boolean(string='VAT required', help="Apply only if partner has a VAT number.")
+    country_id = fields.Many2one('res.country', string='Country',
+        help="Apply only if delivery or invoicing country match.")
+    country_group_id = fields.Many2one('res.country.group', string='Country Group',
+        help="Apply only if delivery or invocing country match the group.")
+    state_ids = fields.Many2many('res.country.state', string='Federal States')
+    zip_from = fields.Integer(string='Zip Range From', default=0)
+    zip_to = fields.Integer(string='Zip Range To', default=0)
 
 
 class AccountFiscalPositionTaxTemplate(models.Model):
@@ -887,6 +918,7 @@ class AccountBankAccountsWizard(models.TransientModel):
 class AccountReconcileModelTemplate(models.Model):
     _name = "account.reconcile.model.template"
 
+    chart_template_id = fields.Many2one('account.chart.template', string='Chart Template', required=True)
     name = fields.Char(string='Button Label', required=True)
     sequence = fields.Integer(required=True, default=10)
     has_second_line = fields.Boolean(string='Add a second line', default=False)

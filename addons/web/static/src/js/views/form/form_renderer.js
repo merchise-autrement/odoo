@@ -27,53 +27,46 @@ var FormRenderer = BasicRenderer.extend({
     //--------------------------------------------------------------------------
 
     /**
-     * This method has two responsabilities: find every invalid fields in the
-     * current form, and making sure that they are displayed as invalid, by
-     * toggling the o_form_invalid css class.  It has to be done both on the
-     * widget, and on the label, if there is a label.
+     * Extend the method so that labels also receive the 'o_form_invalid' class
+     * if necessary.
      *
-     * @returns {Deferred}
-     *   if it fails, it gives the list of invalid field names
+     * @override
+     * @see BasicRenderer.canBeSaved
+     * @param {string} recordID
+     * @returns {string[]}
      */
-    canBeSaved: function () {
+    canBeSaved: function (recordID) {
         var self = this;
-        var invalidFields = [];
-        var defs = [];
+        var fieldNames = this._super.apply(this, arguments);
 
-        function markWidget(widget, isValid) {
-            if (!isValid) {
-                invalidFields.push(widget.name);
-            }
-            widget.$el.toggleClass('o_form_invalid', !isValid);
-            var idForLabel = self.idsForLabels[widget.name];
-            var $label = idForLabel ? self.$('label[for=' + idForLabel + ']') : $();
-            $label.toggleClass('o_form_invalid', !isValid);
-        }
+        var $labels = this.$('label');
+        $labels.removeClass('o_form_invalid');
 
-        _.each(this.allFieldWidgets[this.state.id], function (widget) {
-            var isValid = self._canWidgetBeSaved(widget);
-            if (isValid instanceof $.Deferred) {
-                defs.push(isValid.then(function (isValid) {
-                    markWidget(widget, isValid);
-                }));
-            } else {
-                markWidget(widget, isValid);
+        _.each(fieldNames, function (fieldName) {
+            var idForLabel = self.idsForLabels[fieldName];
+            if (idForLabel) {
+                $labels
+                    .filter('[for=' + idForLabel + ']')
+                    .addClass('o_form_invalid');
             }
         });
-        return $.when.apply($, defs).then(function () {
-            if (invalidFields.length) {
-                return $.Deferred().reject(invalidFields);
-            }
-        });
+        return fieldNames;
     },
     /**
-     * Calls 'commitChanges' on all field widgets, so that they can notify the
-     * environment with their current value (useful for widgets that can't
-     * detect when their value changes, e.g. field 'html').
+     * @see BasicRenderer.confirmChange
+     *
+     * We need to reapply the idForLabel postprocessing since some widgets may
+     * have recomputed their dom entirely.
+     *
+     * @override
      */
-    commitChanges: function () { // TODO add a test
-        _.each(this.allFieldWidgets, function (recordWidgets) {
-            _.invoke(recordWidgets, 'commitChanges');
+    confirmChange: function (state, id, fields, e) {
+        var self = this;
+        return this._super.apply(this, arguments).then(function (resetWidgets) {
+            _.each(resetWidgets, function (widget) {
+                self._setIDForLabel(widget, self.idsForLabels[widget.name]);
+            });
+            return resetWidgets
         });
     },
     /**
@@ -111,9 +104,10 @@ var FormRenderer = BasicRenderer.extend({
             var $notebook = $(this);
             var name = $notebook.data('name');
             if (name in state) {
-                $notebook.find('> ul > li > a[data-toggle="tab"]')
-                         .eq(state[name])
-                         .click();
+                var $page = $notebook.find('> ul > li').eq(state[name]);
+                if (!$page.hasClass('o_form_invisible')) {
+                    $page.find('a[data-toggle="tab"]').click();
+                }
             }
         });
     },
@@ -279,7 +273,7 @@ var FormRenderer = BasicRenderer.extend({
         }, modifiersOptions || {});
 
         var widget = this._super(node, record, options, modifiersOptions);
-        widget.getFocusableElement().attr('id', this._getIDForLabel(node.attrs.name));
+        this._setIDForLabel(widget, this._getIDForLabel(node.attrs.name));
 
         widget.$el.addClass(FIELD_CLASSES[record.fields[node.attrs.name].type]);
         this._addFieldClassNames(widget);
@@ -314,6 +308,21 @@ var FormRenderer = BasicRenderer.extend({
         this._handleAttributes($button, node);
         this._registerModifiers(node, this.state, $button);
         return $button;
+    },
+    /**
+     * @private
+     * @param {Object} node
+     * @returns {jQueryElement}
+     */
+    _renderHeaderButtons: function (node) {
+        var self = this;
+        var $buttons = $('<div>', {class: 'o_statusbar_buttons'});
+        _.each(node.children, function (child) {
+            if (child.tag === 'button') {
+                $buttons.append(self._renderHeaderButton(child));
+            }
+        });
+        return $buttons;
     },
     /**
      * @private
@@ -578,12 +587,9 @@ var FormRenderer = BasicRenderer.extend({
     _renderTagHeader: function (node) {
         var self = this;
         var $statusbar = $('<div>', {class: 'o_form_statusbar'});
-        var $buttons = $('<div>', {class: 'o_statusbar_buttons'});
-        $statusbar.append($buttons);
+        $statusbar.append(this._renderHeaderButtons(node));
         _.each(node.children, function (child) {
-            if (child.tag === 'button') {
-                $buttons.append(self._renderHeaderButton(child));
-            } else if (child.tag === 'field') {
+            if (child.tag === 'field') {
                 var widget = self._renderFieldWidget(child, self.state);
                 $statusbar.append(widget.$el);
             }
@@ -740,6 +746,16 @@ var FormRenderer = BasicRenderer.extend({
         if (focusWidget) {
             focusWidget.activate(true);
         }
+    },
+    /**
+     * Sets id attribute of given widget to idForLabel
+     *
+     * @private
+     * @param {AbstractField} widget
+     * @param {idForLabel} string
+     */
+    _setIDForLabel: function (widget, idForLabel) {
+        widget.getFocusableElement().attr('id', idForLabel);
     },
 
     //--------------------------------------------------------------------------

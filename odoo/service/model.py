@@ -14,7 +14,7 @@ from odoo.tools import pycompat
 from odoo.tools.translate import translate
 from odoo.tools.translate import _
 
-import security
+from . import security
 
 try:
     from xoutil.future.string import safe_encode
@@ -42,8 +42,8 @@ def dispatch(method, params):
     security.check(db,uid,passwd)
     registry = odoo.registry(db).check_signaling()
     fn = globals()[method]
-    res = fn(db, uid, *params)
-    registry.signal_caches_change()
+    with registry.manage_changes():
+        res = fn(db, uid, *params)
     return res
 
 def check(f):

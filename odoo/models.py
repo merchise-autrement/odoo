@@ -270,15 +270,6 @@ class BaseModel(object):
         self.env['ir.model']._reflect_model(self)
         self.env['ir.model.fields']._reflect_model(self)
         self.env['ir.model.constraint']._reflect_model(self)
-        if not self.pool._init:
-            # remove ir.model.fields that are not in self._fields
-            fields = Fields.browse([col['id']
-                                    for name, col in cols.iteritems()
-                                    if name not in self._fields])
-            # add key '_force_unlink' in context to (1) force the removal of the
-            # fields and (2) not reload the registry
-            fields.with_context(_force_unlink=True).unlink()
-
         self.invalidate_cache()
 
     @api.model
@@ -555,18 +546,6 @@ class BaseModel(object):
         for child_name in cls._inherit_children:
             child_class = pool[child_name]
             child_class._build_model_attributes(pool)
-
-    @api.model
-    def _add_manual_fields(self, partial):
-        if not self.pool._init_modules:
-            return
-        IrModelFields = self.env['ir.model.fields']
-        manual_fields = self.pool.get_manual_fields(self._cr, self._name)
-        for name, field_data in manual_fields.iteritems():
-            if name not in self._fields:
-                field = IrModelFields._instanciate(field_data, partial)
-                if field:
-                    self._add_field(name, field)
 
     @classmethod
     def _init_constraints_onchanges(cls):
@@ -1573,11 +1552,7 @@ class BaseModel(object):
         This clears the caches associated to methods decorated with
         ``tools.ormcache`` or ``tools.ormcache_multi``.
         """
-        try:
-            cls.pool.cache.clear()
-            cls.pool.cache_cleared = True
-        except AttributeError:
-            pass
+        cls.pool._clear_cache()
 
     @api.model
     def _read_group_fill_results(self, domain, groupby, remaining_groupbys,
@@ -2292,7 +2267,7 @@ class BaseModel(object):
         cls._model_cache_key = tuple(c for c in cls.mro() if not getattr(c, 'pool', None))
 
     @api.model
-    def _setup_base(self, partial):
+    def _setup_base(self):
         """ Determine the inherited and custom fields of the model. """
         cls = type(self)
         if cls._setup_done:
@@ -2337,14 +2312,15 @@ class BaseModel(object):
 
         cls.pool.model_cache[cls._model_cache_key] = cls
 
-        # 2. add custom fields
-        self._add_manual_fields(partial)
+        # 2. add manual fields
+        if self.pool._init_modules:
+            self.env['ir.model.fields']._add_manual_fields(self)
 
         # 3. make sure that parent models determine their own fields, then add
         # inherited fields to cls
         self._inherits_check()
         for parent in self._inherits:
-            self.env[parent]._setup_base(partial)
+            self.env[parent]._setup_base()
         self._add_inherited_fields()
 
         # 4. initialize more field metadata
@@ -2355,7 +2331,7 @@ class BaseModel(object):
         cls._setup_done = True
 
     @api.model
-    def _setup_fields(self, partial):
+    def _setup_fields(self):
         """ Setup the fields, except for recomputation triggers. """
         cls = type(self)
 
@@ -2365,7 +2341,7 @@ class BaseModel(object):
             try:
                 field.setup_full(self)
             except Exception:
-                if partial and field.manual:
+                if not self.pool.loaded and field.manual:
                     # Something goes wrong when setup a manual field.
                     # This can happen with related fields using another manual many2one field
                     # that hasn't been loaded because the comodel does not exist yet.

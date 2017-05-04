@@ -103,7 +103,7 @@ def load_module_graph(cr, graph, status=None, perform_checks=True, skip_modules=
     module_count = len(graph)
     _logger.info('loading %d modules...', module_count)
 
-    registry.clear_manual_fields()
+    registry.clear_caches()
 
     # register, instantiate and initialize models for each modules
     t0 = time.time()
@@ -131,8 +131,9 @@ def load_module_graph(cr, graph, status=None, perform_checks=True, skip_modules=
 
         loaded_modules.append(package.name)
         if hasattr(package, 'init') or hasattr(package, 'update') or package.state in ('to install', 'to upgrade'):
-            registry.setup_models(cr, partial=True)
+            registry.setup_models(cr)
             registry.init_models(cr, model_names, {'module': package.name})
+            cr.commit()
 
         idref = {}
 
@@ -202,7 +203,7 @@ def load_module_graph(cr, graph, status=None, perform_checks=True, skip_modules=
 
     _logger.log(25, "%s modules loaded in %.2fs, %s queries", len(graph), time.time() - t0, odoo.sql_db.sql_counter - t0_sql)
 
-    registry.clear_manual_fields()
+    registry.clear_caches()
 
     cr.commit()
 
@@ -281,7 +282,7 @@ def load_modules(db, force_demo=False, status=None, update_module=False):
         load_lang = tools.config.pop('load_language')
         if load_lang or update_module:
             # some base models are used below, so make sure they are set up
-            registry.setup_models(cr, partial=True)
+            registry.setup_models(cr)
 
         if load_lang:
             for lang in load_lang.split(','):
@@ -337,6 +338,7 @@ def load_modules(db, force_demo=False, status=None, update_module=False):
                     ['to install'], force, status, report,
                     loaded_modules, update_module)
 
+        registry.loaded = True
         registry.setup_models(cr)
 
         # STEP 3.5: execute migration end-scripts

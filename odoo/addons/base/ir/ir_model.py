@@ -180,10 +180,8 @@ class IrModel(models.Model):
         # Reload registry for normal unlink only. For module uninstall, the
         # reload is done independently in odoo.modules.loading.
         if not self._context.get(MODULE_UNINSTALL_FLAG):
-            self._cr.commit()  # must be committed before reloading registry in new cursor
-            api.Environment.reset()
-            registry = Registry.new(self._cr.dbname)
-            registry.signal_registry_change()
+            # setup models; this automatically removes model from registry
+            self.pool.setup_models(self._cr)
 
         return res
 
@@ -208,10 +206,9 @@ class IrModel(models.Model):
         res = super(IrModel, self).create(vals)
         if vals.get('state', 'manual') == 'manual':
             # setup models; this automatically adds model in registry
-            self.pool.setup_models(self._cr, partial=(not self.pool.ready))
+            self.pool.setup_models(self._cr)
             # update database schema
             self.pool.init_models(self._cr, [vals['model']], dict(self._context, update_custom_fields=True))
-            self.pool.signal_registry_change()
         return res
 
     @api.model
@@ -272,6 +269,19 @@ class IrModel(models.Model):
             __doc__ = model_data['info']
 
         return CustomModel
+
+    def _add_manual_models(self):
+        """ Add extra models to the registry. """
+        # clean up registry first
+        for name, model_class in self.pool.items():
+            if model_class._custom:
+                del self.pool.models[name]
+        # add manual models
+        cr = self.env.cr
+        cr.execute('SELECT * FROM ir_model WHERE state=%s', ['manual'])
+        for model_data in cr.dictfetchall():
+            model_class = self._instanciate(model_data)
+            model_class._build_model(self.pool, cr)
 
 
 # retrieve field types defined by the framework only (not extensions)
@@ -361,15 +371,8 @@ class IrModelFields(models.Model):
                 msg = _("Field names can only contain characters, digits and underscores (up to 63).")
                 raise ValidationError(msg)
 
-    @api.constrains('model', 'name')
-    def _unique_name(self):
-        # fix on stable branch (to be converted into an SQL constraint)
-        for field in self:
-            count = self.search_count([('model', '=', field.model), ('name', '=', field.name)])
-            if count > 1:
-                raise ValidationError(_("Field names must be unique per model."))
-
     _sql_constraints = [
+        ('name_unique', 'UNIQUE(model, name)', "Field names must be unique per model."),
         ('size_gt_zero', 'CHECK (size>=0)', 'Size of the field cannot be negative.'),
     ]
 
@@ -583,12 +586,11 @@ class IrModelFields(models.Model):
         # The field we just deleted might be inherited, and the registry is
         # inconsistent in this case; therefore we reload the registry.
         if not self._context.get(MODULE_UNINSTALL_FLAG):
-            self._cr.commit()
-            api.Environment.reset()
-            registry = Registry.new(self._cr.dbname)
-            models = registry.descendants(model_names, '_inherits')
-            registry.init_models(self._cr, models, dict(self._context, update_custom_fields=True))
-            registry.signal_registry_change()
+            # setup models; this re-initializes models in registry
+            self.pool.setup_models(self._cr)
+            # update database schema of model and its descendant models
+            models = self.pool.descendants(model_names, '_inherits')
+            self.pool.init_models(self._cr, models, dict(self._context, update_custom_fields=True))
 
         return res
 
@@ -612,15 +614,14 @@ class IrModelFields(models.Model):
                 if not self.search([('model_id', '=', vals['relation']), ('name', '=', vals['relation_field']), ('ttype', '=', 'many2one')]):
                     raise UserError(_("Many2one %s on model %s does not exist!") % (vals['relation_field'], vals['relation']))
 
-            self.pool.clear_manual_fields()
+            self.clear_caches()
 
             if vals['model'] in self.pool:
                 # setup models; this re-initializes model in registry
-                self.pool.setup_models(self._cr, partial=(not self.pool.ready))
+                self.pool.setup_models(self._cr)
                 # update database schema of model and its descendant models
                 models = self.pool.descendants([vals['model']], '_inherits')
                 self.pool.init_models(self._cr, models, dict(self._context, update_custom_fields=True))
-                self.pool.signal_registry_change()
 
         return res
 
@@ -672,7 +673,7 @@ class IrModelFields(models.Model):
 
         res = super(IrModelFields, self).write(vals)
 
-        self.pool.clear_manual_fields()
+        self.clear_caches()
 
         if column_rename:
             # rename column in database, and its corresponding index if present
@@ -683,15 +684,12 @@ class IrModelFields(models.Model):
 
         if column_rename or patched_models:
             # setup models, this will reload all manual fields in registry
-            self.pool.setup_models(self._cr, partial=(not self.pool.ready))
+            self.pool.setup_models(self._cr)
 
         if patched_models:
             # update the database schema of the models to patch
             models = self.pool.descendants(patched_models, '_inherits')
             self.pool.init_models(self._cr, models, dict(self._context, update_custom_fields=True))
-
-        if column_rename or patched_models:
-            self.pool.signal_registry_change()
 
         return res
 
@@ -779,10 +777,21 @@ class IrModelFields(models.Model):
 
     def _reflect_model(self, model):
         """ Reflect the given model's fields. """
+        self.clear_caches()
         for field in model._fields.itervalues():
             self._reflect_field(field)
 
-    def _instanciate_attrs(self, field_data, partial):
+        if not self.pool._init:
+            # remove ir.model.fields that are not in self._fields
+            fields_data = self._existing_field_data(model._name)
+            extra_names = set(fields_data) - set(model._fields)
+            if extra_names:
+                # add key MODULE_UNINSTALL_FLAG in context to (1) force the
+                # removal of the fields and (2) not reload the registry
+                records = self.browse([fields_data.pop(name)['id'] for name in extra_names])
+                records.with_context(**{MODULE_UNINSTALL_FLAG: True}).unlink()
+
+    def _instanciate_attrs(self, field_data):
         """ Return the parameters for a field instance for ``field_data``. """
         attrs = {
             'manual': True,
@@ -801,23 +810,23 @@ class IrModelFields(models.Model):
         elif field_data['ttype'] in ('selection', 'reference'):
             attrs['selection'] = safe_eval(field_data['selection'])
         elif field_data['ttype'] == 'many2one':
-            if partial and field_data['relation'] not in self.env:
+            if not self.pool.loaded and field_data['relation'] not in self.env:
                 return
             attrs['comodel_name'] = field_data['relation']
             attrs['ondelete'] = field_data['on_delete']
             attrs['domain'] = safe_eval(field_data['domain']) if field_data['domain'] else None
         elif field_data['ttype'] == 'one2many':
-            if partial and not (
+            if not self.pool.loaded and not (
                 field_data['relation'] in self.env and (
                     field_data['relation_field'] in self.env[field_data['relation']]._fields or
-                    field_data['relation_field'] in self.pool.get_manual_fields(self._cr, field_data['relation'])
+                    field_data['relation_field'] in self._existing_field_data(field_data['relation'])
             )):
                 return
             attrs['comodel_name'] = field_data['relation']
             attrs['inverse_name'] = field_data['relation_field']
             attrs['domain'] = safe_eval(field_data['domain']) if field_data['domain'] else None
         elif field_data['ttype'] == 'many2many':
-            if partial and field_data['relation'] not in self.env:
+            if not self.pool.loaded and field_data['relation'] not in self.env:
                 return
             attrs['comodel_name'] = field_data['relation']
             rel, col1, col2 = self._custom_many2many_names(field_data['model'], field_data['relation'])
@@ -830,13 +839,20 @@ class IrModelFields(models.Model):
             attrs['compute'] = make_compute(field_data['compute'], field_data['depends'])
         return attrs
 
-    def _instanciate(self, field_data, partial):
+    def _instanciate(self, field_data):
         """ Return a field instance corresponding to parameters ``field_data``. """
-        attrs = self._instanciate_attrs(field_data, partial)
-        if partial and not attrs:
-            # field not instanciable yet, ignore.
-            return None
-        return fields.Field.by_type[field_data['ttype']](**attrs)
+        attrs = self._instanciate_attrs(field_data)
+        if attrs:
+            return fields.Field.by_type[field_data['ttype']](**attrs)
+
+    def _add_manual_fields(self, model):
+        """ Add extra fields on model. """
+        fields_data = self._existing_field_data(model._name)
+        for name, field_data in fields_data.iteritems():
+            if name not in model._fields and field_data['state'] == 'manual':
+                field = self._instanciate(field_data)
+                if field:
+                    model._add_field(name, field)
 
 
 class IrModelConstraint(models.Model):
@@ -1430,16 +1446,22 @@ class IrModelData(models.Model):
 
             record = record.create(values)
             if xml_id:
-                for parent_model, parent_field in record._inherits.iteritems():
-                    if parent_model in existing_parents:
-                        continue
-                    self.sudo().create({
-                        'name': xml_id + '_' + parent_model.replace('.', '_'),
-                        'model': parent_model,
-                        'module': module,
-                        'res_id': record[parent_field].id,
-                        'noupdate': noupdate,
-                    })
+                #To add an external identifiers to all inherits model
+                inherit_models = [record]
+                while inherit_models:
+                    current_model = inherit_models.pop()
+                    for parent_model_name, parent_field in current_model._inherits.iteritems():
+                        inherit_models.append(self.env[parent_model_name])
+                        if parent_model_name in existing_parents:
+                            continue
+                        self.sudo().create({
+                            'name': xml_id + '_' + parent_model_name.replace('.', '_'),
+                            'model': parent_model_name,
+                            'module': module,
+                            'res_id': record[parent_field].id,
+                            'noupdate': noupdate,
+                        })
+                        existing_parents.add(parent_model_name)
                 self.sudo().create({
                     'name': xml_id,
                     'model': model,

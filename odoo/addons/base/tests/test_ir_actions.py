@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from psycopg2 import IntegrityError
+
 import odoo
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import mute_logger
@@ -188,21 +190,18 @@ class TestCustomFields(common.TransactionCase):
     MODEL = 'res.partner'
 
     def setUp(self):
-        # use a test cursor instead of a real cursor
+        # check that the registry is properly reset
         registry = odoo.registry()
-        registry.enter_test_mode()
         fnames = set(registry[self.MODEL]._fields)
-
         @self.addCleanup
-        def callback():
-            registry.leave_test_mode()
-            # the tests may have modified the registry, reset it
-            with registry.cursor() as cr:
-                registry.clear_manual_fields()
-                registry.setup_models(cr)
-                assert set(registry[self.MODEL]._fields) == fnames
+        def check_registry():
+            assert set(registry[self.MODEL]._fields) == fnames
 
         super(TestCustomFields, self).setUp()
+
+        # use a test cursor instead of a real cursor
+        self.registry.enter_test_mode()
+        self.addCleanup(self.registry.leave_test_mode)
 
         # do not reload the registry after removing a field
         self.env = self.env(context={'_force_unlink': True})
@@ -252,14 +251,14 @@ class TestCustomFields(common.TransactionCase):
     def test_create_unique(self):
         """ one cannot create two fields with the same name on a given model """
         self.create_field('x_foo')
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(IntegrityError):
             self.create_field('x_foo')
 
     def test_rename_unique(self):
         """ one cannot create two fields with the same name on a given model """
         field1 = self.create_field('x_foo')
         field2 = self.create_field('x_bar')
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(IntegrityError):
             field2.name = field1.name
 
     def test_remove_without_view(self):

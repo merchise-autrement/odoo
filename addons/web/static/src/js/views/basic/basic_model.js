@@ -219,8 +219,20 @@ var BasicModel = AbstractModel.extend({
     discardChanges: function (id, options) {
         options = options || {};
         var element = this.localData[id];
+        var isNew = this.isNew(id);
+        var rollback = options.rollback || isNew;
         this._visitChildren(element, function (elem) {
-            elem._changes = options.rollback && elem._savePoint || null;
+            if (rollback && elem._savePoint) {
+                if (elem._savePoint instanceof Array) {
+                    elem._changes = elem._savePoint.slice(0);
+                } else {
+                    elem._changes = _.extend({}, elem._savePoint);
+                }
+                elem._isDirty = !isNew;
+            } else {
+                elem._changes = null;
+                elem._isDirty = false;
+            }
         });
     },
     /**
@@ -374,26 +386,26 @@ var BasicModel = AbstractModel.extend({
         return element;
     },
     /**
-     * return true if a record is dirty. A record is considered dirty if it has
-     * some unsaved changes. A list is considered dirty if its _changes key is
-     * set to an array of its new datapoints (possibly empty)
+     * Returns true if a record is dirty. A record is considered dirty if it has
+     * some unsaved changes, marked by the _isDirty property on the record or
+     * one of its subrecords.
      *
-     * @param {string} id id for a local resource
+     * @param {string} id - the local resource id
      * @returns {boolean}
      */
     isDirty: function (id) {
         var isDirty = false;
-        var record = this.localData[id];
-        this._visitChildren(record, function (r) {
-            if (r.type === "record" ? !_.isEmpty(r._changes) : r._changes) {
+        this._visitChildren(this.localData[id], function (r) {
+            if (r._isDirty) {
                 isDirty = true;
             }
         });
         return isDirty;
     },
     /**
-     * Check if a record is new, meaning if it is in the process of being created
-     * and no actual record exists in db.
+     * Check if a localData is new, meaning if it is in the process of being
+     * created and no actual record exists in db. Note: if the localData is not
+     * of the "record" type, then it is always considered as not new.
      *
      * Note: A virtual id is a character string composed of an integer and has
      * a dash and other information.
@@ -404,7 +416,11 @@ var BasicModel = AbstractModel.extend({
      * @returns {boolean}
      */
     isNew: function (id) {
-        var res_id = this.localData[id].res_id;
+        var data = this.localData[id];
+        if (data.type !== "record") {
+            return false;
+        }
+        var res_id = data.res_id;
         if (typeof res_id === 'number') {
             return false;
         } else if (typeof res_id === 'string' && /^[0-9]+-/.test(res_id)) {
@@ -655,9 +671,14 @@ var BasicModel = AbstractModel.extend({
             options = options || {};
             var record = self.localData[record_id];
             if (options.savePoint) {
-                if (record._changes) {
-                    record._savePoint = _.extend(record._savePoint || {}, record._changes);
-                }
+                self._visitChildren(record, function (rec) {
+                    var newValue = rec._changes || rec.data;
+                    if (newValue instanceof Array) {
+                        rec._savePoint = newValue.slice(0);
+                    } else {
+                        rec._savePoint = _.extend({}, newValue);
+                    }
+                });
                 return $.when();
             }
             var shouldReload = 'reload' in options ? options.reload : true;
@@ -693,15 +714,20 @@ var BasicModel = AbstractModel.extend({
                             record.res_ids.push(id);
                             record.count++;
                         }
+
+                        // Update the data directly or reload them
+                        var def;
                         if (shouldReload) {
-                            // erase changes as they have been applied
-                            record._changes = {};
-                            return self._fetchRecord(record);
+                            def = self._fetchRecord(record);
                         } else {
                             _.extend(record.data, record._changes);
-                            record._changes = {};
-                            return false;
                         }
+
+                        // Erase changes as they have been applied
+                        record._changes = {};
+                        record._isDirty = false;
+
+                        return def;
                     });
             } else {
                 return $.when(record_id);
@@ -823,6 +849,7 @@ var BasicModel = AbstractModel.extend({
         var field;
         var defs = [];
         record._changes = record._changes || {};
+        record._isDirty = true;
 
         // apply changes to local data
         for (var fieldName in changes) {
@@ -860,6 +887,7 @@ var BasicModel = AbstractModel.extend({
                 _.each(fieldNames, function (name) {
                     if (record._changes && record._changes[name] === record.data[name]) {
                         delete record._changes[name];
+                        record._isDirty = !_.isEmpty(record._changes);
                     }
                 });
                 return self._fetchSpecialData(record).then(function (fieldNames2) {
@@ -1091,6 +1119,7 @@ var BasicModel = AbstractModel.extend({
                             list_records[record.id].data = record;
                             self._parseServerData(fieldNames, list.fields, record);
                         });
+                        return self._fetchX2ManysBatched(list);
                     });
                     defs.push(def);
                 }
@@ -1253,8 +1282,7 @@ var BasicModel = AbstractModel.extend({
                 model: record.model,
                 method: 'read',
                 args: [[record.res_id], fieldNames],
-                context: record.context,
-                // context: {bin_size: true} // FIXME: when editing a subrecord in the partner form view, it tries to write the bin_size on the image field
+                context: _.extend({}, record.context, {bin_size: true}),
             })
             .then(function (result) {
                 result = result[0];
@@ -1292,7 +1320,7 @@ var BasicModel = AbstractModel.extend({
         // find all many2one related records to be fetched
         _.each(record.getFieldNames(), function (name) {
             var field = record.fields[name];
-            if (field.type === 'many2one') {
+            if (field.type === 'many2one' && !record.fieldsInfo[record.viewType][name].__no_fetch) {
                 var localId = (record._changes && record._changes[name]) || record.data[name];
                 var relatedRecord = self.localData[localId];
                 if (!relatedRecord) {
@@ -1618,11 +1646,21 @@ var BasicModel = AbstractModel.extend({
         var fieldsInfo = view ? view.fieldsInfo : fieldInfo.fieldsInfo;
         var fields = view ? view.fields : fieldInfo.relatedFields;
         var viewType = view ? view.type : fieldInfo.viewType;
+        var data = list._changes || list.data;
+        var x2mRecords = [];
 
         // step 1: collect ids
         var ids = [];
-        _.each(list.data, function (dataPoint) {
+        _.each(data, function (dataPoint) {
             var record = self.localData[dataPoint];
+            if (typeof record.data[fieldName] === 'string') {
+                // in this case, the value is a local ID, which means that the
+                // record has already been processed. It can happen for example
+                // when a user adds a record in a m2m relation, or loads more
+                // records in a kanban column
+                return;
+            }
+            x2mRecords.push(record);
             ids = _.unique(ids.concat(record.data[fieldName] || []));
             var m2mList = self._makeDataPoint({
                 fieldsInfo: fieldsInfo,
@@ -1669,8 +1707,7 @@ var BasicModel = AbstractModel.extend({
                 });
             });
 
-            _.each(list.data, function (dataPoint) {
-                var record = self.localData[dataPoint];
+            _.each(x2mRecords, function (record) {
                 var m2mList = self.localData[record.data[fieldName]];
 
                 m2mList.data = [];
@@ -1978,11 +2015,11 @@ var BasicModel = AbstractModel.extend({
         var isValid = true;
         var element = this.get(id, {raw: true});
         _.each(element.data, function (rec) {
-            for (var fieldName in rec.fields) {
+            _.each(rec.getFieldNames(), function (fieldName) {
                 if (rec.fields[fieldName].required && !rec.data[fieldName]) {
                     isValid = false;
                 }
-            }
+            });
         });
         return isValid;
     },
@@ -2268,6 +2305,10 @@ var BasicModel = AbstractModel.extend({
                         return self._postprocess(record);
                     })
                     .then(function () {
+                        // save initial changes, so they can be restored later,
+                        // if we need to discard.
+                        self.save(record.id, {savePoint: true})
+
                         return record.id;
                     });
             });
@@ -2439,6 +2480,15 @@ var BasicModel = AbstractModel.extend({
                             aggregateValues[key] = value;
                         }
                     });
+                    // When a view is grouped, we need to display the name of each group in
+                    // the 'title'.
+                    var value = group[rawGroupBy];
+                    if (list.fields[rawGroupBy].type === "selection") {
+                        var choice = _.find(list.fields[rawGroupBy].selection, function (c) {
+                            return c[0] === value;
+                        });
+                        value = choice[1];
+                    }
                     var newGroup = self._makeDataPoint({
                         modelName: list.model,
                         count: group[rawGroupBy + '_count'],
@@ -2446,7 +2496,7 @@ var BasicModel = AbstractModel.extend({
                         context: list.context,
                         fields: list.fields,
                         fieldsInfo: list.fieldsInfo,
-                        value: group[rawGroupBy],
+                        value: value,
                         aggregateValues: aggregateValues,
                         groupedBy: list.groupedBy.slice(1),
                         orderedBy: list.orderedBy,
@@ -2659,6 +2709,10 @@ var BasicModel = AbstractModel.extend({
      * For example, isDirty need to check all relations to find out if something
      * has been modified, or not.
      *
+     * Note that this method follows all the changes, so if a record has
+     * relational sub data, it will visit the new sub records and not the old
+     * ones.
+     *
      * @param {Object} element a valid local resource
      * @param {callback} fn a function to be called on each visited element
      */
@@ -2672,8 +2726,9 @@ var BasicModel = AbstractModel.extend({
                     continue;
                 }
                 if (_.contains(['one2many', 'many2one', 'many2many'], field.type)) {
-                    var relationalElement = this.localData[element.data[fieldName]];
-
+                    var hasChange = element._changes && fieldName in element._changes;
+                    var value =  hasChange ? element._changes[fieldName] : element.data[fieldName];
+                    var relationalElement = this.localData[value];
                     // relationalElement could be empty in the case of a many2one
                     if (relationalElement) {
                         self._visitChildren(relationalElement, fn);
@@ -2682,7 +2737,8 @@ var BasicModel = AbstractModel.extend({
             }
         }
         if (element.type === 'list') {
-            _.each(element.data, function (elemId) {
+            var listData = element._changes || element.data;
+            _.each(listData, function (elemId) {
                 var elem = self.localData[elemId];
                 self._visitChildren(elem, fn);
             });

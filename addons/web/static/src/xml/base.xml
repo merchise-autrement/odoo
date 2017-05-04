@@ -241,12 +241,12 @@
                 </li>
                 <li t-if="section.name == 'files' and widget.options.editable" class="o_sidebar_add_attachment">
                     <t t-call="HiddenInputFile">
-                        <t t-set="fileupload_id" t-value="widget.fileupload_id"/>
+                        <t t-set="fileupload_id" t-value="widget.fileuploadId"/>
                         <t t-set="fileupload_action" t-translation="off">/web/binary/upload_attachment</t>
                         <t t-set="multi_upload" t-value="true"/>
-                        <input type="hidden" name="model" t-att-value="widget.dataset and widget.dataset.model"/>
-                        <input type="hidden" name="id" t-att-value="widget.model_id"/>
-                        <input type="hidden" name="session_id" t-att-value="widget.session.session_id" t-if="widget.session.override_session"/>
+                        <input type="hidden" name="model" t-att-value="widget.env and widget.env.model"/>
+                        <input type="hidden" name="id" t-att-value="widget.env.activeIds[0]"/>
+                        <input type="hidden" name="session_id" t-att-value="widget.getSession().session_id" t-if="widget.getSession().override_session"/>
                         <span>Add...</span>
                     </t>
                 </li>
@@ -945,7 +945,7 @@
         <span t-if="widget.string"><t t-esc="widget.string"/></span>
     </div>
 </t>
-<t t-name="FieldStatus.content.desktop">
+<t t-name="FieldStatus.content">
     <t t-if="selection_folded.length">
         <ul class="dropdown-menu o-status-more" role="menu">
             <li t-foreach="selection_folded" t-as="i">
@@ -957,16 +957,6 @@
     <t t-foreach="selection_unfolded.reverse()" t-as="i">
         <t t-call="FieldStatus.content.button"/>
     </t>
-</t>
-<t t-name="FieldStatus.content.mobile">
-    <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown">
-        <t t-esc="value"/>
-    </button>
-    <ul class="dropdown-menu o-status-more" role="menu">
-        <li t-foreach="selection" t-as="i">
-            <t t-call="FieldStatus.content.button"/>
-        </li>
-    </ul>
 </t>
 <t t-name="FieldStatus.content.button">
     <t t-set="disabled" t-value="!clickable || i.selected"/>
@@ -1033,7 +1023,7 @@
             <input type="hidden" name="session_id" value="" t-if="widget.getSession().override_session"/>
             <input type="hidden" name="callback" t-att-value="fileupload_id"/>
             <input t-if="widget.image_only" type="file" class="o_form_input_file" name="ufile" accept="image/*"/>
-            <input t-else="1" type="file" class="o_form_input_file" name="ufile" t-att="{'multiple': multi_upload ? 'multiple' : null}"/>
+            <input t-if="!widget.image_only" type="file" class="o_form_input_file" name="ufile" t-att="{'multiple': multi_upload ? 'multiple' : null}"/>
             <t t-raw="0"/>
         </form>
         <iframe t-att-id="fileupload_id" t-att-name="fileupload_id" style="display: none"/>

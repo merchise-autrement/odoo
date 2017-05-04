@@ -219,17 +219,6 @@ var KanbanController = BasicController.extend({
             });
     },
     /**
-     * This method comes from the field manager mixin.  Since there is no
-     * onchange for kanban, we force a save for every change
-     *
-     * @override
-     * @param {OdooEvent} event
-     */
-    _onFieldChanged: function (event) {
-        event.data.force_save = true;
-        this._super.apply(this, arguments);
-    },
-    /**
      * @param {OdooRevent} event
      */
     _onLoadMore: function (event) {
@@ -259,7 +248,7 @@ var KanbanController = BasicController.extend({
             action_data: attrs,
             model: record.model,
             record_id: record.res_id,
-            on_close: function () {
+            on_closed: function () {
                 self.model.reload(record.id).then(function (db_id) {
                     var data = self.model.get(db_id);
                     var kanban_record = event.target;

@@ -16,11 +16,16 @@ import threading
 import time
 import itertools
 import unittest
-import urllib2
-import xmlrpclib
 from contextlib import contextmanager
 from datetime import datetime, timedelta
 from pprint import pformat
+try:
+    from urllib import request as urllib2
+    from xmlrpc import client as xmlrpclib
+except ImportError:
+    # pylint: disable=bad-python3-import
+    import urllib2
+    import xmlrpclib
 
 import werkzeug
 
@@ -151,6 +156,7 @@ class TransactionCase(BaseCase):
         def reset():
             # rollback and close the cursor, and reset the environments
             self.registry.clear_caches()
+            self.registry.reset_changes()
             self.env.reset()
             self.cr.rollback()
             self.cr.close()

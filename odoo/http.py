@@ -20,8 +20,12 @@ import sys
 import threading
 import time
 import traceback
-import urllib2
-import urlparse
+try:
+    from urllib.parse import parse_qs, urlparse, quote
+except ImportError:
+    # pylint: disable=bad-python3-import
+    from urllib2 import quote
+    from urlparse import parse_qs, urlparse
 import warnings
 from os.path import join as opj
 from zlib import adler32
@@ -351,6 +355,9 @@ class WebRequest(object):
         if self._cr:
             if exc_type is None and not self._failed:
                 self._cr.commit()
+                self.registry.signal_changes()
+            else:
+                self.registry.reset_changes()
             self._cr.close()
         # just to be sure no one tries to re-use the request
         self.disable_db = True
@@ -421,7 +428,7 @@ class WebRequest(object):
             debug = self.httprequest.environ.get('HTTP_X_DEBUG_MODE')
 
         if not debug and self.httprequest.referrer:
-            debug = bool(urlparse.parse_qs(urlparse.urlparse(self.httprequest.referrer).query, keep_blank_values=True).get('debug'))
+            debug = bool(parse_qs(urlparse(self.httprequest.referrer).query, keep_blank_values=True).get('debug'))
         return debug
 
     @contextlib.contextmanager
@@ -1327,7 +1334,7 @@ class DisableCacheMiddleware(object):
     def __call__(self, environ, start_response):
         def start_wrapped(status, headers):
             referer = environ.get('HTTP_REFERER', '')
-            parsed = urlparse.urlparse(referer)
+            parsed = urlparse(referer)
             debug = parsed.query.count('debug') >= 1
 
             new_headers = []
@@ -1611,7 +1618,6 @@ class Root(object):
                             result = _dispatch_nodb()
                     else:
                         result = ir_http._dispatch()
-                        ir_http.pool.signal_caches_change()
                 else:
                     result = _dispatch_nodb()
 
@@ -1764,7 +1770,7 @@ def send_file(filepath_or_fp, mimetype=None, as_attachment=False, filename=None,
 
 def content_disposition(filename):
     filename = odoo.tools.ustr(filename)
-    escaped = urllib2.quote(filename.encode('utf8'))
+    escaped = quote(filename.encode('utf8'))
     browser = request.httprequest.user_agent.browser
     version = int((request.httprequest.user_agent.version or '0').split('.')[0])
     if browser == 'msie' and version < 9:

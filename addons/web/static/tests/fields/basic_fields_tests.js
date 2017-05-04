@@ -5,6 +5,7 @@ var concurrency = require('web.concurrency');
 var FormView = require('web.FormView');
 var KanbanView = require('web.KanbanView');
 var ListView = require('web.ListView');
+var session = require('web.session');
 var testUtils = require('web.test_utils');
 
 var createView = testUtils.createView;
@@ -31,6 +32,7 @@ QUnit.module('basic_fields', {
                     currency_id: {string: "Currency", type: "many2one", relation: "currency", searchable: true},
                     selection: {string: "Selection", type: "selection", searchable:true,
                         selection: [['normal', 'Normal'],['blocked', 'Blocked'],['done', 'Done']]},
+                    document: {string: "Binary", type: "binary"},
                 },
                 records: [{
                     id: 1,
@@ -45,6 +47,7 @@ QUnit.module('basic_fields', {
                     timmy: [],
                     trululu: 4,
                     selection: 'blocked',
+                    document: 'coucou==\n',
                 }, {
                     id: 2,
                     display_name: "second record",
@@ -117,13 +120,13 @@ QUnit.module('basic_fields', {
     QUnit.module('FieldBoolean');
 
     QUnit.test('boolean field in form view', function (assert) {
-        assert.expect(7);
+        assert.expect(11);
 
         var form = createView({
             View: FormView,
             model: 'partner',
             data: this.data,
-            arch: '<form><field name="bar"/></form>',
+            arch: '<form><label for="bar" string="Awesome checkbox"/><field name="bar"/></form>',
             res_id: 1,
         });
 
@@ -149,6 +152,27 @@ QUnit.module('basic_fields', {
         form.$buttons.find('.o_form_button_edit').click();
         assert.strictEqual(form.$('.o_field_boolean input:checked').length, 0,
             "checkbox should still be unchecked");
+
+        // check the checkbox
+        form.$('.o_field_boolean input').click();
+        assert.strictEqual(form.$('.o_field_boolean input:checked').length, 1,
+            "checkbox should now be checked");
+
+        // uncheck it back
+        form.$('.o_field_boolean input').click();
+        assert.strictEqual(form.$('.o_field_boolean input:checked').length, 0,
+            "checkbox should now be unchecked");
+
+        // check the checkbox by clicking on label
+        form.$('label').click();
+        assert.strictEqual(form.$('.o_field_boolean input:checked').length, 1,
+            "checkbox should now be checked");
+
+        // uncheck it back
+        form.$('label').click();
+        assert.strictEqual(form.$('.o_field_boolean input:checked').length, 0,
+            "checkbox should now be unchecked");
+
         // check the checkbox by hitting the "enter" key after focusing it
         form.$('.o_field_boolean input')
             .trigger("focusin")
@@ -755,6 +779,61 @@ QUnit.module('basic_fields', {
         form.destroy();
     });
 
+    QUnit.module('FieldBinary');
+
+    QUnit.test('binary fields are correctly rendered', function (assert) {
+        assert.expect(9);
+
+        // save the session function
+        var oldGetFile = session.get_file;
+        session.get_file = function (option) {
+            assert.strictEqual(option.data.field, 'document',
+                "we should download the field document");
+            assert.strictEqual(option.data.data, 'coucou==\n',
+                "we should download the correct data");
+            option.complete();
+            return $.when();
+        };
+
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form string="Partners">' +
+                    '<field name="document"/>' +
+                '</form>',
+            res_id: 1,
+        });
+
+        assert.strictEqual(form.$('a.o_form_field[name="document"] > .fa-download').length, 1,
+            "the binary field should be rendered as a downloadable link in readonly");
+
+        form.$('a.o_form_field[name="document"]').click();
+
+        form.$buttons.find('.o_form_button_edit').click();
+
+        assert.strictEqual(form.$('a.o_form_field[name="document"] > .fa-download').length, 0,
+            "the binary field should not be rendered as a downloadable link in edit");
+        assert.strictEqual(form.$('div.o_form_field_binary_file[name="document"]').length, 1,
+            "the binary field should be correctly rendered in edit");
+        assert.strictEqual(form.$('.o_form_field_binary_file > input').attr('readonly'), 'readonly',
+            "the input should be readonly");
+        assert.strictEqual(form.$('.o_form_field_binary_file > .o_clear_file_button').length, 1,
+            "there shoud be a button to clear the file");
+
+        form.$('.o_form_field_binary_file > .o_clear_file_button').click();
+
+        assert.ok(form.$('.o_form_field_binary_file > input').hasClass('o_hidden'),
+            "the input should be hidden");
+        assert.strictEqual(form.$('.o_form_field_binary_file > .o_select_file_button:not(.o_hidden)').length, 1,
+            "there shoud be a button to upload the file");
+
+        form.destroy();
+
+        // restore the session function
+        session.get_file = oldGetFile;
+    });
+
 
     QUnit.test('text field rendering in list view', function (assert) {
         assert.expect(1);
@@ -964,7 +1043,7 @@ QUnit.module('basic_fields', {
 
     QUnit.module('HandleWidget');
 
-    QUnit.test('handle widget', function (assert) {
+    QUnit.test('handle widget in x2m', function (assert) {
         assert.expect(6);
 
         this.data.partner.records[0].p = [2, 4];
@@ -1351,12 +1430,12 @@ QUnit.module('basic_fields', {
             'The value should be displayed properly.');
 
         form.$buttons.find('.o_form_button_edit').click();
-        assert.strictEqual(form.$('input.o_form_input').val(), '9.10',
+        assert.strictEqual(form.$('input.o_form_input').first().val(), '9.10',
             'The input should be rendered without the currency symbol.');
         assert.strictEqual(form.$('input.o_form_input').parent().children().first().text(), '$',
             'The input should be preceded by a span containing the currency symbol.');
 
-        form.$('input.o_form_input').val('108.2458938598598').trigger('input');
+        form.$('input.o_form_input').first().val('108.2458938598598').trigger('input');
         assert.strictEqual(form.$('input.o_form_input').val(), '108.2458938598598',
             'The value should not be formated yet.');
 
@@ -1392,13 +1471,13 @@ QUnit.module('basic_fields', {
             'The value should be displayed properly.');
 
         form.$buttons.find('.o_form_button_edit').click();
-        assert.strictEqual(form.$('input.o_form_input').val(), '0.00',
+        assert.strictEqual(form.$('input.o_form_input').first().val(), '0.00',
             'The input should be rendered without the currency symbol.');
         assert.strictEqual(form.$('input.o_form_input').parent().children().eq(1).text(), '€',
             'The input should be followed by a span containing the currency symbol.');
 
-        form.$('input.o_form_input').val('108.2458938598598').trigger('input');
-        assert.strictEqual(form.$('input.o_form_input').val(), '108.2458938598598',
+        form.$('input.o_form_input').first().val('108.2458938598598').trigger('input');
+        assert.strictEqual(form.$('input.o_form_input').first().val(), '108.2458938598598',
             'The value should not be formated yet.');
 
         form.$buttons.find('.o_form_button_save').click();

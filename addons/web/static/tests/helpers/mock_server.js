@@ -61,12 +61,15 @@ var MockServer = Class.extend({
      * @param {string} model a model name (that should be in this.data)
      * @returns {Object} an object with 2 keys: arch and fields
      */
-    fieldsViewGet: function (arch, model) {
+    fieldsViewGet: function (arch, model, toolbar) {
         var fields = $.extend(true, {}, this.data[model].fields);
         var fvg = this._fieldsViewGet(arch, model, fields);
         var fields_views = {};
         fields_views[fvg.type] = fvg;
         data_manager.processViews(fields_views, fields);
+        if (toolbar) {
+            fvg.toolbar = toolbar;
+        }
         return fields_views[fvg.type];
     },
     /**
@@ -106,7 +109,7 @@ var MockServer = Class.extend({
             if (logLevel === 1) {
                 console.log('Mock: ' + route, JSON.parse(resultString));
             } else if (logLevel === 2) {
-                console.log('%c[rpc] response:', 'color: blue; font-weight: bold;', JSON.parse(resultString));
+                console.log('%c[rpc] response' + route, 'color: blue; font-weight: bold;', JSON.parse(resultString));
             }
             return JSON.parse(resultString);
         });
@@ -226,7 +229,7 @@ var MockServer = Class.extend({
             }
             _.each(modifiersNames, function (a) {
                 if (node.attrs[a]) {
-                    var v = pyeval.py_eval(node.attrs[a]);
+                    var v = pyeval.py_eval(node.attrs[a]) ? true: false;
                     if (inTreeView && a === 'invisible') {
                         modifiers['tree_invisible'] = v;
                     } else if (v || !(a in modifiers) || !_.isArray(modifiers[a])) {
@@ -718,11 +721,11 @@ var MockServer = Class.extend({
     _mockSearchRead: function (model, args, kwargs) {
         var result = this._mockSearchReadController({
             model: model,
-            domain: args[0],
-            fields: args[1],
-            offset: args[2],
-            limit: args[3],
-            sort: args[4],
+            domain: kwargs.domain || args[0],
+            fields: kwargs.fields || args[1],
+            offset: kwargs.offset || args[2],
+            limit: kwargs.limit || args[3],
+            order: kwargs.order || args[4],
             context: kwargs.context,
         });
         return result.records;
@@ -743,7 +746,7 @@ var MockServer = Class.extend({
      */
     _mockSearchReadController: function (args) {
         var self = this;
-        var records = this._getRecords(args.model, args.domain);
+        var records = this._getRecords(args.model, args.domain || []);
         var fields = args.fields || _.keys(this.data[args.model].fields);
         var nbRecords = records.length;
         var offset = args.offset || 0;
