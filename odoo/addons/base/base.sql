@@ -46,6 +46,7 @@ CREATE TABLE ir_model_fields (
   column1 varchar,
   column2 varchar,
   store boolean,
+  on_delete varchar default 'set null',
   primary key(id)
 );
 
@@ -172,7 +173,7 @@ CREATE TABLE ir_model_relation (
     model integer NOT NULL references ir_model on delete restrict,
     name varchar NOT NULL,
     primary key(id)
-);  
+);
 
 CREATE TABLE res_currency (
     id serial,

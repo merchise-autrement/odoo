@@ -340,6 +340,9 @@ class BaseModel(object):
                     raise UserError(_("Serialization field `%s` not found for sparse field `%s`!") % (field.sparse, field.name))
                 vals['serialization_field_id'] = serialization_field.id
 
+            on_delete = getattr(field, 'ondelete', False)
+            if on_delete:
+                vals['on_delete'] = on_delete
             if field.name not in cols:
                 query = "INSERT INTO ir_model_fields (%s) VALUES (%s) RETURNING id" % (
                     ",".join(vals),
@@ -3381,74 +3384,122 @@ class BaseModel(object):
             return True
 
         # for recomputing fields
-        self.modified(self._fields)
+        to_recompute = self._check_to_unlink(check_access=True)
 
+        for sub_ids in self._cr.split_for_in_conditions(self.ids):
+            query = "DELETE FROM %s WHERE id IN %%s" % self._table
+            self._cr.execute(query, (sub_ids,))
+            self._remove_related(sub_ids)
+
+        # invalidate the *whole* cache, since the orm does not handle all
+        # changes made in the database, like cascading delete!
+        for recs in to_recompute:
+            recs.invalidate_cache()
+
+        # recompute new-style fields
+        if self.env.recompute and self._context.get('recompute', True):
+            for recs in to_recompute:
+                recs.recompute()
+
+        # auditing: deletions are infrequent and leave no trace in the database
+        for recs in to_recompute:
+            _unlink.info('User #%s deleted %s records with IDs: %r',
+                         self._uid, recs._name, recs.ids)
+
+        return True
+
+    @api.multi
+    def _check_to_unlink(self, check_access=False):
+        """ Check concurrency, and access for unlink action, get all affected
+        records and remove the record's property and workflows.
+
+        :param check_access: True to check access for unlink 'self' records.
+
+        :return: list of affected (recordsets, stored_values)
+
+        :raise AccessError: * if user has no unlink rights on the requested object
+                            * if user tries to bypass access rules for unlink on the requested object
+
+        :raise UserError: if the record is default property for other records
+
+        """
+        result = []
         self._check_concurrency()
-
-        self.check_access_rights('unlink')
+        if check_access:
+            self.check_access_rights('unlink')
+        self.modified(self._fields)
+        result.append(self)
 
         # Check if the records are used as default properties.
         refs = ['%s,%s' % (self._name, i) for i in self.ids]
-        if self.env['ir.property'].search([('res_id', '=', False), ('value_reference', 'in', refs)]):
-            raise UserError(_('Unable to delete this document because it is used as a default property'))
-
+        if self.env['ir.property'].search([('res_id', '=', False),
+                                           ('value_reference', 'in', refs)]):
+            raise UserError(
+                _('Unable to delete this document because it is used as '
+                  'a default property')
+            )
         # Delete the records' properties.
         self.env['ir.property'].search([('res_id', 'in', refs)]).unlink()
 
         self.delete_workflow()
 
-        self.check_access_rule('unlink')
+        if check_access:
+            self.check_access_rule('unlink')
 
+        imf = self.env['ir.model.fields']
+        domain = [
+            ('relation', '=', self._name),
+            ('on_delete', '=', 'cascade'),
+            '|',
+            ('store', '=', True),
+            ('compute', '=', False)
+        ]
+        for f in imf.search(domain):
+            recs = self.env[f.model].search([(f.name, 'in', self.ids)])
+            if recs:
+                result.extend(recs._check_to_unlink())
+        return result
+
+    @api.model
+    def _remove_related(self, ids):
+        """ Remove the record's ir.model.data, ir.values, ir.attachment.
+
+        :param ids: sub_ids to check for remove.
+
+        """
         cr = self._cr
         Data = self.env['ir.model.data'].sudo().with_context({})
         Values = self.env['ir.values']
         Attachment = self.env['ir.attachment']
+        # Removing the ir_model_data reference if the record being deleted
+        # is a record created by xml/csv file, as these are not connected
+        # with real database foreign keys, and would be dangling references.
+        #
+        # Note: the following steps are performed as superuser to avoid
+        # access rights restrictions, and with no context to avoid possible
+        # side-effects during admin calls.
+        data = Data.search(
+            [('model', '=', self._name), ('res_id', 'in', ids)])
+        if data:
+            data.unlink()
 
-        for sub_ids in cr.split_for_in_conditions(self.ids):
-            query = "DELETE FROM %s WHERE id IN %%s" % self._table
-            cr.execute(query, (sub_ids,))
+        # For the same reason, remove the relevant records in ir_values
+        refs = ['%s,%s' % (self._name, i) for i in ids]
+        values = Values.search(['|', ('value', 'in', refs),
+                                '&', ('model', '=', self._name),
+                                ('res_id', 'in', ids)])
+        if values:
+            values.unlink()
 
-            # Removing the ir_model_data reference if the record being deleted
-            # is a record created by xml/csv file, as these are not connected
-            # with real database foreign keys, and would be dangling references.
-            #
-            # Note: the following steps are performed as superuser to avoid
-            # access rights restrictions, and with no context to avoid possible
-            # side-effects during admin calls.
-            data = Data.search([('model', '=', self._name), ('res_id', 'in', sub_ids)])
-            if data:
-                data.unlink()
-
-            # For the same reason, remove the relevant records in ir_values
-            refs = ['%s,%s' % (self._name, i) for i in sub_ids]
-            values = Values.search(['|', ('value', 'in', refs),
-                                         '&', ('model', '=', self._name),
-                                              ('res_id', 'in', sub_ids)])
-            if values:
-                values.unlink()
-
-            # For the same reason, remove the relevant records in ir_attachment
-            # (the search is performed with sql as the search method of
-            # ir_attachment is overridden to hide attachments of deleted
-            # records)
-            query = 'SELECT id FROM ir_attachment WHERE res_model=%s AND res_id IN %s'
-            cr.execute(query, (self._name, sub_ids))
-            attachments = Attachment.browse([row[0] for row in cr.fetchall()])
-            if attachments:
-                attachments.unlink()
-
-        # invalidate the *whole* cache, since the orm does not handle all
-        # changes made in the database, like cascading delete!
-        self.invalidate_cache()
-
-        # recompute new-style fields
-        if self.env.recompute and self._context.get('recompute', True):
-            self.recompute()
-
-        # auditing: deletions are infrequent and leave no trace in the database
-        _unlink.info('User #%s deleted %s records with IDs: %r', self._uid, self._name, self.ids)
-
-        return True
+        # For the same reason, remove the relevant records in ir_attachment
+        # (the search is performed with sql as the search method of
+        # ir_attachment is overridden to hide attachments of deleted
+        # records)
+        query = 'SELECT id FROM ir_attachment WHERE res_model=%s AND res_id IN %s'
+        cr.execute(query, (self._name, ids))
+        attachments = Attachment.browse([row[0] for row in cr.fetchall()])
+        if attachments:
+            attachments.unlink()
 
     #
     # TODO: Validate
