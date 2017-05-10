@@ -470,6 +470,7 @@ class UpdateableDict(local):
     def __ne__(self, y):
         return self.dict.__ne__(y)
 
+
 def to_xml(s):
     return s.replace('&','&amp;').replace('<','&lt;').replace('>','&gt;')
 

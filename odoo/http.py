@@ -1209,6 +1209,10 @@ class OpenERPSession(werkzeug.contrib.sessions.Session):
         return saved_actions.get("actions", {}).get(key)
 
     def save_request_data(self):
+        # TODO: Analyze this with our SessionStore below.  Why do we even need
+        # to make request `files` part of the session.  I assume this is
+        # because several parallel AJAX calls from the same client may try to
+        # access such data... Hum!
         import uuid
         req = request.httprequest
         files = werkzeug.datastructures.MultiDict()
