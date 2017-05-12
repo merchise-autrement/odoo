@@ -102,26 +102,6 @@ class WerkzeugOdooRequest(werkzeug.wrappers.Request, _AccelMixin):
     pass
 
 
-def IgnoreWeaknessEtagsMiddleware(app):
-    '''Middleware that remove weakness mark in etags.
-
-    Useful when serving proxied via Nginx with gzip active for
-    large response.  Nginx automatically weakens etags in gzipped
-    responses.  So the etag that browsers actually get is 'w/"my-etag"'.
-    Afterwards, when the browser requests the same resource with
-    weak etag in If-None-Match, we wouldn't get a match.
-
-    '''
-    def _call_(environ, start_response):
-        # TODO: several etags
-        gziped = environ.get('HTTP_X_')
-        etags = environ.get('HTTP_IF_NONE_MATCH')
-        if etags and etags.lower().startswith('w/'):
-            environ['HTTP_IF_NONE_MATCH'] = etags[2:]
-        return app(environ, start_response)
-    return _call_
-
-
 #----------------------------------------------------------
 # RequestHandler
 #----------------------------------------------------------
@@ -1326,6 +1306,27 @@ class Response(werkzeug.wrappers.Response):
         """
         self.response.append(self.render())
         self.template = None
+
+
+class IgnoreWeaknessEtagsMiddleware(object):
+    '''Middleware that remove weakness mark in etags.
+
+    Useful when serving proxied via Nginx with gzip active for
+    large response.  Nginx automatically weakens etags in gzipped
+    responses.  So the etag that browsers actually get is 'w/"my-etag"'.
+    Afterwards, when the browser requests the same resource with
+    weak etag in If-None-Match, we wouldn't get a match.
+
+    '''
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        # TODO: several etags
+        etags = environ.get('HTTP_IF_NONE_MATCH')
+        if etags and etags.lower().startswith('w/'):
+            environ['HTTP_IF_NONE_MATCH'] = etags[2:]
+        return self.app(environ, start_response)
 
 
 class SharedDataMiddleware(werkzeug.wsgi.SharedDataMiddleware):
