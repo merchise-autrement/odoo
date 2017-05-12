@@ -102,26 +102,6 @@ class WerkzeugOdooRequest(werkzeug.wrappers.Request, _AccelMixin):
     pass
 
 
-def IgnoreWeaknessEtagsMiddleware(app):
-    '''Middleware that remove weakness mark in etags.
-
-    Useful when serving proxied via Nginx with gzip active for
-    large response.  Nginx automatically weakens etags in gzipped
-    responses.  So the etag that browsers actually get is 'w/"my-etag"'.
-    Afterwards, when the browser requests the same resource with
-    weak etag in If-None-Match, we wouldn't get a match.
-
-    '''
-    def _call_(environ, start_response):
-        # TODO: several etags
-        gziped = environ.get('HTTP_X_')
-        etags = environ.get('HTTP_IF_NONE_MATCH')
-        if etags and etags.lower().startswith('w/'):
-            environ['HTTP_IF_NONE_MATCH'] = etags[2:]
-        return app(environ, start_response)
-    return _call_
-
-
 #----------------------------------------------------------
 # RequestHandler
 #----------------------------------------------------------
@@ -1327,6 +1307,49 @@ class Response(werkzeug.wrappers.Response):
         self.response.append(self.render())
         self.template = None
 
+
+class IgnoreWeaknessEtagsMiddleware(object):
+    '''Middleware that remove weakness mark in etags.
+
+    Useful when serving proxied via Nginx with gzip active for
+    large response.  Nginx automatically weakens etags in gzipped
+    responses.  So the etag that browsers actually get is 'w/"my-etag"'.
+    Afterwards, when the browser requests the same resource with
+    weak etag in If-None-Match, we wouldn't get a match.
+
+    '''
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        # TODO: several etags
+        etags = environ.get('HTTP_IF_NONE_MATCH')
+        if etags and etags.lower().startswith('w/'):
+            environ['HTTP_IF_NONE_MATCH'] = etags[2:]
+        return self.app(environ, start_response)
+
+
+class SharedDataMiddleware(werkzeug.wsgi.SharedDataMiddleware):
+    def __call__(self, environ, start_response):
+        # See bug: https://github.com/mitsuhiko/werkzeug/issues/379
+        try:
+            cleaned_path = werkzeug.wsgi.get_path_info(environ)
+            cleaned_path = cleaned_path.encode(
+                sys.getfilesystemencoding()
+            )
+            return super(SharedDataMiddleware, self).__call__(environ, start_response)
+        except UnicodeError:
+            # Avoid the SharedDataMiddleware if it is going to fail.  We
+            # STRONGLY recommend static assets don't use any char outside
+            # ASCII, so this SHOULD NOT happen unless this recommendation is
+            # not followed.
+            #
+            # This way custom controllers may include URLs, which does not
+            # comply with this but it's their task to properly handle the
+            # encoding in the URL.
+            return self.app(environ, start_response)
+
+
 class DisableCacheMiddleware(object):
     def __init__(self, app):
         self.app = app
@@ -1420,34 +1443,14 @@ class Root(object):
         if statics:
             _logger.info("HTTP Configuring static files")
 
-        def build_static_app(dispatch_app):
-            def static_app(environ, start_response):
-                # See bug: https://github.com/mitsuhiko/werkzeug/issues/379
-                try:
-                    cleaned_path = werkzeug.wsgi.get_path_info(environ)
-                    cleaned_path = cleaned_path.encode(
-                        sys.getfilesystemencoding()
-                    )
-                except UnicodeError:
-                    # Avoid the SharedDataMiddleware if it is going to
-                    # fail.  We STRONGLY recommend static assets don't use
-                    # any char outside ASCII, so this SHOULD NOT happen
-                    # unless this recommendation is not followed.
-                    #
-                    # This way custom controllers may include URLs, which does
-                    # not comply with this but it's their task to properly
-                    # handle the encoding in the URL.
-                    return dispatch_app(environ, start_response)
-                return werkzeug.wsgi.SharedDataMiddleware(
-                    dispatch_app,
-                    statics,
-                    cache_timeout=STATIC_CACHE
-                )(environ, start_response)
-            return static_app
-
-        self.dispatch = DisableCacheMiddleware(
-            IgnoreWeaknessEtagsMiddleware(build_static_app(self.dispatch))
+        app = IgnoreWeaknessEtagsMiddleware(
+            SharedDataMiddleware(
+                self.dispatch,
+                statics,
+                cache_timeout=STATIC_CACHE
+            )
         )
+        self.dispatch = DisableCacheMiddleware(app)
 
     def setup_session(self, httprequest):
         # recover or create session
