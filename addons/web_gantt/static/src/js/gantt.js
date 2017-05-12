@@ -200,9 +200,33 @@ var GanttView = View.extend({
         gantt.attachEvent("onTaskEndResize", function(task) {
             self.on_task_changed(task);
         });
+        var $div_with_id = $('<div>').addClass('o_gantt_container').attr('id', this.chart_id);
+        $div_with_id.prependTo(document.body);
+
+        this.$el.addClass('o_gantt_container').attr('id', this.chart_id);
         // Horrible hack to make sure that something is in the dom with the required id.
         // The problem is that the view manager renders the view in a document fragment.
-        var $div_with_id = $('<div>').addClass('o_gantt_container').attr('id', this.chart_id);
+        var container = this.ViewManager.el,
+            width = 0,
+            height = (groups.length + _.keys(task_ids).length) + 4;
+        if (container) {
+            $div_with_id[0].style.width = container.top + 'px'
+            while (container && width === 0) {
+                width = container.offsetWidth;
+                container = container.parentElement;
+            }
+            $div_with_id[0].style.width = width + 'px'
+        }
+        if (this.ViewManager.x2m) {
+            if (height > 84)
+                height = 84;
+        }
+        else if (height < 84)
+            height = 84;
+        height = height * gantt.heightTaskItem
+        $div_with_id[0].style.height = (height + 40) + 'px'
+
+
         $div_with_id.prependTo(document.body);
         gantt.create(this.chart_id);
 
