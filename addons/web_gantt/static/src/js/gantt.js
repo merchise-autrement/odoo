@@ -19,6 +19,10 @@ var GanttView = View.extend({
     display_name: _lt('Gantt'),
     icon: 'fa-tasks',
     view_type: "gantt",
+    defaults: _.extend(View.prototype.defaults, {
+        creatable: true,
+        read_only_mode: false,
+    }),
     init: function() {
         this._super.apply(this, arguments);
         this.has_been_loaded = $.Deferred();
@@ -188,7 +192,7 @@ var GanttView = View.extend({
         _.each(_.compact(_.map(groups, function(e) {return generate_task_info(e, 0);})), function(project) {
             gantt.addProject(project);
         });
-        gantt.setEditable(true);
+        gantt.setEditable(!this.options.read_only_mode);
         gantt.setImagePath("/web_gantt/static/lib/dhtmlxGantt/codebase/imgs/");
         gantt.attachEvent("onTaskEndDrag", function(task) {
             self.on_task_changed(task);
@@ -211,7 +215,7 @@ var GanttView = View.extend({
                 self.on_task_display(task_info.internal_task);
             }
         });
-        if (this.is_action_enabled('create')) {        
+        if (this.is_action_enabled('create') && this.options.creatable) {
             // insertion of create button
             var td = $($("table td", self.$el)[0]);
             var rendered = QWeb.render("GanttView-create-button");
@@ -261,6 +265,24 @@ var GanttView = View.extend({
 });
 
 core.view_registry.add('gantt', GanttView);
+
+core.x2many_views_registry.add('gantt', function(x2many){
+    var view = {
+        view_type: 'gantt',
+        view_id: false,
+        options: _.extend({
+            action_buttons: true,
+            confirm_on_delete: false,
+        }, x2many.options),
+    };
+    if (x2many.get("effective_readonly")) {
+        _.extend(view.options, {
+            creatable: false,
+            read_only_mode: true,
+        });
+    }
+    return view;
+});
 
 return GanttView;
 });
