@@ -13,17 +13,13 @@ from functools import wraps
 import logging
 import time
 import uuid
-try:
-    from urllib import parse as urlparse
-except ImportError:
-    #pylint: disable=bad-python3-import
-    import urlparse
 
 import psycopg2
 import psycopg2.extras
 import psycopg2.extensions
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT, ISOLATION_LEVEL_READ_COMMITTED, ISOLATION_LEVEL_REPEATABLE_READ
 from psycopg2.pool import PoolError
+from werkzeug import urls
 
 from .tools import pycompat
 
@@ -47,7 +43,7 @@ def undecimalize(symb, cr):
         return None
     return float(symb)
 
-for name, typeoid in types_mapping.items():
+for name, typeoid in pycompat.items(types_mapping):
     psycopg2.extensions.register_type(psycopg2.extensions.new_type(typeoid, name, lambda x, cr: x))
 psycopg2.extensions.register_type(psycopg2.extensions.new_type((700, 701, 1700,), 'float', undecimalize))
 
@@ -191,9 +187,9 @@ class Cursor(object):
         row = self._obj.fetchone()
         return row and self.__build_dict(row)
     def dictfetchmany(self, size):
-        return map(self.__build_dict, self._obj.fetchmany(size))
+        return [self.__build_dict(row) for row in self._obj.fetchmany(size)]
     def dictfetchall(self):
-        return map(self.__build_dict, self._obj.fetchall())
+        return [self.__build_dict(row) for row in self._obj.fetchall()]
 
     def __del__(self):
         if not self._closed and not self._cnx.closed:
@@ -261,7 +257,7 @@ class Cursor(object):
             sqllogs = {'from': self.sql_from_log, 'into': self.sql_into_log}
             sum = 0
             if sqllogs[type]:
-                sqllogitems = sqllogs[type].items()
+                sqllogitems = pycompat.items(sqllogs[type])
                 _logger.debug("SQL LOG %s:", type)
                 for r in sorted(sqllogitems, key=lambda k: k[1]):
                     delay = timedelta(microseconds=r[1][1])
@@ -474,7 +470,7 @@ class LazyCursor(object):
         if cr is None:
             from odoo import registry
             cr = self._cursor = registry(self.dbname).cursor()
-            for _ in pycompat.range(self._depth):
+            for _ in range(self._depth):
                 cr.__enter__()
         return getattr(cr, name)
 
@@ -657,7 +653,7 @@ def connection_info_for(db_or_uri):
     """
     if db_or_uri.startswith(('postgresql://', 'postgres://')):
         # extract db from uri
-        us = urlparse.urlsplit(db_or_uri)
+        us = urls.url_parse(db_or_uri)
         if len(us.path) > 1:
             db_name = us.path[1:]
         elif us.username:

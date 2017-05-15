@@ -71,7 +71,7 @@ def amount_to_text(number, currency):
     cents_number = int(list[1])
     cents_name = (cents_number > 1) and 'Cents' or 'Cent'
 
-    return ' '.join(filter(None, [start_word, units_name, (start_word or units_name) and (end_word or cents_name) and 'and', end_word, cents_name]))
+    return ' '.join(w for w in [start_word, units_name, (start_word or units_name) and (end_word or cents_name) and 'and', end_word, cents_name] if w)
 
 
 #-------------------------------------------------------------
@@ -89,11 +89,6 @@ def amount_to_text(nbr, lang='en', currency='euro'):
         
             1654: thousands six cent cinquante-quatre.
     """
-    import odoo.loglevels as loglevels
-#    if nbr > 10000000:
-#        _logger.warning(_("Number too large '%d', can not translate it"))
-#        return str(nbr)
-    
     if lang not in _translate_funcs:
         _logger.warning(_("no translation function found for lang: '%s'"), lang)
         #TODO: (default should be en) same as above

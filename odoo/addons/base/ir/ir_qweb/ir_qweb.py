@@ -5,14 +5,10 @@ import json
 import logging
 from collections import OrderedDict
 from time import time
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    # pylint: disable=bad-python3-import
-    from urlparse import urlparse
 
 from lxml import html
 from lxml import etree
+from werkzeug import urls
 
 from odoo.tools import pycompat
 
@@ -75,7 +71,7 @@ class IrQWeb(models.AbstractModel, QWeb):
     # apply ormcache_context decorator unless in dev mode...
     @tools.conditional(
         'xml' not in tools.config['dev_mode'],
-        tools.ormcache('id_or_xml_id', 'tuple(map(options.get, self._get_template_cache_keys()))'),
+        tools.ormcache('id_or_xml_id', 'tuple(options.get(k) for k in self._get_template_cache_keys())'),
     )
     def compile(self, id_or_xml_id, options):
         return super(IrQWeb, self).compile(id_or_xml_id, options=options)
@@ -127,7 +123,7 @@ class IrQWeb(models.AbstractModel, QWeb):
     def _compile_directive_call_assets(self, el, options):
         """ This special 't-call' tag can be used in order to aggregate/minify javascript and css assets"""
         if len(el):
-            raise "t-call-assets cannot contain children nodes"
+            raise SyntaxError("t-call-assets cannot contain children nodes")
 
         # self._get_asset(xmlid, options, css=css, js=js, debug=values.get('debug'), async=async, values=values)
         return [
@@ -173,7 +169,7 @@ class IrQWeb(models.AbstractModel, QWeb):
         if field_options and 'monetary' in field_options:
             try:
                 options = "{'widget': 'monetary'"
-                for k, v in json.loads(field_options).iteritems():
+                for k, v in pycompat.items(json.loads(field_options)):
                     if k in ('display_currency', 'from_currency'):
                         options = "%s, '%s': %s" % (options, k, v)
                     else:
@@ -234,7 +230,7 @@ class IrQWeb(models.AbstractModel, QWeb):
                 atype = el.get('type')
                 media = el.get('media')
 
-                can_aggregate = not urlparse(href).netloc and not href.startswith('/web/content')
+                can_aggregate = not urls.url_parse(href).netloc and not href.startswith('/web/content')
                 if el.tag == 'style' or (el.tag == 'link' and el.get('rel') == 'stylesheet' and can_aggregate):
                     if href.endswith('.sass'):
                         atype = 'text/sass'
@@ -242,12 +238,12 @@ class IrQWeb(models.AbstractModel, QWeb):
                         atype = 'text/less'
                     if atype not in ('text/less', 'text/sass'):
                         atype = 'text/css'
-                    path = filter(None, href.split('/'))
+                    path = [segment for segment in href.split('/') if segment]
                     filename = get_resource_path(*path) if path else None
                     files.append({'atype': atype, 'url': href, 'filename': filename, 'content': el.text, 'media': media})
                 elif el.tag == 'script':
                     atype = 'text/javascript'
-                    path = filter(None, src.split('/'))
+                    path = [segment for segment in src.split('/') if segment]
                     filename = get_resource_path(*path) if path else None
                     files.append({'atype': atype, 'url': src, 'filename': filename, 'content': el.text, 'media': media})
                 else:

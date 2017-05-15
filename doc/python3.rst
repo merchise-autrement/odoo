@@ -74,9 +74,22 @@ library:
   ``io.StringIO`` to replace them in a cross-version manner (``io.BytesIO``
   for binary data, ``io.StringIO`` for text/unicode data).
 * ``urllib``, ``urllib2`` and ``urlparse`` were redistributed across
-  ``urllib.parse`` and ``urllib.request``, you may want to use conditional
-  imports e.g. try to import the Python 3 version and fallback on the Python
-  2 version.
+  ``urllib.parse`` and ``urllib.request``.
+
+  Since `requests`_ and `werkzeug`_ are already hard dependencies of Odoo,
+  replace ``urllib[2].urlopen``/``urllib2.Request`` uses by `requests`_, and
+  ``urlparse`` and a few utilty functions (``urllib.quote``,
+  ``urllib.urlencode``) are available through ``werkzeug.urls``, a backport
+  of Python 3's ``urllib.parse``.
+
+  .. warning:: `requests`_ does not raise by default on non-200 responses
+
+* ``cgi.escape`` (HTML escaping) is deprecated in Python 3, prefer Odoo's own
+  :func:`odoo.tools.misc.html_encode`.
+* Most of ``types``'s content has been stripped out in Python 3: only
+  "internal" interpreter types (e.g. CodeType, FrameType, ...) have been left
+  in, other types can be obtained directly from the corresponding builtin or
+  by getting the ``type()`` of a literal value.
 
 Absolute Imports (:pep:`328`)
 -----------------------------
@@ -172,6 +185,37 @@ statement to the following cross-language forms::
     exec(source, globals)
     exec(source, globals, locals)
 
+List/iteration builtins and methods
+-----------------------------------
+
+In Python 3, a number of builtins and methods formerly returning *lists* were
+converted to return *iterators* or *views*, with the corresponding redundant
+methods or functions having been *removed entirely*:
+
+* In Python 3, ``map``, ``filter`` and ``zip`` return iterators,
+  ``itertools.imap``, ``itertools.ifilter`` and ``itertools.izip`` have been
+  removed.
+
+  .. important::
+
+      When possible, use comprehensions (list, generator, ...) rather than
+      ``map`` or ``filter``, otherwise use the cross-version ``pycompat``
+      versions (``pycompat.imap``, ``pycompat.ifilter`` and
+      ``pycompat.izip``). The ``pycompat`` versions all return *iterators* and
+      may need to be wrapped in a ``list()`` call to yield a list.
+
+* In Python 3, ``dict.keys``, ``dict.values`` and ``dict.items`` return
+  *views* rather than lists, and the ``iter*`` and ``view*`` methods have
+  been removed.
+
+  .. important::
+
+      Prefer using :func:`odoo.tools.pycompat.keys`,
+      :func:`odoo.tools.pycompat.values` and :func:`odoo.tools.pycompat.items`
+      return cross-version iterators. When needing actual lists (e.g. to
+      modify a dictionary during iteration), wrap one of the calls above in a
+      ``list()``.
+
 builtins
 --------
 
@@ -258,21 +302,12 @@ code by replacing it with some other method altogether.
 ``xrange``
 ##########
 
-In Python 3, ``range()`` behaves the same as Python 3's ``xrange``. For
-cross-versions code you can:
+In Python 3, ``range()`` behaves the same as Python 3's ``xrange``.
 
-* just use ``range()`` everywhere and ignore the allocation cost of a list in
-  Python 2 (often not an issue)
-* conditionally alias ``xrange`` to ``range`` in Python 3 and use that
-* use a combination of ``itertools.count`` and ``takewhile`` for a
-  cross-compatible lazy increasing sequence of numbers
-
-.. warning::
-
-    In the *rare* cases where you need conditional code (code which applies
-    for one version of python and not the other), use ``sys.version_info``
-    e.g. ``sys.version_info() >= (3,)`` for Python3+ code or
-    ``sys.version_info() < (3,)`` for Python 2 code.
+For cross-version code, you can just use ``range()`` everywhere: while this
+will incur a slight allocation cost on Python 2, Python 3's ``range`` supports
+the entire Sequence protocol and thus behaves very much like a regular
+list or tuple.
 
 Removed/renamed methods
 -----------------------
@@ -304,3 +339,7 @@ Minor syntax changes
   In Python 3, leading zeroes followed by neither a 0 nor a period is an
   error, octal literals now follow the hexadecimal convention with a ``0o``
   prefix.
+
+.. _requests: http://docs.python-requests.org/
+
+.. _werkzeug: http://werkzeug.pocoo.org/docs/urls/

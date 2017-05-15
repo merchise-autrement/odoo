@@ -8,7 +8,7 @@ import logging
 
 import odoo
 import odoo.tools as tools
-
+from odoo.tools import pycompat
 
 _logger = logging.getLogger(__name__)
 
@@ -36,7 +36,7 @@ class Graph(dict):
             return
         # update the graph with values from the database (if exist)
         ## First, we set the default values for each package in graph
-        additional_data = dict((key, {'id': 0, 'state': 'uninstalled', 'dbdemo': False, 'installed_version': None}) for key in self.keys())
+        additional_data = {key: {'id': 0, 'state': 'uninstalled', 'dbdemo': False, 'installed_version': None} for key in pycompat.keys(self)}
         ## Then we get the values from the database
         cr.execute('SELECT name, id, state, demo AS dbdemo, latest_version AS installed_version'
                    '  FROM ir_module_module'
@@ -46,8 +46,8 @@ class Graph(dict):
         ## and we update the default values with values from the database
         additional_data.update((x['name'], x) for x in cr.dictfetchall())
 
-        for package in self.values():
-            for k, v in additional_data[package.name].items():
+        for package in pycompat.values(self):
+            for k, v in pycompat.items(additional_data[package.name]):
                 setattr(package, k, v)
 
     def add_module(self, cr, module, force=None):
@@ -94,13 +94,13 @@ class Graph(dict):
         self.update_from_db(cr)
 
         for package in later:
-            unmet_deps = filter(lambda p: p not in self, dependencies[package])
+            unmet_deps = [p for p in dependencies[package] if p not in self]
             _logger.error('module %s: Unmet dependencies: %s', package, ', '.join(unmet_deps))
 
         return len(self) - len_graph
 
     def __iter__(self):
-        return (module for _, module in sorted(self.items(), key=lambda (n, m): (m.depth, n)))
+        return (module for _, module in sorted(pycompat.items(self), key=lambda (n, m): (m.depth, n)))
 
     def __str__(self):
         return '\n'.join(str(n) for n in self if n.depth == 0)
@@ -157,7 +157,10 @@ class Node(object):
                 setattr(child, name, value + 1)
 
     def __iter__(self):
-        return itertools.chain(iter(self.children), *map(iter, self.children))
+        return itertools.chain(
+            self.children,
+            itertools.chain.from_iterable(self.children)
+        )
 
     def __str__(self):
         return self._pprint()

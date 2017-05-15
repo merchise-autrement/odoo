@@ -5,8 +5,8 @@
 """
 Miscellaneous tools used by OpenERP.
 """
-
 from functools import wraps
+import io
 import babel
 import cPickle
 import cProfile
@@ -16,28 +16,31 @@ import subprocess
 import logging
 import os
 import passlib.utils
+import pickle as pickle_
 import re
 import socket
 import sys
 import threading
 import time
+import types
 import werkzeug.utils
 import zipfile
 from cStringIO import StringIO
 from collections import defaultdict, Iterable, Mapping, MutableSet, OrderedDict
-from itertools import islice, izip, groupby, repeat
+from itertools import islice, groupby, repeat
 from lxml import etree
 
 from which import which
-from threading import local
 import traceback
 import csv
 from operator import itemgetter
 
 try:
-    from html2text import html2text
+    # pylint: disable=bad-python3-import
+    import cProfile
 except ImportError:
-    html2text = None
+    import profile as cProfile
+
 
 from config import config
 from cache import *
@@ -145,7 +148,6 @@ def file_open(name, mode="r", subdir='addons', pathinfo=False):
 
     >>> file_open('hr/report/timesheer.xsl')
     >>> file_open('addons/hr/report/timesheet.xsl')
-    >>> file_open('../../base/report/rml_template.xsl', subdir='addons/hr/report', pathinfo=True)
 
     @param name name of the file
     @param mode file open mode
@@ -275,7 +277,7 @@ def flatten(list):
     r = []
     for e in list:
         if isiterable(e):
-            map(r.append, flatten(e))
+            r.extend(flatten(e))
         else:
             r.append(e)
     return r
@@ -297,7 +299,7 @@ def reverse_enumerate(l):
       File "<stdin>", line 1, in <module>
     StopIteration
     """
-    return izip(pycompat.range(len(l)-1, -1, -1), reversed(l))
+    return pycompat.izip(range(len(l)-1, -1, -1), reversed(l))
 
 def partition(pred, elems):
     """ Return a pair equivalent to:
@@ -330,10 +332,12 @@ def topological_sort(elems):
             visited.add(n)
             if n in elems:
                 # first visit all dependencies of n, then append n to result
-                map(visit, elems[n])
+                for it in elems[n]:
+                    visit(it)
                 result.append(n)
 
-    map(visit, elems)
+    for el in elems:
+        visit(el)
 
     return result
 
@@ -451,7 +455,7 @@ def logged(f):
         vector = ['Call -> function: %r' % f]
         for i, arg in enumerate(args):
             vector.append('  arg %02d: %s' % (i, pformat(arg)))
-        for key, value in kwargs.items():
+        for key, value in pycompat.items(kwargs):
             vector.append('  kwarg %10s: %s' % (key, pformat(value)))
 
         timeb4 = time.time()
@@ -516,9 +520,9 @@ def detect_ip_addr():
 
             # try 32 bit kernel:
             if ip_addr is None:
-                ifaces = filter(None, [namestr[i:i+32].split('\0', 1)[0] for i in range(0, outbytes, 32)])
+                ifaces = [namestr[i:i+32].split('\0', 1)[0] for i in range(0, outbytes, 32)]
 
-                for ifname in [iface for iface in ifaces if iface != 'lo']:
+                for ifname in [iface for iface in ifaces if iface if iface != 'lo']:
                     ip_addr = socket.inet_ntoa(fcntl.ioctl(s.fileno(), 0x8915, pack('256s', ifname[:15]))[20:24])
                     break
 
@@ -678,26 +682,6 @@ def split_every(n, iterable, piece_maker=tuple):
     while piece:
         yield piece
         piece = piece_maker(islice(iterator, n))
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod()
-
-
-class upload_data_thread(threading.Thread):
-    def __init__(self, email, data, type):
-        self.args = [('email', email), ('type', type), ('data', data)]
-        super(upload_data_thread, self).__init__()
-
-    def run(self):
-        # No, thanks
-        pass
-
-
-def upload_data(email, data, type='SURVEY'):
-    # No, thanks
-    return True
-
 
 def get_and_group_by_field(cr, uid, obj, ids, field, context=None):
     """ Read the values of ``field´´ for the given ``ids´´ and group ids by value.
@@ -910,7 +894,7 @@ def dumpstacks(sig=None, frame=None):
                                'uid': getattr(th, 'uid', 'n/a'),
                                'dbname': getattr(th, 'dbname', 'n/a')}
                     for th in threading.enumerate()}
-    for threadId, stack in sys._current_frames().items():
+    for threadId, stack in pycompat.items(sys._current_frames()):
         thread_info = threads_info.get(threadId, {})
         code.append("\n# Thread: %s (id:%s) (db:%s) (uid:%s)" %
                     (thread_info.get('name', 'n/a'),
@@ -940,7 +924,7 @@ def freehash(arg):
         if isinstance(arg, Mapping):
             return hash(frozendict(arg))
         elif isinstance(arg, Iterable):
-            return hash(frozenset(map(freehash, arg)))
+            return hash(frozenset(freehash(item) for item in arg))
         else:
             return id(arg)
 
@@ -961,7 +945,7 @@ class frozendict(dict):
     def update(self, *args, **kwargs):
         raise NotImplementedError("'update' not supported on frozendict")
     def __hash__(self):
-        return hash(frozenset((key, freehash(val)) for key, val in self.iteritems()))
+        return hash(frozenset((key, freehash(val)) for key, val in pycompat.items(self)))
 
 class Collector(Mapping):
     """ A mapping from keys to lists. This is essentially a space optimization
@@ -1123,27 +1107,22 @@ def format_date(env, value, lang_code=False, date_format=False):
 def _consteq(str1, str2):
     """ Constant-time string comparison. Suitable to compare bytestrings of fixed,
         known length only, because length difference is optimized. """
-    return len(str1) == len(str2) and sum(ord(x)^ord(y) for x, y in zip(str1, str2)) == 0
+    return len(str1) == len(str2) and sum(ord(x)^ord(y) for x, y in pycompat.izip(str1, str2)) == 0
 
 consteq = getattr(passlib.utils, 'consteq', _consteq)
 
-class Pickle(object):
-    @classmethod
-    def load(cls, stream, errors=False):
-        unpickler = cPickle.Unpickler(stream)
-        # pickle builtins: str/unicode, int/long, float, bool, tuple, list, dict, None
-        unpickler.find_global = None
-        try:
-            return unpickler.load()
-        except Exception:
-            _logger.warning('Failed unpickling data, returning default: %r', errors, exc_info=True)
-            return errors
-
-    @classmethod
-    def loads(cls, text):
-        return cls.load(StringIO(text))
-
-    dumps = cPickle.dumps
-    dump = cPickle.dump
-
-pickle = Pickle
+def _pickle_load(stream, errors=False):
+    unpickler = pickle_.Unpickler(stream)
+    # pickle builtins: str/unicode, int/long, float, bool, tuple, list, dict, None
+    unpickler.find_global = None
+    try:
+        return unpickler.load()
+    except Exception:
+        _logger.warning('Failed unpickling data, returning default: %r',
+                        errors, exc_info=True)
+        return errors
+pickle = types.ModuleType(__name__ + '.pickle')
+pickle.load = _pickle_load
+pickle.loads = lambda text: _pickle_load(io.BytesIO(text))
+pickle.dump = pickle_.dump
+pickle.dumps = pickle_.dumps

@@ -12,8 +12,7 @@ from odoo import fields, tools
 from odoo.http import request
 from odoo.modules.module import get_resource_path
 import psycopg2
-import werkzeug
-from odoo.tools import func, misc
+from odoo.tools import func, misc, pycompat
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -313,7 +312,7 @@ class AssetsBundle(object):
             outdated = False
             assets = dict((asset.html_url, asset) for asset in self.stylesheets if isinstance(asset, atype))
             if assets:
-                assets_domain = [('url', 'in', assets.keys())]
+                assets_domain = [('url', 'in', list(assets))]
                 attachments = self.env['ir.attachment'].sudo().search(assets_domain)
                 for attachment in attachments:
                     asset = assets[attachment.url]
@@ -325,7 +324,7 @@ class AssetsBundle(object):
                         if not asset._content and attachment.file_size > 0:
                             asset._content = None # file missing, force recompile
 
-                if any(asset._content is None for asset in assets.itervalues()):
+                if any(asset._content is None for asset in pycompat.values(assets)):
                     outdated = True
 
                 if outdated:
@@ -457,7 +456,7 @@ class WebAsset(object):
 
     def stat(self):
         if not (self.inline or self._filename or self._ir_attach):
-            path = filter(None, self.url.split('/'))
+            path = (segment for segment in self.url.split('/') if segment)
             self._filename = get_resource_path(*path)
             if self._filename:
                 return
@@ -544,7 +543,7 @@ class JavascriptAsset(WebAsset):
         try:
             return super(JavascriptAsset, self)._fetch_content()
         except AssetError as e:
-            return "console.error(%s);" % json.dumps(e.message)
+            return "console.error(%s);" % json.dumps(str(e))
 
     def to_html(self):
         if self.url:
@@ -597,7 +596,7 @@ class StylesheetAsset(WebAsset):
 
             return content
         except AssetError as e:
-            self.bundle.css_errors.append(e.message)
+            self.bundle.css_errors.append(str(e))
             return ''
 
     def minify(self):
@@ -611,7 +610,7 @@ class StylesheetAsset(WebAsset):
         return self.with_header(content)
 
     def to_html(self):
-        media = (' media="%s"' % werkzeug.utils.escape(self.media)) if self.media else ''
+        media = (' media="%s"' % misc.html_escape(self.media)) if self.media else ''
         if self.url:
             href = self.html_url
             vhash = self.versionhash

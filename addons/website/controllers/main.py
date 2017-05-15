@@ -7,19 +7,20 @@ import json
 import xml.etree.ElementTree as ET
 import logging
 import re
-import urllib2
+
+import requests
 import werkzeug.utils
 import werkzeug.wrappers
 
 import odoo
-from odoo import http
+from odoo import http, models
 from odoo import fields
 from odoo.http import request
-from odoo.osv.orm import browse_record
-from odoo.exceptions import AccessError
 
 from odoo.addons.website.models.website import slug
 from odoo.addons.web.controllers.main import WebClient, Binary, Home
+
+from odoo.tools import pycompat
 
 logger = logging.getLogger(__name__)
 
@@ -37,13 +38,13 @@ class QueryURL(object):
 
     def __call__(self, path=None, path_args=None, **kw):
         path = path or self.path
-        for key, value in self.args.items():
+        for key, value in pycompat.items(self.args):
             kw.setdefault(key, value)
         path_args = set(path_args or []).union(self.path_args)
         paths, fragments = [], []
-        for key, value in kw.items():
+        for key, value in pycompat.items(kw):
             if value and key in path_args:
-                if isinstance(value, browse_record):
+                if isinstance(value, models.BaseModel):
                     paths.append((key, slug(value)))
                 else:
                     paths.append((key, value))
@@ -193,7 +194,7 @@ class Website(Home):
                 })
             else:
                 # TODO: in master/saas-15, move current_website_id in template directly
-                pages_with_website = map(lambda p: "%d-%d" % (current_website.id, p), range(1, pages + 1))
+                pages_with_website = ["%d-%d" % (current_website.id, p) for p in range(1, pages + 1)]
 
                 # Sitemaps must be split in several smaller files with a sitemap index
                 content = View.render_template('website.sitemap_index_xml', {
@@ -300,12 +301,13 @@ class Website(Home):
         language = lang.split("_")
         url = "http://google.com/complete/search"
         try:
-            req = urllib2.Request("%s?%s" % (url, werkzeug.url_encode({
-                'ie': 'utf8', 'oe': 'utf8', 'output': 'toolbar', 'q': keywords, 'hl': language[0], 'gl': language[1]})))
-            response = urllib2.urlopen(req)
-        except (urllib2.HTTPError, urllib2.URLError):
+            req = requests.get(url, params={
+                'ie': 'utf8', 'oe': 'utf8', 'output': 'toolbar', 'q': keywords, 'hl': language[0], 'gl': language[1]})
+            req.raise_for_status()
+            response = req.content
+        except IOError:
             return []
-        xmlroot = ET.fromstring(response.read())
+        xmlroot = ET.fromstring(response)
         return json.dumps([sugg[0].attrib['data'] for sugg in xmlroot if len(sugg) and sugg[0].attrib['data']])
 
     #------------------------------------------------------

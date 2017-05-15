@@ -32,11 +32,12 @@ odoo.define('web.BasicModel', function (require) {
  *      groupedBy: {string[]},
  *      id: {integer},
  *      isOpen: {boolean},
+ *      loadMoreOffset: {integer},
  *      limit: {integer},
  *      model: {string,
  *      offset: {integer},
  *      openGroupByDefault: {boolean},
- *      orderedBy: {string[]},
+ *      orderedBy: {Object[]},
  *      parentID: {string},
  *      rawContext: {Object},
  *      relationField: {string},
@@ -359,6 +360,13 @@ var BasicModel = AbstractModel.extend({
             if (this.isNew(element.id)) {
                 delete element.res_id;
             }
+            var evalContext;
+            Object.defineProperty(element, 'evalContext', {
+                get: function () {
+                    evalContext = evalContext || self._getEvalContext(record);
+                    return evalContext;
+                },
+            });
         }
         if (element.type === 'list') {
             // apply changes if any
@@ -617,6 +625,12 @@ var BasicModel = AbstractModel.extend({
         }
         if (options.offset !== undefined) {
             this._setOffset(element.id, options.offset);
+        }
+        if (options.loadMoreOffset !== undefined) {
+            element.loadMoreOffset = options.loadMoreOffset;
+        } else {
+            // reset if not specified
+            element.loadMoreOffset = 0;
         }
         if (options.currentId !== undefined) {
             element.res_id = options.currentId;
@@ -1614,6 +1628,7 @@ var BasicModel = AbstractModel.extend({
                     res_ids: ids,
                     static: true,
                     type: 'list',
+                    orderedBy: fieldInfo.orderedBy,
                     parentID: record.id,
                     rawContext: rawContext,
                     relationField: field.relation_field,
@@ -1832,8 +1847,17 @@ var BasicModel = AbstractModel.extend({
                     // of a 'delete' and a 'link' commands with the exact diff
                     // because 1) performance-wise it doesn't change anything
                     // and 2) to guard against concurrent updates (policy: force
-                    // an complete override of the actual value of the m2m)
+                    // a complete override of the actual value of the m2m)
                     commands[fieldName].push(x2ManyCommands.replace_with(relIds));
+                    // generate update commands for records that have been
+                    // updated (it may happen with editable lists)
+                    _.each(relData, function (relRecord) {
+                        if (!_.isEmpty(relRecord._changes)) {
+                            var changes = self._generateChanges(relRecord);
+                            var command = x2ManyCommands.update(relRecord.res_id, changes);
+                            commands[fieldName].push(command);
+                        }
+                    });
                 } else if (type === 'one2many') {
                     var removedIds = _.difference(list.res_ids, relIds);
                     var addedIds = _.difference(relIds, list.res_ids);
@@ -1987,7 +2011,7 @@ var BasicModel = AbstractModel.extend({
             }
             _.extend(evalContext, {parent: parent.data});
         }
-        return _.extend({}, session.user_context, evalContext);
+        return _.extend({}, session.user_context, element.context, evalContext);
     },
     /**
      * Returns the list of field names of the given element according to its
@@ -2001,6 +2025,25 @@ var BasicModel = AbstractModel.extend({
         return Object.keys(fieldsInfo && fieldsInfo[element.viewType] || {});
     },
     /**
+     * Returns true iff value is considered to be set for the given field's type.
+     *
+     * @private
+     * @param {any} value a value for the field
+     * @param {string} fieldType a type of field
+     * @returns {boolean}
+     */
+    _isFieldSet: function (value, fieldType) {
+        switch (fieldType) {
+            case 'boolean':
+                return true;
+            case 'one2many':
+            case 'many2many':
+                return value.count > 0;
+            default:
+                return value !== false;
+        }
+    },
+    /**
      * return true if a list element is 'valid'. Such an element is valid if it
      * has no sub record with an unset required field.
      *
@@ -2012,11 +2055,13 @@ var BasicModel = AbstractModel.extend({
      * @returns {boolean}
      */
     _isX2ManyValid: function (id) {
+        var self = this;
         var isValid = true;
         var element = this.get(id, {raw: true});
-        _.each(element.data, function (rec) {
-            _.each(rec.getFieldNames(), function (fieldName) {
-                if (rec.fields[fieldName].required && !rec.data[fieldName]) {
+        _.each(element.getFieldNames(), function (fieldName) {
+            var field = element.fields[fieldName];
+            _.each(element.data, function (rec) {
+                if (field.required && !self._isFieldSet(rec.data[fieldName], field.type)) {
                     isValid = false;
                 }
             });
@@ -2086,6 +2131,7 @@ var BasicModel = AbstractModel.extend({
             id: _.uniqueId(params.modelName + '_'),
             isOpen: params.isOpen,
             limit: type === 'record' ? 1 : params.limit,
+            loadMoreOffset: 0,
             model: params.modelName,
             offset: params.offset || (type === 'record' ? _.indexOf(res_ids, res_id) : 0),
             openGroupByDefault: params.openGroupByDefault,
@@ -2636,11 +2682,12 @@ var BasicModel = AbstractModel.extend({
             context: list.context,
             domain: list.domain || [],
             limit: list.limit,
-            offset: list.offset,
+            offset: list.loadMoreOffset + list.offset,
             orderBy: list.orderedBy,
         })
         .then(function (result) {
             list.count = result.length;
+            var ids = _.pluck(result.records, 'id');
             var data = _.map(result.records, function (record) {
                 var dataPoint = self._makeDataPoint({
                     data: record,
@@ -2655,8 +2702,13 @@ var BasicModel = AbstractModel.extend({
                 self._parseServerData(fieldNames, dataPoint.fields, dataPoint.data);
                 return dataPoint.id;
             });
-            list.data = data;
-            list.res_ids = _.pluck(result.records, 'id');
+            if (list.loadMoreOffset) {
+                list.data = list.data.concat(data);
+                list.res_ids = list.res_ids.concat(ids);
+            } else {
+                list.data = data;
+                list.res_ids = ids;
+            }
             return list;
         });
     },

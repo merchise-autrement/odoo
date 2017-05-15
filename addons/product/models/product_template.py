@@ -34,11 +34,11 @@ class ProductTemplate(models.Model):
     description_purchase = fields.Text(
         'Purchase Description', translate=True,
         help="A description of the Product that you want to communicate to your vendors. "
-             "This description will be copied to every Purchase Order, Receipt and Vendor Bill/Refund.")
+             "This description will be copied to every Purchase Order, Receipt and Vendor Bill/Credit Note.")
     description_sale = fields.Text(
         'Sale Description', translate=True,
         help="A description of the Product that you want to communicate to your customers. "
-             "This description will be copied to every Sales Order, Delivery Order and Customer Invoice/Refund")
+             "This description will be copied to every Sales Order, Delivery Order and Customer Invoice/Credit Note")
     type = fields.Selection([
         ('consu', _('Consumable')),
         ('service', _('Service'))], string='Product Type', default='consu', required=True,
@@ -61,7 +61,7 @@ class ProductTemplate(models.Model):
         'Price', compute='_compute_template_price', inverse='_set_template_price',
         digits=dp.get_precision('Product Price'))
     list_price = fields.Float(
-        'Sale Price', default=1.0,
+        'Sales Price', default=1.0,
         digits=dp.get_precision('Product Price'),
         help="Base price to compute the customer price. Sometimes called the catalog price.")
     lst_price = fields.Float(
@@ -81,7 +81,6 @@ class ProductTemplate(models.Model):
         inverse='_set_weight', store=True,
         help="The weight of the contents in Kg, not including any packaging, etc.")
 
-    warranty = fields.Float('Warranty')
     sale_ok = fields.Boolean(
         'Can be Sold', default=True,
         help="Specify if the product can be selected in a sales order line.")
@@ -101,7 +100,7 @@ class ProductTemplate(models.Model):
         'res.company', 'Company',
         default=lambda self: self.env['res.company']._company_default_get('product.template'), index=1)
     packaging_ids = fields.One2many(
-        'product.packaging', string="Packaging", compute="_compute_packaging_ids", inverse="_set_packaging_ids",
+        'product.packaging', string="Product Packages", compute="_compute_packaging_ids", inverse="_set_packaging_ids",
         help="Gives the different ways to package the same product.")
     seller_ids = fields.One2many('product.supplierinfo', 'product_tmpl_id', 'Vendors')
 

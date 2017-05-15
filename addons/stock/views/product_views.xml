@@ -125,22 +125,28 @@
             <field name="arch" type="xml">
                 <group name="packaging" position="before">
                     <group name="inventory">
-                        <group>
+                        <group string="Operations" name="operations">
                             <field name="route_ids" widget="many2many_checkboxes" attrs="{'invisible':[('type', 'in', ['service', 'digital'])]}"/>
                             <field name="route_from_categ_ids" widget="many2many_tags" readonly="1" attrs="{'invisible':[('route_from_categ_ids', '=', [])]}"/>
+                            <label for="sale_delay"/>
+                            <div>
+                                <field name="sale_delay" attrs="{'readonly':[('sale_ok','=',False)]}" class="oe_inline" style="vertical-align:baseline"/> days
+                            </div>
                         </group>
-                        <group name="group_lots_and_weight">
-                            <label for="weight" attrs="{'invisible':['|', ('type', 'not in', ['product', 'consu']), ('product_variant_count', '&gt;', 1)]}"/>
-                            <div class="o_row" name="weight" attrs="{'invisible':['|', ('type', 'not in', ['product', 'consu']), ('product_variant_count', '&gt;', 1)]}">
+                        <group string="Logistics" name="group_lots_and_weight" attrs="{'invisible':['|', ('type', 'not in', ['product', 'consu']), ('product_variant_count', '&gt;', 1)]}">
+                            <label for="weight"/>
+                            <div class="o_row" name="weight">
                                 <field name="weight"/>
                             </div>
-                            <field name="tracking" widget="radio" attrs="{'invisible':[('type', 'in', ['service', 'digital'])]}" groups="stock.group_production_lot"/>
-                            <label for="volume" attrs="{'invisible':['|', ('type', 'not in', ['product', 'consu']), ('product_variant_count', '&gt;', 1)]}"/>
-                            <div class="o_row" name="volume" attrs="{'invisible':['|', ('type', 'not in', ['product', 'consu']), ('product_variant_count', '&gt;', 1)]}">
+                            <label for="volume"/>
+                            <div class="o_row" name="volume">
                                 <field name="volume" string="Volume"/>
                             </div>
                         </group>
-                        <group name="stock_property" groups="base.group_no_one">
+                        <group string="Traceability" name="traceability" groups="stock.group_production_lot">
+                            <field name="tracking" widget="radio" attrs="{'invisible':[('type', 'in', ['service', 'digital'])]}"/>
+                        </group>
+                        <group string="Counterpart Locations" name="stock_property" groups="base.group_no_one">
                             <field name="property_stock_procurement" domain="[('usage','=','procurement')]"/>
                             <field name="property_stock_production" domain="[('usage','=','production')]"/>
                             <field name="property_stock_inventory" domain="[('usage','=','inventory')]"/>
@@ -149,27 +155,15 @@
                 </group>
                 <group name="description" position="after">
                     <group>
-                        <group string="Description for Internal Transfers">
-                            <field name="description_picking" placeholder="Description for Internal Transfers (Rack, Row and Case Information)" nolabel="1"/>
-                        </group>
                         <group string="Description for Delivery Orders">
-                            <field name="description_pickingout" nolabel="1" placeholder="This note will be displayed on Delivery orders."/>
+                            <field name="description_pickingout" nolabel="1" placeholder="This note will show up on delivery orders."/>
                         </group>
-                    </group>
-                    <group string="Description for Receptions">
-                        <field name="description_pickingin" nolabel="1" placeholder="This note will be displayed on the Receptions."/>
-                    </group>
-                </group>
-                <group name="email_template_and_project" position="before">
-                    <group name="sale_condition" string="Sale Conditions">
-                        <label for="warranty" groups="stock.group_production_lot"/>
-                        <div groups="stock.group_production_lot">
-                            <field name="warranty" class="oe_inline"/> months
-                        </div>
-                        <label for="sale_delay"/>
-                        <div>
-                            <field name="sale_delay" attrs="{'readonly':[('sale_ok','=',False)]}" class="oe_inline" style="vertical-align:baseline"/> days
-                        </div>
+                        <group string="Description for Receptions">
+                            <field name="description_pickingin" nolabel="1" placeholder="This note will show up on the receipt orders (e.g. where to store the product in the warehouse)."/>
+                        </group>
+                        <group string="Description for Internal Transfers">
+                            <field name="description_picking" placeholder="This note will show up  on internal transfer orders (e.g. where to pick the product in the warehouse)." nolabel="1"/>
+                        </group>
                     </group>
                 </group>
             </field>
@@ -293,7 +287,7 @@
                             name="%(stock.action_stock_level_forecast_report_product)d"
                             attrs="{'invisible':[('type', '!=', 'product')]}"
                             class="oe_stat_button" icon="fa-building-o">
-                            <div class="o_form_field o_stat_info">
+                            <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value"><field name="virtual_available" widget="statinfo" nolabel="1"/>
                                     <span attrs="{'invisible':[('outgoing_qty', '=', 0),('incoming_qty','=',0)]}">
                                         (-<field name="outgoing_qty" widget="statinfo" nolabel="1"/>
@@ -318,11 +312,11 @@
                         <button name="%(product_open_orderpoint)d" type="action"
                             attrs="{'invisible':['|',('type', 'not in', ['product', 'consu']),('nbr_reordering_rules', '!=', 1)]}"
                             class="oe_stat_button" icon="fa-refresh">
-                            <div class="o_form_field o_stat_info mr4">
+                            <div class="o_field_widget o_stat_info mr4">
                                 <span class="o_stat_text">Min :</span>
                                 <span class="o_stat_text">Max:</span>
                             </div>
-                            <div class="o_form_field o_stat_info">
+                            <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value"><field name="reordering_min_qty"/></span>
                                 <span class="o_stat_value"><field name="reordering_max_qty"/></span>
                             </div>
@@ -357,7 +351,7 @@
                             name="%(stock.action_stock_level_forecast_report_template)d"
                             attrs="{'invisible':[('type', '!=', 'product')]}"
                             class="oe_stat_button" icon="fa-building-o">
-                            <div class="o_form_field o_stat_info">
+                            <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value"><field name="virtual_available" widget="integer"/>
                                     <span attrs="{'invisible':[('outgoing_qty', '=', 0),('incoming_qty','=',0)]}" groups="base.group_no_one">
                                         (-<field name="outgoing_qty" widget="integer"/>+<field name="incoming_qty" widget="integer"/>)
@@ -382,11 +376,11 @@
                             name="action_view_orderpoints"
                             attrs="{'invisible':['|',('type', '!=', 'product'),('nbr_reordering_rules', '!=', 1)]}"
                             class="oe_stat_button" icon="fa-refresh">
-                            <div class="o_form_field o_stat_info mr4">
+                            <div class="o_field_widget o_stat_info mr4">
                                 <span class="o_stat_text">Min:</span>
                                 <span class="o_stat_text">Max:</span>
                             </div>
-                            <div class="o_form_field o_stat_info">
+                            <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value"><field name="reordering_min_qty"/></span>
                                 <span class="o_stat_value"><field name="reordering_max_qty"/></span>
                             </div>
@@ -418,7 +412,7 @@
         parent="stock.menu_stock_inventory_control" sequence="1"/>
     <menuitem id="product_product_menu" name="Product Variants" action="product.product_normal_action"
         parent="menu_stock_inventory_control" sequence="2" groups="product.group_product_variant"/>
-    <menuitem id="menu_product_packagings" name="Product Packaging" parent="stock.menu_packages_config" action="product.action_packaging_view" groups="product.group_stock_packaging"/>
+    <menuitem id="menu_product_packagings" name="Product Packages" parent="stock.menu_packages_config" action="product.action_packaging_view" groups="product.group_stock_packaging"/>
 
     </data>
 </odoo>

@@ -20,12 +20,6 @@ import sys
 import threading
 import time
 import traceback
-try:
-    from urllib.parse import parse_qs, urlparse, quote
-except ImportError:
-    # pylint: disable=bad-python3-import
-    from urllib2 import quote
-    from urlparse import parse_qs, urlparse
 import warnings
 from os.path import join as opj
 from zlib import adler32
@@ -41,6 +35,7 @@ import werkzeug.local
 import werkzeug.routing
 import werkzeug.wrappers
 import werkzeug.wsgi
+from werkzeug import urls
 from werkzeug.wsgi import wrap_file
 
 try:
@@ -52,7 +47,7 @@ import odoo
 from odoo.service.server import memory_info
 from odoo.service import security, model as service_model
 from odoo.tools.func import lazy_property
-from odoo.tools import ustr, consteq, frozendict
+from odoo.tools import ustr, consteq, frozendict, pycompat, unique
 
 from odoo.modules.module import module_manifest, load_information_from_description_file
 
@@ -365,8 +360,8 @@ class WebRequest(object):
 
     def set_handler(self, endpoint, arguments, auth):
         # is this needed ?
-        arguments = dict((k, v) for k, v in arguments.iteritems()
-                         if not k.startswith("_ignored_"))
+        arguments ={k: v for k, v in pycompat.items(arguments)
+                         if not k.startswith("_ignored_")}
         self.endpoint_arguments = arguments
         self.endpoint = endpoint
         self.auth_method = auth
@@ -428,7 +423,7 @@ class WebRequest(object):
             debug = self.httprequest.environ.get('HTTP_X_DEBUG_MODE')
 
         if not debug and self.httprequest.referrer:
-            debug = bool(parse_qs(urlparse(self.httprequest.referrer).query, keep_blank_values=True).get('debug'))
+            debug = 'debug' in urls.url_parse(self.httprequest.referrer).decode_query()
         return debug
 
     @contextlib.contextmanager
@@ -914,7 +909,7 @@ more details.
         """
         response = Response(data, headers=headers)
         if cookies:
-            for k, v in cookies.iteritems():
+            for k, v in pycompat.items(cookies):
                 response.set_cookie(k, v)
         return response
 
@@ -955,7 +950,7 @@ class ControllerType(type):
         super(ControllerType, cls).__init__(name, bases, attrs)
 
         # flag old-style methods with req as first argument
-        for k, v in attrs.items():
+        for k, v in pycompat.items(attrs):
             if inspect.isfunction(v) and hasattr(v, 'original_func'):
                 # Set routing type on original functions
                 routing_type = v.routing.get('type')
@@ -985,8 +980,7 @@ class ControllerType(type):
             return
         controllers_per_module[module].append(name_class)
 
-class Controller(object):
-    __metaclass__ = ControllerType
+Controller = ControllerType('Controller', (object,), {})
 
 class EndPoint(object):
     def __init__(self, method, routing):
@@ -1018,14 +1012,12 @@ def routing_map(modules, nodb_only, converters=None):
             result = [klass]
         return result
 
-    uniq = lambda it: collections.OrderedDict((id(x), x) for x in it).values()
-
     for module in modules:
         if module not in controllers_per_module:
             continue
 
         for _, cls in controllers_per_module[module]:
-            subclasses = uniq(c for c in get_subclasses(cls) if c is not cls)
+            subclasses = list(unique(c for c in get_subclasses(cls) if c is not cls))
             if subclasses:
                 name = "%s (extended by %s)" % (cls.__name__, ', '.join(sub.__name__ for sub in subclasses))
                 cls = type(name, tuple(reversed(subclasses)), {})
@@ -1122,7 +1114,7 @@ class OpenERPSession(werkzeug.contrib.sessions.Session):
         security.check(self.db, self.uid, self.password)
 
     def logout(self, keep_db=False):
-        for k in self.keys():
+        for k in list(self):
             if not (keep_db and k == 'db'):
                 del self[k]
         self._default_values()
@@ -1209,7 +1201,7 @@ class OpenERPSession(werkzeug.contrib.sessions.Session):
         # NOTE we do not store files in the session itself to avoid loading them in memory.
         #      By storing them in the session store, we ensure every worker (even ones on other
         #      servers) can access them. It also allow stale files to be deleted by `session_gc`.
-        for f in req.files.values():
+        for f in pycompat.values(req.files):
             storename = 'werkzeug_%s_%s.file' % (self.sid, uuid.uuid4().hex)
             path = os.path.join(root.session_store.path, storename)
             with open(path, 'w') as fp:
@@ -1227,7 +1219,7 @@ class OpenERPSession(werkzeug.contrib.sessions.Session):
         try:
             if data:
                 # regenerate files filenames with the current session store
-                for name, (storename, filename, content_type) in data['files'].iteritems():
+                for name, (storename, filename, content_type) in pycompat.items(data['files']):
                     path = os.path.join(root.session_store.path, storename)
                     files.add(name, (path, filename, content_type))
                 yield werkzeug.datastructures.CombinedMultiDict([data['form'], files])
@@ -1235,7 +1227,7 @@ class OpenERPSession(werkzeug.contrib.sessions.Session):
                 yield None
         finally:
             # cleanup files
-            for f, _, _ in files.values():
+            for f, _, _ in pycompat.values(files):
                 try:
                     os.unlink(f)
                 except IOError:
@@ -1334,7 +1326,7 @@ class DisableCacheMiddleware(object):
     def __call__(self, environ, start_response):
         def start_wrapped(status, headers):
             referer = environ.get('HTTP_REFERER', '')
-            parsed = urlparse(referer)
+            parsed = urls.url_parse(referer)
             debug = parsed.query.count('debug') >= 1
 
             new_headers = []
@@ -1770,7 +1762,7 @@ def send_file(filepath_or_fp, mimetype=None, as_attachment=False, filename=None,
 
 def content_disposition(filename):
     filename = odoo.tools.ustr(filename)
-    escaped = quote(filename.encode('utf8'))
+    escaped = urls.url_quote(filename.encode('utf8'))
     browser = request.httprequest.user_agent.browser
     version = int((request.httprequest.user_agent.version or '0').split('.')[0])
     if browser == 'msie' and version < 9:

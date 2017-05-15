@@ -94,7 +94,8 @@ class FieldConverter(models.AbstractModel):
     def record_to_html(self, record, field_name, options):
         """ record_to_html(record, field_name, options)
 
-        Converts the specified field of the browse_record ``record`` to HTML
+        Converts the specified field of the ``record`` to HTML
+
         :rtype: unicode
         """
         if not record:
@@ -110,7 +111,7 @@ class FieldConverter(models.AbstractModel):
         in the user's context. Fallbacks to en_US if no lang is present in the
         context *or the language code is not valid*.
 
-        :returns: res.lang browse_record
+        :returns: Model[res.lang]
         """
         lang_code = self._context.get('lang') or 'en_US'
         return self.env['res.lang']._lang_get(lang_code)
@@ -410,6 +411,28 @@ class RelativeDatetimeConverter(models.AbstractModel):
         if 'now' not in options:
             options = dict(options, now=record._fields[field_name].now())
         return super(RelativeDatetimeConverter, self).record_to_html(record, field_name, options)
+
+
+class BarcodeConverter(models.AbstractModel):
+    """ ``barcode`` widget rendering, inserts a data:uri-using image tag in the
+    document. May be overridden by e.g. the website module to generate links
+    instead.
+    """
+    _name = 'ir.qweb.field.barcode'
+    _inherit = 'ir.qweb.field'
+
+    @api.model
+    def value_to_html(self, value, options=None):
+        barcode_type = options.get('type', 'Code128')
+        barcode = self.env['ir.actions.report'].barcode(
+            barcode_type,
+            value,
+            **dict((key, value) for key, value in options.items() if key in ['width', 'height', 'humanreadable']))
+        return unicodifier('<img src="data:%s;base64,%s">' % ('png', barcode.encode('base64')))
+
+    @api.model
+    def from_html(self, model, field, element):
+        return None
 
 
 class Contact(models.AbstractModel):

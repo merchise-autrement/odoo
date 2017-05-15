@@ -34,7 +34,6 @@ var field_utils = require('web.field_utils');
 var Widget = require('web.Widget');
 
 var AbstractField = Widget.extend({
-    className: 'o_field_widget',
     events: {
         'keydown': '_onKeydown',
     },
@@ -151,6 +150,7 @@ var AbstractField = Widget.extend({
         var self = this;
         return this._super.apply(this, arguments).then(function () {
             self.$el.attr('name', self.name);
+            self.$el.addClass('o_field_widget');
             return self._render();
         });
     },
@@ -177,7 +177,7 @@ var AbstractField = Widget.extend({
             if ($focusable.is('input[type="text"], textarea')) {
                 $focusable[0].selectionStart = $focusable[0].selectionEnd = $focusable[0].value.length;
                 if (!noselect) {
-                    setTimeout($focusable.select.bind($focusable), 0);
+                    $focusable.select();
                 }
             }
             return true;
@@ -187,13 +187,16 @@ var AbstractField = Widget.extend({
     /**
      * This function should be implemented by widgets that are not able to
      * notify their environment when their value changes (maybe because their
-     * are not aware of the changes). It is called before saving, and should
-     * call _setValue() to notify the environment if the value changed.
+     * are not aware of the changes) or that may have a value in a temporary
+     * state (maybe because some action should be performed to validate it
+     * before notifying it). This is typically called before trying to save the
+     * widget's value, so it should call _setValue() to notify the environment
+     * if the value changed but was not notified.
      *
      * @abstract
+     * @returns {Deferred|undefined}
      */
-    commitChanges: function () { // TODO maybe should be done for all fields (keyboard save)
-    },
+    commitChanges: function () {},
     /**
      * Returns the main field's DOM element (jQuery form) which can be focused
      * by the browser.
@@ -258,6 +261,20 @@ var AbstractField = Widget.extend({
     _formatValue: function (value) {
         var options = _.extend({}, this.nodeOptions, { data: this.recordData });
         return field_utils.format[this.field.type](value, this.field, options);
+    },
+    /**
+     * This method check if a value is the same as the current value of the
+     * field.  For example, a fieldDate widget might want to use the moment
+     * specific value isSame instead of ===.
+     *
+     * This method is used by the _setValue method.
+     *
+     * @private
+     * @param {any} value
+     * @returns {boolean}
+     */
+    _isSameValue: function (value) {
+        return this.value === value;
     },
     /**
      * convert a string representation to a valid value, depending on the field
@@ -330,7 +347,7 @@ var AbstractField = Widget.extend({
     _setValue: function (value) {
         // we try to avoid doing useless work, if the value given has not
         // changed.  Note that we compare the unparsed values.
-        if (this.lastSetValue === value || (value !== false && value === this.value)) {
+        if (this.lastSetValue === value || (this.value === false && value === '')) {
             return;
         }
         this.lastSetValue = value;
@@ -339,6 +356,9 @@ var AbstractField = Widget.extend({
             this._isValid = true;
         } catch (e) {
             this._isValid = false;
+            return;
+        }
+        if (this._isSameValue(value)) {
             return;
         }
         var changes = {};

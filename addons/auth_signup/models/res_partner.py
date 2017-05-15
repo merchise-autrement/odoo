@@ -2,10 +2,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import random
-import werkzeug
+import werkzeug.urls
 
 from datetime import datetime, timedelta
-from urlparse import urljoin
 
 from odoo import api, fields, models, _
 from odoo.tools import pycompat
@@ -17,7 +16,7 @@ class SignupError(Exception):
 def random_token():
     # the token has an entropy of about 120 bits (6 bits/char * 20 chars)
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    return ''.join(random.SystemRandom().choice(chars) for _ in pycompat.range(20))
+    return ''.join(random.SystemRandom().choice(chars) for _ in range(20))
 
 def now(**kwargs):
     dt = datetime.now() + timedelta(**kwargs)
@@ -89,9 +88,9 @@ class ResPartner(models.Model):
                 fragment['res_id'] = res_id
 
             if fragment:
-                query['redirect'] = base + werkzeug.url_encode(fragment)
+                query['redirect'] = base + werkzeug.urls.url_encode(fragment)
 
-            res[partner.id] = urljoin(base_url, "/web/%s?%s" % (route, werkzeug.url_encode(query)))
+            res[partner.id] = werkzeug.urls.url_join(base_url, "/web/%s?%s" % (route, werkzeug.urls.url_encode(query)))
         return res
 
     @api.multi

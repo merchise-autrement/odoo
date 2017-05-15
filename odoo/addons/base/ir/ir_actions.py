@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import odoo
+from odoo import api, fields, models, tools, SUPERUSER_ID, _
+from odoo.exceptions import MissingError, UserError, ValidationError, AccessError
+from odoo.tools.safe_eval import safe_eval, test_python_expr
+from odoo.tools import pycompat
+from odoo.http import request
+
 import datetime
 import dateutil
 import logging
-import os
 import time
-from pytz import timezone
 
-import odoo
-from odoo import api, fields, models, tools, _
-from odoo.exceptions import MissingError, UserError, ValidationError
-from odoo.report.report_sxw import report_sxw, report_rml
-from odoo.tools.safe_eval import safe_eval, test_python_expr
+from pytz import timezone
 
 _logger = logging.getLogger(__name__)
 
@@ -70,167 +71,6 @@ class IrActions(models.Model):
             'dateutil': dateutil,
             'timezone': timezone,
         }
-
-
-class IrActionsReportXml(models.Model):
-    _name = 'ir.actions.report.xml'
-    _inherit = 'ir.actions.actions'
-    _table = 'ir_act_report_xml'
-    _sequence = 'ir_actions_id_seq'
-    _order = 'name'
-
-    name = fields.Char(translate=True)
-    type = fields.Char(default='ir.actions.report.xml')
-
-    model = fields.Char(required=True)
-    report_type = fields.Selection([('qweb-pdf', 'PDF'),
-                                    ('qweb-html', 'HTML'),
-                                    ('controller', 'Controller'),
-                                    ('pdf', 'RML pdf (deprecated)'),
-                                    ('sxw', 'RML sxw (deprecated)'),
-                                    ('webkit', 'Webkit (deprecated)')],
-                                   required=True, default="pdf",
-                                   help="HTML will open the report directly in your browser, PDF will use wkhtmltopdf to render the HTML into a PDF file and let you download it, Controller allows you to define the url of a custom controller outputting any kind of report.")
-    report_name = fields.Char(string='Template Name', required=True,
-                              help="For QWeb reports, name of the template used in the rendering. The method 'render_html' of the model 'report.template_name' will be called (if any) to give the html. For RML reports, this is the LocalService name.")
-    groups_id = fields.Many2many('res.groups', 'res_groups_report_rel', 'uid', 'gid', string='Groups')
-    ir_values_id = fields.Many2one('ir.values', string='More Menu entry', readonly=True,
-                                   help='More menu entry.', copy=False)
-
-    # options
-    multi = fields.Boolean(string='On Multiple Doc.', help="If set to true, the action will not be displayed on the right toolbar of a form view.")
-    attachment_use = fields.Boolean(string='Reload from Attachment', help='If you check this, then the second time the user prints with same attachment name, it returns the previous report.')
-    attachment = fields.Char(string='Save as Attachment Prefix',
-                             help='This is the filename of the attachment used to store the printing result. Keep empty to not save the printed reports. You can use a python expression with the object and time variables.')
-
-    # Deprecated rml stuff
-    header = fields.Boolean(string='Add RML Header', default=True, help="Add or not the corporate RML header")
-    parser = fields.Char(string='Parser Class')
-    auto = fields.Boolean(string='Custom Python Parser', default=True)
-
-    report_xsl = fields.Char(string='XSL Path')
-    report_xml = fields.Char(string='XML Path')
-
-    report_rml = fields.Char(string='Main Report File Path/controller', help="The path to the main report file/controller (depending on Report Type) or empty if the content is in another data field")
-    report_file = fields.Char(related='report_rml', string='Report File', required=False, readonly=False, store=True,
-                              help="The path to the main report file (depending on Report Type) or empty if the content is in another field")
-
-    report_sxw = fields.Char(compute='_compute_report_sxw', string='SXW Path')
-    report_sxw_content_data = fields.Binary(string='SXW Content')
-    report_rml_content_data = fields.Binary(string='RML Content')
-    report_sxw_content = fields.Binary(compute='_compute_report_sxw_content', inverse='_inverse_report_sxw_content', string='SXW Content')
-    report_rml_content = fields.Binary(compute='_compute_report_rml_content', inverse='_inverse_report_rml_content', string='RML Content')
-
-    @api.depends('report_rml')
-    def _compute_report_sxw(self):
-        for report in self:
-            if report.report_rml:
-                self.report_sxw = report.report_rml.replace('.rml', '.sxw')
-
-    def _report_content(self, name):
-        data = self[name + '_content_data']
-        if not data and self[name]:
-            try:
-                with tools.file_open(self[name], mode='rb') as fp:
-                    data = fp.read()
-            except Exception:
-                data = False
-        return data
-
-    @api.depends('report_sxw', 'report_sxw_content_data')
-    def _compute_report_sxw_content(self):
-        for report in self:
-            report.report_sxw_content = report._report_content('report_sxw')
-
-    @api.depends('report_rml', 'report_rml_content_data')
-    def _compute_report_rml_content(self):
-        for report in self:
-            report.report_rml_content = report._report_content('report_rml')
-
-    def _inverse_report_sxw_content(self):
-        for report in self:
-            report.report_sxw_content_data = report.report_sxw_content
-
-    def _inverse_report_rml_content(self):
-        for report in self:
-            report.report_rml_content_data = report.report_rml_content
-
-    @api.model_cr
-    def _lookup_report(self, name):
-        """
-        Look up a report definition.
-        """
-        join = os.path.join
-
-        # First lookup in the deprecated place, because if the report definition
-        # has not been updated, it is more likely the correct definition is there.
-        # Only reports with custom parser sepcified in Python are still there.
-        if 'report.' + name in odoo.report.interface.report_int._reports:
-            return odoo.report.interface.report_int._reports['report.' + name]
-
-        self._cr.execute("SELECT * FROM ir_act_report_xml WHERE report_name=%s", (name,))
-        row = self._cr.dictfetchone()
-        if not row:
-            raise Exception("Required report does not exist: %s" % name)
-
-        if row['report_type'] in ('qweb-pdf', 'qweb-html'):
-            return row['report_name']
-        elif row['report_rml'] or row['report_rml_content_data']:
-            kwargs = {}
-            if row['parser']:
-                kwargs['parser'] = getattr(odoo.addons, row['parser'])
-            return report_sxw('report.'+row['report_name'], row['model'],
-                              join('addons', row['report_rml'] or '/'),
-                              header=row['header'], register=False, **kwargs)
-        elif row['report_xsl'] and row['report_xml']:
-            return report_rml('report.'+row['report_name'], row['model'],
-                              join('addons', row['report_xml']),
-                              row['report_xsl'] and join('addons', row['report_xsl']),
-                              register=False)
-        else:
-            raise Exception("Unhandled report type: %s" % row)
-
-    @api.multi
-    def create_action(self):
-        """ Create a contextual action for each report. """
-        for report in self:
-            ir_values = self.env['ir.values'].sudo().create({
-                'name': report.name,
-                'model': report.model,
-                'key2': 'client_print_multi',
-                'value': "ir.actions.report.xml,%s" % report.id,
-            })
-            report.write({'ir_values_id': ir_values.id})
-        return True
-
-    @api.multi
-    def unlink_action(self):
-        """ Remove the contextual actions created for the reports. """
-        self.check_access_rights('write', raise_exception=True)
-        for report in self:
-            if report.ir_values_id:
-                try:
-                    report.ir_values_id.sudo().unlink()
-                except Exception:
-                    raise UserError(_('Deletion of the action record failed.'))
-        return True
-
-    @api.model
-    def render_report(self, res_ids, name, data):
-        """
-        Look up a report definition and render the report for the provided IDs.
-        """
-        report = self._lookup_report(name)
-        if isinstance(report, basestring):  # Qweb report
-            # The only case where a QWeb report is rendered with this method occurs when running
-            # yml tests originally written for RML reports.
-            if tools.config['test_enable'] and not tools.config['test_report_directory']:
-                # Only generate the pdf when a destination folder has been provided.
-                return self.env['report'].get_html(res_ids, report, data=data), 'html'
-            else:
-                return self.env['report'].get_pdf(res_ids, report, data=data), 'pdf'
-        else:
-            return report.create(self._cr, self._uid, res_ids, data, context=self._context)
 
 
 class IrActionsActWindow(models.Model):
@@ -810,17 +650,19 @@ class IrActionsTodo(models.Model):
         """
         user_groups = self.env.user.groups_id
 
-        def groups_match(todo):
-            """ Checks if the todo's groups match those of the current user """
-            return not todo.groups_id or bool(todo.groups_id & user_groups)
-
-        done = filter(groups_match, self.browse(self.search([('state', '!=', 'open')])))
-        total = filter(groups_match, self.browse(self.search([])))
-
+        done_count = self.search_count([
+            ('state', '!=', open),
+            '|', ('groups_id', '=', False),
+                 ('groups_id', 'in', user_groups.ids),
+        ])
+        total_count = self.search_count([
+            '|', ('groups_id', '=', False),
+                 ('groups_id', 'in', user_groups.ids),
+        ])
         return {
-            'done': len(done),
-            'total': len(total),
-            'todo': len(total) - len(done),
+            'done': done_count,
+            'total': total_count,
+            'todo': total_count - done_count,
         }
 
 
@@ -849,7 +691,7 @@ class IrActionsActClient(models.Model):
     @api.depends('params_store')
     def _compute_params(self):
         self_bin = self.with_context(bin_size=False, bin_size_params_store=False)
-        for record, record_bin in zip(self, self_bin):
+        for record, record_bin in pycompat.izip(self, self_bin):
             record.params = record_bin.params_store and safe_eval(record_bin.params_store, {'uid': self._uid})
 
     def _inverse_params(self):

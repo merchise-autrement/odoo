@@ -10,13 +10,9 @@ import shutil
 import tempfile
 import zipfile
 
-try:
-    from urllib import parse as urlparse
-    from urllib.request import urlopen
-except ImportError:
-    # pylint: disable=bad-python3-import
-    import urlparse
-    from urllib2 import urlopen
+import requests
+
+from odoo.tools import pycompat
 
 from docutils import nodes
 from docutils.core import publish_string
@@ -184,7 +180,7 @@ class Module(models.Model):
     @api.depends('name', 'state')
     def _get_views(self):
         IrModelData = self.env['ir.model.data'].with_context(active_test=True)
-        dmodels = ['ir.ui.view', 'ir.actions.report.xml', 'ir.ui.menu']
+        dmodels = ['ir.ui.view', 'ir.actions.report', 'ir.ui.menu']
 
         for module in self:
             # Skip uninstalled modules below, no data to find anyway.
@@ -209,9 +205,9 @@ class Module(models.Model):
             def format_view(v):
                 return '%s%s (%s)' % (v.inherit_id and '* INHERIT ' or '', v.name, v.type)
 
-            module.views_by_module = "\n".join(sorted(map(format_view, browse('ir.ui.view'))))
-            module.reports_by_module = "\n".join(sorted(map(attrgetter('name'), browse('ir.actions.report.xml'))))
-            module.menus_by_module = "\n".join(sorted(map(attrgetter('complete_name'), browse('ir.ui.menu'))))
+            module.views_by_module = "\n".join(sorted(format_view(v) for v in browse('ir.ui.view')))
+            module.reports_by_module = "\n".join(sorted(r.name for r in browse('ir.actions.report')))
+            module.menus_by_module = "\n".join(sorted(m.complete_name for m in browse('ir.ui.menu')))
 
     @api.depends('icon')
     def _get_icon_image(self):
@@ -661,24 +657,26 @@ class Module(models.Model):
             _logger.warning(msg)
             raise UserError(msg)
 
-        apps_server = urlparse.urlparse(self.get_apps_server())
+        apps_server = urls.url_parse(self.get_apps_server())
 
         OPENERP = odoo.release.product_name.lower()
         tmp = tempfile.mkdtemp()
         _logger.debug('Install from url: %r', urls)
         try:
             # 1. Download & unzip missing modules
-            for module_name, url in urls.iteritems():
+            for module_name, url in pycompat.items(urls):
                 if not url:
                     continue    # nothing to download, local version is already the last one
 
-                up = urlparse.urlparse(url)
+                up = urls.url_parse(url)
                 if up.scheme != apps_server.scheme or up.netloc != apps_server.netloc:
                     raise AccessDenied()
 
                 try:
                     _logger.info('Downloading module `%s` from OpenERP Apps', module_name)
-                    content = urlopen(url).read()
+                    response = requests.get(url)
+                    response.raise_for_status()
+                    content = response.content
                 except Exception:
                     _logger.exception('Failed to fetch module %s', module_name)
                     raise UserError(_('The `%s` module appears to be unavailable at the moment, please try again later.') % module_name)
@@ -687,7 +685,7 @@ class Module(models.Model):
                     assert os.path.isdir(os.path.join(tmp, module_name))
 
             # 2a. Copy/Replace module source in addons path
-            for module_name, url in urls.iteritems():
+            for module_name, url in pycompat.items(urls):
                 if module_name == OPENERP or not url:
                     continue    # OPENERP is special case, handled below, and no URL means local module
                 module_path = modules.get_module_path(module_name, downloaded=True, display_warning=False)
@@ -719,11 +717,11 @@ class Module(models.Model):
 
             self.update_list()
 
-            with_urls = [module_name for module_name, url in urls.iteritems() if url]
+            with_urls = [module_name for module_name, url in pycompat.items(urls) if url]
             downloaded = self.search([('name', 'in', with_urls)])
             installed = self.search([('id', 'in', downloaded.ids), ('state', '=', 'installed')])
 
-            to_install = self.search([('name', 'in', urls.keys()), ('state', '=', 'uninstalled')])
+            to_install = self.search([('name', 'in', list(urls)), ('state', '=', 'uninstalled')])
             post_install_action = to_install.button_immediate_install()
 
             if installed or to_install:

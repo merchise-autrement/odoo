@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import api, fields, models
+
+from odoo import api, fields, models, _
 
 
 class BaseConfigSettings(models.TransientModel):
@@ -28,10 +29,12 @@ class BaseConfigSettings(models.TransientModel):
              " * Checked : Partners are visible for every companies, even if a company is defined on the partner.\n"
              " * Unchecked : Each company can see only its partner (partners where company is defined). Partners not related to a company are visible for all companies.")
     default_custom_report_footer = fields.Boolean("Custom Report Footer")
-    rml_footer = fields.Text(related="company_id.rml_footer", string='Custom Report Footer', help="Footer text displayed at the bottom of all reports.")
+    report_footer = fields.Text(related="company_id.report_footer", string='Custom Report Footer', help="Footer text displayed at the bottom of all reports.")
     group_multi_currency = fields.Boolean(string='Allow multi currencies',
             implied_group='base.group_multi_currency',
             help="Allows to work in a multi currency environment")
+    paperformat_id = fields.Many2one(related="company_id.paperformat_id", string='Paper format')
+    external_report_layout = fields.Selection(related="company_id.external_report_layout")
 
     @api.model
     def get_default_fields(self, fields):
@@ -80,5 +83,33 @@ class BaseConfigSettings(models.TransientModel):
         for config in self:
             partner_rule.write({'active': not config.company_share_partner})
 
-    def act_discover_fonts(self):
-        self.company_id.act_discover_fonts()
+    @api.model
+    def _prepare_report_view_action(self, template):
+        template_id = self.env.ref(template)
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'ir.ui.view',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_id': template_id.id,
+        }
+
+    @api.model
+    def edit_external_header(self):
+        return self._prepare_report_view_action('web.external_layout_' + self.external_report_layout)
+
+    @api.multi
+    def change_report_template(self):
+        self.ensure_one()
+        template = self.env.ref('base.view_company_report_form')
+        return {
+            'name': _('Choose Your Document Layout'),
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_id': self.env.user.company_id.id,
+            'res_model': 'res.company',
+            'views': [(template.id, 'form')],
+            'view_id': template.id,
+            'target': 'new',
+        }

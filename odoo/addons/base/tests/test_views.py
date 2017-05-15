@@ -2,7 +2,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from functools import partial
-from itertools import izip_longest
+try:
+    from itertools import zip_longest as izip_longuest
+except ImportError:
+    from itertools import izip_longest
 
 from lxml import etree
 from lxml.builder import E
@@ -638,7 +641,7 @@ class TestViews(ViewCase):
         kw.setdefault('mode', 'extension' if kw.get('inherit_id') else 'primary')
         kw.setdefault('active', True)
 
-        keys = sorted(kw.keys())
+        keys = sorted(kw)
         fields = ','.join('"%s"' % (k.replace('"', r'\"'),) for k in keys)
         params = ','.join('%%(%s)s' % (k,) for k in keys)
 

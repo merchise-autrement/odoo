@@ -148,7 +148,7 @@ class AccountMove(models.Model):
                         sequence = journal.sequence_id
                         if invoice and invoice.type in ['out_refund', 'in_refund'] and journal.refund_sequence:
                             if not journal.refund_sequence_id:
-                                raise UserError(_('Please define a sequence for the refunds'))
+                                raise UserError(_('Please define a sequence for the credit notes'))
                             sequence = journal.refund_sequence_id
                                                             
                         new_name = sequence.with_context(ir_sequence_date=move.date).next_by_id()
@@ -671,7 +671,7 @@ class AccountMoveLine(models.Model):
     def prepare_move_lines_for_reconciliation_widget(self, target_currency=False, target_date=False):
         """ Returns move lines formatted for the manual/bank reconciliation widget
 
-            :param target_currency: currency (browse_record or ID) you want the move line debit/credit converted into
+            :param target_currency: currency (Model or ID) you want the move line debit/credit converted into
             :param target_date: date to use for the monetary conversion
         """
         context = dict(self._context or {})
@@ -1696,7 +1696,7 @@ class AccountPartialReconcile(models.Model):
                         total_amount_currency += aml.company_id.currency_id.with_context(date=aml.date).compute(aml.balance, partial_rec.currency_id)
                 for x in aml.matched_debit_ids | aml.matched_credit_ids:
                     partial_rec_set[x] = None
-        partial_rec_ids = [x.id for x in partial_rec_set.keys()]
+        partial_rec_ids = [x.id for x in partial_rec_set]
         aml_ids = aml_set.ids
         #then, if the total debit and credit are equal, or the total amount in currency is 0, the reconciliation is full
         digits_rounding_precision = aml_set[0].company_id.currency_id.rounding

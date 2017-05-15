@@ -52,14 +52,15 @@ var BasicRenderer = AbstractRenderer.extend({
             if (!canBeSaved) {
                 invalidFields.push(widget.name);
             }
-            widget.$el.toggleClass('o_form_invalid', !canBeSaved);
+            widget.$el.toggleClass('o_field_invalid', !canBeSaved);
         });
         return invalidFields;
     },
     /**
      * Calls 'commitChanges' on all field widgets, so that they can notify the
      * environment with their current value (useful for widgets that can't
-     * detect when their value changes, e.g. field 'html').
+     * detect when their value changes or that have to validate their changes
+     * before notifying them).
      *
      * @param {string} recordID
      * @return {Deferred}
@@ -147,32 +148,45 @@ var BasicRenderer = AbstractRenderer.extend({
     },
     /**
      * Activates the widget at the given index for the given record if possible
-     * or the "next" possible one.
+     * or the "next" possible one. Usually, a widget can be activated if it is
+     * in edit mode, and if it is visible.
      *
      * @private
      * @param {Object} record
      * @param {integer} currentIndex
-     * @param {integer} [inc=1] - the increment to use when searching for the
-     *                          "next" possible one
+     * @param {Object} [options]
+     * @param {integer} [options.inc=1] - the increment to use when searching for the
+     *   "next" possible one
+     * @param {boolean} [options.wrap=true] if true, when we arrive at the end of the
+     *   list of widget, we wrap around and try to activate widgets starting at
+     *   the beginning. Otherwise, we just stop trying and return -1
      * @returns {integer} the index of the widget that was activated or -1 if
-     *                    none was possible to activate
+     *   none was possible to activate
      */
-    _activateFieldWidget: function (record, currentIndex, inc) {
-        inc = inc === undefined ? 1 : inc;
+    _activateFieldWidget: function (record, currentIndex, options) {
+        options = options || {};
+        _.defaults(options, {inc: 1, wrap: true});
 
-        var activated;
         var recordWidgets = this.allFieldWidgets[record.id] || [];
         for (var i = 0 ; i < recordWidgets.length ; i++) {
-            activated = recordWidgets[currentIndex].activate();
+            var activated = recordWidgets[currentIndex].activate();
             if (activated) {
                 return currentIndex;
             }
 
-            currentIndex += inc;
+            currentIndex += options.inc;
             if (currentIndex >= recordWidgets.length) {
-                currentIndex -= recordWidgets.length;
+                if (options.wrap) {
+                    currentIndex -= recordWidgets.length;
+                } else {
+                    return -1;
+                }
             } else if (currentIndex < 0) {
-                currentIndex += recordWidgets.length;
+                if (options.wrap) {
+                    currentIndex += recordWidgets.length;
+                } else {
+                    return -1;
+                }
             }
         }
         return -1;
@@ -188,7 +202,7 @@ var BasicRenderer = AbstractRenderer.extend({
      */
     _activateNextFieldWidget: function (record, currentIndex) {
         currentIndex = (currentIndex + 1) % (this.allFieldWidgets[record.id] || []).length;
-        return this._activateFieldWidget(record, currentIndex, +1);
+        return this._activateFieldWidget(record, currentIndex, {inc: 1});
     },
     /**
      * This is a wrapper of the {@see _activateFieldWidget} function to select
@@ -201,7 +215,7 @@ var BasicRenderer = AbstractRenderer.extend({
      */
     _activatePreviousFieldWidget: function (record, currentIndex) {
         currentIndex = currentIndex ? (currentIndex - 1) : ((this.allFieldWidgets[record.id] || []).length - 1);
-        return this._activateFieldWidget(record, currentIndex, -1);
+        return this._activateFieldWidget(record, currentIndex, {inc:-1});
     },
     /**
      * Does the necessary DOM updates to match the given modifiers data. The
@@ -236,9 +250,9 @@ var BasicRenderer = AbstractRenderer.extend({
             }
 
             // Toggle modifiers CSS classes if necessary
-            element.$el.toggleClass("o_form_invisible", !!modifiers.invisible);
-            element.$el.toggleClass("o_readonly", !!modifiers.readonly);
-            element.$el.toggleClass("o_form_required", !!modifiers.required);
+            element.$el.toggleClass("o_invisible_modifier", !!modifiers.invisible);
+            element.$el.toggleClass("o_readonly_modifier", !!modifiers.readonly);
+            element.$el.toggleClass("o_required_modifier", !!modifiers.required);
 
             // Call associated callback
             if (element.callback) {
@@ -269,7 +283,7 @@ var BasicRenderer = AbstractRenderer.extend({
      * @param {Object} record
      */
     _computeModifiers: function (modifiersData, record) {
-        var evalContext = record.getEvalContext();
+        var evalContext = record.evalContext;
         modifiersData.evaluatedModifiers[record.id]
             = _.mapObject(modifiersData.modifiers, function (modifier) {
                 return new Domain(modifier, evalContext).compute(evalContext);
@@ -482,7 +496,15 @@ var BasicRenderer = AbstractRenderer.extend({
         // Update the modifiers registration by associating the widget and by
         // giving the modifiers options now (as the potential callback is
         // associated to new widget)
-        this._registerModifiers(node, record, widget, modifiersOptions);
+        this._registerModifiers(node, record, widget, _.extend({
+            callback: (function (element, modifiers, record) {
+                element.$el.toggleClass('o_field_empty', !!(
+                    record.data.id
+                    && (modifiers.readonly || this.mode === 'readonly')
+                    && !element.widget.isSet()
+                ));
+            }).bind(this),
+        }, modifiersOptions || {}));
 
         return widget;
     },

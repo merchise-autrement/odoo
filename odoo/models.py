@@ -43,14 +43,13 @@ from lxml.builder import E
 from celery.exceptions import SoftTimeLimitExceeded
 
 import odoo
-from odoo.tools import pycompat
 from . import SUPERUSER_ID
 from . import api
 from . import tools
 from .exceptions import AccessError, MissingError, ValidationError, UserError
 from .osv.query import Query
 from .tools import frozendict, lazy_classproperty, lazy_property, ormcache, \
-                   Collector, LastOrderedSet, OrderedSet
+                   Collector, LastOrderedSet, OrderedSet, pycompat
 from .tools.config import config
 from .tools.func import frame_codeinfo
 from .tools.misc import CountingStream, DEFAULT_SERVER_DATETIME_FORMAT, DEFAULT_SERVER_DATE_FORMAT
@@ -110,9 +109,6 @@ def check_method_name(name):
     if regex_private.match(name):
         raise AccessError(_('Private methods (such as %s) cannot be called remotely.') % (name,))
 
-def intersect(la, lb):
-    return filter(lambda x: x in lb, la)
-
 def same_name(f, g):
     """ Test whether functions ``f`` and ``g`` are identical or have the same name """
     return f == g or getattr(f, '__name__', 0) == getattr(g, '__name__', 1)
@@ -152,7 +148,7 @@ class MetaModel(api.Meta):
             self.module_to_models[self._module].append(self)
 
         # check for new-api conversion error: leave comma after field definition
-        for key, val in attrs.iteritems():
+        for key, val in pycompat.items(attrs):
             if type(val) is tuple and len(val) == 1 and isinstance(val[0], Field):
                 _logger.error("Trailing comma after field definition: %s.%s", self, key)
             if isinstance(val, Field):
@@ -187,7 +183,7 @@ LOG_ACCESS_COLUMNS = ['create_uid', 'create_date', 'write_uid', 'write_date']
 MAGIC_COLUMNS = ['id'] + LOG_ACCESS_COLUMNS
 
 
-class BaseModel(object):
+class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
     """ Base class for Odoo models.
 
     Odoo models are created by inheriting:
@@ -215,7 +211,6 @@ class BaseModel(object):
     To create a class that should not be instantiated, the _register class
     attribute may be set to False.
     """
-    __metaclass__ = MetaModel
     _auto = False               # don't create any database backend
     _register = False           # not visible in ORM registry
     _abstract = True            # whether model is abstract
@@ -526,7 +521,7 @@ class BaseModel(object):
 
             cls._inherits.update(base._inherits)
 
-            for mname, fnames in base._depends.iteritems():
+            for mname, fnames in pycompat.items(base._depends):
                 cls._depends[mname] = cls._depends.get(mname, []) + fnames
 
             for cons in base._constraints:
@@ -536,7 +531,7 @@ class BaseModel(object):
             cls._sql_constraints += base._sql_constraints
 
         cls._sequence = cls._sequence or (cls._table + '_id_seq')
-        cls._constraints = cls._constraints.values()
+        cls._constraints = list(pycompat.values(cls._constraints))
 
         # update _inherits_children of parent models
         for parent_name in cls._inherits:
@@ -718,7 +713,7 @@ class BaseModel(object):
 
             This method is used when exporting data via client menu
         """
-        fields_to_export = map(fix_import_export_id_paths, fields_to_export)
+        fields_to_export = [fix_import_export_id_paths(f) for f in fields_to_export]
         if raw_data:
             self = self.with_context(export_raw_data=True)
         return {'datas': self._export_rows(fields_to_export)}
@@ -751,7 +746,7 @@ class BaseModel(object):
         cr = self._cr
         cr.execute('SAVEPOINT model_load')
 
-        fields = map(fix_import_export_id_paths, fields)
+        fields = [fix_import_export_id_paths(f) for f in fields]
         fg = self.fields_get()
 
         ids = []
@@ -846,7 +841,7 @@ class BaseModel(object):
 
             # copy non-relational fields to record dict
             record = {fnames[0]: value
-                      for fnames, value in itertools.izip(fields_, row)
+                      for fnames, value in pycompat.izip(fields_, row)
                       if not is_relational(fnames[0])}
 
             # Get all following rows which have relational values attached to
@@ -860,13 +855,13 @@ class BaseModel(object):
 
                 # get only cells for this sub-field, should be strictly
                 # non-empty, field path [None] is for name_get field
-                indices, subfields = zip(*((index, fnames[1:] or [None])
+                indices, subfields = pycompat.izip(*((index, fnames[1:] or [None])
                                            for index, fnames in enumerate(fields_)
                                            if fnames[0] == relfield))
 
                 # return all rows which have at least one value for the
                 # subfields of relfield
-                relfield_data = filter(any, map(itemgetter_tuple(indices), record_span))
+                relfield_data = [it for it in pycompat.imap(itemgetter_tuple(indices), record_span) if any(it)]
                 record[relfield] = [
                     subrecord
                     for subrecord, _subinfo in comodel._extract_records(subfields, relfield_data, log=log)
@@ -887,7 +882,7 @@ class BaseModel(object):
         :returns: a list of triplets of (id, xid, record)
         :rtype: list((int|None, str|None, dict))
         """
-        field_names = {name: field.string for name, field in self._fields.iteritems()}
+        field_names = {name: field.string for name, field in pycompat.items(self._fields)}
         if self.env.lang:
             field_names.update(self.env['ir.translation'].get_field_string(self._name))
 
@@ -1018,7 +1013,7 @@ class BaseModel(object):
         defaults = self._convert_to_write(defaults)
 
         # add default values for inherited fields
-        for model, names in parent_fields.iteritems():
+        for model, names in pycompat.items(parent_fields):
             defaults.update(self.env[model].default_get(names))
 
         return defaults
@@ -1094,7 +1089,7 @@ class BaseModel(object):
         :rtype: etree._Element
         """
         group = E.group(col="4")
-        for fname, field in self._fields.iteritems():
+        for fname, field in pycompat.items(self._fields):
             if field.automatic:
                 continue
             elif field.type in ('one2many', 'many2many', 'text', 'html'):
@@ -1315,24 +1310,18 @@ class BaseModel(object):
 
         # Add related action information if aksed
         if toolbar:
-            toclean = ('report_sxw_content', 'report_rml_content', 'report_sxw', 'report_rml', 'report_sxw_content_data', 'report_rml_content_data')
-            def clean(x):
-                x = x[2]
-                for key in toclean:
-                    x.pop(key, None)
-                return x
             IrValues = self.env['ir.values']
             resprint = IrValues.get_actions('client_print_multi', self._name)
             resaction = IrValues.get_actions('client_action_multi', self._name)
             resrelate = IrValues.get_actions('client_action_relate', self._name)
-            resprint = [clean(print_)
+            resprint = [print_[2]
                         for print_ in resprint
                         if view_type == 'tree' or not print_[2].get('multi')]
-            resaction = [clean(action)
+            resaction = [action[2]
                          for action in resaction
                          if view_type == 'tree' or not action[2].get('multi')]
             #When multi="True" set it will display only in More of the list view
-            resrelate = [clean(action)
+            resrelate = [action[2]
                          for action in resrelate
                          if (action[2].get('multi') and view_type == 'tree') or (not action[2].get('multi') and view_type == 'form')]
 
@@ -1517,14 +1506,14 @@ class BaseModel(object):
         # avoid overriding inherited values when parent is set
         avoid_models = {
             parent_model
-            for parent_model, parent_field in self._inherits.iteritems()
+            for parent_model, parent_field in pycompat.items(self._inherits)
             if parent_field in values
         }
 
         # compute missing fields
         missing_defaults = {
             name
-            for name, field in self._fields.iteritems()
+            for name, field in pycompat.items(self._fields)
             if name not in values
             if name not in MAGIC_COLUMNS
             if not (field.inherited and field.related_field.model_name in avoid_models)
@@ -1535,7 +1524,7 @@ class BaseModel(object):
 
         # override defaults with the provided values, never allow the other way around
         defaults = self.default_get(list(missing_defaults))
-        for name, value in defaults.iteritems():
+        for name, value in pycompat.items(defaults):
             if self._fields[name].type == 'many2many' and value and isinstance(value[0], pycompat.integer_types):
                 # convert a list of ids into a list of commands
                 defaults[name] = [(6, 0, value)]
@@ -1564,56 +1553,66 @@ class BaseModel(object):
         if not field.group_expand:
             return read_group_result
 
-        # field.group_expand is the name of a method that returns a list of all
-        # aggregated values that we want to display for this field, in the form
-        # of a m2o-like pair (key,label).
-        # This is useful to implement kanban views for instance, where all
-        # columns should be displayed even if they don't contain any record.
+        # field.group_expand is the name of a method that returns the groups
+        # that we want to display for this field, in the form of a recordset or
+        # a list of values (depending on the type of the field). This is useful
+        # to implement kanban views for instance, where some columns should be
+        # displayed even if they don't contain any record.
 
-        # Grab the list of all groups that should be displayed, including all present groups
-        group_ids = [x[groupby][0] for x in read_group_result if x[groupby]]
-        groups = self.env[field.comodel_name].browse(group_ids)
-        # determine order on groups's model
-        order = groups._order
-        if read_group_order == groupby + ' desc':
-            order = tools.reverse_order(order)
-        groups = getattr(self, field.group_expand)(groups, domain, order)
-        groups = groups.sudo()
+        # determine all groups that should be returned
+        values = [line[groupby] for line in read_group_result if line[groupby]]
 
-        result_template = dict.fromkeys(aggregated_fields, False)
-        result_template[groupby + '_count'] = 0
-        if remaining_groupbys:
-            result_template['__context'] = {'group_by': remaining_groupbys}
+        if field.relational:
+            # groups is a recordset; determine order on groups's model
+            groups = self.env[field.comodel_name].browse([value[0] for value in values])
+            order = groups._order
+            if read_group_order == groupby + ' desc':
+                order = tools.reverse_order(order)
+            groups = getattr(self, field.group_expand)(groups, domain, order)
+            groups = groups.sudo()
+            values = groups.name_get()
+            value2key = lambda value: value and value[0]
 
-        # Merge the current results (list of dicts) with all groups (recordset).
-        # Determine the global order of results from all groups, which is
-        # supposed to be in the same order as read_group_result.
-        result = OrderedDict((group.id, {}) for group in groups)
+        else:
+            # groups is a list of values
+            values = getattr(self, field.group_expand)(values, domain, None)
+            if read_group_order == groupby + ' desc':
+                values.reverse()
+            value2key = lambda value: value
+
+        # Merge the current results (list of dicts) with all groups. Determine
+        # the global order of results groups, which is supposed to be in the
+        # same order as read_group_result (in the case of a many2one field).
+        result = OrderedDict((value2key(value), {}) for value in values)
 
         # fill in results from read_group_result
-        for left_side in read_group_result:
-            left_id = (left_side[groupby] or (False,))[0]
-            if not result.get(left_id):
-                result[left_id] = left_side
+        for line in read_group_result:
+            key = value2key(line[groupby])
+            if not result.get(key):
+                result[key] = line
             else:
-                result[left_id][count_field] = left_side[count_field]
+                result[key][count_field] = line[count_field]
 
         # fill in missing results from all groups
-        for right_side in groups.name_get():
-            right_id = right_side[0]
-            if not result[right_id]:
-                line = dict(result_template)
-                line[groupby] = right_side
-                line['__domain'] = [(groupby, '=', right_id)] + domain
-                result[right_id] = line
+        for value in values:
+            key = value2key(value)
+            if not result[key]:
+                line = dict.fromkeys(aggregated_fields, False)
+                line[groupby] = value
+                line[groupby + '_count'] = 0
+                line['__domain'] = [(groupby, '=', key)] + domain
+                if remaining_groupbys:
+                    line['__context'] = {'group_by': remaining_groupbys}
+                result[key] = line
 
-        result = result.values()
+        # add folding information if present
+        if field.relational and groups._fold_name in groups._fields:
+            fold = {group.id: group[groups._fold_name]
+                    for group in groups.browse([key for key in result if key])}
+            for key, line in pycompat.items(result):
+                line['__fold'] = fold.get(key, False)
 
-        if groups._fold_name in groups._fields:
-            for r in result:
-                group = groups.browse(r[groupby] and r[groupby][0])
-                r['__fold'] = group[groups._fold_name]
-        return result
+        return list(pycompat.values(result))
 
     @api.model
     def _read_group_prepare(self, orderby, aggregated_fields, annotated_groupbys, query):
@@ -1847,7 +1846,7 @@ class BaseModel(object):
     def _read_group_raw(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
         self.check_access_rights('read')
         query = self._where_calc(domain)
-        fields = fields or [f.name for f in self._fields.itervalues() if f.store]
+        fields = fields or [f.name for f in pycompat.values(self._fields) if f.store]
 
         groupby = [groupby] if isinstance(groupby, basestring) else list(OrderedSet(groupby))
         groupby_list = groupby[:1] if lazy else groupby
@@ -1921,7 +1920,7 @@ class BaseModel(object):
 
         self._read_group_resolve_many2one_fields(fetched_data, annotated_groupbys)
 
-        data = map(lambda r: {k: self._read_group_prepare_data(k,v, groupby_dict) for k,v in r.iteritems()}, fetched_data)
+        data = ({k: self._read_group_prepare_data(k,v, groupby_dict) for k,v in pycompat.items(r)} for r in fetched_data)
         result = [self._read_group_format_result(d, annotated_groupbys, groupby, domain) for d in data]
         if lazy:
             # Right now, read_group only fill results in lazy mode (by default).
@@ -2027,7 +2026,7 @@ class BaseModel(object):
         # fields which were required but have been removed (or will be added by
         # another module)
         cr = self._cr
-        cols = [name for name, field in self._fields.iteritems()
+        cols = [name for name, field in pycompat.items(self._fields)
                      if field.store and field.column_type]
         cr.execute("SELECT a.attname, a.attnotnull"
                    "  FROM pg_class c, pg_attribute a"
@@ -2127,7 +2126,7 @@ class BaseModel(object):
                 recs = self.with_context(active_test=False).search([])
                 recs._recompute_todo(field)
 
-            for field in self._fields.itervalues():
+            for field in pycompat.values(self._fields):
                 if not field.store:
                     continue
 
@@ -2215,9 +2214,9 @@ class BaseModel(object):
         """ Determine inherited fields. """
         # determine candidate inherited fields
         fields = {}
-        for parent_model, parent_field in self._inherits.iteritems():
+        for parent_model, parent_field in pycompat.items(self._inherits):
             parent = self.env[parent_model]
-            for name, field in parent._fields.iteritems():
+            for name, field in pycompat.items(parent._fields):
                 # inherited fields are implemented as related fields, with the
                 # following specific properties:
                 #  - reading inherited fields should not bypass access rights
@@ -2230,13 +2229,13 @@ class BaseModel(object):
                 )
 
         # add inherited fields that are not redefined locally
-        for name, field in fields.iteritems():
+        for name, field in pycompat.items(fields):
             if name not in self._fields:
                 self._add_field(name, field)
 
     @api.model
     def _inherits_check(self):
-        for table, field_name in self._inherits.items():
+        for table, field_name in pycompat.items(self._inherits):
             field = self._fields.get(field_name)
             if not field:
                 _logger.info('Missing many2one field definition for _inherits reference "%s" in "%s", using default one.', field_name, self._name)
@@ -2249,7 +2248,7 @@ class BaseModel(object):
                 field.ondelete = "cascade"
 
         # reflect fields with delegate=True in dictionary self._inherits
-        for field in self._fields.itervalues():
+        for field in pycompat.values(self._fields):
             if field.type == 'many2one' and not field.related and field.delegate:
                 if not field.required:
                     _logger.warning("Field %s with delegate=True must be required.", field)
@@ -2337,7 +2336,7 @@ class BaseModel(object):
 
         # set up fields
         bad_fields = []
-        for name, field in cls._fields.iteritems():
+        for name, field in pycompat.items(cls._fields):
             try:
                 field.setup_full(self)
             except Exception:
@@ -2356,11 +2355,11 @@ class BaseModel(object):
 
         # map each field to the fields computed with the same method
         groups = defaultdict(list)
-        for field in cls._fields.itervalues():
+        for field in pycompat.values(cls._fields):
             if field.compute:
                 cls._field_computed[field] = group = groups[field.compute]
                 group.append(field)
-        for fields in groups.itervalues():
+        for fields in pycompat.values(groups):
             compute_sudo = fields[0].compute_sudo
             if not all(field.compute_sudo == compute_sudo for field in fields):
                 _logger.warning("%s: inconsistent 'compute_sudo' for computed fields: %s",
@@ -2373,7 +2372,7 @@ class BaseModel(object):
 
         if isinstance(self, Model):
             # set up field triggers (on database-persisted models only)
-            for field in cls._fields.itervalues():
+            for field in pycompat.values(cls._fields):
                 # dependencies of custom fields may not exist; ignore that case
                 exceptions = (Exception,) if field.manual else ()
                 with tools.ignore(*exceptions):
@@ -2412,7 +2411,7 @@ class BaseModel(object):
         readonly = not (has_access('write') or has_access('create'))
 
         res = {}
-        for fname, field in self._fields.iteritems():
+        for fname, field in pycompat.items(self._fields):
             if allfields and fname not in allfields:
                 continue
             if field.groups and not self.user_has_groups(field.groups):
@@ -2424,7 +2423,7 @@ class BaseModel(object):
                 description['states'] = {}
             if attributes:
                 description = {key: val
-                               for key, val in description.iteritems()
+                               for key, val in pycompat.items(description)
                                if key in attributes}
             res[fname] = description
 
@@ -2459,9 +2458,9 @@ class BaseModel(object):
                 return True
 
         if not fields:
-            fields = filter(valid, self._fields)
+            fields = [name for name in self._fields if valid(name)]
         else:
-            invalid_fields = set(filter(lambda name: not valid(name), fields))
+            invalid_fields = {name for name in fields if not valid(name)}
             if invalid_fields:
                 _logger.info('Access Denied by ACLs for operation: %s, uid: %s, model: %s, fields: %s',
                     operation, self._uid, self._name, ', '.join(invalid_fields))
@@ -2535,7 +2534,7 @@ class BaseModel(object):
         if self._context.get('prefetch_fields', True) and field.prefetch:
             fs.update(
                 f
-                for f in self._fields.itervalues()
+                for f in pycompat.values(self._fields)
                 # select fields that can be prefetched
                 if f.prefetch
                 # discard fields with groups that the user may not access
@@ -2598,7 +2597,7 @@ class BaseModel(object):
         order_str = self._generate_order_by(None, query)
 
         # determine the fields that are stored as columns in tables;
-        fields = map(self._fields.get, field_names + inherited_field_names)
+        fields = [self._fields[n] for n in (field_names + inherited_field_names)]
         fields_pre = [
             field
             for field in fields
@@ -2615,7 +2614,7 @@ class BaseModel(object):
                 res = 'pg_size_pretty(length(%s)::bigint)' % res
             return '%s as "%s"' % (res, col)
 
-        qual_names = map(qualify, set(fields_pre + [self._fields['id']]))
+        qual_names = [qualify(name) for name in set(fields_pre + [self._fields['id']])]
 
         # determine the actual query to execute
         from_clause, where_clause, params = query.get_sql()
@@ -2673,8 +2672,7 @@ class BaseModel(object):
             if extras:
                 raise AccessError(
                     _("Database fetch misses ids ({}) and has extra ids ({}), may be caused by a type incoherence in a previous request").format(
-                        ', '.join(map(repr, missing._ids)),
-                        ', '.join(map(repr, extras._ids)),
+                        missing._ids, extras._ids,
                     ))
             # mark non-existing records in missing
             forbidden = missing.exists()
@@ -2997,7 +2995,7 @@ class BaseModel(object):
 
         # split up fields into old-style and pure new-style ones
         old_vals, new_vals, unknown = {}, {}, []
-        for key, val in vals.iteritems():
+        for key, val in pycompat.items(vals):
             field = self._fields.get(key)
             if field:
                 if field.store or field.inherited:
@@ -3010,7 +3008,7 @@ class BaseModel(object):
         if unknown:
             _logger.warning("%s.write() with unknown fields: %s", self._name, ', '.join(sorted(unknown)))
 
-        protected_fields = map(self._fields.get, new_vals)
+        protected_fields = [self._fields[n] for n in new_vals]
         with self.env.protecting(protected_fields, self):
             # write old-style fields with (low-level) method _write
             if old_vals:
@@ -3061,7 +3059,7 @@ class BaseModel(object):
                 query = "SELECT id FROM %s WHERE id IN %%s AND (%s IS NOT NULL) ORDER BY %s" % \
                                 (self._table, self._parent_name, self._parent_order)
                 cr.execute(query, (tuple(self.ids),))
-            parents_changed = map(operator.itemgetter(0), cr.fetchall())
+            parents_changed = [x[0] for x in cr.fetchall()]
 
         updates = []            # list of (column, expr) or (column, pattern, value)
         upd_todo = []           # list of column names to set explicitly
@@ -3069,7 +3067,7 @@ class BaseModel(object):
         direct = []             # list of direcly updated columns
         has_trans = self.env.lang and self.env.lang != 'en_US'
         single_lang = len(self.env['res.lang'].get_installed()) <= 1
-        for name, val in vals.iteritems():
+        for name, val in pycompat.items(vals):
             field = self._fields[name]
             if field and field.deprecated:
                 _logger.warning('Field %s.%s is deprecated: %s', self._name, name, field.deprecated)
@@ -3131,7 +3129,7 @@ class BaseModel(object):
 
         # defaults in context must be removed when call a one2many or many2many
         rel_context = {key: val
-                       for key, val in self._context.iteritems()
+                       for key, val in pycompat.items(self._context)
                        if not key.startswith('default_')}
 
         # call the 'write' method of fields which are not columns
@@ -3144,7 +3142,7 @@ class BaseModel(object):
 
         # write inherited fields on the corresponding parent records
         unknown_fields = set(updend)
-        for parent_model, parent_field in self._inherits.iteritems():
+        for parent_model, parent_field in pycompat.items(self._inherits):
             parent_ids = []
             for sub_ids in cr.split_for_in_conditions(self.ids):
                 query = "SELECT DISTINCT %s FROM %s WHERE id IN %%s" % (parent_field, self._table)
@@ -3265,7 +3263,7 @@ class BaseModel(object):
 
         # split up fields into old-style and pure new-style ones
         old_vals, new_vals, unknown = {}, {}, []
-        for key, val in vals.iteritems():
+        for key, val in pycompat.items(vals):
             field = self._fields.get(key)
             if field:
                 if field.store or field.inherited:
@@ -3281,7 +3279,7 @@ class BaseModel(object):
         # create record with old-style fields
         record = self.browse(self._create(old_vals))
 
-        protected_fields = map(self._fields.get, new_vals)
+        protected_fields = [self._fields[n] for n in new_vals]
         with self.env.protecting(protected_fields, record):
             # put the values of pure new-style fields into cache, and inverse them
             record.modified(set(new_vals) - set(old_vals))
@@ -3306,7 +3304,7 @@ class BaseModel(object):
         # data of parent records to create or update, by model
         tocreate = {
             parent_model: {'id': vals.pop(parent_field, None)}
-            for parent_model, parent_field in self._inherits.iteritems()
+            for parent_model, parent_field in pycompat.items(self._inherits)
         }
 
         # list of column assignments defined as tuples like:
@@ -3321,7 +3319,7 @@ class BaseModel(object):
         upd_todo = []
         unknown_fields = []
         protected_fields = []
-        for name, val in vals.items():
+        for name, val in list(pycompat.items(vals)):
             field = self._fields.get(name)
             if not field:
                 unknown_fields.append(name)
@@ -3337,7 +3335,7 @@ class BaseModel(object):
             _logger.warning('No such field(s) in model %s: %s.', self._name, ', '.join(unknown_fields))
 
         # create or update parent records
-        for parent_model, parent_vals in tocreate.iteritems():
+        for parent_model, parent_vals in pycompat.items(tocreate):
             parent_id = parent_vals.pop('id')
             if not parent_id:
                 parent_id = self.env[parent_model].create(parent_vals).id
@@ -3346,12 +3344,12 @@ class BaseModel(object):
             updates.append((self._inherits[parent_model], '%s', parent_id))
 
         # set boolean fields to False by default (to make search more powerful)
-        for name, field in self._fields.iteritems():
+        for name, field in pycompat.items(self._fields):
             if field.type == 'boolean' and field.store and name not in vals:
                 vals[name] = False
 
         # determine SQL values
-        for name, val in vals.iteritems():
+        for name, val in pycompat.items(vals):
             field = self._fields[name]
             if field.store and field.column_type:
                 updates.append((name, field.column_format, field.convert_to_column(val, self)))
@@ -3382,7 +3380,7 @@ class BaseModel(object):
 
         if self.env.lang and self.env.lang != 'en_US':
             # add translations for self.env.lang
-            for name, val in vals.iteritems():
+            for name, val in pycompat.items(vals):
                 field = self._fields[name]
                 if field.store and field.column_type and field.translate is True:
                     tname = "%s,%s" % (self._name, name)
@@ -3430,7 +3428,7 @@ class BaseModel(object):
 
             # defaults in context must be removed when call a one2many or many2many
             rel_context = {key: val
-                           for key, val in self._context.iteritems()
+                           for key, val in pycompat.items(self._context)
                            if not key.startswith('default_')}
 
             # call the 'write' method of fields which are not columns
@@ -3735,11 +3733,11 @@ class BaseModel(object):
 
         # build a black list of fields that should not be copied
         blacklist = set(MAGIC_COLUMNS + ['parent_left', 'parent_right'])
-        whitelist = set(name for name, field in self._fields.iteritems() if not field.inherited)
+        whitelist = set(name for name, field in pycompat.items(self._fields) if not field.inherited)
 
         def blacklist_given_fields(model):
             # blacklist the fields that are given by inheritance
-            for parent_model, parent_field in model._inherits.items():
+            for parent_model, parent_field in pycompat.items(model._inherits):
                 blacklist.add(parent_field)
                 if parent_field in default:
                     # all the fields of 'parent_model' are given by the record:
@@ -3748,17 +3746,17 @@ class BaseModel(object):
                 else:
                     blacklist_given_fields(self.env[parent_model])
             # blacklist deprecated fields
-            for name, field in model._fields.iteritems():
+            for name, field in pycompat.items(model._fields):
                 if field.deprecated:
                     blacklist.add(name)
 
         blacklist_given_fields(self)
 
         fields_to_copy = {name: field
-                          for name, field in self._fields.iteritems()
+                          for name, field in pycompat.items(self._fields)
                           if field.copy and name not in default and name not in blacklist}
 
-        for name, field in fields_to_copy.iteritems():
+        for name, field in pycompat.items(fields_to_copy):
             if field.type == 'one2many':
                 # duplicate following the order of the ids because we'll rely on
                 # it later for copying translations in copy_translation()!
@@ -3796,7 +3794,7 @@ class BaseModel(object):
         old_wo_lang, new_wo_lang = (old + new).with_context(lang=None)
         Translation = old.env['ir.translation']
 
-        for name, field in old._fields.iteritems():
+        for name, field in pycompat.items(old._fields):
             if not field.copy:
                 continue
 
@@ -3806,7 +3804,7 @@ class BaseModel(object):
                 # foreseen in copy_data()
                 old_lines = old[name].sorted(key='id')
                 new_lines = new[name].sorted(key='id')
-                for (old_line, new_line) in zip(old_lines, new_lines):
+                for (old_line, new_line) in pycompat.izip(old_lines, new_lines):
                     old_line.copy_translations(new_line)
 
             elif field.translate:
@@ -3976,22 +3974,11 @@ class BaseModel(object):
         """
         results = self._get_external_ids()
         return {key: val[0] if val else ''
-                for key, val in results.iteritems()}
+                for key, val in pycompat.items(results)}
 
     # backwards compatibility
     get_xml_id = get_external_id
     _get_xml_ids = _get_external_ids
-
-    @api.multi
-    def print_report(self, name, data):
-        """
-        Render the report ``name`` for the given IDs. The report must be defined
-        for this model, not another.
-        """
-        report = self.env['ir.actions.report.xml']._lookup_report(name)
-        assert self._name == report.table
-        cr, uid, context = self.env.args
-        return report.create(cr, uid, self.ids, data, context)
 
     # Transience
     @classmethod
@@ -4254,7 +4241,7 @@ class BaseModel(object):
         """ List of actual record ids in this recordset (ignores placeholder
         ids for records to create)
         """
-        return filter(None, list(self._ids))
+        return [it for it in self._ids if it]
 
     # backward-compatibility with former browse records
     _cr = property(lambda self: self.env.cr)
@@ -4360,7 +4347,7 @@ class BaseModel(object):
         target = self if update else self.browse([], self._prefetch)
         return {
             name: fields[name].convert_to_cache(value, target, validate=validate)
-            for name, value in values.iteritems()
+            for name, value in pycompat.items(values)
             if name in fields
         }
 
@@ -4370,14 +4357,14 @@ class BaseModel(object):
         """
         return {
             name: self._fields[name].convert_to_record(value, self)
-            for name, value in values.iteritems()
+            for name, value in pycompat.items(values)
         }
 
     def _convert_to_write(self, values):
         """ Convert the ``values`` dictionary into the format of :meth:`write`. """
         fields = self._fields
         result = {}
-        for name, value in values.iteritems():
+        for name, value in pycompat.items(values):
             if name in fields:
                 field = fields[name]
                 value = field.convert_to_cache(value, self, validate=False)
@@ -4441,7 +4428,7 @@ class BaseModel(object):
         """
         if isinstance(func, basestring):
             name = func
-            func = lambda rec: filter(None, rec.mapped(name))
+            func = lambda rec: any(rec.mapped(name))
         return self.browse([rec.id for rec in self if func(rec)])
 
     def sorted(self, key=None, reverse=False):
@@ -4458,13 +4445,13 @@ class BaseModel(object):
             return self.browse(reversed(recs._ids)) if reverse else recs
         if isinstance(key, basestring):
             key = itemgetter(key)
-        return self.browse(map(attrgetter('id'), sorted(self, key=key, reverse=reverse)))
+        return self.browse(item.id for item in sorted(self, key=key, reverse=reverse))
 
     @api.multi
     def update(self, values):
         """ Update the records in ``self`` with ``values``. """
         for record in self:
-            for name, value in values.iteritems():
+            for name, value in pycompat.items(values):
                 record[name] = value
 
     #
@@ -4685,7 +4672,7 @@ class BaseModel(object):
             the records of model ``self`` in cache that have no value for ``field``
             (:class:`Field` instance).
         """
-        ids = filter(None, self._prefetch[self._name] - set(self.env.cache[field]))
+        ids = [it for it in self._prefetch[self._name] - set(self.env.cache[field]) if it]
         return self.browse(ids)
 
     @api.model
@@ -4708,9 +4695,9 @@ class BaseModel(object):
         if fnames is None:
             if ids is None:
                 return self.env.invalidate_all()
-            fields = self._fields.values()
+            fields = list(pycompat.values(self._fields))
         else:
-            fields = map(self._fields.__getitem__, fnames)
+            fields = [self._fields[n] for n in fnames]
 
         # invalidate fields and inverse fields, too
         spec = [(f, ids) for f in fields] + \
@@ -4764,10 +4751,11 @@ class BaseModel(object):
                 updates[frozendict(vals)].add(rec.id)
             # update records in batch when possible
             with recs.env.norecompute():
-                for vals, ids in updates.iteritems():
+                for vals, ids in pycompat.items(updates):
                     recs.browse(ids)._write(dict(vals))
             # mark computed fields as done
-            map(recs._recompute_done, fs)
+            for f in fs:
+                recs._recompute_done(f)
 
     #
     # Generic onchange method
@@ -4797,7 +4785,7 @@ class BaseModel(object):
                 if not result.get(names):
                     result[names] = node.attrib.get('on_change')
                 # traverse the subviews included in relational fields
-                for subinfo in info['fields'][name].get('views', {}).itervalues():
+                for subinfo in pycompat.values(info['fields'][name].get('views', {})):
                     process(etree.fromstring(subinfo['arch']), subinfo, names)
             else:
                 for child in node:
@@ -4820,19 +4808,19 @@ class BaseModel(object):
                 return
             if res.get('value'):
                 res['value'].pop('id', None)
-                self.update({key: val for key, val in res['value'].iteritems() if key in self._fields})
+                self.update({key: val for key, val in pycompat.items(res['value']) if key in self._fields})
             if res.get('domain'):
                 result.setdefault('domain', {}).update(res['domain'])
             if res.get('warning'):
                 if result.get('warning'):
                     # Concatenate multiple warnings
                     warning = result['warning']
-                    warning['message'] = '\n\n'.join(filter(None, [
+                    warning['message'] = '\n\n'.join(s for s in [
                         warning.get('title'),
                         warning.get('message'),
                         res['warning'].get('title'),
                         res['warning'].get('message'),
-                    ]))
+                    ] if s)
                     warning['title'] = _('Warnings')
                 else:
                     result['warning'] = res['warning']
@@ -4949,7 +4937,7 @@ class BaseModel(object):
                     record.mapped(field_seq)
 
                 # determine which fields have been modified
-                for name, oldval in values.iteritems():
+                for name, oldval in pycompat.items(values):
                     field = self._fields[name]
                     newval = record[name]
                     if newval != oldval or (
@@ -5023,7 +5011,7 @@ class RecordCache(MutableMapping):
         """
         if args and isinstance(args[0], SpecialValue):
             values = dict.fromkeys(self._recs._ids, args[0])
-            for name, field in self._recs._fields.iteritems():
+            for name, field in pycompat.items(self._recs._fields):
                 if name != 'id':
                     self._recs.env.cache[field].update(values)
         else:
@@ -5041,7 +5029,7 @@ class RecordCache(MutableMapping):
         """ Iterate over the field names with a regular value in cache. """
         cache, id = self._recs.env.cache, self._recs.id
         dummy = SpecialValue(None)
-        for name, field in self._recs._fields.iteritems():
+        for name, field in pycompat.items(self._recs._fields):
             if name != 'id' and not isinstance(cache[field].get(id, dummy), SpecialValue):
                 yield name
 

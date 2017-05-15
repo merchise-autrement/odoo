@@ -35,13 +35,16 @@ var _t = core._t;
  * @returns {jQueryElement}
  */
 function formatBoolean(value) {
-    var $input = $('<input type="checkbox">')
-                .prop('checked', value)
-                .prop('disabled', true);
-    return $('<div>')
-                .addClass('o_checkbox')
-                .append($input)
-                .append($('<span>'));
+    var $input = $('<input/>', {
+        type: 'checkbox',
+    }).prop({
+        checked: value,
+        disabled: true,
+    });
+    var $div = $('<div/>', {
+        class: 'o_checkbox',
+    });
+    return $div.append($input, '<span/>');
 }
 
 /**
@@ -342,7 +345,7 @@ function parseDateTime(value, field, options) {
     var pattern2 = datePatternWoZero + ' ' + timePatternWoZero;
     var datetime;
     if (options && options.isUTC) {
-        // phatomjs crash if we don't use this format 
+        // phatomjs crash if we don't use this format
         datetime = moment.utc(value.replace(' ', 'T') + 'Z');
     } else {
         datetime = moment.utc(value, [pattern1, pattern2, moment.ISO_8601], true);
@@ -396,14 +399,6 @@ function parseInteger(value) {
         throw new Error(_.str.sprintf(core._t("'%s' is not a correct integer"), value));
     }
     return parsed;
-}
-
-function parseMonetary(formatted_value) {
-    var l10n = core._t.database.parameters;
-    var value = formatted_value.replace(l10n.thousands_sep, '')
-        .replace(l10n.decimal_point, '.')
-        .match(/([0-9]+(\.[0-9]*)?)/)[1];
-    return parseFloat(value);
 }
 
 /**
@@ -465,7 +460,7 @@ return {
         integer: parseInteger,
         many2many: _.identity, // todo
         many2one: parseMany2one,
-        monetary: parseMonetary,
+        monetary: parseFloat,
         one2many: _.identity,
         reference: _.identity, // todo
         selection: _.identity, // todo

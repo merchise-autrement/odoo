@@ -87,7 +87,9 @@ class GoalDefinition(models.Model):
                 # dummy search to make sure the domain is valid
                 Obj.search_count(domain)
             except (ValueError, SyntaxError) as e:
-                msg = e.message or (e.msg + '\n' + e.text)
+                msg = e
+                if isinstance(e, SyntaxError):
+                    msg = (e.msg + '\n' + e.text)
                 raise exceptions.UserError(_("The domain for the definition %s seems incorrect, please check it.\n\n%s") % (definition.name, msg))
         return True
 
@@ -105,7 +107,7 @@ class GoalDefinition(models.Model):
                         _("The model configuration for the definition %s seems incorrect, please check it.\n\n%s not stored") % (definition.name, definition.field_id.name))
             except KeyError as e:
                 raise exceptions.UserError(
-                    _("The model configuration for the definition %s seems incorrect, please check it.\n\n%s not found") % (definition.name, e.message))
+                    _("The model configuration for the definition %s seems incorrect, please check it.\n\n%s not found") % (definition.name, e))
 
     @api.model
     def create(self, vals):
@@ -260,7 +262,7 @@ class Goal(models.Model):
         for goal in self:
             goals_by_definition.setdefault(goal.definition_id, []).append(goal)
 
-        for definition, goals in goals_by_definition.items():
+        for definition, goals in pycompat.items(goals_by_definition):
             goals_to_write = {}
             if definition.computation_mode == 'manually':
                 for goal in goals:
@@ -305,9 +307,9 @@ class Goal(models.Model):
                         subqueries.setdefault((start_date, end_date), {}).update({goal.id:safe_eval(definition.batch_user_expression, {'user': goal.user_id})})
 
                     # the global query should be split by time periods (especially for recurrent goals)
-                    for (start_date, end_date), query_goals in subqueries.items():
+                    for (start_date, end_date), query_goals in pycompat.items(subqueries):
                         subquery_domain = list(general_domain)
-                        subquery_domain.append((field_name, 'in', list(set(query_goals.values()))))
+                        subquery_domain.append((field_name, 'in', list(set(pycompat.values(query_goals)))))
                         if start_date:
                             subquery_domain.append((field_date_name, '>=', start_date))
                         if end_date:
@@ -351,7 +353,7 @@ class Goal(models.Model):
 
                         goals_to_write.update(goal._get_write_values(new_value))
 
-            for goal, values in goals_to_write.iteritems():
+            for goal, values in pycompat.items(goals_to_write):
                 if not values:
                     continue
                 goal.write(values)

@@ -30,22 +30,63 @@ class TestPyLint(TransactionCase):
         'relative-import',
         'deprecated-module',
         'import-star-module-level',
-        # 'bad-python3-import', # TODO: more stuff used in report
+
+        'bad-builtin',
+
+        'dict-iter-method',
+        'dict-view-method',
 
         'long-suffix',
-        'apply-builtin',
-        'cmp-builtin',
-        'coerce-builtin',
-        'execfile-builtin',
-        'input-builtin',
-        'intern-builtin',
-        'long-builtin',
-        'raw_input-builtin',
-        'reload-builtin',
-        'xrange-builtin',
-        # TODO: enable once report has been removed
-        # 'file-builtin',
-        # 'reduce-builtin',
+        'old-ne-operator',
+        'old-octal-operator',
+        'parameter-unpacking',
+
+        'metaclass-assignment',
+        'deprecated-module',
+
+        'exception-message-attribute',
+        'indexing-exception',
+        'old-raise-syntax',
+        'raising-string',
+        'unpacking-in-except',
+    ]
+
+    BAD_FUNCTIONS = [
+        'apply',
+        'cmp',
+        'coerce',
+        'execfile',
+        'input',
+        'intern',
+        'long',
+        'raw_input',
+        'reload',
+        'xrange',
+        'long',
+        'map',
+        'filter',
+        'zip',
+
+        'file',
+        'reduce',
+    ]
+
+    BAD_MODULES = [
+        'commands',
+        'cPickle',
+        'md5',
+        'urllib',
+        'urllib2',
+        'urlparse',
+        'sgmllib',
+        'sha',
+        'cgi',
+        'htmlentitydefs',
+        'HTMLParser',
+        'Queue',
+        'UserDict',
+        'UserString',
+        'UserList',
     ]
 
     def _skip_test(self, reason):
@@ -69,6 +110,9 @@ class TestPyLint(TransactionCase):
             '--enable=%s' % ','.join(self.ENABLED_CODES),
             '--reports=n',
             "--msg-template='{msg} ({msg_id}) at {path}:{line}'",
+            '--load-plugins=pylint.extensions.bad_builtin',
+            '--bad-functions=%s' % ','.join(self.BAD_FUNCTIONS),
+            '--deprecated-modules=%s' % ','.join(self.BAD_MODULES)
         ]
 
         try:

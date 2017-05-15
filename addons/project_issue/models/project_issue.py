@@ -27,7 +27,7 @@ class ProjectIssue(models.Model):
     date_deadline = fields.Date(string='Deadline')
     partner_id = fields.Many2one('res.partner', string='Contact', index=True)
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.user.company_id)
-    description = fields.Text('Private Note')
+    description = fields.Html('Private Note')
     kanban_state = fields.Selection([
         ('normal', 'Grey'),
         ('blocked', 'Red'),
@@ -55,12 +55,12 @@ class ProjectIssue(models.Model):
     duration = fields.Float('Duration')
     task_id = fields.Many2one('project.task', string='Task', domain="[('project_id','=',project_id)]",
                               help="You can link this issue to an existing task or directly create a new one from here")
-    day_open = fields.Float(compute='_compute_day', string='Days to Assign', store=True)
-    day_close = fields.Float(compute='_compute_day', string='Days to Close', store=True)
+    day_open = fields.Float(compute='_compute_day', string='Days to Assign', store=True, group_operator="avg")
+    day_close = fields.Float(compute='_compute_day', string='Days to Close', store=True, group_operator="avg")
 
     user_id = fields.Many2one('res.users', string='Assigned to', index=True, track_visibility='onchange', default=lambda self: self.env.uid)
-    working_hours_open = fields.Float(compute='_compute_day', string='Working Hours to assign the Issue', store=True)
-    working_hours_close = fields.Float(compute='_compute_day', string='Working Hours to close the Issue', store=True)
+    working_hours_open = fields.Float(compute='_compute_day', string='Working Hours to assign the Issue', store=True, group_operator="avg")
+    working_hours_close = fields.Float(compute='_compute_day', string='Working Hours to close the Issue', store=True, group_operator="avg")
     inactivity_days = fields.Integer(compute='_compute_inactivity_days', string='Days since last action',
                                      help="Difference in days between last action and current date")
     color = fields.Integer('Color Index')
@@ -278,7 +278,7 @@ class ProjectIssue(models.Model):
     def email_split(self, msg):
         email_list = tools.email_split((msg.get('to') or '') + ',' + (msg.get('cc') or ''))
         # check left-part is not already an alias
-        return filter(lambda x: x.split('@')[0] not in self.mapped('project_id.alias_name'), email_list)
+        return [x for x in email_list if x.split('@')[0] not in self.mapped('project_id.alias_name')]
 
     @api.model
     def message_new(self, msg, custom_values=None):
@@ -303,7 +303,7 @@ class ProjectIssue(models.Model):
 
         issue = super(ProjectIssue, self.with_context(create_context)).message_new(msg, custom_values=defaults)
         email_list = issue.email_split(msg)
-        partner_ids = filter(None, issue._find_partner_from_emails(email_list))
+        partner_ids = [p for p in issue._find_partner_from_emails(email_list) if p]
         issue.message_subscribe(partner_ids)
         return issue
 
@@ -311,7 +311,7 @@ class ProjectIssue(models.Model):
     def message_update(self, msg, update_vals=None):
         """ Override to update the issue according to the email. """
         email_list = self.email_split(msg)
-        partner_ids = filter(None, self._find_partner_from_emails(email_list))
+        partner_ids = [p for p in self._find_partner_from_emails(email_list) if p]
         self.message_subscribe(partner_ids)
         return super(ProjectIssue, self).message_update(msg, update_vals=update_vals)
 
@@ -327,6 +327,19 @@ class ProjectIssue(models.Model):
             self.sudo().write({'date_action_last': fields.Datetime.now()})
         return mail_message
 
+    def _message_post_after_hook(self, message):
+        if self.email_from and not self.partner_id:
+            # we consider that posting a message with a specified recipient (not a follower, a specific one)
+            # on a document without customer means that it was created through the chatter using
+            # suggested recipients. This heuristic allows to avoid ugly hacks in JS.
+            new_partner = message.partner_ids.filtered(lambda partner: partner.email == self.email_from)
+            if new_partner:
+                self.search([
+                    ('partner_id', '=', False),
+                    ('email_from', '=', new_partner.email),
+                    ('stage_id.fold', '=', False)]).write({'partner_id': new_partner.id})
+        return super(ProjectIssue, self)._message_post_after_hook(message)
+
     @api.multi
     def message_get_email_values(self, notif_mail=None):
         self.ensure_one()
@@ -338,7 +351,7 @@ class ProjectIssue(models.Model):
             except Exception:
                 pass
         if self.project_id:
-            current_objects = filter(None, headers.get('X-Odoo-Objects', '').split(','))
+            current_objects = [h for h in headers.get('X-Odoo-Objects', '').split(',') if h]
             current_objects.insert(0, 'project.project-%s, ' % self.project_id.id)
             headers['X-Odoo-Objects'] = ','.join(current_objects)
         if self.tag_ids:

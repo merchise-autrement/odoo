@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-
 import babel.messages.pofile
 import base64
 import csv
@@ -24,15 +23,17 @@ import werkzeug.wrappers
 import zlib
 from xml.etree import ElementTree
 from cStringIO import StringIO
+from werkzeug import url_decode
 
 
 import odoo
 import odoo.modules.registry
 from odoo.api import call_kw, Environment
 from odoo.modules import get_resource_path
-from odoo.tools import topological_sort
+from odoo.tools import topological_sort, html_escape, pycompat
 from odoo.tools.translate import _
 from odoo.tools.misc import str2bool, xlwt
+from odoo.tools.safe_eval import safe_eval
 from odoo import http
 from odoo.http import content_disposition, dispatch_rpc, request, \
                       serialize_exception as _serialize_exception
@@ -147,7 +148,7 @@ def ensure_db(redirect='/web/database/selector'):
 
 def module_installed(environment):
     # Candidates module the current heuristic is the /static dir
-    loadable = http.addons_manifest.keys()
+    loadable = list(http.addons_manifest)
 
     # Retrieve database installed modules
     # TODO The following code should move to ir.module.module.list_installed_modules()
@@ -408,7 +409,7 @@ def xml2json_from_elementtree(el, preserve_whitespaces=False):
     else:
         res["tag"] = el.tag
     res["attrs"] = {}
-    for k, v in el.items():
+    for k, v in pycompat.items(el):
         res["attrs"][k] = v
     kids = []
     if el.text and (preserve_whitespaces or el.text.strip() != ''):
@@ -767,7 +768,7 @@ class Session(http.Controller):
     @http.route('/web/session/change_password', type='json', auth="user")
     def change_password(self, fields):
         old_password, new_password,confirm_password = operator.itemgetter('old_pwd', 'new_password','confirm_pwd')(
-                dict(map(operator.itemgetter('name', 'value'), fields)))
+            {f['name']: f['value'] for f in fields})
         if not (old_password.strip() and new_password.strip() and confirm_password.strip()):
             return {'error':_('You cannot leave any password empty.'),'title': _('Change Password')}
         if new_password != confirm_password:
@@ -950,12 +951,6 @@ class View(http.Controller):
         })
         return {'result': True}
 
-class TreeView(View):
-
-    @http.route('/web/treeview/action', type='json', auth="user")
-    def action(self, model, id):
-        return load_actions_from_ir_values('tree_but_open', model, id)
-
 class Binary(http.Controller):
 
     def placeholder(self, image='placeholder.png'):
@@ -965,7 +960,7 @@ class Binary(http.Controller):
     def force_contenttype(self, headers, contenttype='image/png'):
         dictheaders = dict(headers)
         dictheaders['Content-Type'] = contenttype
-        return dictheaders.items()
+        return list(pycompat.items(dictheaders))
 
     @http.route(['/web/content',
         '/web/content/<string:xmlid>',
@@ -1062,7 +1057,7 @@ class Binary(http.Controller):
             args = [len(data), ufile.filename,
                     ufile.content_type, base64.b64encode(data)]
         except Exception as e:
-            args = [False, e.message]
+            args = [False, str(e)]
         return out % (json.dumps(callback), json.dumps(args))
 
     @http.route('/web/binary/upload_attachment', type='http', auth="user")
@@ -1167,7 +1162,7 @@ class Action(http.Controller):
         if base_action:
             ctx = dict(request.context)
             action_type = base_action[0]['type']
-            if action_type == 'ir.actions.report.xml':
+            if action_type == 'ir.actions.report':
                 ctx.update({'bin_size': True})
             if additional_context:
                 ctx.update(additional_context)
@@ -1216,7 +1211,7 @@ class Export(http.Controller):
         else:
             fields['.id'] = fields.pop('id', {'string': 'ID'})
 
-        fields_sequence = sorted(fields.iteritems(),
+        fields_sequence = sorted(pycompat.items(fields),
             key=lambda field: odoo.tools.ustr(field[1].get('string', '')))
 
         records = []
@@ -1227,7 +1222,7 @@ class Export(http.Controller):
                 if field.get('readonly'):
                     # If none of the field's states unsets readonly, skip the field
                     if all(dict(attrs).get('readonly', True)
-                           for attrs in field.get('states', {}).values()):
+                           for attrs in pycompat.values(field.get('states', {}))):
                         continue
             if not field.get('exportable', True):
                 continue
@@ -1259,7 +1254,7 @@ class Export(http.Controller):
         export_fields_list = request.env['ir.exports.line'].browse(export['export_fields']).read()
 
         fields_data = self.fields_info(
-            model, map(operator.itemgetter('name'), export_fields_list))
+            model, [f['name'] for f in export_fields_list])
 
         return [
             {'name': field['name'], 'label': fields_data[field['name']]}
@@ -1319,7 +1314,7 @@ class Export(http.Controller):
         export_fields = [field.split('/', 1)[1] for field in fields]
         return (
             (prefix + '/' + k, prefix_string + '/' + v)
-            for k, v in self.fields_info(model, export_fields).iteritems())
+            for k, v in pycompat.items(self.fields_info(model, export_fields)))
 
 class ExportFormat(object):
     raw_data = False
@@ -1357,7 +1352,7 @@ class ExportFormat(object):
         if not Model._is_an_ordinary_table():
             fields = [field for field in fields if field['name'] != 'id']
 
-        field_names = map(operator.itemgetter('name'), fields)
+        field_names = [f['name'] for f in fields]
         import_data = records.export_data(field_names, self.raw_data).get('datas',[])
 
         if import_compat:
@@ -1508,7 +1503,7 @@ class Reports(http.Controller):
             report_struct['format'], 'octet-stream')
         file_name = action.get('name', 'report')
         if 'name' not in action:
-            reports = request.env['ir.actions.report.xml']
+            reports = request.env['ir.actions.report']
             reports = reports.search([('report_name', '=', action['report_name'])])
             if reports:
                 file_name = reports[0].name
@@ -1545,3 +1540,115 @@ class Apps(http.Controller):
         sakey = Session().save_session_action(action)
         debug = '?debug' if req.debug else ''
         return werkzeug.utils.redirect('/web{0}#sa={1}'.format(debug, sakey))
+
+
+class ReportController(http.Controller):
+
+    #------------------------------------------------------
+    # Report controllers
+    #------------------------------------------------------
+    @http.route([
+        '/report/<converter>/<reportname>',
+        '/report/<converter>/<reportname>/<docids>',
+    ], type='http', auth='user', website=True)
+    def report_routes(self, reportname, docids=None, converter=None, **data):
+        report = request.env['ir.actions.report']._get_report_from_name(reportname)
+        context = dict(request.env.context)
+
+        if docids:
+            docids = [int(i) for i in docids.split(',')]
+        if data.get('options'):
+            data.update(json.loads(data.pop('options')))
+        if data.get('context'):
+            # Ignore 'lang' here, because the context in data is the one from the webclient *but* if
+            # the user explicitely wants to change the lang, this mechanism overwrites it.
+            data['context'] = json.loads(data['context'])
+            if data['context'].get('lang'):
+                del data['context']['lang']
+            context.update(data['context'])
+        if converter == 'html':
+            html = report.with_context(context).render_qweb_html(docids, data=data)[0]
+            return request.make_response(html)
+        elif converter == 'pdf':
+            pdf = report.with_context(context).render_qweb_pdf(docids, data=data)[0]
+            pdfhttpheaders = [('Content-Type', 'application/pdf'), ('Content-Length', len(pdf))]
+            return request.make_response(pdf, headers=pdfhttpheaders)
+        else:
+            raise werkzeug.exceptions.HTTPException(description='Converter %s not implemented.' % converter)
+
+    #------------------------------------------------------
+    # Misc. route utils
+    #------------------------------------------------------
+    @http.route(['/report/barcode', '/report/barcode/<type>/<path:value>'], type='http', auth="public")
+    def report_barcode(self, type, value, width=600, height=100, humanreadable=0):
+        """Contoller able to render barcode images thanks to reportlab.
+        Samples:
+            <img t-att-src="'/report/barcode/QR/%s' % o.name"/>
+            <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' %
+                ('QR', o.name, 200, 200)"/>
+
+        :param type: Accepted types: 'Codabar', 'Code11', 'Code128', 'EAN13', 'EAN8', 'Extended39',
+        'Extended93', 'FIM', 'I2of5', 'MSI', 'POSTNET', 'QR', 'Standard39', 'Standard93',
+        'UPCA', 'USPS_4State'
+        :param humanreadable: Accepted values: 0 (default) or 1. 1 will insert the readable value
+        at the bottom of the output image
+        """
+        try:
+            barcode = request.env['ir.actions.report'].barcode(type, value, width=width, height=height, humanreadable=humanreadable)
+        except (ValueError, AttributeError):
+            raise exceptions.HTTPException(description='Cannot convert into barcode.')
+
+        return request.make_response(barcode, headers=[('Content-Type', 'image/png')])
+
+    @http.route(['/report/download'], type='http', auth="user")
+    def report_download(self, data, token):
+        """This function is used by 'qwebactionmanager.js' in order to trigger the download of
+        a pdf/controller report.
+
+        :param data: a javascript array JSON.stringified containg report internal url ([0]) and
+        type [1]
+        :returns: Response with a filetoken cookie and an attachment header
+        """
+        requestcontent = json.loads(data)
+        url, type = requestcontent[0], requestcontent[1]
+        try:
+            if type == 'qweb-pdf':
+                reportname = url.split('/report/pdf/')[1].split('?')[0]
+
+                docids = None
+                if '/' in reportname:
+                    reportname, docids = reportname.split('/')
+
+                if docids:
+                    # Generic report:
+                    response = self.report_routes(reportname, docids=docids, converter='pdf')
+                else:
+                    # Particular report:
+                    data = url_decode(url.split('?')[1]).items()  # decoding the args represented in JSON
+                    response = self.report_routes(reportname, converter='pdf', **dict(data))
+
+                report = request.env['ir.actions.report']._get_report_from_name(reportname)
+                filename = "%s.%s" % (report.name, "pdf")
+                if docids:
+                    ids = [int(x) for x in docids.split(",")]
+                    obj = request.env[report.model].browse(ids)
+                    if report.print_report_name and not len(obj) > 1:
+                        report_name = safe_eval(report.print_report_name, {'object': obj, 'time': time})
+                        filename = "%s.%s" % (report_name, "pdf")
+                response.headers.add('Content-Disposition', content_disposition(filename))
+                response.set_cookie('fileToken', token)
+                return response
+            else:
+                return
+        except Exception as e:
+            se = _serialize_exception(e)
+            error = {
+                'code': 200,
+                'message': "Odoo Server Error",
+                'data': se
+            }
+            return request.make_response(html_escape(json.dumps(error)))
+
+    @http.route(['/report/check_wkhtmltopdf'], type='json', auth="user")
+    def check_wkhtmltopdf(self):
+        return request.env['ir.actions.report'].get_wkhtmltopdf_state()

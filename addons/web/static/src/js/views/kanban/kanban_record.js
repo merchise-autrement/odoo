@@ -39,6 +39,8 @@ var KanbanRecord = Widget.extend({
         this.subWidgets = {};
 
         this._setState(state);
+        // avoid quick multiple clicks
+        this._onKanbanActionClicked = _.debounce(this._onKanbanActionClicked, 300, true);
     },
     start: function () {
         return this._super.apply(this, arguments).then(this._render.bind(this));
@@ -88,7 +90,7 @@ var KanbanRecord = Widget.extend({
      * @returns {boolean} the domain evaluted with the current values
      */
     _computeDomain: function (d) {
-        return new Domain(d).compute(this.state.getEvalContext());
+        return new Domain(d).compute(this.state.evalContext);
     },
     /**
      * Generates the color classname from a given variable
@@ -366,7 +368,7 @@ var KanbanRecord = Widget.extend({
             if ((r.type === 'date' || r.type === 'datetime') && value) {
                 r.raw_value = value.toDate();
             } else if (r.type === 'one2many' || r.type === 'many2many') {
-                r.raw_value = value.count ? value.res_ids : false;
+                r.raw_value = value.count ? value.res_ids : [];
             } else if (r.type === 'many2one' ) {
                 r.raw_value = value && value.res_id || false;
             } else {

@@ -6,10 +6,12 @@ import sys
 PY2 = sys.version_info[0] == 2
 
 if PY2:
-    # pylint: disable=long-builtin,xrange-builtin
+    # pylint: disable=long-builtin,dict-iter-method
     integer_types = (int, long)
 
-    range = xrange
+    keys = lambda d: iter(d.iterkeys())
+    values = lambda d: iter(d.itervalues())
+    items = lambda d: iter(d.iteritems())
 
     # noinspection PyUnresolvedReferences
     from itertools import imap, izip, ifilter
@@ -18,10 +20,15 @@ if PY2:
         cls.next = cls.__next__
         del cls.__next__
         return cls
+
+    exec ('def reraise(tp, value, tb=None):\n raise tp, value, tb')
 else:
+    # pylint: disable=bad-functions
     integer_types = (int,)
 
-    range = range
+    keys = lambda d: iter(d.keys())
+    values = lambda d: iter(d.values())
+    items = lambda d: iter(d.items())
 
     imap = map
     izip = zip
@@ -29,3 +36,8 @@ else:
 
     def implements_iterator(cls):
         return cls
+
+    def reraise(tp, value, tb=None):
+        if value.__traceback__ != tb:
+            raise value.with_traceback(tb)
+        raise value
