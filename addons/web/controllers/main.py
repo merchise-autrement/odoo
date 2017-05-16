@@ -1596,7 +1596,7 @@ class ReportController(http.Controller):
         try:
             barcode = request.env['ir.actions.report'].barcode(type, value, width=width, height=height, humanreadable=humanreadable)
         except (ValueError, AttributeError):
-            raise exceptions.HTTPException(description='Cannot convert into barcode.')
+            raise werkzeug.exceptions.HTTPException(description='Cannot convert into barcode.')
 
         return request.make_response(barcode, headers=[('Content-Type', 'image/png')])
 
