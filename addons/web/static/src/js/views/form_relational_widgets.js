@@ -20,14 +20,14 @@ var list_view_get = function(x2many){
     var view = {
         view_type: 'list',
         view_id: false,
-        options: {
+        options: _.extend({
             action_buttons: false, // to avoid 'Save' and 'Discard' buttons to appear in X2M fields
             addable: null,
             selectable: x2many.multi_selection,
             sortable: true,
             import_enabled: false,
             deletable: true
-        },
+        }, x2many.options),
     };
     if (x2many.get("effective_readonly")) {
         _.extend(view.options, {
@@ -46,7 +46,7 @@ core.x2many_views_registry.add('graph', function(x2many){
     return {
         view_type: 'graph',
         view_id: false,
-        options: {},
+        options: _.extend({}, x2many.options),
     };
 });
 
@@ -54,10 +54,10 @@ core.x2many_views_registry.add('kanban', function(x2many){
     var view = {
         view_type: 'kanban',
         view_id: false,
-        options: {
+        options: _.extend({
             action_buttons: true,
             confirm_on_delete: false,
-        },
+        }, x2many.options),
     };
     if (x2many.get("effective_readonly")) {
         _.extend(view.options, {
