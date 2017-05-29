@@ -10,7 +10,7 @@ from odoo import api, fields, models, tools, _
 from odoo.tools import float_is_zero, pycompat
 from odoo.exceptions import UserError
 from odoo.http import request
-import odoo.addons.decimal_precision as dp
+from odoo.addons import decimal_precision as dp
 
 _logger = logging.getLogger(__name__)
 
@@ -677,7 +677,7 @@ class PosOrder(models.Model):
                 qty = 0
                 qty_done = 0
                 pack_lots = []
-                pos_pack_lots = PosPackOperationLot.search([('order_id', '=',  order.id), ('product_id', '=', pack_operation.product_id.id)])
+                pos_pack_lots = PosPackOperationLot.search([('order_id', '=', order.id), ('product_id', '=', pack_operation.product_id.id)])
                 pack_lot_names = [pos_pack.lot_name for pos_pack in pos_pack_lots]
 
                 if pack_lot_names and lots_necessary:

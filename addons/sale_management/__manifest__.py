@@ -43,9 +43,7 @@ The Dashboard for the Sales Manager will include
     'website': 'https://www.odoo.com/page/sales',
     'depends': ['sale'],
     'data': [
-        'data/sale_management_tour.xml',
         'views/sale_management_views.xml',
-        'views/crm_team_views.xml',
         'views/sale_management_templates.xml',
     ],
     'application': True,

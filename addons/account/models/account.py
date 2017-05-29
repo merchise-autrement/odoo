@@ -217,6 +217,14 @@ class AccountJournal(models.Model):
     refund_sequence_id = fields.Many2one('ir.sequence', string='Credit Note Entry Sequence',
         help="This field contains the information related to the numbering of the credit note entries of this journal.", copy=False)
     sequence = fields.Integer(help='Used to order Journals in the dashboard view', default=10)
+    sequence_number_next = fields.Integer(string='Next Number',
+        help='The next sequence number will be used for the next invoice.',
+        compute='_compute_seq_number_next',
+        inverse='_inverse_seq_number_next')
+    refund_sequence_number_next = fields.Integer(string='Credit Notes: Next Number',
+        help='The next sequence number will be used for the next credit note.',
+        compute='_compute_refund_seq_number_next',
+        inverse='_inverse_refund_seq_number_next')
 
     #groups_id = fields.Many2many('res.groups', 'account_journal_group_rel', 'journal_id', 'group_id', string='Groups')
     currency_id = fields.Many2one('res.currency', help='The currency used to enter statement', string="Currency", oldname='currency')
@@ -241,7 +249,7 @@ class AccountJournal(models.Model):
     belongs_to_company = fields.Boolean('Belong to the user\'s current company', compute="_belong_to_company", search="_search_company_journals",)
 
     # Bank journals fields
-    bank_account_id = fields.Many2one('res.partner.bank', string="Bank Account", ondelete='restrict', copy=False)
+    bank_account_id = fields.Many2one('res.partner.bank', string="Bank Account", ondelete='restrict', copy=False, domain="[('partner_id','=', company_id)]")
     bank_statements_source = fields.Selection([('undefined', 'Undefined Yet'),('manual', 'Record Manually')], string='Bank Feeds', default='undefined')
     bank_acc_number = fields.Char(related='bank_account_id.acc_number')
     bank_id = fields.Many2one('res.bank', related='bank_account_id.bank_id')
@@ -250,6 +258,50 @@ class AccountJournal(models.Model):
     _sql_constraints = [
         ('code_company_uniq', 'unique (code, name, company_id)', 'The code and name of the journal must be unique per company !'),
     ]
+
+    @api.multi
+    # do not depend on 'sequence_id.date_range_ids', because
+    # sequence_id._get_current_sequence() may invalidate it!
+    @api.depends('sequence_id.use_date_range', 'sequence_id.number_next_actual')
+    def _compute_seq_number_next(self):
+        '''Compute 'sequence_number_next' according to the current sequence in use,
+        an ir.sequence or an ir.sequence.date_range.
+        '''
+        for journal in self:
+            if journal.sequence_id:
+                sequence = journal.sequence_id._get_current_sequence()
+                journal.sequence_number_next = sequence.number_next_actual
+
+    @api.multi
+    def _inverse_seq_number_next(self):
+        '''Inverse 'sequence_number_next' to edit the current sequence next number.
+        '''
+        for journal in self:
+            if journal.sequence_id and journal.sequence_number_next:
+                sequence = journal.sequence_id._get_current_sequence()
+                sequence.number_next = journal.sequence_number_next
+
+    @api.multi
+    # do not depend on 'refund_sequence_id.date_range_ids', because
+    # refund_sequence_id._get_current_sequence() may invalidate it!
+    @api.depends('refund_sequence_id.use_date_range', 'refund_sequence_id.number_next_actual')
+    def _compute_refund_seq_number_next(self):
+        '''Compute 'sequence_number_next' according to the current sequence in use,
+        an ir.sequence or an ir.sequence.date_range.
+        '''
+        for journal in self:
+            if journal.refund_sequence_id and journal.refund_sequence:
+                sequence = journal.refund_sequence_id._get_current_sequence()
+                journal.refund_sequence_number_next = sequence.number_next_actual
+
+    @api.multi
+    def _inverse_refund_seq_number_next(self):
+        '''Inverse 'refund_sequence_number_next' to edit the current sequence next number.
+        '''
+        for journal in self:
+            if journal.refund_sequence_id and journal.refund_sequence and journal.refund_sequence_number_next:
+                sequence = journal.refund_sequence_id._get_current_sequence()
+                sequence.number_next = journal.refund_sequence_number_next
 
     @api.one
     @api.constrains('currency_id', 'default_credit_account_id', 'default_debit_account_id')
@@ -320,8 +372,8 @@ class AccountJournal(models.Model):
                     self.default_debit_account_id.currency_id = vals['currency_id']
                 if not 'default_credit_account_id' in vals and self.default_credit_account_id:
                     self.default_credit_account_id.currency_id = vals['currency_id']
-            if 'bank_acc_number' in vals and not vals.get('bank_acc_number') and journal.bank_account_id:
-                raise UserError(_('You cannot empty the account number once set.\nIf you would like to delete the account number, you can do it from the Bank Accounts list.'))
+            if 'bank_account_id' in vals and not vals.get('bank_account_id'):
+                raise UserError(_('You cannot empty the bank account once set.'))
         result = super(AccountJournal, self).write(vals)
 
         # Create the bank_account_id if necessary
@@ -334,10 +386,10 @@ class AccountJournal(models.Model):
                 journal_vals = {
                     'name': journal.name,
                     'company_id': journal.company_id.id,
-                    'code': journal.code
+                    'code': journal.code,
+                    'refund_sequence_number_next': vals.get('refund_sequence_number_next', journal.refund_sequence_number_next),
                 }
                 journal.refund_sequence_id = self.sudo()._create_sequence(journal_vals, refund=True).id
-
         return result
 
     @api.model
@@ -361,7 +413,10 @@ class AccountJournal(models.Model):
         }
         if 'company_id' in vals:
             seq['company_id'] = vals['company_id']
-        return self.env['ir.sequence'].create(seq)
+        seq = self.env['ir.sequence'].create(seq)
+        seq_date_range = seq._get_current_sequence()
+        seq_date_range.number_next = refund and vals.get('refund_sequence_number_next', 1) or vals.get('sequence_number_next', 1)
+        return seq
 
     @api.model
     def _prepare_liquidity_account(self, name, company, currency_id, type):

@@ -9,7 +9,7 @@ from odoo.exceptions import UserError
 from odoo.tools import float_is_zero, float_compare, DEFAULT_SERVER_DATETIME_FORMAT, pycompat
 from odoo.tools.misc import formatLang
 
-import odoo.addons.decimal_precision as dp
+from odoo.addons import decimal_precision as dp
 
 
 class SaleOrder(models.Model):
@@ -81,6 +81,12 @@ class SaleOrder(models.Model):
                 'invoice_ids': invoice_ids.ids + refund_ids.ids,
                 'invoice_status': invoice_status
             })
+
+    @api.model
+    def get_empty_list_help(self, help):
+        if help:
+            return '<p class=''oe_view_nocontent_create''">%s</p>' % (help)
+        return super(SaleOrder, self).get_empty_list_help(help)
 
     @api.model
     def _default_note(self):

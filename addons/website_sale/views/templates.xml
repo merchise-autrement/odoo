@@ -25,10 +25,15 @@
     <template id="assets_editor" inherit_id="website.assets_editor" name="Shop Editor">
         <xpath expr="." position="inside">
             <script type="text/javascript" src="/website_sale/static/src/js/website_sale.editor.js"></script>
-            <script type="text/javascript" src="/website_sale/static/src/js/website_sale_tour_shop.js"></script>
         </xpath>
     </template>
 
+    <template id="assets_common" name="tour" inherit_id="web.assets_common">
+        <xpath expr="." position="inside">
+            <script type="text/javascript" src="/website_sale/static/src/js/website_sale_tour_shop.js"></script>
+        </xpath>
+    </template>
+    
     <template id="header" inherit_id="website.layout" name="Header Shop My Cart Link">
         <xpath expr="//header//ul[@id='top_menu']/li" position="before">
             <t t-set="website_sale_order" t-value="website.sale_get_order()" />
@@ -465,7 +470,7 @@
                                     <a id="add_to_cart" class="btn btn-primary btn-lg mt8 js_check_product a-submit" href="#">Add to Cart</a>
                                 </div>
                             </form>
-                            <hr />
+                            <hr t-if="product.availability != 'empty'"/>
                             <div t-if="product.availability == 'in_stock'" class="alert alert-success">
                                 <span class="fa fa-check" />
                                 <span>In Stock</span>
@@ -1435,7 +1440,7 @@
                                 <div class="col-sm-12">
                                     <form target="_self" action="/shop/payment/validate" method="post" class="pull-right">
                                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
-                                        <a style="width:127px;" class="btn btn-primary a-submit">
+                                        <a class="btn btn-primary a-submit">
                                             <span t-if="order.amount_total &gt; 0">Pay Now <span class="fa fa-long-arrow-right"></span></span>
                                             <span t-if="order.amount_total == 0">Confirm Order <span class="fa fa-long-arrow-right"></span></span>
                                         </a>
@@ -1472,7 +1477,7 @@
                 <div class="container oe_website_sale">
                     <div class="row">
                         <div class="col-md-9">
-                            <h1 class="mb32">Order <em t-field="order.name" /> Confirmed</h1>
+                            <h1 class="mb32">Order <em t-field="order.name" /> <t t-if="order.state == 'sale'">Confirmed</t></h1>
                             <div class="thanks_msg">
                                 <h2>Thank you for your order.
                                     <a class="btn btn-primary pull-right hidden-xs" href="/shop/print" target="_blank"><i class="fa fa-print"></i> Print</a>
@@ -1512,7 +1517,7 @@
                                               <td class='td-qty'>
                                                   <div id="quote_qty">
                                                       <span t-field="line.product_uom_qty"/>
-                                                      <span class='hidden-xs' t-field="line.product_uom"/>
+                                                      <span class='hidden-xs' t-field="line.product_uom" groups="product.group_uom"/>
                                                   </div>
                                               </td>
                                               <td class='td-price'>
