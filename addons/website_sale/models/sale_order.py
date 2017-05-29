@@ -71,7 +71,7 @@ class SaleOrder(models.Model):
         if order.pricelist_id and order.partner_id:
             order_line = order._cart_find_product_line(product.id)
             if order_line:
-                pu = self.env['account.tax']._fix_tax_included_price(pu, product.taxes_id, order_line.tax_id)
+                pu = self.env['account.tax']._fix_tax_included_price(pu, product.taxes_id, order_line[0].tax_id)
 
         return {
             'product_id': product_id,
@@ -268,7 +268,7 @@ class Website(models.Model):
         :param int pl_id: The pricelist id to check
         :returns: Boolean, True if valid / available
         """
-        return pl_id in self.get_pricelist_available(show_visible=False).ids
+        return pl_id in self.get_pricelist_available(show_visible=True).ids
 
     def get_current_pricelist(self):
         """
