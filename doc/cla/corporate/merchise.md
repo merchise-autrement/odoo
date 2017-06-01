@@ -9,11 +9,11 @@ declaration.
 
 Signed,
 
-Manuel Vázquez Acosta manuel@merchise.org, mva.led@gmail.com https://github.com/mvaled
+Manuel Vázquez Acosta manuel@merchise.org https://github.com/mvaled
 
 List of contributors (some members don't have a github account yet):
 
-Manuel Vázquez Acosta manuel@merchise.org, mva.led@gmail.com https://github.com/mvaled
+Manuel Vázquez Acosta manuel@merchise.org https://github.com/mvaled
 Johanny Rivera johanny@merchise.org
 Henrik Pestano henrik@merchise.org https://github.com/hpestano
 Oraldo Jacinto Simón oraldo@merchise.org
