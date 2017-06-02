@@ -198,6 +198,7 @@ class Partner(models.Model):
     mobile = fields.Char()
     is_company = fields.Boolean(string='Is a Company', default=False,
         help="Check if the contact is a company, otherwise it is a person")
+    industry_id = fields.Many2one('res.partner.industry', 'Sector of Activity')
     # company_type is only an interface field, do not use it in business logic
     company_type = fields.Selection(string='Company Type',
         selection=[('person', 'Individual'), ('company', 'Company')],
@@ -764,6 +765,10 @@ class Partner(models.Model):
         ''' Return the main partner '''
         return self.env.ref('base.main_partner')
 
+    @api.model
+    def _get_default_address_format(self):
+        return "%(street)s\n%(street2)s\n%(city)s %(state_code)s %(zip)s\n%(country_name)s"
+
     @api.multi
     def _display_address(self, without_company=False):
 
@@ -779,7 +784,7 @@ class Partner(models.Model):
         # get the information that will be injected into the display format
         # get the address format
         address_format = self.country_id.address_format or \
-              "%(street)s\n%(street2)s\n%(city)s %(state_code)s %(zip)s\n%(country_name)s"
+            self._get_default_address_format()
         args = {
             'state_code': self.state_id.code or '',
             'state_name': self.state_id.name or '',
@@ -801,3 +806,13 @@ class Partner(models.Model):
             'country_id.address_format', 'country_id.code', 'country_id.name',
             'company_name', 'state_id.code', 'state_id.name',
         ]
+
+
+class ResPartnerIndustry(models.Model):
+    _description = 'Sector of Activity'
+    _name = "res.partner.industry"
+    _order = "name"
+
+    name = fields.Char('Name', translate=True)
+    full_name = fields.Char('Full Name', translate=True)
+    active = fields.Boolean('Active', default=True)
