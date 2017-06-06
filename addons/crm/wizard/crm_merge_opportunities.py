@@ -27,9 +27,6 @@ class crm_merge_opportunity(osv.osv_memory):
         wizard = self.browse(cr, uid, ids[0], context=context)
         opportunity2merge_ids = wizard.opportunity_ids
 
-        #TODO: why is this passed through the context ?
-        context['lead_ids'] = [opportunity2merge_ids[0].id]
-
         merge_id = lead_obj.merge_opportunity(cr, uid, [x.id for x in opportunity2merge_ids], wizard.user_id.id, wizard.team_id.id, context=context)
 
         # The newly created lead might be a lead or an opp: redirect toward the right view
