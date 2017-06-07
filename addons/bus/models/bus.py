@@ -40,7 +40,7 @@ class ImBus(models.Model):
 
     @api.model
     def gc(self):
-        timeout_ago = datetime.datetime.utcnow()-datetime.timedelta(seconds=TIMEOUT*2)
+        timeout_ago = datetime.datetime.utcnow() - TIMEOUT_DELTA * 10
         domain = [('create_date', '<', timeout_ago.strftime(DEFAULT_SERVER_DATETIME_FORMAT))]
         return self.sudo().search(domain).unlink()
 
@@ -154,10 +154,10 @@ class ImDispatch(object):
                     channels.extend(json.loads(conn.notifies.pop().payload))
                 # dispatch to local threads/greenlets
                 events = set()
-                for c in channels:
-                    events.update(self.channels.pop(hashable(c), []))
-                for e in events:
-                    e.set()
+                for channel in channels:
+                    events.update(self.channels.pop(hashable(channel), []))
+                for event in events:
+                    event.set()
             return callback
 
         _logger.info("Bus.loop listen imbus on db postgres")
@@ -166,7 +166,7 @@ class ImDispatch(object):
         with odoo.sql_db.db_connect('postgres').cursor() as cr:
             conn = cr._cnx
             cr.execute("listen imbus")
-            cr.commit();
+            cr.commit()
 
             hub = Hub()
             hub.add_reader(conn, on_db_notification(conn))

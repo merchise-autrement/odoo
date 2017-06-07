@@ -33,7 +33,7 @@ openerp.web_celery = function(instance){
             var channel = this.channel = get_progress_channel(options.params);
             // The CrossTabBus cannot be used cause it's implemented to be
             // a singleton.
-            bus = this.bus = new openerp.bus.Bus();
+            bus = this.bus = new openerp.bus.BusClass();
             bus.add_channel(channel);
             bus.on('notification', this, this.on_job_notification);
             pending_jobs += 1;

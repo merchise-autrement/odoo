@@ -23,7 +23,9 @@ class MailChatController(BusController):
             partner_id = request.env.user.partner_id.id
 
             if partner_id:
-                channels = list(channels)       # do not alter original list
+                # NOTICE: Don't modify the provided channels to avoid errors
+                # on request retries.
+                channels = list(channels)
                 for mail_channel in request.env['mail.channel'].search([('channel_partner_ids', 'in', [partner_id])]):
                     channels.append((request.db, 'mail.channel', mail_channel.id))
                 # personal and needaction channel
