@@ -416,14 +416,17 @@ instance.web.Model.include({
      */
     call_button: function (method, args) {
         instance.web.pyeval.ensure_evaluated(args, {});
-        return this.session().rpc('/web/dataset/call_button', {
-            model: this.name,
-            method: method,
-            // Should not be necessary anymore. Integrate remote in this?
-            domain_id: null,
-            context_id: args.length - 1,
-            args: args || []
-        });
+        return this.session().rpc(
+            // merchise: expose the model and method in the URL so that we can
+            // easily track slow methods.
+            '/web/dataset/call_button?model=' + this.name + '&method=' + method,
+            {model: this.name,
+             method: method,
+             // Should not be necessary anymore. Integrate remote in this?
+             domain_id: null,
+             context_id: args.length - 1,
+             args: args || []}
+        );
     },
 });
 
