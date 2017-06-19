@@ -15,28 +15,13 @@ Implementation details
 The idea is to have a single task definition that simply allows the execution
 of any method in a model.
 
-There are three queues defined:
+There are just one queue defined:
 
 - The `default` queue.  For jobs that need the standard level of response.
 
-- The `high` priority queue.  For jobs that need to be processed as soon as
-  possible.
-
-- The `low` priority queue.  For jobs that may wait in a queue.
-
-.. warning::  This priorities are not actually enforced.
-
-   We simply configured (by default) more processes that consume jobs from the
-   `high` priority queue than processes that consume jobs from the `low`
-   priority queue.
-
-   Therefore if the application is queuing jobs to the `high` priority queue
-   at rate faster than the workers can process them while the are few jobs in
-   the `low` priority queue; high priority jobs will actually get a worse
-   throughput.
-
-   The programmer is expected to coordinate about the priority of a job.  As
-   rule of thumb is to always use the `default` queue first.
+By default you can put a job in any queue.  Just name it and it will be
+created.  **But** you must ensure that at least a worker explicitly takes jobs
+from the queue or they won't be processed.
 
 
 Usage
@@ -44,34 +29,30 @@ Usage
 
 In this example use the ``bin/xoeuf shell`` to test the current features.
 
-First run the server **using the preforking server**.  Celery workers won't be
-spawned automatically unless in preforking mode::
+Run at least a worker::
+
+  bin/xoeuf celery worker -l DEBUG -c1
+
+.. note:: The `report_progress` uses the same bus the chat uses to send
+   progress reports to the browser, so you need to have a working bus to see
+   the progress report.
+
+Run the server::
 
   bin/xoeuf --workers=2
-
-You should see some logs about the workers being started::
-
-    INFO ? openerp.service.server: Worker DefaultCeleryWorker (9396) alive
-
-If you don't see that something has gone bad or your configuration has
-disabled the workers.  If you see that, then you may start to send jobs to the
-workers (use the shell).
 
 
 High level API
 --------------
 
-The ``openerp.jobs`` module exposes three functions to request backgrounds
+The ``openerp.jobs`` module exposes a single object to request backgrounds
 jobs:
 
 - ``Deferred``
 
-They put the background job request in the one of the queues we mentioned
-above.
+It puts the background job request in the default queue::
 
-  >>> from xoeuf.pool import db
-  >>> db.salt_shell()
-  >>> self = env['res.users']
+  $ bin/xoeuf shell -d somedb
 
   >>> from openerp.jobs import Deferred
   >>> for i in range(1000):
@@ -80,7 +61,7 @@ above.
 Now you should see your CPUs burning while processing all the 1000 jobs.  You
 may watch the whole story using ``flower``::
 
-  bin/celery flower
+  bin/xoeuf celery flower
 
 It will create a nice dashboard to monitor the Celery Workers.
 
@@ -173,7 +154,6 @@ Example: Delay the execution of the task by passing a countdown::
   ...                                          1, 'search', [])
 
 
-
 Reporting progress
 ------------------
 
@@ -214,10 +194,6 @@ honored:
   couldn't be retrieved afterwards (I haven't tested what happens.)
 
 - You MUST NEVER override an existing method to make it a background job.
-
-  Yes, I did this in the `web_celery` addon, but only to be able to test the
-  main concept, I ensure to override the method only when ``debug_mode`` is
-  on.
 
   The way to go would be the to make methods specifically designed to work on
   the background and call normal methods from there and change the UI to call
