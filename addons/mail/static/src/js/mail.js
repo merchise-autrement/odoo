@@ -2006,8 +2006,6 @@ openerp.mail = function (session) {
      * Load here widgets that could depend on widgets defined in mail.js
      */
 
-    openerp.mail.suggestions(session, mail);        // import suggestion.js (suggestion widget)
-
 };
 
 // Local Variables:
