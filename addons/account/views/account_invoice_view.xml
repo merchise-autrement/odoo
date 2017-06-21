@@ -522,7 +522,9 @@
                     <field name="user_id" string="Salesperson"/>
                     <field name="date" string="Period"/>
                     <separator/>
-                    <filter domain="[('user_id','=',uid)]" help="My Invoices"/>
+                    <filter
+                        name='my_invoices_filter'
+                        domain="[('user_id','=',uid)]" help="My Invoices"/>
                     <group expand="0" string="Group By">
                         <filter name="group_by_partner_id" string="Partner" context="{'group_by':'commercial_partner_id'}"/>
                         <filter string="Salesperson" context="{'group_by':'user_id'}"/>
