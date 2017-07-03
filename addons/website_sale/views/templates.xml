@@ -17,7 +17,6 @@
             <script type="text/javascript" src="/website_sale/static/src/js/website_sale_payment.js"></script>
             <script type="text/javascript" src="/website_sale/static/src/js/website_sale_validate.js"></script>
             <script type="text/javascript" src="/website_sale/static/src/js/website_sale_tour_buy.js"></script>
-            <script type="text/javascript" src="/website_sale/static/src/js/website_sale_rating.js"></script>
             <script type="text/javascript" src="/website_sale/static/src/js/website_sale_tracking.js"></script>
         </xpath>
     </template>
@@ -552,32 +551,20 @@
 
     <!-- Product options: OpenChatter -->
     <template id="product_comment" inherit_id="website_sale.product" active="False" customize_show="True" name="Discussion and Rating">
-        <xpath expr="//div[@id='product_details']" position="inside">
-            <t t-call="rating.rating_card">
-                <t t-set="rating_stat" t-value="rating_product"/>
-                <t t-set="max_rate" t-value="5"/>
-                <t t-set="min_rate" t-value="1"/>
-            </t>
-        </xpath>
         <xpath expr="//div[@t-field='product.website_description']" position="after">
-            <hr class="mb32"/>
-            <section class="container">
-                <div class="row col-md-10 col-md-offset-1">
-                    <div class="text-muted">
-                        <h3 class="fa fa-comment-o">
-                            <a id="comments">
-                                <t t-if="len(product.website_message_ids) &lt;= 1" ><t t-esc="len(product.website_message_ids)"/> comment</t>
-                                <t t-if="len(product.website_message_ids) > 1"><t t-esc="len(product.website_message_ids)"/> comments</t>
-                            </a>
-                        </h3>
+            <div class="o_shop_discussion_rating">
+                <section class="container mt16 mb16">
+                    <hr/>
+                    <div class="row">
+                        <div class="col-md-8 col-md-offset-2">
+                            <t t-call="website_mail.message_thread">
+                                <t t-set="object" t-value="product"/>
+                                <t t-set="display_rating" t-value="True"/>
+                            </t>
+                        </div>
                     </div>
-                    <t t-call="website_mail.message_thread">
-                        <t t-set="object" t-value="product"/>
-                        <t t-set="chatter_mode" t-value="'json'"/>
-                        <t t-set="rating_enable" t-value="True"/>
-                    </t>
-                </div>
-            </section>
+                </section>
+            </div>
         </xpath>
     </template>
 
@@ -704,30 +691,6 @@
       </ul>
     </template>
 
-    <!-- extend the generic mail thread message template to add rating widget -->
-    <template id="message_thread_rating" inherit_id="website_mail.message_thread" name="Chatter with rating">
-        <xpath expr="//section[contains(@class, 'o_website_mail_thread')]" position="attributes">
-            <attribute name="t-att-data-rating-enabled">rating_message_values and 1 or 0</attribute>
-        </xpath>
-        <xpath expr="//textarea[@name='message']" position="before">
-            <t t-if="rating_enable">
-                <t t-call="rating.rating_star_card">
-                    <t t-set="rating_input_name" t-value="'rating'" />
-                </t>
-            </t>
-        </xpath>
-        <xpath expr="//ul[contains(@class, 'o_website_comments')]//h5" position="after">
-            <t t-if="rating_enable">
-                <div t-if="rating_message_values.get(message.id)">
-                    <t t-call="rating.rating_star_card">
-                        <t t-set="rating_default_value" t-value="rating_message_values.get(message.id)" />
-                        <t t-set="rating_disabled" t-value="True" />
-                    </t>
-                </div>
-            </t>
-        </xpath>
-    </template>
-
     <template id="wizard_checkout" name="Wizard Checkout">
         <ul class="wizard pull-right hidden-xs">
             <li t-att-class="step==10 and 'text-primary' or 'text-muted'" id="step10">
@@ -775,35 +738,35 @@
                 </div>
                 <div class="oe_structure row">
                     <div class='col-md-6 col-md-offset-3'>
-                        <form action="/website_form/" method="post" class="s_website_form form-horizontal container-fluid  text-right-not-xs" enctype="multipart/form-data" data-force_action="shop.sale.order" data-model_name="sale.order" data-success_page="/shop/payment">
+                        <form action="/website_form/" method="post" class="s_website_form form-horizontal container-fluid" enctype="multipart/form-data" data-force_action="shop.sale.order" data-model_name="sale.order" data-success_page="/shop/payment">
                             <div class="form-group form-field o_website_form_custom">
-                                <div class="col-md-4 col-sm-5">
+                                <div class="col-md-3 col-sm-4 text-right-not-xs">
                                     <label class="control-label" for="client_order_ref">Your Reference</label>
                                 </div>
-                                <div class="col-md-8 col-sm-7">
+                                <div class="col-md-7 col-sm-8">
                                     <input type="text" class="form-control o_website_form_input" name="client_order_ref"/>
                                 </div>
                             </div>
                             <div class="form-group form-field o_website_form_custom">
-                                <div class="col-md-4 col-sm-5">
+                                <div class="col-md-3 col-sm-4 text-right-not-xs">
                                     <label class="control-label" for="Give us your feedback...">Give us your feedback...</label>
                                 </div>
-                                <div class="col-md-8 col-sm-7">
+                                <div class="col-md-7 col-sm-8">
                                     <textarea class="form-control o_website_form_input" name="Give us your feedback..." />
                                 </div>
                             </div>
                             <div class="form-group form-field o_website_form_custom">
-                                <div class="col-md-4 col-sm-5">
+                                <div class="col-md-3 col-sm-4 text-right-not-xs">
                                     <label class="control-label" for="a_document">A document to provide ? </label>
                                 </div>
-                                <div class="col-md-8 col-sm-7">
+                                <div class="col-md-7 col-sm-8">
                                     <input type="file" class="form-control o_website_form_input" name="a_document" />
                                 </div>
                             </div>
                             <div class="form-group">
-                                <div class="col-md-4 col-sm-5">
+                                <div class="col-md-3 col-sm-4">
                                 </div>
-                                <div class="col-md-8 col-sm-7">
+                                <div class="col-md-7 col-sm-8">
                                     <a href="/shop/checkout" class="btn btn-default mb32 pull-left"><span class="fa fa-long-arrow-left" /> Previous</a>
                                     <a class="btn btn-primary pull-right mb32 o_website_form_send" href="/shop/confirm_order">Next <span class="fa fa-long-arrow-right" /></a>
                                 </div>
