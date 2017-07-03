@@ -76,7 +76,7 @@ instance.web.Query = instance.web.Class.extend({
     _execute: function (options) {
         var self = this;
         options = options || {};
-        return instance.session.rpc('/web/dataset/search_read', {
+        return instance.session.rpc('/web/dataset/search_read?model=' + this._model.name, {
             model: this._model.name,
             fields: this._fields || false,
             domain: instance.web.pyeval.eval('domains',
