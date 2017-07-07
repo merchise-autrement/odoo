@@ -304,8 +304,8 @@
                                 <group>
                                     <group string="Control-Access" groups="base.group_no_one">
                                         <div class="text-muted" colspan="2">Keep empty for no control</div>
-                                        <field name="type_control_ids" widget="many2many_tags"/>
-                                        <field name="account_control_ids" widget="many2many_tags"/>
+                                        <field name="type_control_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                                        <field name="account_control_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
                                     </group>
                                     <group string="Miscellaneous">
                                         <field name="inbound_payment_method_ids" widget="many2many_checkboxes" attrs="{'invisible': [('type', 'not in', ['bank', 'cash'])]}"/>
@@ -362,11 +362,24 @@
                             <group>
                                 <field name="bank_acc_number"/>
                                 <field name="bank_id"/>
-                            </group><group>
+                            </group>
+                            <group>
                                 <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
                                 <field name="currency_id" options="{'no_create': True}" groups="base.group_multi_currency"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Receivables">
                                 <field name="inbound_payment_method_ids" widget="many2many_checkboxes"/>
+                            </group>
+                            <group string="Payables">
                                 <field name="outbound_payment_method_ids" widget="many2many_checkboxes"/>
+                            </group>
+                            <group name="bank_statement" string="Bank Statements">
+                                <label for="bank_statements_source"/>
+                                <div name="bank_source">
+                                    <field name="bank_statements_source" widget="radio" attrs="{'required': [('type', '=', 'bank')]}"/>
+                                </div>
                             </group>
                         </group>
                     </sheet>
@@ -1263,8 +1276,6 @@
                 <search string="Search Journal Items">
                     <field name="name" filter_domain="['|', ('name','ilike',self), ('ref','ilike',self)]" string="Move"/>
                     <field name="date"/>
-                    <field name="tax_line_id"/>
-                    <field name="tax_ids" />
                     <separator/>
                     <filter string="Unposted" domain="[('move_id.state','=','draft')]" help="Unposted Journal Items"/>
                     <filter name="posted" string="Posted" domain="[('move_id.state','=','posted')]" help="Posted Journal Items"/>
@@ -1274,10 +1285,12 @@
                     <filter string="Payable" domain="[('account_id.internal_type', '=', 'payable')]" help="From Payable accounts" name="payable"/>
                     <filter string="Receivable" domain="[('account_id.internal_type', '=', 'receivable')]" help="From Receivable accounts" name="receivable"/>
                     <separator/>
-                    <field name="move_id" string="Number (Move)"/>
                     <field name="account_id"/>
                     <field name="partner_id"/>
                     <field name="journal_id"/>
+                    <field name="move_id" string="Number (Move)"/>
+                    <field name="tax_line_id"/>
+                    <field name="tax_ids" />
                     <group expand="0" string="Group By">
                         <filter string="Partner" domain="[]" context="{'group_by':'partner_id'}"/>
                         <filter string="Journal" domain="[]" context="{'group_by':'journal_id'}"/>
@@ -1397,7 +1410,6 @@
                     <header>
                         <button name="post" states="draft" string="Post" type="object" class="oe_highlight" groups="account.group_account_invoice"/>
                         <button name="%(action_view_account_move_reversal)d" states="posted" string="Reverse Entry" type="action" groups="account.group_account_invoice"/>
-                        <button name="button_cancel" states="posted" string="Cancel Entry" type="object" groups="account.group_account_invoice"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
@@ -2038,8 +2050,8 @@
                     <field name="name"/>
                     <field name="attribute_value_ids" widget="many2many_tags" groups="product.group_product_variant"/>
                     <field name="lst_price"/>
-                    <field name="taxes_id" widget="many2many_tags"/>
-                    <field name="supplier_taxes_id" widget="many2many_tags"/>
+                    <field name="taxes_id" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                    <field name="supplier_taxes_id" widget="many2many_tags" options="{'color_field': 'color'}"/>
                 </tree>
             </field>
         </record>
@@ -2182,6 +2194,18 @@
             </field>
         </record>
 
+        <record id="view_account_group_search" model="ir.ui.view">
+            <field name="name">account.group.search</field>
+            <field name="model">account.group</field>
+            <field name="arch" type="xml">
+                <search string="Account groups">
+                    <field name="name"
+                           filter_domain="['|', ('code_prefix', '=like', str(self) + '%'), ('name', 'ilike', self)]"
+                           string="Account group"/>
+                </search>
+            </field>
+        </record>
+
         <record id="view_account_group_tree" model="ir.ui.view">
             <field name="name">account.group.tree</field>
             <field name="model">account.group</field>
@@ -2198,6 +2222,7 @@
             <field name="res_model">account.group</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_account_group_search"/>
         </record>
 
         <menuitem id="menu_account_group" name="Groups"

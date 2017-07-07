@@ -238,15 +238,15 @@
                                             </div>
                                         </group>
                                         <group>
-                                            <field name="tax_id" widget="many2many_tags" domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]"
-                                                attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}" options="{'no_create': True}"/>
+                                            <field name="tax_id" widget="many2many_tags" options="{'color_field': 'color', 'no_create': True}" domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]"
+                                                attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
                                             <label for="customer_lead"/>
                                             <div>
                                                 <field name="customer_lead" class="oe_inline"/> days
                                             </div>
                                             <label for="analytic_tag_ids"/>
                                             <div>
-                                                <field name="analytic_tag_ids" widget="many2many_tags"/>
+                                                <field name="analytic_tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
                                             </div>
                                         </group>
                                     </group>
@@ -279,11 +279,11 @@
                                         attrs="{'readonly': [('state', 'in', ('sale','done', 'cancel'))]}"
                                         context="{'company_id': parent.company_id}"
                                         groups="product.group_uom" options='{"no_open": True}'/>
-                                    <field name="analytic_tag_ids" groups="analytic.group_analytic_accounting" widget="many2many_tags"/>
+                                    <field name="analytic_tag_ids" groups="analytic.group_analytic_accounting" widget="many2many_tags" options="{'color_field': 'color'}"/>
                                     <field name="price_unit"
                                         attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
-                                    <field name="tax_id" widget="many2many_tags" domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]"
-                                        attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}" options="{'no_create': True}"/>
+                                    <field name="tax_id" widget="many2many_tags" options="{'color_field': 'color', 'no_create': True}" domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]"
+                                        attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
                                     <field name="discount" groups="sale.group_discount_per_so_line"/>
                                     <field name="price_subtotal" widget="monetary" groups="sale.group_show_price_subtotal"/>
                                     <field name="price_total" widget="monetary" groups="sale.group_show_price_total"/>
@@ -398,15 +398,15 @@
                     <separator/>
                     <filter string="My Activities" name="activities_my"
                         domain="[('activity_ids.user_id', '=', uid)]"/>
-                    <filter string="Today Activities" name="activities_today"
-                        domain="[('activity_ids.date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
-                    <filter string="Upcoming Activities (7 days)" name="activities_week"
-                        domain="['&amp;', ('activity_ids.date_deadline', '&gt;=', context_today().strftime('%Y-%m-%d')),
-                                 ('activity_ids.date_deadline', '&lt;=', (context_today()+datetime.timedelta(days=7)).strftime('%Y-%m-%d'))
-                        ]"/>
-                    <filter string="Overdue Activities" name="activities_overdue"
+                    <separator/>
+                    <filter string="Late Activities" name="activities_overdue"
                         domain="[('activity_ids.date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"
                         help="Show all records which has next action date is before today"/>
+                    <filter string="Today Activities" name="activities_today"
+                        domain="[('activity_ids.date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                    <filter string="Future Activities" name="activities_upcoming_all"
+                        domain="[('activity_ids.date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))
+                        ]"/>
                     <group expand="0" string="Group By">
                         <filter string="Salesperson" domain="[]" context="{'group_by':'user_id'}"/>
                         <filter name="customer" string="Customer" domain="[]" context="{'group_by':'partner_id'}"/>

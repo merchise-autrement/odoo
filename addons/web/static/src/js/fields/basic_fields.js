@@ -17,7 +17,6 @@ var dom = require('web.dom');
 var Domain = require('web.Domain');
 var DomainSelector = require('web.DomainSelector');
 var DomainSelectorDialog = require('web.DomainSelectorDialog');
-var field_utils = require('web.field_utils');
 var framework = require('web.framework');
 var session = require('web.session');
 var utils = require('web.utils');
@@ -476,15 +475,14 @@ var FieldMonetary = InputField.extend({
 
         this._setCurrency();
 
-        if (this.mode === 'edit' && this.currency) {
+        if (this.mode === 'edit') {
             this.tagName = 'div';
             this.className += ' o_input';
-        }
 
-        // use the formatFloat function in edit
-        if (this.mode === 'edit') {
+            // use the formatFloat function in edit
             this.formatType = 'float';
         }
+
         this.formatOptions.currency = this.currency;
         this.formatOptions.digits = [16, 2];
     },
@@ -514,20 +512,19 @@ var FieldMonetary = InputField.extend({
      * @private
      */
     _renderEdit: function () {
-        if (!this.currency) {
-            this._super.apply(this, arguments);
-            return;
-        }
-
         this.$el.empty();
+
         // Prepare and add the input
         this._prepareInput().appendTo(this.$el);
-        // prepare and add the currency symbol
-        var $currencySymbol = $('<span>', {text: this.currency.symbol});
-        if (this.currency.position === "after") {
-            this.$el.append($currencySymbol);
-        } else {
-            this.$el.prepend($currencySymbol);
+
+        if (this.currency) {
+            // Prepare and add the currency symbol
+            var $currencySymbol = $('<span>', {text: this.currency.symbol});
+            if (this.currency.position === "after") {
+                this.$el.append($currencySymbol);
+            } else {
+                this.$el.prepend($currencySymbol);
+            }
         }
     },
     /**
@@ -790,6 +787,23 @@ var FieldText = InputField.extend(TranslatableFieldMixin, {
             this.$el = this.$el.add(this._renderTranslateButton());
         }
         return this._super();
+    },
+
+    //--------------------------------------------------------------------------
+    // Handlers
+    //--------------------------------------------------------------------------
+
+    /**
+     * Stops the enter navigation in a text area.
+     *
+     * @private
+     * @param {OdooEvent} ev
+     */
+    _onKeydown: function (ev) {
+        if (ev.which === $.ui.keyCode.ENTER) {
+            return;
+        }
+        this._super.apply(this, arguments);
     },
 });
 
@@ -1490,6 +1504,52 @@ var FieldBooleanButton = AbstractField.extend({
         var $hover = $('<span>').addClass('o_stat_text o_hover ' + hover_color).text(hover);
         this.$el.append($val).append($hover);
     },
+});
+
+var BooleanToggle = FieldBoolean.extend({
+    events: {
+        'click': '_onClick'
+    },
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
+
+    /**
+     * @override
+     * @private
+     */
+    _render: function () {
+        this._super.apply(this, arguments);
+        this._renderToggleSwitch();
+    },
+
+    /**
+     * Display toggle switch
+     *
+     * @private
+     */
+    _renderToggleSwitch: function () {
+        this.$el.addClass("o_boolean_toggle");
+        var $div = $('<div class="slider"></div>');
+        $div.insertAfter(this.$("input[type=checkbox]"));
+    },
+
+    //--------------------------------------------------------------------------
+    // Handlers
+    //--------------------------------------------------------------------------
+
+    /**
+     * Toggle active value
+     *
+     * @private
+     * @param {MouseEvent} event
+     */
+    _onClick: function (event) {
+        event.stopPropagation();
+        this._setValue(!this.value);
+        this.$el.closest(".o_data_row").toggleClass('text-muted', this.value);
+    },
+
 });
 
 var StatInfo = AbstractField.extend({
@@ -2237,12 +2297,14 @@ var AceEditor = DebouncedField.extend({
 });
 
 return {
+    TranslatableFieldMixin: TranslatableFieldMixin,
     DebouncedField: DebouncedField,
     FieldEmail: FieldEmail,
     FieldBinaryFile: FieldBinaryFile,
     FieldBinaryImage: FieldBinaryImage,
     FieldBoolean: FieldBoolean,
     FieldBooleanButton: FieldBooleanButton,
+    BooleanToggle: BooleanToggle,
     FieldChar: FieldChar,
     FieldDate: FieldDate,
     FieldDateTime: FieldDateTime,

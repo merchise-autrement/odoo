@@ -220,7 +220,6 @@
                         <button name="action_invoice_open" type="object" states="draft" string="Validate" class="oe_highlight" groups="account.group_account_invoice"/>
                         <button name="%(action_account_invoice_payment)d" type="action" states="open" string="Register Payment" groups="account.group_account_invoice" class="oe_highlight"/>
                         <button name="%(action_account_invoice_refund)d" type='action' string='Ask for a Credit Note' groups="account.group_account_invoice" attrs="{'invisible': ['|',('type', 'in', ['in_refund','out_refund']),('state','not in',('open','paid'))]}"/>
-                        <button name="action_invoice_cancel" type="object" states="draft" string="Cancel Bill" groups="account.group_account_invoice"/>
                         <button name="action_invoice_draft" states="cancel" string="Set to Draft" type="object" groups="account.group_account_invoice"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,open,paid" />
                 </header>
@@ -269,13 +268,13 @@
                                     <field name="account_analytic_id" groups="analytic.group_analytic_accounting"
                                         domain="[('company_id', '=', parent.company_id)]"
                                         context="{'default_partner_id': parent.partner_id}"/>
-                                    <field name="analytic_tag_ids" groups="analytic.group_analytic_accounting" widget="many2many_tags"/>
+                                    <field name="analytic_tag_ids" groups="analytic.group_analytic_accounting" widget="many2many_tags" options="{'color_field': 'color'}"/>
                                     <field name="quantity"/>
                                     <field name="uom_id" groups="product.group_uom"/>
                                     <field name="price_unit"/>
                                     <field name="discount" groups="base.group_no_one"/>
-                                    <field name="invoice_line_tax_ids" widget="many2many_tags" context="{'type':parent.type}"
-                                        domain="[('type_tax_use','=','purchase'),('company_id', '=', parent.company_id)]" options="{'no_create': True}"/>
+                                    <field name="invoice_line_tax_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create': True}" context="{'type':parent.type}"
+                                        domain="[('type_tax_use','=','purchase'),('company_id', '=', parent.company_id)]"/>
                                     <field name="price_subtotal"/>
                                     <field name="currency_id" invisible="1"/>
                                 </tree>
@@ -349,14 +348,13 @@
             <field name="arch" type="xml">
                 <form string="Invoice">
                 <header>
-                    <button name="action_invoice_sent" type="object" string="Send by Email" attrs="{'invisible':['|',('sent','=',True), ('state', '!=', 'open')]}" class="oe_highlight" groups="base.group_user"/>
-                    <button name="invoice_print" string="Print Invoice" type="object" attrs="{'invisible':['|',('sent','=',True), ('state', '!=', 'open')]}" class="oe_highlight" groups="base.group_user"/>
-                    <button name="action_invoice_sent" type="object" string="Send by Email" attrs="{'invisible':['|',('sent','=',False), ('state', '!=', 'open')]}" groups="base.group_user"/>
-                    <button name="invoice_print" string="Print Invoice" type="object" attrs="{'invisible':['|',('sent','=',False), ('state', '!=', 'open')]}" groups="base.group_user"/>
+                    <button name="action_invoice_sent" type="object" string="Send by Email" attrs="{'invisible':['|',('sent','=',True), ('state', 'not in', ('open','paid'))]}" class="oe_highlight" groups="base.group_user"/>
+                    <button name="invoice_print" string="Print Invoice" type="object" attrs="{'invisible':['|',('sent','=',True), ('state', 'not in', ('open','paid'))]}" class="oe_highlight" groups="base.group_user"/>
+                    <button name="action_invoice_sent" type="object" string="Send by Email" attrs="{'invisible':['|',('sent','=',False), ('state', 'not in', ('open','paid'))]}" groups="base.group_user"/>
+                    <button name="invoice_print" string="Print Invoice" type="object" attrs="{'invisible':['|',('sent','=',False), ('state', 'not in', ('open','paid'))]}" groups="base.group_user"/>
                     <button name="%(action_account_invoice_payment)d" id="account_invoice_payment_btn" type="action" states="open" string="Register Payment" groups="account.group_account_invoice" class="oe_highlight"/>
                     <button name="action_invoice_open" type="object" states="draft" string="Validate" class="oe_highlight" groups="account.group_account_invoice"/>
                     <button name="%(action_account_invoice_refund)d" type='action' string='Add Credit Note' groups="account.group_account_invoice" attrs="{'invisible': ['|',('type', '=', 'out_refund'), ('state', 'not in', ('open','paid'))]}"/>
-                    <button name="action_invoice_cancel" type="object" states="draft,open" string="Cancel Invoice" groups="base.group_no_one"/>
                     <button name="action_invoice_draft" states="cancel" string="Reset to Draft" type="object" groups="account.group_account_invoice"/>
                     <field name="state" widget="statusbar" nolabel="1" statusbar_visible="draft,open,paid"/>
                 </header>
@@ -402,17 +400,17 @@
                                     <field name="name"/>
                                     <field name="company_id" invisible="1"/>
                                     <field name="account_id" groups="account.group_account_user"
-                                        domain="[('company_id', '=', parent.company_id), ('internal_type', '=', 'other')]"/>
+                                        domain="[('company_id', '=', parent.company_id), ('internal_type', '=', 'other'), ('deprecated', '=', False)]"/>
                                     <field name="account_analytic_id" groups="analytic.group_analytic_accounting"
                                         domain="[('company_id', '=', parent.company_id)]"
                                         context="{'default_partner_id': parent.partner_id}"/>
-                                    <field name="analytic_tag_ids" groups="analytic.group_analytic_accounting" widget="many2many_tags"/>
+                                    <field name="analytic_tag_ids" groups="analytic.group_analytic_accounting" widget="many2many_tags" options="{'color_field': 'color'}"/>
                                     <field name="quantity"/>
                                     <field name="uom_id" groups="product.group_uom"/>
                                     <field name="price_unit"/>
                                     <field name="discount" groups="base.group_no_one"/>
-                                    <field name="invoice_line_tax_ids" widget="many2many_tags" context="{'type':parent.type}"
-                                        domain="[('type_tax_use','=','sale'),('company_id', '=', parent.company_id)]" options="{'no_create': True}"/>
+                                    <field name="invoice_line_tax_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create': True}" context="{'type':parent.type}"
+                                        domain="[('type_tax_use','=','sale'),('company_id', '=', parent.company_id)]"/>
                                     <field name="price_subtotal"/>
                                     <field name="currency_id" invisible="1"/>
                                 </tree>
@@ -527,15 +525,15 @@
                     <separator/>
                     <filter string="My Activities" name="activities_my"
                         domain="[('activity_ids.user_id', '=', uid)]"/>
-                    <filter string="Today Activities" name="activities_today"
-                        domain="[('activity_ids.date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
-                    <filter string="Upcoming Activities (7 days)" name="activities_week"
-                        domain="['&amp;', ('activity_ids.date_deadline', '&gt;=', context_today().strftime('%Y-%m-%d')),
-                                 ('activity_ids.date_deadline', '&lt;=', (context_today()+datetime.timedelta(days=7)).strftime('%Y-%m-%d'))
-                        ]"/>
-                    <filter string="Overdue Activities" name="activities_overdue"
+                    <separator/>
+                    <filter string="Late Activities" name="activities_overdue"
                         domain="[('activity_ids.date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"
                         help="Show all records which has next action date is before today"/>
+                    <filter string="Today Activities" name="activities_today"
+                        domain="[('activity_ids.date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                    <filter string="Future Activities" name="activities_upcoming_all"
+                        domain="[('activity_ids.date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))
+                        ]"/>
                     <group expand="0" string="Group By">
                         <filter name="group_by_partner_id" string="Partner" context="{'group_by':'commercial_partner_id'}"/>
                         <filter string="Salesperson" context="{'group_by':'user_id'}"/>

@@ -489,6 +489,9 @@ class Home(http.Controller):
             if 'error' in request.params and request.params.get('error') == 'access':
                 values['error'] = _('Only employee can access this database. Please contact the administrator.')
 
+        if 'login' not in values and request.session.get('auth_login'):
+            values['login'] = request.session.get('auth_login')
+
         response = request.render('web.login', values)
         response.headers['X-Frame-Options'] = 'DENY'
         return response
@@ -1007,6 +1010,8 @@ class Binary(http.Controller):
         elif status != 200 and download:
             return request.not_found()
 
+        height = int(height)
+        width = int(width)
         if content and (width or height):
             # resize maximum 500*500
             if width > 500:

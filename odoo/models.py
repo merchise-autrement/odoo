@@ -1350,12 +1350,14 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         return False
 
     @api.multi
-    def get_formview_action(self):
+    def get_formview_action(self, access_uid=None):
         """ Return an action to open the document ``self``. This method is meant
             to be overridden in addons that want to give specific view ids for
             example.
-        """
-        view_id = self.sudo().get_formview_id(access_uid=self.env.uid)
+
+        An optional access_uid holds the user that will access the document
+        that could be different from the current user. """
+        view_id = self.sudo().get_formview_id(access_uid=access_uid)
         return {
             'type': 'ir.actions.act_window',
             'res_model': self._name,
@@ -1368,12 +1370,15 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         }
 
     @api.multi
-    def get_access_action(self):
+    def get_access_action(self, access_uid=None):
         """ Return an action to open the document. This method is meant to be
         overridden in addons that want to give specific access to the document.
         By default it opens the formview of the document.
+
+        An optional access_uid holds the user that will access the document
+        that could be different from the current user.
         """
-        return self[0].get_formview_action()
+        return self[0].get_formview_action(access_uid=access_uid)
 
     @api.model
     def search_count(self, args):
@@ -1518,7 +1523,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             name
             for name, field in pycompat.items(self._fields)
             if name not in values
-            if name not in MAGIC_COLUMNS
+            if self._log_access and name not in MAGIC_COLUMNS
             if not (field.inherited and field.related_field.model_name in avoid_models)
         }
 
@@ -2993,7 +2998,10 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         self.check_access_rights('write')
 
         # No user-driven update of these columns
-        for field in itertools.chain(MAGIC_COLUMNS, ('parent_left', 'parent_right')):
+        pop_fields = ['parent_left', 'parent_right']
+        if self._log_access:
+            pop_fields.extend(MAGIC_COLUMNS)
+        for field in pop_fields:
             vals.pop(field, None)
 
         # split up fields into old-style and pure new-style ones
@@ -3261,7 +3269,10 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
 
         # add missing defaults, and drop fields that may not be set by user
         vals = self._add_missing_default_values(vals)
-        for field in itertools.chain(MAGIC_COLUMNS, ('parent_left', 'parent_right')):
+        pop_fields = ['parent_left', 'parent_right']
+        if self._log_access:
+            pop_fields.extend(MAGIC_COLUMNS)
+        for field in pop_fields:
             vals.pop(field, None)
 
         # split up fields into old-style and pure new-style ones
@@ -3817,7 +3828,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                 trans_name, source_id, target_id = get_trans(field, old, new)
                 domain = [('name', '=', trans_name), ('res_id', '=', source_id)]
                 new_val = new_wo_lang[name]
-                if old.env.lang:
+                if old.env.lang and callable(field.translate):
                     # the new value *without lang* must be the old value without lang
                     new_wo_lang[name] = old_wo_lang[name]
                 for vals in Translation.search_read(domain):
@@ -3826,6 +3837,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                     del vals['module']      # duplicated vals is not linked to any module
                     vals['res_id'] = target_id
                     if vals['lang'] == old.env.lang and field.translate is True:
+                        vals['source'] = old_wo_lang[name]
                         # the value should be the new value (given by copy())
                         vals['value'] = new_val
                     Translation.create(vals)

@@ -221,7 +221,9 @@ var ChatAction = Widget.extend(ControlPanelMixin, {
         this.$buttons.on('click', '.o_mail_chat_button_mark_read', function () {
             chat_manager.mark_all_as_read(self.channel, self.domain);
         });
-        this.$buttons.on('click', '.o_mail_chat_button_unstar_all', chat_manager.unstar_all);
+        this.$buttons.on('click', '.o_mail_chat_button_unstar_all', function () {
+            chat_manager.unstar_all();
+        });
 
         this.thread.on('redirect', this, function (res_model, res_id) {
             chat_manager.redirect(res_model, res_id, this.set_channel.bind(this));
@@ -268,6 +270,7 @@ var ChatAction = Widget.extend(ControlPanelMixin, {
                 chat_manager.bus.on('update_starred', self, self.throttled_renderSidebar);
                 chat_manager.bus.on('update_channel_unread_counter', self, self.throttled_renderSidebar);
                 chat_manager.bus.on('update_dm_presence', self, self.throttled_renderSidebar);
+                chat_manager.bus.on('activity_updated', self, self.throttled_renderSidebar);
                 self.thread.$el.on("scroll", null, _.debounce(function () {
                     if (self.thread.is_at_bottom()) {
                         chat_manager.mark_channel_as_seen(self.channel);

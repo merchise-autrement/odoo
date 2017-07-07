@@ -356,6 +356,15 @@ function createModel(params) {
 
     addMockEnvironment(widget, params);
 
+    // override the model's 'destroy' so that it calls 'destroy' on the widget
+    // instead, as the widget is the parent of the model and the mockServer.
+    model.destroy = function () {
+        // remove the override to properly destroy the model when it will be
+        // called the second time (by its parent)
+        delete model.destroy;
+        widget.destroy();
+    };
+
     return model;
 }
 
@@ -369,6 +378,7 @@ function createModel(params) {
  * @param {jqueryElement} $to
  * @param {Object} [options]
  * @param {string} [options.position=center] target position
+ * @param {string} [options.disableDrop=false] whether to trigger the drop action
  */
 function dragAndDrop($el, $to, options) {
     var position = (options && options.position) || 'center';
@@ -396,11 +406,13 @@ function dragAndDrop($el, $to, options) {
         pageY: toOffset.top
     }));
 
-    $el.trigger($.Event("mouseup", {
-        which: 1,
-        pageX: toOffset.left,
-        pageY: toOffset.top
-    }));
+    if (!(options && options.disableDrop)) {
+        $el.trigger($.Event("mouseup", {
+            which: 1,
+            pageX: toOffset.left,
+            pageY: toOffset.top
+        }));
+    }
 }
 
 /**
