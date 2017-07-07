@@ -251,23 +251,15 @@ def patch_logging(override=True, force=False):
             exc_info = record.exc_info
             if not exc_info:
                 return res
-            from openerp.exceptions import Warning
-            ignored = (Warning, )
+            from odoo.exceptions import UserError
+            ignored = (UserError, )
             try:
-                from openerp.exceptions import RedirectWarning
+                from odoo.exceptions import RedirectWarning
                 ignored += (RedirectWarning, )
             except ImportError:
                 pass
-            try:
-                from openerp.exceptions import except_orm
-            except ImportError:
-                from openerp.osv.orm import except_orm
+            from odoo.exceptions import except_orm
             ignored += (except_orm, )
-            try:
-                from openerp.osv.osv import except_osv
-                ignored += (except_osv, )
-            except ImportError:
-                pass
             _type, value, _tb = exc_info
             return not isinstance(value, ignored)
 
