@@ -98,11 +98,11 @@
 
     <template id="portal_layout" name="Portal Layout">
         <t t-call="website.layout">
-            <div class="container mt16 o_website_portal">
+            <div class="container mt16 o_portal">
                 <div class="oe_structure">
                     <div t-if="not no_breadcrumbs" class="row">
                         <div class="col-sm-12">
-                            <ol class="breadcrumb mt8 o_portal_submenu">
+                            <ol class="breadcrumb o_portal_submenu">
                                 <li><a href="/my/home"><i class="fa fa-home"/></a></li>
                             </ol>
                         </div>
@@ -143,6 +143,9 @@
             <t t-set="my_details" t-value="True"/>
             <div class="o_my_home_content">
                 <div class="oe_structure"></div>
+                <h3 class="page-header">Your Documents</h3>
+                <ul class="o_portal_docs list-group">
+                </ul>
             </div>
             <div class="col-md-12 oe_structure"/>
         </t>
@@ -172,7 +175,7 @@
                 <div class="container">
                   <div class="row">
                         <div class="col-sm-6">
-                            <ol class="breadcrumb mt8">
+                            <ol class="breadcrumb">
                                 <li><a href="/my/home"><i class="fa fa-home"/></a></li>
                                 <li>Details</li>
                             </ol>
@@ -181,7 +184,7 @@
                     <h1>Contact Details</h1>
                     <form action="/my/account" method="post">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                        <div class="row o_website_portal_details">
+                        <div class="row o_portal_details">
                             <div class="col-md-8">
                                 <div class="row">
                                     <div class="col-md-12">
