@@ -475,13 +475,6 @@ class EventCounterChain(object):
             return type(self)(self, o)
     __ror__ = __or__
 
-    def __sub__(self, o):
-        pos = self.events.index(o)  # ValueError possible
-        o._unclaim(self)
-        events = self.events[:pos] + self.events[pos + 1:]
-        if len(events) > 1:
-            return type(self)(*events)
-
     def __repr__(self):
         return '(%s)' % ' | '.join(repr(e) for e in self.events)
 

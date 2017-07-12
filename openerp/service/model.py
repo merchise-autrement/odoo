@@ -130,7 +130,7 @@ def check(f):
                     raise
                 wait_time = random.uniform(0.0, 2 ** tries)
                 tries += 1
-                _logger.info("%s, retry %d/%d in %.04f sec..." % (errorcodes.lookup(e.pgcode), tries, MAX_TRIES_ON_CONCURRENCY_FAILURE, wait_time))
+                _logger.warn("%s, retry %d/%d in %.04f sec..." % (errorcodes.lookup(e.pgcode), tries, MAX_TRIES_ON_CONCURRENCY_FAILURE, wait_time))
                 time.sleep(wait_time)
             except IntegrityError, inst:
                 registry = openerp.registry(dbname)
