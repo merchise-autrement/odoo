@@ -5332,6 +5332,11 @@ class BaseModel(object):
         """
         if len(self) == 1:
             return self
+        _logger.error(
+            'ValueError: expected singleton: %s',
+            self,
+            extra=dict(stack=True)
+        )
         raise except_orm("ValueError", "Expected singleton: %s" % self)
 
     def with_env(self, env):
