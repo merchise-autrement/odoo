@@ -272,6 +272,7 @@ def load_information_from_description_file(module, mod_path=None):
 
             globals_dict = {
                 'ODOO_VERSION_INFO': release.version_info,
+                'MAJOR_ODOO_VERSION': release.version_info[0],
             }
             f = tools.file_open(terp_file)
             try:
