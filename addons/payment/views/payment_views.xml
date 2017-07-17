@@ -169,6 +169,7 @@
                     <field name="sequence" widget="handle"/>
                     <field name="name"/>
                     <field name="provider"/>
+                    <field name="website_published"/>
                     <field name="environment"/>
                 </tree>
             </field>
@@ -300,6 +301,7 @@
             action='action_payment_transaction'
             id='payment_transaction_menu'
             parent='root_payment_menu'
+            groups="base.group_no_one"
             sequence='20' />
 
         <!-- Payment Tokens -->

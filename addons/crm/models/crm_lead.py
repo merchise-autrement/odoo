@@ -30,7 +30,6 @@ CRM_LEAD_FIELDS_TO_MERGE = [
     'city',
     'contact_name',
     'description',
-    'fax',
     'mobile',
     'partner_name',
     'phone',
@@ -125,7 +124,6 @@ class Lead(models.Model):
     state_id = fields.Many2one("res.country.state", string='State')
     country_id = fields.Many2one('res.country', string='Country')
     phone = fields.Char('Phone')
-    fax = fields.Char('Fax')
     mobile = fields.Char('Mobile')
     function = fields.Char('Job Position')
     title = fields.Many2one('res.partner.title')
@@ -225,7 +223,6 @@ class Lead(models.Model):
                 'email_from': partner.email,
                 'phone': partner.phone,
                 'mobile': partner.mobile,
-                'fax': partner.fax,
                 'zip': partner.zip,
                 'function': partner.function,
                 'website': partner.website,
@@ -354,7 +351,52 @@ class Lead(models.Model):
         for lead in self:
             stage_id = lead._stage_find(domain=[('probability', '=', 100.0), ('on_change', '=', True)])
             lead.write({'stage_id': stage_id.id, 'probability': 100})
-        return True
+            if lead.user_id and lead.team_id and lead.planned_revenue:
+                query = """
+                    SELECT
+                        SUM(CASE WHEN user_id = %(user_id)s THEN 1 ELSE 0 END) as total_won,
+                        MAX(CASE WHEN date_closed >= CURRENT_DATE - INTERVAL '30 days' AND user_id = %(user_id)s THEN planned_revenue ELSE 0 END) as max_user_30,
+                        MAX(CASE WHEN date_closed >= CURRENT_DATE - INTERVAL '7 days' AND user_id = %(user_id)s THEN planned_revenue ELSE 0 END) as max_user_7,
+                        MAX(CASE WHEN date_closed >= CURRENT_DATE - INTERVAL '30 days' AND team_id = %(team_id)s THEN planned_revenue ELSE 0 END) as max_team_30,
+                        MAX(CASE WHEN date_closed >= CURRENT_DATE - INTERVAL '7 days' AND team_id = %(team_id)s THEN planned_revenue ELSE 0 END) as max_team_7
+                    FROM crm_lead
+                    WHERE
+                        type = 'opportunity'
+                    AND
+                        active = True
+                    AND
+                        probability = 100
+                    AND
+                        DATE_TRUNC('year', date_closed) = DATE_TRUNC('year', CURRENT_DATE)
+                    AND
+                        (user_id = %(user_id)s OR team_id = %(team_id)s)
+                """
+                lead.env.cr.execute(query, {'user_id': lead.user_id.id,
+                                            'team_id': lead.team_id.id})
+                query_result = self.env.cr.dictfetchone()
+
+                message = False
+                if query_result['total_won'] == 1:
+                    message = _('Go, go, go! Congrats for your first deal.')
+                elif query_result['max_team_30'] == lead.planned_revenue:
+                    message = _('Boom! Team record for the past 30 days.')
+                elif query_result['max_team_7'] == lead.planned_revenue:
+                    message = _('Yeah! Deal of the last 7 days for the team.')
+                elif query_result['max_user_30'] == lead.planned_revenue:
+                    message = _('You just beat your personal record for the past 30 days.')
+                elif query_result['max_user_7'] == lead.planned_revenue:
+                    message = _('You just beat your personal record for the past 7 days.')
+
+                if message:
+                    return {
+                        'effect': {
+                            'fadeout': 'slow',
+                            'message': message,
+                            'img_url': '/web/image/%s/%s/image' % (lead.team_id.user_id._name, lead.team_id.user_id.id) if lead.team_id.user_id.image else '/web/static/src/img/smile.svg',
+                            'type': 'rainbow_man',
+                        }
+                    }
+            return True
 
     @api.multi
     def action_schedule_meeting(self):
@@ -706,7 +748,6 @@ class Lead(models.Model):
             'phone': self.phone,
             'mobile': self.mobile,
             'email': email_split[0] if email_split else False,
-            'fax': self.fax,
             'title': self.title.id,
             'function': self.function,
             'street': self.street,

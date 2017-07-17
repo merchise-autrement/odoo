@@ -224,12 +224,11 @@ class SaleOrder(models.Model):
             'payment_term_id': self.partner_id.property_payment_term_id and self.partner_id.property_payment_term_id.id or False,
             'partner_invoice_id': addr['invoice'],
             'partner_shipping_id': addr['delivery'],
+            'user_id': self.partner_id.user_id.id or self.env.uid
         }
         if self.env['ir.config_parameter'].sudo().get_param('sale.use_sale_note') and self.env.user.company_id.sale_note:
             values['note'] = self.with_context(lang=self.partner_id.lang).env.user.company_id.sale_note
 
-        if self.partner_id.user_id:
-            values['user_id'] = self.partner_id.user_id.id
         if self.partner_id.team_id:
             values['team_id'] = self.partner_id.team_id.id
         self.update(values)
@@ -743,32 +742,34 @@ class SaleOrderLine(models.Model):
 
         return line
 
+    def _update_line_quantity(self, values):
+        orders = self.mapped('order_id')
+        for order in orders:
+            order_lines = self.filtered(lambda x: x.order_id == order)
+            msg = ""
+            if any([values['product_uom_qty'] < x.product_uom_qty for x in order_lines]):
+                msg += "<b>" + _(
+                    'The ordered quantity has been decreased. Do not forget to take it into account on your invoices and delivery orders.') + '</b>'
+            msg += "<ul>"
+            for line in order_lines:
+                msg += "<li> %s:" % (line.product_id.display_name,)
+                msg += "<br/>" + _("Ordered Quantity") + ": %s -> %s <br/>" % (
+                line.product_uom_qty, float(values['product_uom_qty']),)
+                if line.product_id.type in ('consu', 'product'):
+                    msg += _("Delivered Quantity") + ": %s <br/>" % (line.qty_delivered,)
+                msg += _("Invoiced Quantity") + ": %s <br/>" % (line.qty_invoiced,)
+            msg += "</ul>"
+            order.message_post(body=msg)
+
     @api.multi
     def write(self, values):
         lines = False
-        changed_lines = False
         if 'product_uom_qty' in values:
             precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
             lines = self.filtered(
                 lambda r: r.state == 'sale' and float_compare(r.product_uom_qty, values['product_uom_qty'], precision_digits=precision) == -1)
-            changed_lines = self.filtered(
-                lambda r: r.state == 'sale' and float_compare(r.product_uom_qty, values['product_uom_qty'], precision_digits=precision) != 0)
-            if changed_lines:
-                orders = self.mapped('order_id')
-                for order in orders:
-                    order_lines = changed_lines.filtered(lambda x: x.order_id == order)
-                    msg = ""
-                    if any([values['product_uom_qty'] < x.product_uom_qty for x in order_lines]):
-                        msg += "<b>" + _('The ordered quantity has been decreased. Do not forget to take it into account on your invoices and delivery orders.') + '</b>'
-                    msg += "<ul>"
-                    for line in order_lines:
-                        msg += "<li> %s:" % (line.product_id.display_name,)
-                        msg += "<br/>" + _("Ordered Quantity") + ": %s -> %s <br/>" % (line.product_uom_qty, float(values['product_uom_qty']),)
-                        if line.product_id.type in ('consu', 'product'):
-                            msg += _("Delivered Quantity") + ": %s <br/>" % (line.qty_delivered,)
-                        msg += _("Invoiced Quantity") + ": %s <br/>" % (line.qty_invoiced,)
-                    msg += "</ul>"
-                    order.message_post(body=msg)
+            self.filtered(
+                lambda r: r.state == 'sale' and float_compare(r.product_uom_qty, values['product_uom_qty'], precision_digits=precision) != 0)._update_line_quantity(values)
         result = super(SaleOrderLine, self).write(values)
         if lines:
             lines._action_procurement_create()
@@ -923,6 +924,21 @@ class SaleOrderLine(models.Model):
             uom=self.product_uom.id
         )
 
+        result = {'domain': domain}
+
+        title = False
+        message = False
+        warning = {}
+        if product.sale_line_warn != 'no-message':
+            title = _("Warning for %s") % product.name
+            message = product.sale_line_warn_msg
+            warning['title'] = title
+            warning['message'] = message
+            result = {'warning': warning}
+            if product.sale_line_warn == 'block':
+                self.product_id = False
+                return result
+
         name = product.name_get()[0][1]
         if product.description_sale:
             name += '\n' + product.description_sale
@@ -934,22 +950,11 @@ class SaleOrderLine(models.Model):
             vals['price_unit'] = self.env['account.tax']._fix_tax_included_price(self._get_display_price(product), product.taxes_id, self.tax_id)
         self.update(vals)
 
-        title = False
-        message = False
-        warning = {}
-        if product.sale_line_warn != 'no-message':
-            title = _("Warning for %s") % product.name
-            message = product.sale_line_warn_msg
-            warning['title'] = title
-            warning['message'] = message
-            if product.sale_line_warn == 'block':
-                self.product_id = False
-            return {'warning': warning}
-        return {'domain': domain}
+        return result
 
     @api.onchange('product_uom', 'product_uom_qty')
     def product_uom_change(self):
-        if not self.product_uom:
+        if not self.product_uom or not self.product_id:
             self.price_unit = 0.0
             return
         if self.order_id.pricelist_id and self.order_id.partner_id:
