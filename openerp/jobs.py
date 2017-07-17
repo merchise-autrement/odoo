@@ -774,6 +774,12 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs,
                 raise TypeError(
                     'Invalid method name %r for model %r' % (methodname, model)
                 )
+    except SoftTimeLimitExceeded as e:
+        # Well, SoftTimeLimitExceeded may occur anywhere in the code.  It's
+        # really a signal.  When integrating with `sentrylog`, I think the
+        # best option is collect this events per job: ``(model, methodname)``.
+        e._sentry_fingerprint = [type(e), model, methodname]
+        raise e
     except OperationalError as error:
         if error.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
             _report_current_failure(dbname, uid, job_uuid, error)
