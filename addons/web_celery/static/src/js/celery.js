@@ -1,6 +1,11 @@
-openerp.web_celery = function(instance){
+odoo.define('web_celery', function(require){
+    var Bus = require('bus.bus');
     var pending_jobs = 0;
-    var _t = openerp._t;
+    var Widget = require('web.Widget');
+    var core = require('web.core');
+    var _t = core._t;
+    var framework = require('web.framework');
+    var CrashManager = require('web.CrashManager');
 
     // That's 20 minutes!  This should account for the time in the queue plus
     // the running time.
@@ -19,7 +24,7 @@ openerp.web_celery = function(instance){
      *  `celery.rst` for the specification.
      *
      */
-    openerp.JobThrobber = openerp.Widget.extend({
+    var JobThrobber = Widget.extend({
         init: function(parent, options) {
             this._super(parent);
             var uuid, bus,
@@ -33,7 +38,7 @@ openerp.web_celery = function(instance){
             var channel = this.channel = get_progress_channel(options.params);
             // The CrossTabBus cannot be used cause it's implemented to be
             // a singleton.
-            bus = this.bus = new openerp.bus.BusClass();
+            bus = this.bus = new Bus.Bus();
             bus.add_channel(channel);
             bus.on('notification', this, this.on_job_notification);
             pending_jobs += 1;
@@ -129,7 +134,7 @@ openerp.web_celery = function(instance){
         },
     });
 
-    var FailureSuccessReporting = openerp.JobThrobber.extend({
+    var FailureSuccessReporting = JobThrobber.extend({
         show_success: function(message) {
             var next_action = message.result,
                 parent = this.getParent(),
@@ -164,7 +169,7 @@ openerp.web_celery = function(instance){
                 );
             }
             else {
-                var cm = new instance.web.CrashManager();
+                var cm = new CrashManager();
                 // Our 'message' has the error data in 'message.message'. This
                 // can be passed to the CrashManager as the 'data' attribute
                 // of the error object.
@@ -242,9 +247,7 @@ openerp.web_celery = function(instance){
         }
     });
 
-    openerp.ProgressBarThrobber = ProgressBarThrobber;
-
-    openerp.SpinnerThrobber = FailureSuccessReporting.extend({
+    var SpinnerThrobber = FailureSuccessReporting.extend({
         SPINNER_WAIT: 250,
 
         show: function() {
@@ -269,14 +272,14 @@ openerp.web_celery = function(instance){
 
         updateView: function() {
             if (!this.active) {
-                instance.web.blockUI();
+                framework.blockUI();
                 this.active = true;
             }
         },
 
         show_success: function() {
             if (this.active) {
-                instance.web.unblockUI();
+                framework.unblockUI();
                 this.active = false;
             }
             this._super.apply(this, arguments);
@@ -284,7 +287,7 @@ openerp.web_celery = function(instance){
 
         show_failure: function() {
             if (this.active) {
-                instance.web.unblockUI();
+                framework.unblockUI();
                 this.active = false;
             }
             this._super.apply(this, arguments);
@@ -292,15 +295,16 @@ openerp.web_celery = function(instance){
 
     });
 
-    if (!!instance){
-        if(!!instance.hasOwnProperty('web')){
-            instance.web.client_actions.add('wait_for_background_job',
-                                            'openerp.ProgressBarThrobber');
-            instance.web.client_actions.add('quietly_wait_for_background_job',
-                                            'openerp.SpinnerThrobber');
-        }
-    }
-};
+    core.action_registry.add('wait_for_background_job', ProgressBarThrobber);
+    core.action_registry.add('quietly_wait_for_background_job', SpinnerThrobber);
+
+    return {
+        JobThrobber: JobThrobber,
+        FailureSuccessReporting: FailureSuccessReporting,
+        ProgressBarThrobber: ProgressBarThrobber,
+        SpinnerThrobber: SpinnerThrobber
+    };
+});
 
 // Local Variables:
 // indent-tabs-mode: nil
