@@ -32,10 +32,6 @@ logger = logging.getLogger(__name__)
 del logging
 
 from xoutil.context import context as ExecutionContext
-try:
-    from xoutil.cl.ids import str_uuid as new_uuid
-except ImportError:
-    from xoutil.uuid import uuid as new_uuid
 
 from kombu import Exchange, Queue
 
@@ -752,9 +748,10 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs,
     Retries are scheduled with a minimum delay of 300ms.
 
     '''
-    if job_uuid is Unset:
-        job_uuid = self.request.id if self.request.id else new_uuid()
     from odoo.models import BaseModel
+    if job_uuid is Unset:
+        from uuid import uuid1
+        job_uuid = self.request.id if self.request.id else str(uuid1())
     context = kwargs.pop('context', None)
     try:
         with MaybeRecords(dbname, uid, model, ids, context=context) as r:
