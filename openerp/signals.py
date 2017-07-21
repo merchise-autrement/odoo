@@ -267,7 +267,6 @@ class Signal(object):
         framework.)
 
         '''
-        from xoeuf.modules import get_object_module
         if isinstance(receiver, Receiver):
             receiver = receiver.receiver
         module = get_object_module(receiver, typed=True)
@@ -515,3 +514,26 @@ models.Model.fields_view_get = fields_view_get
 models.BaseModel.create = create
 models.BaseModel.write = write
 models.BaseModel.unlink = unlink
+
+
+# Don't require xoeuf to be installed.  Odoo should not depend on `xoeuf`,
+# shouldn't it?  But it's fine it depends on xoutil.
+import re
+_ADDONS_NAMESPACE = re.compile(r'^openerp\.addons\.(?P<module>[^\.]+)\.')
+
+
+def get_object_module(obj, typed=False):
+    '''Return the name of the OpenERP addon the `obj` has been defined.
+
+    If the `obj` is not defined (imported) from the "openerp.addons."
+    namespace, return None.
+
+    '''
+    from xoutil.names import nameof
+    name = nameof(obj, inner=True, full=True, typed=typed)
+    match = _ADDONS_NAMESPACE.match(name)
+    if match:
+        module = match.group(1)
+        return module
+    else:
+        return None
