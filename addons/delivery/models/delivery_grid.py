@@ -35,9 +35,6 @@ class PriceRule(models.Model):
     list_price = fields.Float('Sale Price', digits=dp.get_precision('Product Price'), required=True, default=0.0)
     variable_factor = fields.Selection([('weight', 'Weight'), ('volume', 'Volume'), ('wv', 'Weight * Volume'), ('price', 'Price'), ('quantity', 'Quantity')], 'Variable Factor', required=True, default='weight')
 
-    # TODO remove me, should be replaced by fixed price
-    standard_price = fields.Float('Cost Price', digits=dp.get_precision('Product Price'), required=True, default=0.0)
-
 
 class ProviderGrid(models.Model):
     _inherit = 'delivery.carrier'
@@ -58,7 +55,7 @@ class ProviderGrid(models.Model):
             price_unit = order.company_id.currency_id.with_context(date=order.date_order).compute(price_unit, order.pricelist_id.currency_id)
 
         return {'success': True,
-                'price': self.fixed_price,
+                'price': price_unit,
                 'error_message': False,
                 'warning_message': False}
 
@@ -104,12 +101,12 @@ class ProviderGrid(models.Model):
             carrier = self._match_address(p.partner_id)
             if not carrier:
                 raise ValidationError(_('Error: no matching grid.'))
-            res = res + [{'exact_price': p.carrier_id._get_price_available(p.sale_id),  # TODO cleanme
+            res = res + [{'exact_price': p.carrier_id._get_price_available(p.sale_id) if p.sale_id else 0.0,  # TODO cleanme
                           'tracking_number': False}]
         return res
 
-    def base_on_rule__get_tracking_link(self, pickings):
-        raise NotImplementedError()
+    def base_on_rule_get_tracking_link(self, picking):
+        return False
 
-    def base_on_rule__cancel_shipment(self, pickings):
+    def base_on_rule_cancel_shipment(self, pickings):
         raise NotImplementedError()
