@@ -104,7 +104,7 @@
                     <div class="user-heading">
                         <h3>
                             Version <t t-esc="db_info.server_version"/>
-                            (Community Edition)
+                            (Community Edition by Merchise Autrement Ltd)
                         </h3>
                         <t t-if="db_info.expiration_date">
                             <h5>Database expiration: <t t-esc="new moment(db_info.expiration_date).format('LL')"/></h5>
@@ -115,14 +115,26 @@
                             <div id="settings" class="tab-pane active">
                                 <h4>Copyright © 2004-2015 Odoo S.A.</h4>
                                 <p>Odoo is a trademark of <a target="_blank" href="https://www.odoo.com" style="text-decoration: underline;">Odoo S.A.</a></p>
-                                <p>Licenced under the terms of <a target="_blank" href="http://www.gnu.org/licenses/lgpl.html" style="text-decoration: underline;">GNU Lesser General Public License</a></p>
-                                <p>For more information visit <a target="_blank" href="https://www.odoo.com" style="text-decoration: underline;">Odoo.com</a></p>
-                                <p>
-                                  <a href="https://www.odoo.com/web/about/facebook"><i class="fa fa-facebook-square fa-3x social-fb"></i></a>
-                                  <a href="https://www.odoo.com/web/about/twitter"><i class="fa fa-twitter-square fa-3x social-tw"></i></a>
-                                  <a href="https://www.odoo.com/web/about/googleplus"><i class="fa fa-google-plus-square fa-3x social-gp"></i></a>
-                                  <a href="https://www.odoo.com/web/about/linkedin"><i class="fa fa-linkedin-square fa-3x social-lk"></i></a>
-                                </p>
+                                <div class="merchise-legal">
+                                  <p>
+                                    This version of Odoo is distributed by <a
+                                    href="https://github.com/merchise-autrement">Merchise
+                                    Autrement, Ltd</a>. All modifications to the
+                                    Odoo core are published in <a
+                                    href="https://github.com/merchise-autrement/odoo/tree/merchise-9.0">github.com</a>.
+                                  </p>
+                                  <p>
+                                    Merchise Autrement is not a partner of Odoo SA.
+                                  </p>
+                                  <p>
+                                    This program comes with ABSOLUTELY NO
+                                    WARRANTY. This is free software, and you
+                                    are welcome to redistribute it under the
+                                    terms of the <a
+                                    href="http://www.gnu.org/licenses/lgpl.html">GNU
+                                    Lesser General Public License.</a>
+                                  </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -188,7 +200,7 @@
 <t t-name="ViewManager.switch-buttons">
     <t t-foreach="views" t-as="view">
         <button type="button" t-att-accesskey="view.accesskey"
-            t-attf-class="btn btn-default fa #{view.icon} oe-cp-switch-#{view.type}" 
+            t-attf-class="btn btn-default fa #{view.icon} oe-cp-switch-#{view.type}"
             t-att-data-view-type="view.type" t-att-title="view.label"/>
     </t>
 </t>
@@ -205,7 +217,8 @@
 <t t-name="WebClient.DebugDropdown">
     <t t-if="active_view.type === 'form'">
         <t t-if="active_view.controller.get_selected_ids().length == 1">
-            <li class="oe_metadata"><a href="#" data-action="get_metadata">View Metadata</a></li>
+            <li class="oe_metadata"><a href="#"
+            data-action="get_metadata">View Metadata</a></li>
         </t>
         <li class="oe_layout"><a href="#" data-action="toggle_layout_outline">Toggle Form Layout Outline</a></li>
         <li class="oe_defaults"><a href="#" data-action="set_defaults">Set Defaults</a></li>
@@ -217,8 +230,8 @@
     <t t-if="is_admin">
         <li class="oe_translate"><a href="#" data-action="translate">Technical Translation</a></li>
         <li class="oe_edit_view"><a href="#" data-action="edit" data-model="ir.ui.view" t-att-data-id="active_view.controller.fields_view.view_id">Edit <t t-esc="_.str.capitalize(view.fields_view.type)"/> View</a></li>
-        <li class="oe_edit_searchview" t-if="searchview"><a href="#" data-action="edit" data-model="ir.ui.view" t-att-data-id="searchview.view_id">Edit SearchView</a></li> 
-        <li class="oe_edit_action" t-if="action"><a href="#" data-action="edit" t-att-data-model="action.type" t-att-data-id="action.id">Edit Action</a></li> 
+        <li class="oe_edit_searchview" t-if="searchview"><a href="#" data-action="edit" data-model="ir.ui.view" t-att-data-id="searchview.view_id">Edit SearchView</a></li>
+        <li class="oe_edit_action" t-if="action"><a href="#" data-action="edit" t-att-data-model="action.type" t-att-data-id="action.id">Edit Action</a></li>
         <li class="oe_edit_workflow"><a href="#" data-action="edit_workflow">Edit Workflow</a></li>
         <li class="oe_print_workflow"><a href="#" data-action="print_workflow">Print Workflow</a></li>
         <li class="divider"/>
