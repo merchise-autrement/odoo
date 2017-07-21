@@ -265,7 +265,6 @@ class im_chat_presence(osv.Model):
 
     def update(self, cr, uid, presence=True, context=None):
         """ register the poll, and change its im status if necessary. It also notify the Bus if the status has changed. """
-        from xoeuf.tools import str2dt
         presence_ids = self.search(cr, uid, [('user_id', '=', uid)], context=context)
         presences = self.browse(cr, uid, presence_ids, context=context)
         # set the default values
@@ -287,11 +286,11 @@ class im_chat_presence(osv.Model):
                 vals['status'] = 'online'
             else:
                 threshold = now - AWAY_DELTA
-                if str2dt(presences[0].last_presence) < threshold:
+                if datetime.datetime.strptime(presences[0].last_presence) < threshold:
                     vals['status'] = 'away'
             send_notification = presences[0].status != vals['status']
             # write only if the last_poll is passed TIMEOUT, or if the status has changed
-            delta = now - str2dt(presences[0].last_poll)
+            delta = now - datetime.datetime.strptime(presences[0].last_poll)
             if (delta > TIMEOUT_DELTA or send_notification):
                 self.write(cr, uid, presence_ids, vals, context=context)
         # avoid TransactionRollbackError
@@ -306,8 +305,7 @@ class im_chat_presence(osv.Model):
 
     def check_users_disconnection(self, cr, uid, context=None):
         """ disconnect the users having a too old last_poll """
-        from xoeuf.tools import dt2str
-        dt = dt2str(datetime.datetime.now() - DISCONNECTION)
+        dt = datetime.datetime.strptime(datetime.datetime.now() - DISCONNECTION)
         presence_ids = self.search(cr, uid, [('last_poll', '<', dt), ('status', '!=', 'offline')], context=context)
         self.write(cr, uid, presence_ids, {'status': 'offline'}, context=context)
         presences = self.browse(cr, uid, presence_ids, context=context)
