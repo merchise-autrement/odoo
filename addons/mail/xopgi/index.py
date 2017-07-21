@@ -25,9 +25,6 @@ from __future__ import (division as _py3_division,
 
 from openerp import SUPERUSER_ID
 from openerp.models import AbstractModel, fields, Model
-from openerp.addons.mail.mail_thread import mail_thread as _base_mail_thread
-
-from xoeuf.osv.orm import get_modelname
 
 # NOTICE: In several methods we use the SUPERUSER_ID to make the sure the
 # index works regardless of the user using the system.  BUT THIS SHOULD NOT BE
@@ -99,8 +96,7 @@ class MailThreadIndex(AbstractModel):
       threads.
 
     '''
-    _name = get_modelname(_base_mail_thread)
-    _inherit = _name
+    _inherit = 'mail.thread'
 
     def _get_message_index(self, cr, uid, ids, fields, arg, context=None):
         result = dict.fromkeys(ids, None)  # Make sure to returns some value
@@ -172,10 +168,11 @@ class MailThreadIndex(AbstractModel):
         for thread in self.browse(cr, uid, ids, context=context):
             if not thread.thread_index:
                 imd = self.pool['ir.model.data']
-                search = lambda r: self._thread_by_index(
-                    cr, uid, r, context=context
+                reference = generate_reference(
+                    lambda r: self._thread_by_index(
+                        cr, uid, r, context=context
+                    )
                 )
-                reference = generate_reference(search)
                 if reference:
                     imd.create(
                         cr, uid,
