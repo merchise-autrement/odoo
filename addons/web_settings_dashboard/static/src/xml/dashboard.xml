@@ -161,6 +161,31 @@
             </div>
             <hr/>
             <div class="row">
+              <div class="col-md-12">
+                <div class="merchise-legal">
+                  <p>
+                    This version of Odoo is distributed by <a
+                    href="https://github.com/merchise-autrement">Merchise
+                    Autrement, Ltd</a>. All modifications to the
+                    Odoo core are published in <a
+                    href="https://github.com/merchise-autrement/odoo/tree/merchise-10.0">github.com</a>.
+                  </p>
+                  <p>
+                    Merchise Autrement is not a partner of Odoo SA.
+                  </p>
+                  <p>
+                    This program comes with ABSOLUTELY NO
+                    WARRANTY. This is free software, and you
+                    are welcome to redistribute it under the
+                    terms of the <a
+                    href="http://www.gnu.org/licenses/lgpl.html">GNU
+                    Lesser General Public License.</a>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <hr/>
+            <div class="row">
                 <div class="col-md-12">
                     <a t-if="debug != true" class="oe_activate_debug_mode pull-right" href="?debug" >Activate the developer mode</a>
                     <br t-if="debug != true"/>
