@@ -286,11 +286,11 @@ class im_chat_presence(osv.Model):
                 vals['status'] = 'online'
             else:
                 threshold = now - AWAY_DELTA
-                if datetime.datetime.strptime(presences[0].last_presence) < threshold:
+                if datetime.datetime.strptime(presences[0].last_presence, DEFAULT_SERVER_DATETIME_FORMAT) < threshold:
                     vals['status'] = 'away'
             send_notification = presences[0].status != vals['status']
             # write only if the last_poll is passed TIMEOUT, or if the status has changed
-            delta = now - datetime.datetime.strptime(presences[0].last_poll)
+            delta = now - datetime.datetime.strptime(presences[0].last_poll, DEFAULT_SERVER_DATETIME_FORMAT)
             if (delta > TIMEOUT_DELTA or send_notification):
                 self.write(cr, uid, presence_ids, vals, context=context)
         # avoid TransactionRollbackError
@@ -305,7 +305,7 @@ class im_chat_presence(osv.Model):
 
     def check_users_disconnection(self, cr, uid, context=None):
         """ disconnect the users having a too old last_poll """
-        dt = datetime.datetime.strptime(datetime.datetime.now() - DISCONNECTION)
+        dt = (datetime.datetime.now() - DISCONNECTION).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         presence_ids = self.search(cr, uid, [('last_poll', '<', dt), ('status', '!=', 'offline')], context=context)
         self.write(cr, uid, presence_ids, {'status': 'offline'}, context=context)
         presences = self.browse(cr, uid, presence_ids, context=context)
