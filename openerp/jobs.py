@@ -32,10 +32,6 @@ logger = logging.getLogger(__name__)
 del logging
 
 from xoutil.context import context as ExecutionContext
-try:
-    from xoutil.cl.ids import str_uuid as new_uuid
-except ImportError:
-    from xoutil.uuid import uuid as new_uuid
 
 from kombu import Exchange, Queue
 
@@ -753,9 +749,10 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs,
     Retries are scheduled with a minimum delay of 300ms.
 
     '''
-    if job_uuid is Unset:
-        job_uuid = self.request.id if self.request.id else new_uuid()
     from openerp.models import BaseModel
+    if job_uuid is Unset:
+        from uuid import uuid1
+        job_uuid = self.request.id if self.request.id else str(uuid1())
     context = kwargs.pop('context', None)
     try:
         with MaybeRecords(dbname, uid, model, ids, context=context) as r:
@@ -774,6 +771,12 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs,
                 raise TypeError(
                     'Invalid method name %r for model %r' % (methodname, model)
                 )
+    except SoftTimeLimitExceeded as e:
+        # Well, SoftTimeLimitExceeded may occur anywhere in the code.  It's
+        # really a signal.  When integrating with `sentrylog`, I think the
+        # best option is collect this events per job: ``(model, methodname)``.
+        e._sentry_fingerprint = [type(e), model, methodname]
+        raise e
     except OperationalError as error:
         if error.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
             _report_current_failure(dbname, uid, job_uuid, error)

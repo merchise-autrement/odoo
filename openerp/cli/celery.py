@@ -32,9 +32,5 @@ class Celery(Command):
         from openerp.jobs import app  # noqa: discover the app
         from celery.bin.celery import main as _main
         openerp.evented = False
-        # Some addons (specially report) think they live inside a cozy and
-        # warm HTTP worker.  This is not True for jobs inside the celery
-        # worker; in fact, this process is not a multi_process (with regards
-        # to Odoo).
-        openerp.multi_process = False
+        openerp.multi_process = True
         _main(argv=['celery', ] + cmdargs)

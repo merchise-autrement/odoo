@@ -88,6 +88,10 @@ openerp.testing = {};
                 ];
             } else {
                 fn = this.responses[url.url];
+                // merchise: If failed to find an exact match try disregarding
+                // the query string.
+                if (!fn)
+                    fn = this.responses[url.url.split('?')[0]];
                 params = [{params: rparams}];
             }
 

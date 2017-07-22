@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # takeover
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise Autrement and Contributors
+# Copyright (c) 2015-2017 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -20,15 +20,11 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
-from openerp.addons.mail.mail_thread import mail_thread as _base_mail_thread
-from openerp.osv.orm import AbstractModel
-
-from xoeuf.osv.orm import get_modelname
+from openerp.models import AbstractModel
 
 
 class mail_thread(AbstractModel):
-    _name = get_modelname(_base_mail_thread)
-    _inherit = _name
+    _inherit = 'mail.thread'
 
     def _merge_history(self, cr, uid, target_thread_id, previous_threads,
                        context=None):

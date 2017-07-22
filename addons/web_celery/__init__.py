@@ -26,6 +26,8 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
+from openerp import models, api, _
+
 
 def QUIETLY_WAIT_FOR_TASK(job, next_action=None):
     '''The client action that waits quietly for a background job to complete.
@@ -82,3 +84,45 @@ def WAIT_FOR_TASK(job, next_action=None):
 # user the progress of the background job.
 CLOSE_FEEDBACK = None
 CLOSE_PROGRESS_BAR = CLOSE_FEEDBACK
+
+
+# The following is just a proof of concept.
+#
+# This makes the install button of modules to go to a background job.  This
+# will only be activated in DEBUG mode.
+#
+# It is STRONGLY discouraged to make existing methods go to a background job,
+# other addons may break if you do this.  The recommended way is to create
+# your own methods and call them from the UI.
+#
+class Module(models.Model):
+    _inherit = 'ir.module.module'
+
+    @api.multi
+    def button_immediate_install(self):
+        import time
+        import openerp.tools.config as config
+        from openerp.jobs import CELERY_JOB, report_progress, Deferred
+        from xoutil.context import context
+        if CELERY_JOB in context or not config.get('debug_mode'):
+            report_progress(
+                message=_('Installing has begun, wait for a minute '
+                          'or two to finish.'),
+                progress=0,
+                valuemin=0,
+                valuemax=100,
+            )
+            for progress in range(1, 25, 4):
+                report_progress(progress=progress)
+                time.sleep(0.86)
+            res = super(Module, self).button_immediate_install()
+            self.env.cr.commit()
+            for progress in range(progress, 101, 4):
+                report_progress(progress=progress)
+                time.sleep(0.86)
+            report_progress(progress=100)
+            return res
+        else:
+            return WAIT_FOR_TASK(
+                Deferred(self.button_immediate_install)
+            )
