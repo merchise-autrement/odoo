@@ -175,15 +175,12 @@ def init_logger():
 DEFAULT_LOG_CONFIGURATION = [
     'odoo.http.rpc.request:INFO',
     'odoo.http.rpc.response:INFO',
-    'odoo.addons.web.http:INFO',
-    'odoo.sql_db:INFO',
-    'odoo.signals:INFO',
     ':INFO',
 ]
 PSEUDOCONFIG_MAPPER = {
-    'debug_rpc_answer': ['odoo:DEBUG','odoo.http.rpc.request:DEBUG', 'odoo.http.rpc.response:DEBUG'],
-    'debug_rpc': ['odoo:DEBUG','odoo.http.rpc.request:DEBUG'],
-    'debug': ['odoo:DEBUG'],
+    'debug_rpc_answer': ['odoo:DEBUG', 'odoo.sql_db:INFO', 'odoo.http.rpc:DEBUG'],
+    'debug_rpc': ['odoo:DEBUG', 'odoo.sql_db:INFO', 'odoo.http.rpc.request:DEBUG'],
+    'debug': ['odoo:DEBUG', 'odoo.sql_db:INFO'],
     'debug_sql': ['odoo.sql_db:DEBUG'],
     'debug_signals': ['odoo:DEBUG', 'odoo.signals:DEBUG'],
     'info': [],

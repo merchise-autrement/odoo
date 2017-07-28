@@ -81,9 +81,6 @@
       <menuitem name="Products" id="menu_procurement_partner_contact_form" action="product_normal_action_puchased"
           parent="menu_procurement_management" sequence="20"/>
 
-      <menuitem name="Purchasable Products" id="menu_product_normal_action_puchased" action="product_normal_action_puchased"
-          parent="account.menu_finance_payables" sequence="110"/>
-
         <record id="product_product_action" model="ir.actions.act_window">
             <field name="name">Product Variants</field>
             <field name="res_model">product.product</field>
@@ -224,7 +221,7 @@
                                     <field name="qty_invoiced" invisible="not context.get('show_purchase', True)"/>
                                     <field name="product_uom" groups="product.group_uom" attrs="{'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}"/>
                                     <field name="price_unit"/>
-                                    <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use','=','purchase')]" context="{'default_type_tax_use': 'purchase'}" options="{'no_create': True, 'color_field': 'color'}"/>
+                                    <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use','=','purchase')]" context="{'default_type_tax_use': 'purchase'}" options="{'no_create': True}"/>
                                     <field name="price_subtotal" widget="monetary"/>
                                 </tree>
                                 <form string="Purchase Order Line">
@@ -242,7 +239,7 @@
                                                 <field name="price_unit"/>
                                             </group>
                                             <group>
-                                                <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use', '=', 'purchase')]" options="{'no_create': True, 'color_field': 'color'}"/>
+                                                <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use', '=', 'purchase')]" options="{'no_create': True}"/>
                                                 <field name="date_planned" widget="date"/>
                                                 <field name="account_analytic_id" colspan="2" groups="purchase.group_analytic_accounting"/>
                                                 <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
@@ -614,7 +611,7 @@
                      <field name="property_account_expense_id" domain="[('deprecated','=',False)]" attrs="{'readonly': [('purchase_ok', '=', 0)]}"/>
                 </field>
                 <field name='supplier_taxes_id' position="replace" >
-                     <field name="supplier_taxes_id" colspan="2" widget="many2many_tags" options="{'color_field': 'color'}" attrs="{'readonly':[('purchase_ok','=',0)]}"/>
+                     <field name="supplier_taxes_id" colspan="2" widget="many2many_tags" attrs="{'readonly':[('purchase_ok','=',0)]}"/>
                 </field>
             </field>
         </record>

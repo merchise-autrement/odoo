@@ -138,7 +138,7 @@ class StockQuant(models.Model):
                     if quant.quantity == 0 and quant.reserved_quantity == 0:
                         quant.unlink()
                     break
-            except OperationalError, e:
+            except OperationalError as e:
                 if e.pgcode == '55P03':  # could not obtain the lock
                     continue
                 else:
@@ -183,15 +183,17 @@ class StockQuant(models.Model):
                 max_quantity_on_quant = quant.quantity - quant.reserved_quantity
                 if max_quantity_on_quant <= 0:
                     continue
+                max_quantity_on_quant = min(max_quantity_on_quant, quantity)
+                quant.reserved_quantity += max_quantity_on_quant
+                reserved_quants.append((quant, max_quantity_on_quant))
+                quantity -= max_quantity_on_quant
+                available_quantity -= max_quantity_on_quant
             else:
-                max_quantity_on_quant = quant.reserved_quantity
-            max_quantity_on_quant = min(max_quantity_on_quant, quantity)
-
-            quant.reserved_quantity += max_quantity_on_quant
-            reserved_quants.append((quant, max_quantity_on_quant))
-
-            quantity -= max_quantity_on_quant
-            available_quantity -= max_quantity_on_quant
+                max_quantity_on_quant = min(quant.reserved_quantity, abs(quantity))
+                quant.reserved_quantity -= max_quantity_on_quant
+                reserved_quants.append((quant, -max_quantity_on_quant))
+                quantity += max_quantity_on_quant
+                available_quantity += max_quantity_on_quant
 
             if quantity == 0 or available_quantity == 0:
                 break

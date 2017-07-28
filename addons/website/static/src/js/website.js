@@ -11,7 +11,6 @@ odoo.define('website.website', function (require) {
 
     var qweb = core.qweb;
     var _t = core._t;
-    base.url_translations = '/website/translations';
 
     /* --- Set the browser into the dom for css selectors --- */
     var browser;
@@ -172,9 +171,7 @@ odoo.define('website.website', function (require) {
         form.submit();
     };
 
-    ajax.loadXML('/web/static/src/xml/base_common.xml', qweb).then(function () {
-        ajax.loadXML('/website/static/src/xml/website.xml', qweb);
-    });
+    ajax.loadXML('/website/static/src/xml/website.xml', qweb);
 
     base.ready().then(function () {
         data.topBar = new TopBar();
@@ -282,9 +279,9 @@ odoo.define('website.website', function (require) {
     $('.zoomable img[data-zoom]').zoomOdoo();
 
     Dialog.include({
-        init: function () {
-            this._super.apply(this, arguments);
+        start: function () {
             this.$modal.addClass("o_website_modal");
+            return this._super.apply(this, arguments);
         },
     });
 

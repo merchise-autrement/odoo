@@ -27,10 +27,6 @@ class ProductCategory(models.Model):
         store=True)
     parent_id = fields.Many2one('product.category', 'Parent Category', index=True, ondelete='cascade')
     child_id = fields.One2many('product.category', 'parent_id', 'Child Categories')
-    type = fields.Selection([
-        ('view', 'View'),
-        ('normal', 'Normal')], 'Category Type', default='normal',
-        help="A category of the view type is a virtual category that can be used as the parent of another category to create a hierarchical structure.")
     parent_left = fields.Integer('Left Parent', index=1)
     parent_right = fields.Integer('Right Parent', index=1)
     product_count = fields.Integer(
@@ -83,7 +79,7 @@ class ProductProduct(models.Model):
     _description = "Product"
     _inherits = {'product.template': 'product_tmpl_id'}
     _inherit = ['mail.thread']
-    _order = 'default_code, id'
+    _order = 'default_code, name, id'
 
     price = fields.Float(
         'Price', compute='_compute_product_price',
