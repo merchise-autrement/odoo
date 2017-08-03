@@ -26,8 +26,8 @@
 
             <link rel="stylesheet" href="/web/static/lib/fontawesome/css/font-awesome.css"/>
 
-	     <!-- Xopgi -->
-	    <script type="text/javascript" src="/web/static/lib/xopgi/js/xopgi.js"></script>
+            <!-- Xopgi -->
+            <script type="text/javascript" src="/web/static/lib/xopgi/js/xopgi.js"></script>
         </template>
 
         <template id="jqueryui_conflict" name="jquery.ui.conflict">
