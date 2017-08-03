@@ -26,8 +26,9 @@
 
             <link rel="stylesheet" href="/web/static/lib/fontawesome/css/font-awesome.css"/>
 
-	     <!-- Xopgi -->
-	    <script type="text/javascript" src="/web/static/lib/xopgi/js/xopgi.js"></script>
+            <!-- Xopgi -->
+            <script type="text/javascript" src="/web/static/lib/xopgi/js/xopgi.js"></script>
+            <script type="text/javascript" src="/web/static/lib/raven.js"></script>
         </template>
 
         <template id="jqueryui_conflict" name="jquery.ui.conflict">
@@ -124,6 +125,10 @@
         <template id="web.layout" name="Web layout">&lt;!DOCTYPE html&gt;
             <html style="height: 100%">
                 <head>
+                  <t t-if="sentry_csp_endpoint">
+                    <meta t-attf-http-equiv="Content-Security-Policy: default-src 'self' #{sentry_csp_endpoint}'; script-src 'unsafe-eval' 'unsafe-inline' 'self'; style-src 'unsafe-inline' 'self'; img-src data: 'self'"/>
+                  </t>
+
                     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
                     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
                     <title>Odoo</title>
@@ -205,6 +210,7 @@
                     &lt;!--[if lte IE 9]&gt; <link rel="stylesheet" href="/web/static/src/css/ie.css"/> &lt;![endif]--&gt;
                     <script type="text/javascript">
                         $(function() {
+                            var dsn = '<t t-raw="sentry_client_dsn"/>';
                             var s = new openerp.init();
                             <t t-if="init">
                                 <t t-raw="init"/>
@@ -214,6 +220,8 @@
                                 wc.setElement($(document.body));
                                 wc.start();
                             </t>
+                            if (!!dsn)
+                               Raven.config(dsn).install();
                         });
                     </script>
                 </t>
