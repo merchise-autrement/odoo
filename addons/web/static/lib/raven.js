@@ -2835,8 +2835,8 @@ module.exports = TraceKit;
  ISC license: https://github.com/isaacs/json-stringify-safe/blob/master/LICENSE
 */
 
-exports = module.exports = stringify
-exports.getSerialize = serializer
+exports = module.exports = stringify;
+exports.getSerialize = serializer;
 
 function indexOf(haystack, needle) {
   for (var i = 0; i < haystack.length; ++i) {
@@ -2850,23 +2850,23 @@ function stringify(obj, replacer, spaces, cycleReplacer) {
 }
 
 function serializer(replacer, cycleReplacer) {
-  var stack = [], keys = []
+  var stack = [], keys = [];
 
   if (cycleReplacer == null) cycleReplacer = function(key, value) {
-    if (stack[0] === value) return '[Circular ~]'
-    return '[Circular ~.' + keys.slice(0, indexOf(stack, value)).join('.') + ']'
+    if (stack[0] === value) return '[Circular ~]';
+    return '[Circular ~.' + keys.slice(0, indexOf(stack, value)).join('.') + ']';
   }
 
   return function(key, value) {
     if (stack.length > 0) {
       var thisPos = indexOf(stack, this);
-      ~thisPos ? stack.splice(thisPos + 1) : stack.push(this)
-      ~thisPos ? keys.splice(thisPos, Infinity, key) : keys.push(key)
-      if (~indexOf(stack, value)) value = cycleReplacer.call(this, key, value)
+      ~thisPos ? stack.splice(thisPos + 1) : stack.push(this);
+      ~thisPos ? keys.splice(thisPos, Infinity, key) : keys.push(key);
+      if (~indexOf(stack, value)) value = cycleReplacer.call(this, key, value);
     }
-    else stack.push(value)
+    else stack.push(value);
 
-    return replacer == null ? value : replacer.call(this, key, value)
+    return replacer == null ? value : replacer.call(this, key, value);
   }
 }
 
