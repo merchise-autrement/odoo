@@ -105,6 +105,20 @@ return {
         }
     },
     /**
+     * jQuery find function behavior is:
+     *      $('A').find('A B') <=> $('A A B')
+     * The searches behavior to find options' DOM needs to be
+     *      $('A').find('A B') <=> $('A B')
+     * This is what this function does.
+     *
+     * @param {jQuery} $from - the jQuery element(s) from which to search
+     * @param {string} selector - the CSS selector to match
+     * @returns {jQuery}
+     */
+    cssFind: function ($from, selector) {
+        return $from.find('*').filter(selector);
+    },
+    /**
      * Detaches widgets from the DOM and performs their on_detach_callback()
      *
      * @param {Array} [to_detach] array of {widget: w, callback_args: args} such
@@ -200,6 +214,35 @@ return {
             }));
         }
         return $button;
+    },
+    /**
+     * Renders a checkbox with standard odoo template. This does not use any xml
+     * template to avoid forcing the frontend part to lazy load a xml file for
+     * each widget which might want to create a simple checkbox.
+     *
+     * @param {Object} [options]
+     * @param {Object} [options.prop]
+     *        Allows to set the input properties (disabled and checked states).
+     * @param {string} [options.text]
+     *        The checkbox's associated text. If none is given then a simple
+     *        checkbox without label structure is rendered.
+     * @returns {jQuery}
+     */
+    renderCheckbox: function (options) {
+        var $container = $('<div class="o_checkbox"><input type="checkbox"/><span/></div>');
+        if (options && options.prop) {
+            $container.children('input').prop(options.prop);
+        }
+        if (options && options.text) {
+            $container = $('<label/>').append(
+                $container,
+                $('<span/>', {
+                    class: 'ml8',
+                    text: options.text,
+                })
+            );
+        }
+        return $container;
     },
 };
 

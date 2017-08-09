@@ -230,6 +230,7 @@ class TxAuthorize(models.Model):
             self.write({
                 'state': 'cancel',
                 'acquirer_reference': data.get('x_trans_id'),
+                'state_message': data.get('x_response_reason_text'),
             })
             return True
         else:
@@ -326,6 +327,8 @@ class PaymentToken(models.Model):
 
     authorize_profile = fields.Char(string='Authorize.net Profile ID', help='This contains the unique reference '
                                     'for this partner/payment token combination in the Authorize.net backend')
+    provider = fields.Selection(string='Provider', related='acquirer_id.provider')
+    save_token = fields.Selection(string='Save Cards', related='acquirer_id.save_token')
 
     @api.model
     def authorize_create(self, values):

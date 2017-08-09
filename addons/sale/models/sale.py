@@ -5,9 +5,10 @@ import uuid
 
 from itertools import groupby
 from datetime import datetime, timedelta
+from werkzeug.urls import url_encode
 
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, AccessError
 from odoo.tools import float_is_zero, float_compare, DEFAULT_SERVER_DATETIME_FORMAT, pycompat
 from odoo.tools.misc import formatLang
 
@@ -16,7 +17,7 @@ from odoo.addons import decimal_precision as dp
 
 class SaleOrder(models.Model):
     _name = "sale.order"
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin']
     _description = "Sales Order"
     _order = 'date_order desc, id desc'
 
@@ -118,7 +119,6 @@ class SaleOrder(models.Model):
     access_token = fields.Char(
         'Security Token', copy=False,
         default=_get_default_access_token)
-
     state = fields.Selection([
         ('draft', 'Quotation'),
         ('sent', 'Quotation Sent'),
@@ -165,6 +165,11 @@ class SaleOrder(models.Model):
     procurement_group_id = fields.Many2one('procurement.group', 'Procurement Group', copy=False)
 
     product_id = fields.Many2one('product.product', related='order_line.product_id', string='Product')
+
+    def _compute_portal_url(self):
+        super(SaleOrder, self)._compute_portal_url()
+        for order in self:
+            order.portal_url = '/my/orders/%s' % (order.id)
 
     @api.model
     def _get_customer_lead(self, product_tmpl_id):
@@ -560,6 +565,39 @@ class SaleOrder(models.Model):
         res = [(l[0].name, l[1]) for l in res]
         return res
 
+    @api.multi
+    def get_access_action(self, access_uid=None):
+        """ Instead of the classic form view, redirect to the online order for
+        portal users or if force_website=True in the context. """
+        # TDE note: read access on sales order to portal users granted to followed sales orders
+        self.ensure_one()
+        if self.state == 'cancel' or (self.state == 'draft' and not self.env.context.get('mark_so_as_sent')):
+            return super(SaleOrder, self).get_access_action(access_uid)
+
+        user = self.env['res.users'].sudo().browse(access_uid) if access_uid else self.env.user
+        if user.share or self.env.context.get('force_website'):
+            return {
+                'type': 'ir.actions.act_url',
+                'url': '/my/orders/%s?access_token=%s' % (self.id, self.access_token),
+                'target': 'self',
+                'res_id': self.id,
+            }
+        return super(SaleOrder, self).get_access_action(access_uid)
+
+    def get_mail_url(self):
+        return self.get_share_url()
+
+    @api.multi
+    def _notification_recipients(self, message, groups):
+        groups = super(SaleOrder, self)._notification_recipients(message, groups)
+
+        self.ensure_one()
+        if self.state not in ('draft', 'cancel'):
+            for group_name, group_method, group_data in groups:
+                group_data['has_button_access'] = True
+
+        return groups
+
 
 class SaleOrderLine(models.Model):
     _name = 'sale.order.line'
@@ -804,6 +842,8 @@ class SaleOrderLine(models.Model):
     product_id = fields.Many2one('product.product', string='Product', domain=[('sale_ok', '=', True)], change_default=True, ondelete='restrict', required=True)
     product_uom_qty = fields.Float(string='Quantity', digits=dp.get_precision('Product Unit of Measure'), required=True, default=1.0)
     product_uom = fields.Many2one('product.uom', string='Unit of Measure', required=True)
+    # Non-stored related field to allow portal user to see the image of the product he has ordered
+    product_image = fields.Binary('Product Image', related="product_id.image", store=False)
 
     qty_delivered_updateable = fields.Boolean(compute='_compute_qty_delivered_updateable', string='Can Edit Delivered', readonly=True, default=True)
     qty_delivered = fields.Float(string='Delivered', copy=False, digits=dp.get_precision('Product Unit of Measure'), default=0.0)

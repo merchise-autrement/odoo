@@ -5,11 +5,12 @@ import re
 from lxml import etree
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from werkzeug.urls import url_encode
 
-from odoo import api, fields, models, _
+from odoo import api, exceptions, fields, models, _
 from odoo.tools import float_is_zero, float_compare, pycompat
 
-from odoo.exceptions import UserError, RedirectWarning, ValidationError, Warning
+from odoo.exceptions import AccessError, UserError, RedirectWarning, ValidationError, Warning
 
 from odoo.addons import decimal_precision as dp
 import logging
@@ -681,6 +682,48 @@ class AccountInvoice(models.Model):
         if self.filtered(lambda inv: inv.state not in ['draft', 'open']):
             raise UserError(_("Invoice must be in draft or open state in order to be cancelled."))
         return self.action_cancel()
+
+
+    @api.multi
+    def _notification_recipients(self, message, groups):
+        groups = super(AccountInvoice, self)._notification_recipients(message, groups)
+
+        for group_name, group_method, group_data in groups:
+            group_data['has_button_access'] = True
+
+        return groups
+
+    @api.multi
+    def get_access_action(self, access_uid=None):
+        """ Instead of the classic form view, redirect to the online invoice for portal users. """
+        self.ensure_one()
+        user, record = self.env.user, self
+        if access_uid:
+            user = self.env['res.users'].sudo().browse(access_uid)
+            record = self.sudo(user)
+
+        if user.share or self.env.context.get('force_website'):
+            try:
+                record.check_access_rule('read')
+            except exceptions.AccessError:
+                pass
+            else:
+                return {
+                    'type': 'ir.actions.act_url',
+                    'url': '/my/invoices?',  # No controller /my/invoices/<int>, only a report pdf
+                    'target': 'self',
+                    'res_id': self.id,
+                }
+        return super(AccountInvoice, self).get_access_action(access_uid)
+
+    def get_mail_url(self):
+        self.ensure_one()
+        params = {
+            'model': self._name,
+            'res_id': self.id,
+        }
+        params.update(self.partner_id.signup_get_auth_param()[self.partner_id.id])
+        return '/mail/view?' + url_encode(params)
 
     @api.multi
     def get_formview_id(self, access_uid=None):
@@ -1526,7 +1569,7 @@ class AccountInvoiceTax(models.Model):
 class AccountPaymentTerm(models.Model):
     _name = "account.payment.term"
     _description = "Payment Terms"
-    _order = "name"
+    _order = "sequence, id"
 
     def _default_line_ids(self):
         return [(0, 0, {'value': 'balance', 'value_amount': 0.0, 'sequence': 9, 'days': 0, 'option': 'day_after_invoice_date'})]
@@ -1536,6 +1579,7 @@ class AccountPaymentTerm(models.Model):
     note = fields.Text(string='Description on the Invoice', translate=True)
     line_ids = fields.One2many('account.payment.term.line', 'payment_id', string='Terms', copy=True, default=_default_line_ids)
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
+    sequence = fields.Integer(required=True, default=10)
 
     @api.constrains('line_ids')
     @api.one

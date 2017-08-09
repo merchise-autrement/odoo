@@ -243,7 +243,7 @@ odoo.define('website.website', function (require) {
     });
 
     /* Load localizations */
-    var lang = utils.get_cookie('website_lang') || $('html').attr('lang') || 'en_US';
+    var lang = utils.get_cookie('frontend_lang') || $('html').attr('lang') || 'en_US';
     ajax.loadJS('/web/webclient/locale/' + lang.replace('-', '_'));
 
     /**
@@ -277,13 +277,6 @@ odoo.define('website.website', function (require) {
 
     // enable magnify on zommable img
     $('.zoomable img[data-zoom]').zoomOdoo();
-
-    Dialog.include({
-        start: function () {
-            this.$modal.addClass("o_website_modal");
-            return this._super.apply(this, arguments);
-        },
-    });
 
     var data = {
         prompt: prompt,
