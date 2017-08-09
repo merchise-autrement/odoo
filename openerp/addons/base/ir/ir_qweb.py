@@ -249,9 +249,13 @@ class QWeb(orm.AbstractModel):
         :param loader: if ``qwebcontext`` is a dict, loader set into the
                        context instantiated for rendering
         """
+        from openerp.tools.config import config
         if qwebcontext is None:
             qwebcontext = {}
-
+        if config.get('sentry_client_dsn'):
+            qwebcontext['sentry_client_dsn'] = config.get('sentry_client_dsn')
+        if config.get('sentry_csp_endpoint'):
+            qwebcontext['sentry_csp_endpoint'] = config.get('sentry_csp_endpoint')
         if not isinstance(qwebcontext, QWebContext):
             qwebcontext = QWebContext(cr, uid, qwebcontext, loader=loader, context=context)
 
@@ -1155,10 +1159,10 @@ class AssetsBundle(object):
             if css and self.stylesheets:
                 self.compile_sass()
                 for style in self.stylesheets:
-                    response.append(style.to_html())
+                    response.append(style.to_html(debug=debug, spdy=spdy))
             if js:
                 for jscript in self.javascripts:
-                    response.append(jscript.to_html())
+                    response.append(jscript.to_html(debug=debug, spdy=spdy))
         else:
             url_for = self.context.get('url_for', lambda url: url)
             if css and self.stylesheets:
@@ -1393,7 +1397,7 @@ class WebAsset(object):
                 except Exception:
                     raise AssetNotFound("Could not find %s" % self.name)
 
-    def to_html(self):
+    def to_html(self, debug=False, spdy=False):
         raise NotImplementedError()
 
     @lazy_property
@@ -1469,10 +1473,10 @@ class JavascriptAsset(WebAsset):
         except AssetError, e:
             return "console.error(%s);" % json.dumps(e.message)
 
-    def to_html(self):
+    def to_html(self, debug=False, spdy=False):
         if self.url:
             vhash = self.versionhash
-            if vhash:
+            if vhash and not debug:
                 return '<script type="text/javascript" src="%s?_h=%s"></script>' % (self.html_url % self.url, vhash)
             else:
                 return '<script type="text/javascript" src="%s"></script>' % (self.html_url % self.url)
@@ -1529,12 +1533,12 @@ class StylesheetAsset(WebAsset):
         content = re.sub(r' *([{}]) *', r'\1', content)
         return self.with_header(content)
 
-    def to_html(self):
+    def to_html(self, debug=False, spdy=False):
         media = (' media="%s"' % werkzeug.utils.escape(self.media)) if self.media else ''
         if self.url:
             href = self.html_url % self.url
             vhash = self.versionhash
-            if vhash:
+            if vhash and not debug:
                 return '<link rel="stylesheet" href="%s?_h=%s" type="text/css"%s/>' % (href, vhash, media)
             else:
                 return '<link rel="stylesheet" href="%s" type="text/css"%s/>' % (href, media)
@@ -1550,7 +1554,7 @@ class SassAsset(StylesheetAsset):
     def minify(self):
         return self.with_header()
 
-    def to_html(self):
+    def to_html(self, debug=False, spdy=False):
         if self.url:
             try:
                 ira = self.registry['ir.attachment']
@@ -1572,7 +1576,7 @@ class SassAsset(StylesheetAsset):
                         ), context=self.context)
             except psycopg2.Error:
                 pass
-        return super(SassAsset, self).to_html()
+        return super(SassAsset, self).to_html(debug=debug, spdy=spdy)
 
     def get_source(self):
         content = textwrap.dedent(self.inline or self._fetch_content())
