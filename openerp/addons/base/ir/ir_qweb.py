@@ -249,9 +249,13 @@ class QWeb(orm.AbstractModel):
         :param loader: if ``qwebcontext`` is a dict, loader set into the
                        context instantiated for rendering
         """
+        from openerp.tools.config import config
         if qwebcontext is None:
             qwebcontext = {}
-
+        if config.get('sentry_client_dsn'):
+            qwebcontext['sentry_client_dsn'] = config.get('sentry_client_dsn')
+        if config.get('sentry_csp_endpoint'):
+            qwebcontext['sentry_csp_endpoint'] = config.get('sentry_csp_endpoint')
         if not isinstance(qwebcontext, QWebContext):
             qwebcontext = QWebContext(cr, uid, qwebcontext, loader=loader, context=context)
 

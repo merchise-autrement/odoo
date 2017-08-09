@@ -29,6 +29,12 @@
             <!-- Xopgi -->
             <script type="text/javascript" src="/web/static/lib/xopgi/js/xopgi.js"></script>
             <script type="text/javascript" src="/web/static/lib/raven.js"></script>
+            <script type="text/javascript">
+              $(function(){
+                  var dsn = "<t t-raw='sentry_client_dsn'/>";
+                  if (!!dsn) Raven.config(dsn).install();
+              });
+            </script>
         </template>
 
         <template id="jqueryui_conflict" name="jquery.ui.conflict">
@@ -210,7 +216,6 @@
                     &lt;!--[if lte IE 9]&gt; <link rel="stylesheet" href="/web/static/src/css/ie.css"/> &lt;![endif]--&gt;
                     <script type="text/javascript">
                         $(function() {
-                            var dsn = '<t t-raw="sentry_client_dsn"/>';
                             var s = new openerp.init();
                             <t t-if="init">
                                 <t t-raw="init"/>
@@ -220,8 +225,6 @@
                                 wc.setElement($(document.body));
                                 wc.start();
                             </t>
-                            if (!!dsn)
-                               Raven.config(dsn).install();
                         });
                     </script>
                 </t>
