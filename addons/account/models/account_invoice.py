@@ -177,7 +177,7 @@ class AccountInvoice(models.Model):
             if payment_currency_id and payment_currency_id == self.currency_id:
                 amount_to_show = amount_currency
             else:
-                amount_to_show = payment.company_id.currency_id.with_context(date=payment.date).compute(amount,
+                amount_to_show = payment.company_id.currency_id.with_context(date=self.date).compute(amount,
                                                                                                         self.currency_id)
             if float_is_zero(amount_to_show, precision_rounding=self.currency_id.rounding):
                 continue
@@ -193,6 +193,8 @@ class AccountInvoice(models.Model):
                 'position': currency_id.position,
                 'date': payment.date,
                 'payment_id': payment.id,
+                'account_payment_id': payment.payment_id.id,
+                'invoice_id': payment.invoice_id.id,
                 'move_id': payment.move_id.id,
                 'ref': payment_ref,
             })
@@ -357,44 +359,57 @@ class AccountInvoice(models.Model):
         ('number_uniq', 'unique(number, company_id, journal_id, type)', 'Invoice Number must be unique per Company!'),
     ]
 
+    def _no_existing_validated_invoice(self):
+        self.ensure_one()
+        if self.journal_id.refund_sequence:
+            domain = [('type', '=', self.type)]
+        elif self.type in ['in_invoice', 'in_refund']:
+            domain = [('type', 'in', ['in_invoice', 'in_refund'])]
+        else:
+            domain = [('type', 'in', ['out_invoice', 'out_refund'])]
+        if self.id:
+            domain += [('id', '<>', self.id)]
+        domain += [('journal_id', '=', self.journal_id.id), ('state', 'not in', ['draft', 'cancel'])]
+        return not self.search(domain, limit=1)
+
     @api.depends('state', 'journal_id', 'date_invoice')
     def _get_sequence_prefix(self):
         """ computes the number that will be assigned to the first invoice/bill/refund of a journal, in order to
         let the user manually change it.
         """
+        if not self.env.user._is_admin():
+            for invoice in self:
+                invoice.sequence_number_next_prefix = False
+                invoice.sequence_number_next = ''
+            return
         for invoice in self:
-            journal_sequence = invoice.journal_id.sequence_id
             if invoice.journal_id.refund_sequence:
-                domain = [('type', '=', invoice.type)]
                 journal_sequence = invoice.type in ['in_refund', 'out_refund'] and invoice.journal_id.refund_sequence_id or invoice.journal_id.sequence_id
-            elif invoice.type in ['in_invoice', 'in_refund']:
-                domain = [('type', 'in', ['in_invoice', 'in_refund'])]
             else:
-                domain = [('type', 'in', ['out_invoice', 'out_refund'])]
-            if invoice.id:
-                domain += [('id', '<>', invoice.id)]
-            domain += [('journal_id', '=', invoice.journal_id.id), ('state', 'not in', ['draft', 'cancel'])]
+                journal_sequence = invoice.journal_id.sequence_id
 
-            if (invoice.state == 'draft') and not self.search(domain, limit=1):
+            if (invoice.state == 'draft') and self._no_existing_validated_invoice():
                 prefix, dummy = journal_sequence.with_context(ir_sequence_date=invoice.date_invoice)._get_prefix_suffix()
                 invoice.sequence_number_next_prefix = prefix
                 number_next = journal_sequence._get_current_sequence().number_next_actual
                 invoice.sequence_number_next = '%%0%sd' % journal_sequence.padding % number_next
             else:
                 invoice.sequence_number_next_prefix = False
-                invoice.sequence_number_next = 'no'
+                invoice.sequence_number_next = ''
 
     @api.multi
     def _set_sequence_next(self):
         ''' Set the number_next on the sequence related to the invoice/bill/refund'''
-        for invoice in self:
-            nxt = re.sub("[^0-9]", '', invoice.sequence_number_next or '1')
-            result = re.match("(0*)([0-9]+)", nxt)
-            journal_sequence = invoice.journal_id.refund_sequence and invoice.journal_id.refund_sequence_id or invoice.journal_id.sequence_id
-            if result and journal_sequence:
-                #use _get_current_sequence to manage the date range sequences
-                sequence = journal_sequence._get_current_sequence()
-                sequence.number_next = int(result.group(2))
+        self.ensure_one()
+        if not self.env.user._is_admin() or not self.sequence_number_next or not self._no_existing_validated_invoice():
+            return
+        nxt = re.sub("[^0-9]", '', self.sequence_number_next)
+        result = re.match("(0*)([0-9]+)", nxt)
+        journal_sequence = self.journal_id.refund_sequence and self.journal_id.refund_sequence_id or self.journal_id.sequence_id
+        if result and journal_sequence:
+            #use _get_current_sequence to manage the date range sequences
+            sequence = journal_sequence._get_current_sequence()
+            sequence.number_next = int(result.group(2))
 
     @api.model
     def create(self, vals):
@@ -886,7 +901,6 @@ class AccountInvoice(models.Model):
                 if tax.amount_type == "group":
                     for child_tax in tax.children_tax_ids:
                         done_taxes.append(child_tax.id)
-                done_taxes.append(tax.id)
                 res.append({
                     'invoice_tax_line_id': tax_line.id,
                     'tax_line_id': tax_line.tax_id.id,
@@ -898,8 +912,9 @@ class AccountInvoice(models.Model):
                     'account_id': tax_line.account_id.id,
                     'account_analytic_id': tax_line.account_analytic_id.id,
                     'invoice_id': self.id,
-                    'tax_ids': [(6, 0, done_taxes)] if tax_line.tax_id.include_base_amount else []
+                    'tax_ids': [(6, 0, list(done_taxes))] if tax_line.tax_id.include_base_amount else []
                 })
+                done_taxes.append(tax.id)
         return res
 
     def inv_line_characteristic_hashcode(self, invoice_line):

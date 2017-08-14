@@ -9,7 +9,7 @@
                 <form class="oe_form_configuration">
                     <header>
                         <button string="Save" type="object" name="execute" class="oe_highlight"/>
-                        <button string="Cancel" type="object" name="cancel" class="oe_link"/>
+                        <button string="Cancel" type="object" name="cancel" class="oe_link" special="cancel"/>
                     </header>
                     <sheet>
                         <h2>Recording</h2>
@@ -83,7 +83,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="col-xs-12 col-md-6 o_setting_box" groups="account.group_account_user">
                                 <div class="o_setting_left_pane">
                                     <field name="group_analytic_accounting"/>
                                 </div>

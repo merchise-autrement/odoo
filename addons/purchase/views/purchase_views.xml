@@ -558,10 +558,10 @@
                 <page name="sales" position="after">
                     <page string="Purchase" name="purchase" attrs="{'invisible': [('purchase_ok','=',False)]}">
                         <group string="Vendors" name="vendors" attrs="{'invisible': [('product_variant_count','&gt;',1)]}">
-                            <field name="seller_ids" context="{'default_product_tmpl_id':context.get('product_tmpl_id',active_id)}" nolabel="1"/>
+                            <field name="seller_ids" context="{'default_product_tmpl_id':context.get('product_tmpl_id',active_id), 'product_template_invisible_variant': True}" nolabel="1"/>
                         </group>
                         <group string="Vendors" name="variant_vendors" attrs="{'invisible': [('product_variant_count','&lt;=',1)]}">
-                            <field name="variant_seller_ids" context="{'default_product_tmpl_id': context.get('product_tmpl_id', active_id)}, 'tree_view_ref': 'product.product_supplierinfo_tree_view'" nolabel="1"/>
+                            <field name="variant_seller_ids" context="{'default_product_tmpl_id': context.get('product_tmpl_id', active_id)}" nolabel="1"/>
                         </group>
                     </page>
                 </page>
@@ -610,8 +610,9 @@
             <field name="model">product.template</field>
             <field name="inherit_id" ref="account.product_template_form_view"/>
             <field name="arch" type="xml">
-                <field name="property_account_expense_id" position="replace" >
-                     <field name="property_account_expense_id" domain="[('deprecated','=',False)]" attrs="{'readonly': [('purchase_ok', '=', 0)]}"/>
+                <field name="property_account_expense_id" position="attributes">
+                    <attribute name="domain">[('deprecated','=',False)]"</attribute>
+                    <attribute name="attrs">{'readonly': [('purchase_ok', '=', 0)]}</attribute>
                 </field>
                 <field name='supplier_taxes_id' position="replace" >
                      <field name="supplier_taxes_id" colspan="2" widget="many2many_tags" attrs="{'readonly':[('purchase_ok','=',0)]}"/>
@@ -640,7 +641,7 @@
             <field name="inherit_id" ref="account.product_template_form_view"/>
             <field name="arch" type="xml">
                 <field name="property_account_expense_id" position="after">
-                    <field name="property_account_creditor_price_difference" domain="[('deprecated','=',False)]" attrs="{'readonly':[('purchase_ok', '=', 0)]}" />
+                    <field name="property_account_creditor_price_difference" domain="[('deprecated','=',False)]" attrs="{'readonly':[('purchase_ok', '=', 0)]}" groups="account.group_account_user"/>
                 </field>
             </field>
         </record>
