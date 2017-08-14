@@ -130,6 +130,7 @@ def py2exe_options():
                         'xoutil>=1.7.4,<1.8',
                         'raven>=5.31.0,<6.1.0',
                         'raven-sanitize-openerp',
+                        'rjsmin>=1.0.12,<1.1',
                     ],
                     'excludes': ['Tkconstants', 'Tkinter', 'tcl'],
                 }
@@ -198,7 +199,7 @@ setup(
         'xoutil>=1.7.4,<1.8',
         'raven>=5.31.0',
         'raven-sanitize-openerp',
-
+        'rjsmin>=1.0.12,<1.1',
     ],
     extras_require={
         'SSL': ['pyopenssl'],

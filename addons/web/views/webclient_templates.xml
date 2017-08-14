@@ -55,8 +55,15 @@
             <link rel="stylesheet" href="/web/static/lib/select2-bootstrap-css/select2-bootstrap.css"/>
             <script type="text/javascript" src="/web/static/lib/select2/select2.js"></script>
 
-	     <!-- Xopgi -->
-	    <script type="text/javascript" src="/web/static/lib/xopgi/js/xopgi.js"></script>
+            <!-- Xopgi -->
+            <script type="text/javascript" src="/web/static/lib/xopgi/js/xopgi.js"></script>
+            <script type="text/javascript" src="/web/static/lib/raven.js"></script>
+            <script type="text/javascript">
+              $(function(){
+                  var dsn = "<t t-raw='sentry_client_dsn'/>";
+                  if (!!dsn) Raven.config(dsn).install();
+              });
+            </script>
         </template>
 
         <template id="web.bootstrap">
@@ -163,6 +170,10 @@
         <template id="web.layout" name="Web layout">&lt;!DOCTYPE html&gt;
             <html style="height: 100%">
                 <head>
+                  <t t-if="sentry_csp_endpoint">
+                    <meta t-attf-http-equiv="Content-Security-Policy: default-src 'self' #{sentry_csp_endpoint}'; script-src 'unsafe-eval' 'unsafe-inline' 'self'; style-src 'unsafe-inline' 'self'; img-src data: 'self'"/>
+                  </t>
+
                     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
                     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
                     <title>Odoo</title>

@@ -23,6 +23,8 @@ from lxml import etree, html
 from PIL import Image
 import psycopg2
 
+from rjsmin import jsmin as rjsmin
+
 import openerp.http
 import openerp.tools
 from openerp.tools.func import lazy_property
@@ -235,9 +237,13 @@ class QWeb(orm.AbstractModel):
         :param loader: if ``qwebcontext`` is a dict, loader set into the
                        context instantiated for rendering
         """
+        from openerp.tools.config import config
         if qwebcontext is None:
             qwebcontext = {}
-
+        if config.get('sentry_client_dsn'):
+            qwebcontext['sentry_client_dsn'] = config.get('sentry_client_dsn')
+        if config.get('sentry_csp_endpoint'):
+            qwebcontext['sentry_csp_endpoint'] = config.get('sentry_csp_endpoint')
         if not isinstance(qwebcontext, QWebContext):
             qwebcontext = QWebContext(cr, uid, qwebcontext, loader=loader, context=context)
 
@@ -1197,10 +1203,10 @@ class AssetsBundle(object):
                         msg = '\n'.join(self.css_errors)
                         self.stylesheets.append(StylesheetAsset(self, inline=self.css_message(msg)))
                 for style in self.stylesheets:
-                    response.append(style.to_html())
+                    response.append(style.to_html(debug=debug, spdy=spdy))
             if js:
                 for jscript in self.javascripts:
-                    response.append(jscript.to_html())
+                    response.append(jscript.to_html(debug=debug, spdy=spdy))
         else:
             if qwebcontext is None:
                 qwebcontext = QWebContext(self.cr, self.uid, {})
@@ -1515,7 +1521,7 @@ class WebAsset(object):
             except Exception:
                 raise AssetNotFound("Could not find %s" % self.name)
 
-    def to_html(self):
+    def to_html(self, debug=False, spdy=False):
         raise NotImplementedError()
 
     @lazy_property
@@ -1591,11 +1597,11 @@ class JavascriptAsset(WebAsset):
         except AssetError, e:
             return "console.error(%s);" % json.dumps(e.message)
 
-    def to_html(self):
+    def to_html(self, debug=False, spdy=False):
         if self.url:
             vhash = self.versionhash
-            if vhash:
-                return '<script type="text/javascript" src="%s?_h=%s"></script>' % (self.html_url, vhash)
+            if vhash and not debug:
+                return '<script type="text/javascript" src="%s?_h=%s"></script>' % (self.html_url % self.url, vhash)
             else:
                 return '<script type="text/javascript" src="%s"></script>' % (self.html_url, )
         else:
@@ -1655,12 +1661,12 @@ class StylesheetAsset(WebAsset):
         content = re.sub(r' *([{}]) *', r'\1', content)
         return self.with_header(content)
 
-    def to_html(self):
+    def to_html(self, debug=False, spdy=False):
         media = (' media="%s"' % werkzeug.utils.escape(self.media)) if self.media else ''
         if self.url:
             href = self.html_url
             vhash = self.versionhash
-            if vhash:
+            if vhash and not debug:
                 return '<link rel="stylesheet" href="%s?_h=%s" type="text/css"%s/>' % (href, vhash, media)
             else:
                 return '<link rel="stylesheet" href="%s" type="text/css"%s/>' % (href, media)
@@ -1725,47 +1731,3 @@ class LessStylesheetAsset(PreprocessedCSS):
             lessc = 'lessc'
         lesspath = get_resource_path('web', 'static', 'lib', 'bootstrap', 'less')
         return [lessc, '-', '--no-js', '--no-color', '--include-path=%s' % lesspath]
-
-def rjsmin(script):
-    """ Minify js with a clever regex.
-    Taken from http://opensource.perlig.de/rjsmin
-    Apache License, Version 2.0 """
-    def subber(match):
-        """ Substitution callback """
-        groups = match.groups()
-        return (
-            groups[0] or
-            groups[1] or
-            groups[2] or
-            groups[3] or
-            (groups[4] and '\n') or
-            (groups[5] and ' ') or
-            (groups[6] and ' ') or
-            (groups[7] and ' ') or
-            ''
-        )
-
-    result = re.sub(
-        r'([^\047"/\000-\040]+)|((?:(?:\047[^\047\\\r\n]*(?:\\(?:[^\r\n]|\r?'
-        r'\n|\r)[^\047\\\r\n]*)*\047)|(?:"[^"\\\r\n]*(?:\\(?:[^\r\n]|\r?\n|'
-        r'\r)[^"\\\r\n]*)*"))[^\047"/\000-\040]*)|(?:(?<=[(,=:\[!&|?{};\r\n]'
-        r')(?:[\000-\011\013\014\016-\040]|(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/'
-        r'))*((?:/(?![\r\n/*])[^/\\\[\r\n]*(?:(?:\\[^\r\n]|(?:\[[^\\\]\r\n]*'
-        r'(?:\\[^\r\n][^\\\]\r\n]*)*\]))[^/\\\[\r\n]*)*/)[^\047"/\000-\040]*'
-        r'))|(?:(?<=[\000-#%-,./:-@\[-^`{-~-]return)(?:[\000-\011\013\014\01'
-        r'6-\040]|(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/))*((?:/(?![\r\n/*])[^/'
-        r'\\\[\r\n]*(?:(?:\\[^\r\n]|(?:\[[^\\\]\r\n]*(?:\\[^\r\n][^\\\]\r\n]'
-        r'*)*\]))[^/\\\[\r\n]*)*/)[^\047"/\000-\040]*))|(?<=[^\000-!#%&(*,./'
-        r':-@\[\\^`{|~])(?:[\000-\011\013\014\016-\040]|(?:/\*[^*]*\*+(?:[^/'
-        r'*][^*]*\*+)*/))*(?:((?:(?://[^\r\n]*)?[\r\n]))(?:[\000-\011\013\01'
-        r'4\016-\040]|(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/))*)+(?=[^\000-\040"#'
-        r'%-\047)*,./:-@\\-^`|-~])|(?<=[^\000-#%-,./:-@\[-^`{-~-])((?:[\000-'
-        r'\011\013\014\016-\040]|(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)))+(?=[^'
-        r'\000-#%-,./:-@\[-^`{-~-])|(?<=\+)((?:[\000-\011\013\014\016-\040]|'
-        r'(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)))+(?=\+)|(?<=-)((?:[\000-\011\0'
-        r'13\014\016-\040]|(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)))+(?=-)|(?:[\0'
-        r'00-\011\013\014\016-\040]|(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/))+|(?:'
-        r'(?:(?://[^\r\n]*)?[\r\n])(?:[\000-\011\013\014\016-\040]|(?:/\*[^*'
-        r']*\*+(?:[^/*][^*]*\*+)*/))*)+', subber, '\n%s\n' % script
-    ).strip()
-    return result
