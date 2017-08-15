@@ -14,55 +14,13 @@ from odoo.modules.module import get_resource_path
 import psycopg2
 from odoo.tools import func, misc, pycompat
 
+from rjsmin import jsmin as rjsmin
+
+
 import logging
 _logger = logging.getLogger(__name__)
 
 MAX_CSS_RULES = 4095
-
-
-def rjsmin(script):
-    """ Minify js with a clever regex.
-    Taken from http://opensource.perlig.de/rjsmin
-    Apache License, Version 2.0 """
-    def subber(match):
-        """ Substitution callback """
-        groups = match.groups()
-        return (
-            groups[0] or
-            groups[1] or
-            groups[2] or
-            groups[3] or
-            (groups[4] and '\n') or
-            (groups[5] and ' ') or
-            (groups[6] and ' ') or
-            (groups[7] and ' ') or
-            ''
-        )
-
-    result = re.sub(
-        r'([^\047"/\000-\040]+)|((?:(?:\047[^\047\\\r\n]*(?:\\(?:[^\r\n]|\r?'
-        r'\n|\r)[^\047\\\r\n]*)*\047)|(?:"[^"\\\r\n]*(?:\\(?:[^\r\n]|\r?\n|'
-        r'\r)[^"\\\r\n]*)*"))[^\047"/\000-\040]*)|(?:(?<=[(,=:\[!&|?{};\r\n]'
-        r')(?:[\000-\011\013\014\016-\040]|(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/'
-        r'))*((?:/(?![\r\n/*])[^/\\\[\r\n]*(?:(?:\\[^\r\n]|(?:\[[^\\\]\r\n]*'
-        r'(?:\\[^\r\n][^\\\]\r\n]*)*\]))[^/\\\[\r\n]*)*/)[^\047"/\000-\040]*'
-        r'))|(?:(?<=[\000-#%-,./:-@\[-^`{-~-]return)(?:[\000-\011\013\014\01'
-        r'6-\040]|(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/))*((?:/(?![\r\n/*])[^/'
-        r'\\\[\r\n]*(?:(?:\\[^\r\n]|(?:\[[^\\\]\r\n]*(?:\\[^\r\n][^\\\]\r\n]'
-        r'*)*\]))[^/\\\[\r\n]*)*/)[^\047"/\000-\040]*))|(?<=[^\000-!#%&(*,./'
-        r':-@\[\\^`{|~])(?:[\000-\011\013\014\016-\040]|(?:/\*[^*]*\*+(?:[^/'
-        r'*][^*]*\*+)*/))*(?:((?:(?://[^\r\n]*)?[\r\n]))(?:[\000-\011\013\01'
-        r'4\016-\040]|(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/))*)+(?=[^\000-\040"#'
-        r'%-\047)*,./:-@\\-^`|-~])|(?<=[^\000-#%-,./:-@\[-^`{-~-])((?:[\000-'
-        r'\011\013\014\016-\040]|(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)))+(?=[^'
-        r'\000-#%-,./:-@\[-^`{-~-])|(?<=\+)((?:[\000-\011\013\014\016-\040]|'
-        r'(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)))+(?=\+)|(?<=-)((?:[\000-\011\0'
-        r'13\014\016-\040]|(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)))+(?=-)|(?:[\0'
-        r'00-\011\013\014\016-\040]|(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/))+|(?:'
-        r'(?:(?://[^\r\n]*)?[\r\n])(?:[\000-\011\013\014\016-\040]|(?:/\*[^*'
-        r']*\*+(?:[^/*][^*]*\*+)*/))*)+', subber, '\n%s\n' % script
-    ).strip()
-    return result
 
 
 class AssetError(Exception):
@@ -115,12 +73,12 @@ class AssetsBundle(object):
                     )
                     if self.css_errors:
                         msg = '\n'.join(self.css_errors)
-                        response.append(JavascriptAsset(self, inline=self.dialog_message(msg)).to_html())
+                        response.append(JavascriptAsset(self, inline=self.dialog_message(msg)).to_html(debug=debug, spdy=spdy))
                 for style in self.stylesheets:
-                    response.append(style.to_html())
+                    response.append(style.to_html(debug=debug, spdy=spdy))
             if js:
                 for jscript in self.javascripts:
-                    response.append(jscript.to_html())
+                    response.append(jscript.to_html(debug=debug, spdy=spdy))
         else:
             if css and self.stylesheets:
                 css_attachments = self.css() or []
@@ -128,7 +86,7 @@ class AssetsBundle(object):
                     response.append('<link href="%s" rel="stylesheet"/>' % url_for(attachment.url))
                 if self.css_errors:
                     msg = '\n'.join(self.css_errors)
-                    response.append(JavascriptAsset(self, inline=self.dialog_message(msg)).to_html())
+                    response.append(JavascriptAsset(self, inline=self.dialog_message(msg)).to_html(debug=debug, spdy=spdy))
             if js and self.javascripts:
                 response.append('<script %s type="text/javascript" src="%s"></script>' % (async and 'async="async"' or '', url_for(self.js().url)))
         response.extend(self.remains)
@@ -472,7 +430,7 @@ class WebAsset(object):
             except Exception:
                 raise AssetNotFound("Could not find %s" % self.name)
 
-    def to_html(self):
+    def to_html(self, debug=False, spdy=False):
         raise NotImplementedError()
 
     @func.lazy_property
@@ -548,10 +506,10 @@ class JavascriptAsset(WebAsset):
         except AssetError as e:
             return "console.error(%s);" % json.dumps(str(e))
 
-    def to_html(self):
+    def to_html(self, debug=False, spdy=False):
         if self.url:
             vhash = self.versionhash
-            if vhash:
+            if vhash and not debug:
                 return '<script type="text/javascript" src="%s?_h=%s"></script>' % (self.html_url, vhash)
             else:
                 return '<script type="text/javascript" src="%s"></script>' % (self.html_url)
@@ -612,12 +570,12 @@ class StylesheetAsset(WebAsset):
         content = re.sub(r' *([{}]) *', r'\1', content)
         return self.with_header(content)
 
-    def to_html(self):
+    def to_html(self, debug=False, spdy=False):
         media = (' media="%s"' % misc.html_escape(self.media)) if self.media else ''
         if self.url:
             href = self.html_url
             vhash = self.versionhash
-            if vhash:
+            if vhash and not debug:
                 return '<link rel="stylesheet" href="%s?_h=%s" type="text/css"%s/>' % (href, vhash, media)
             else:
                 return '<link rel="stylesheet" href="%s" type="text/css"%s/>' % (href, media)
