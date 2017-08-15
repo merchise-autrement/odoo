@@ -244,7 +244,12 @@ class QWeb(object):
             * ``profile`` (float) profile the rendering (use astor lib) (filter
               profile line with time ms >= profile)
         """
+        from odoo.tools.config import config
         body = []
+        if config.get('sentry_client_dsn'):
+            values['sentry_client_dsn'] = config.get('sentry_client_dsn')
+        if config.get('sentry_csp_endpoint'):
+            values['sentry_csp_endpoint'] = config.get('sentry_csp_endpoint')
         self.compile(template, options)(self, body.append, values or {})
         return u''.join(body).encode('utf8')
 
