@@ -179,6 +179,16 @@ class IrHttp(models.AbstractModel):
     rerouting_limit = 10
 
     @classmethod
+    def _get_converters(cls):
+        """ Get the converters list for custom url pattern werkzeug need to
+            match Rule. This override adds the website ones.
+        """
+        return dict(
+            super(IrHttp, cls)._get_converters(),
+            model=ModelConverter,
+        )
+
+    @classmethod
     def _get_languages(cls):
         return request.env['res.lang'].search([])
 
@@ -389,7 +399,7 @@ class IrHttp(models.AbstractModel):
             _, path = rule.build(arguments)
             assert path is not None
         except Exception as e:
-            return cls._handle_exception(e, code=404)
+            return cls._handle_exception(e)
 
         if getattr(request, 'is_frontend_multilang', False) and request.httprequest.method in ('GET', 'HEAD'):
             generated_path = werkzeug.url_unquote_plus(path)

@@ -302,7 +302,7 @@
 <template id="opt_blog_post_complete_comment" name="Allow blog post comment" inherit_id="website_blog.blog_post_complete" active="False" customize_show="True">
     <xpath expr="//div[hasclass('o_blog_post_complete','o_sharing_links')]" position="after">
         <section id="comments" class="read_width">
-            <t t-call="website_mail.message_thread">
+            <t t-call="portal.message_thread">
               <t t-set="object" t-value="blog_post"/>
             </t>
         </section>
@@ -538,7 +538,7 @@
 
 <!-- User Navbar -->
 <template id="content_new_blogpost" inherit_id="website.user_navbar">
-    <xpath expr="//div[@id='o_website_add_page_modal']//ul" position="inside">
+    <xpath expr="//div[@id='o_new_content_menu_choices']//ul" position="inside">
         <li groups="website.group_website_designer"><a href="#" data-action="new_blog_post"><i class="fa fa-rss"/><p>New Blog Post</p></a></li>
     </xpath>
 </template>
