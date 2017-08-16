@@ -1601,7 +1601,7 @@ class JavascriptAsset(WebAsset):
         if self.url:
             vhash = self.versionhash
             if vhash and not debug:
-                return '<script type="text/javascript" src="%s?_h=%s"></script>' % (self.html_url % self.url, vhash)
+                return '<script type="text/javascript" src="%s?_h=%s"></script>' % (self.html_url, vhash)
             else:
                 return '<script type="text/javascript" src="%s"></script>' % (self.html_url, )
         else:
