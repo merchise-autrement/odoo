@@ -53,7 +53,7 @@ from odoo.tools.func import lazy_property
 
 from odoo.release import version_info
 from odoo.api import Environment
-from odoo.modules.registry import RegistryManager
+from odoo.modules.registry import Registry
 from odoo.http import serialize_exception as _serialize_exception
 
 from psycopg2 import OperationalError, errorcodes
@@ -810,8 +810,8 @@ def MaybeRecords(dbname, uid, model, ids=None, cr=None, context=None):
 def OdooEnvironment(dbname, uid, cr=None, context=None):
     __traceback_hide__ = True  # noqa: hide from Celery Tracebacks
     with Environment.manage():
-        RegistryManager.check_registry_signaling(dbname)
-        registry = RegistryManager.get(dbname)
+        registry = Registry(dbname)
+        registry.check_signaling()
         # Several pieces of OpenERP code expect this attributes to be set in the
         # current thread.
         threading.current_thread().uid = uid
