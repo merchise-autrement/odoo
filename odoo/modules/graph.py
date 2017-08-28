@@ -36,7 +36,7 @@ class Graph(dict):
             return
         # update the graph with values from the database (if exist)
         ## First, we set the default values for each package in graph
-        additional_data = {key: {'id': 0, 'state': 'uninstalled', 'dbdemo': False, 'installed_version': None} for key in pycompat.keys(self)}
+        additional_data = {key: {'id': 0, 'state': 'uninstalled', 'dbdemo': False, 'installed_version': None} for key in self.keys()}
         ## Then we get the values from the database
         cr.execute('SELECT name, id, state, demo AS dbdemo, latest_version AS installed_version'
                    '  FROM ir_module_module'
@@ -46,8 +46,8 @@ class Graph(dict):
         ## and we update the default values with values from the database
         additional_data.update((x['name'], x) for x in cr.dictfetchall())
 
-        for package in pycompat.values(self):
-            for k, v in pycompat.items(additional_data[package.name]):
+        for package in self.values():
+            for k, v in additional_data[package.name].items():
                 setattr(package, k, v)
 
     def add_module(self, cr, module, force=None):
@@ -100,7 +100,7 @@ class Graph(dict):
         return len(self) - len_graph
 
     def __iter__(self):
-        return (module for _, module in sorted(pycompat.items(self), key=lambda (n, m): (m.depth, n)))
+        return (module for _, module in sorted(self.items(), key=lambda (n, m): (m.depth, n)))
 
     def __str__(self):
         return '\n'.join(str(n) for n in self if n.depth == 0)

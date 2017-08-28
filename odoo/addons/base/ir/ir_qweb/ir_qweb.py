@@ -66,7 +66,7 @@ class IrQWeb(models.AbstractModel, QWeb):
     # assume cache will be invalidated by third party on write to ir.ui.view
     def _get_template_cache_keys(self):
         """ Return the list of context keys to use for caching ``_get_template``. """
-        return ['lang', 'inherit_branding', 'editable', 'translatable', 'edit_translations']
+        return ['lang', 'inherit_branding', 'editable', 'translatable', 'edit_translations', 'website_id']
 
     # apply ormcache_context decorator unless in dev mode...
     @tools.conditional(
@@ -169,7 +169,7 @@ class IrQWeb(models.AbstractModel, QWeb):
         if field_options and 'monetary' in field_options:
             try:
                 options = "{'widget': 'monetary'"
-                for k, v in pycompat.items(json.loads(field_options)):
+                for k, v in json.loads(field_options).items():
                     if k in ('display_currency', 'from_currency'):
                         options = "%s, '%s': %s" % (options, k, v)
                     else:
@@ -189,7 +189,7 @@ class IrQWeb(models.AbstractModel, QWeb):
         # in non-xml-debug mode we want assets to be cached forever, and the admin can force a cache clear
         # by restarting the server after updating the source code (or using the "Clear server cache" in debug tools)
         'xml' not in tools.config['dev_mode'],
-        tools.ormcache('xmlid', 'options.get("lang", "en_US")', 'css', 'js', 'debug', 'async'),
+        tools.ormcache_context('xmlid', 'options.get("lang", "en_US")', 'css', 'js', 'debug', 'async', keys=("website_id",)),
     )
     def _get_asset(self, xmlid, options, css=True, js=True, debug=False, async=False, values=None):
         files, remains = self._get_asset_content(xmlid, options)
@@ -199,7 +199,7 @@ class IrQWeb(models.AbstractModel, QWeb):
             css=css, js=js, debug=debug, async=async,
             url_for=(values or {}).get('url_for', lambda url: url), spdy=spdy)
 
-    @tools.ormcache('xmlid', 'options.get("lang", "en_US")')
+    @tools.ormcache_context('xmlid', 'options.get("lang", "en_US")', keys=("website_id",))
     def _get_asset_content(self, xmlid, options):
         options = dict(
             options,
@@ -222,8 +222,8 @@ class IrQWeb(models.AbstractModel, QWeb):
         files = []
         remains = []
         for el in html.fragments_fromstring(template):
-            if isinstance(el, basestring):
-                remains.append(el)
+            if isinstance(el, pycompat.string_types):
+                remains.append(pycompat.to_text(el))
             elif isinstance(el, html.HtmlElement):
                 href = el.get('href', '')
                 src = el.get('src', '')
@@ -247,10 +247,10 @@ class IrQWeb(models.AbstractModel, QWeb):
                     filename = get_resource_path(*path) if path else None
                     files.append({'atype': atype, 'url': src, 'filename': filename, 'content': el.text, 'media': media})
                 else:
-                    remains.append(html.tostring(el))
+                    remains.append(html.tostring(el, encoding='unicode'))
             else:
                 try:
-                    remains.append(html.tostring(el))
+                    remains.append(html.tostring(el, encoding='unicode'))
                 except Exception:
                     # notYETimplementederror
                     raise NotImplementedError

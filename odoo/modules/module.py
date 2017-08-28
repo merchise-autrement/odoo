@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import ast
 import functools
 import imp
 import importlib
@@ -16,7 +15,6 @@ import time
 import types
 import unittest
 import threading
-from operator import itemgetter
 from os.path import join as opj
 
 import odoo
@@ -24,7 +22,6 @@ import odoo.tools as tools
 from odoo.tools.safe_eval import safe_eval
 
 import odoo.release as release
-from odoo import SUPERUSER_ID, api
 from odoo.tools import pycompat
 
 MANIFEST_NAMES = ('__manifest__.py', '__openerp__.py')
@@ -38,6 +35,7 @@ hooked = False
 
 # Modules already loaded
 loaded = []
+
 
 class AddonsHook(object):
     """ Makes modules accessible through openerp.addons.* and odoo.addons.* """
@@ -447,7 +445,7 @@ def get_test_modules(module):
         mod = importlib.import_module('.tests', modpath)
     except Exception as e:
         # If module has no `tests` sub-module, no problem.
-        if str(e) != 'No module named tests':
+        if not pycompat.text_type(e).startswith(u'No module named'):
             _logger.exception('Can not `import %s`.', module)
         return []
 
