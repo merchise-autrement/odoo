@@ -28,6 +28,7 @@ var ViewManager = Widget.extend(ControlPanelMixin, {
             _.extend(this.env, this._process_search_data(d.domains, d.contexts, d.groupbys));
             this.active_view.controller.reload(_.extend({}, this.env));
         },
+        add_filter: '_onAddFilter',
         switch_view: function(event) {
             if ('res_id' in event.data) {
                 this.env.currentId = event.data.res_id;
@@ -363,7 +364,7 @@ var ViewManager = Widget.extend(ControlPanelMixin, {
         var View = this.registry.get(arch.attrs.js_class || view_descr.type);
         var params = _.extend({}, view_options, {userContext: this.getSession().user_context});
         if (view_descr.type === "form" && ((this.action.target === 'new' || this.action.target === 'inline') ||
-            (view_options && view_options.mode === 'edit'))) {
+            (view_options && (view_options.mode === 'edit' || view_options.context.form_view_initial_mode)))) {
             params.mode = params.initial_mode || 'edit';
         }
         view_descr.searchview_hidden = View.prototype.searchview_hidden;
@@ -649,6 +650,14 @@ var ViewManager = Widget.extend(ControlPanelMixin, {
     // Handlers
     //--------------------------------------------------------------------------
 
+    /**
+     * @private
+     */
+    _onAddFilter: function (event) {
+        if (this.searchview) {
+            this.searchview.addFilter(event.data.domain, event.data.help);
+        }
+    },
     /**
      * This handler is probably called by a sub form view when the user discards
      * its value.  The usual result of this is that we switch back to the

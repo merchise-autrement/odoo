@@ -170,7 +170,12 @@ class MetaModel(api.Meta):
 
 
 class NewId(object):
-    """ Pseudo-ids for new records. """
+    """ Pseudo-ids for new records, encapsulating an optional reference. """
+    __slots__ = ['ref']
+
+    def __init__(self, ref=None):
+        self.ref = ref
+
     def __bool__(self):
         return False
     __nonzero__ = __bool__
@@ -583,6 +588,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         def is_onchange(func):
             return callable(func) and hasattr(func, '_onchange')
 
+        # collect onchange methods on the model's class
         cls = type(self)
         methods = defaultdict(list)
         for attr, func in getmembers(cls, is_onchange):
@@ -590,6 +596,17 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                 if name not in cls._fields:
                     _logger.warning("@onchange%r parameters must be field names", func._onchange)
                 methods[name].append(func)
+
+        # add onchange methods to implement "change_default" on fields
+        def onchange_default(field, self):
+            value = field.convert_to_write(self[field.name], self)
+            condition = "%s=%s" % (field.name, value)
+            defaults = self.env['ir.default'].get_model_defaults(self._name, condition)
+            self.update(defaults)
+
+        for name, field in cls._fields.items():
+            if field.change_default:
+                methods[name].append(functools.partial(onchange_default, field))
 
         # optimization: memoize result on cls, it will not be recomputed
         cls._onchange_methods = methods
@@ -4456,14 +4473,17 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
     #
 
     @api.model
-    def new(self, values={}):
+    def new(self, values={}, ref=None):
         """ new([values]) -> record
 
         Return a new record instance attached to the current environment and
         initialized with the provided ``value``. The record is *not* created
         in database, it only exists in memory.
+
+        One can pass a reference value to identify the record among other new
+        records. The reference is encapsulated in the ``id`` of the record.
         """
-        record = self.browse([NewId()])
+        record = self.browse([NewId(ref)])
         record._cache.update(record._convert_to_cache(values, update=True))
 
         if record.env.in_onchange:
@@ -4989,12 +5009,6 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                         todo.append(name)
                         dirty.add(name)
 
-        # At the moment, the client does not support updates on a *2many field
-        # while this one is modified by the user.
-        if isinstance(field_name, pycompat.string_types) and \
-                self._fields[field_name].type in ('one2many', 'many2many'):
-            dirty.discard(field_name)
-
         # collect values from dirty fields
         result['value'] = {
             name: self._fields[name].convert_to_onchange(record[name], record, subfields[name])
@@ -5002,6 +5016,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         }
 
         return result
+
 collections.Set.register(BaseModel)
 # not exactly true as BaseModel doesn't have __reversed__, index or count
 collections.Sequence.register(BaseModel)

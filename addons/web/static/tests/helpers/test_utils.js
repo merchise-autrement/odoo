@@ -152,7 +152,7 @@ function createAsyncView(params) {
     });
 
     // reproduce the DOM environment of views
-    var $web_client = $('<div>').addClass('o_web_client').appendTo($target);
+    var $web_client = $('<div>').addClass('o_web_client').prependTo($target);
     var $control_panel = $('<div>').addClass('o_control_panel').appendTo($web_client);
     var $content = $('<div>').addClass('o_content').appendTo($web_client);
     var $view_manager = $('<div>').addClass('o_view_manager_content').appendTo($content);
@@ -470,6 +470,20 @@ function triggerPositionalMouseEvent(x, y, type){
 }
 
 /**
+ * simulate a keypress event for a given character
+ * @param {string} the character
+ */
+function triggerKeypressEvent(char) {
+    var keycode;
+    if (char === "Enter") {
+        keycode = $.ui.keyCode.ENTER;
+    } else {
+        keycode = char.charCodeAt(0);
+    }
+    return $('body').trigger($.Event('keypress', {which: keycode, keyCode: keycode}));
+}
+
+/**
  * Removes the src attribute on images and iframes to prevent not found errors,
  * and optionally triggers an rpc with the src url as route on a widget.
  *
@@ -518,6 +532,7 @@ return $.when(
         dragAndDrop: dragAndDrop,
         triggerMouseEvent: triggerMouseEvent,
         triggerPositionalMouseEvent: triggerPositionalMouseEvent,
+        triggerKeypressEvent: triggerKeypressEvent,
         removeSrcAttribute: removeSrcAttribute,
     };
 });

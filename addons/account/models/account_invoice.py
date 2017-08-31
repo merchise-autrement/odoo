@@ -302,6 +302,7 @@ class AccountInvoice(models.Model):
         readonly=True, states={'draft': [('readonly', False)]}, copy=True)
     tax_line_ids = fields.One2many('account.invoice.tax', 'invoice_id', string='Tax Lines', oldname='tax_line',
         readonly=True, states={'draft': [('readonly', False)]}, copy=True)
+    refund_invoice_ids = fields.One2many('account.invoice', 'refund_invoice_id', string='Refund Invoices', readonly=True)
     move_id = fields.Many2one('account.move', string='Journal Entry',
         readonly=True, index=True, ondelete='restrict', copy=False,
         help="Link to the automatically generated Journal Items.")
@@ -360,22 +361,19 @@ class AccountInvoice(models.Model):
     has_outstanding = fields.Boolean(compute='_get_outstanding_info_JSON', groups="account.group_account_invoice")
 
     #fields use to set the sequence, on the first invoice of the journal
-    sequence_number_next = fields.Char(string='Next Number', compute="_get_sequence_prefix", inverse="_set_sequence_next")
+    sequence_number_next = fields.Char(string='Next Number', compute="_get_sequence_number_next", inverse="_set_sequence_next")
     sequence_number_next_prefix = fields.Char(string='Next Number', compute="_get_sequence_prefix")
 
     _sql_constraints = [
         ('number_uniq', 'unique(number, company_id, journal_id, type)', 'Invoice Number must be unique per Company!'),
     ]
 
-    def _compute_portal_url(self):
-        super(AccountInvoice, self)._compute_portal_url()
-        for order in self:
-            order.portal_url = '/my/invoices/%s' % (order.id)
-
-    def _no_existing_validated_invoice(self):
+    def _get_seq_number_next_stuff(self):
         self.ensure_one()
+        journal_sequence = self.journal_id.sequence_id
         if self.journal_id.refund_sequence:
             domain = [('type', '=', self.type)]
+            journal_sequence = self.type in ['in_refund', 'out_refund'] and self.journal_id.refund_sequence_id or self.journal_id.sequence_id
         elif self.type in ['in_invoice', 'in_refund']:
             domain = [('type', 'in', ['in_invoice', 'in_refund'])]
         else:
@@ -383,11 +381,16 @@ class AccountInvoice(models.Model):
         if self.id:
             domain += [('id', '<>', self.id)]
         domain += [('journal_id', '=', self.journal_id.id), ('state', 'not in', ['draft', 'cancel'])]
-        return not self.search(domain, limit=1)
+        return journal_sequence, domain
+
+    def _compute_portal_url(self):
+        super(AccountInvoice, self)._compute_portal_url()
+        for order in self:
+            order.portal_url = '/my/invoices/%s' % (order.id)
 
     @api.depends('state', 'journal_id', 'date_invoice')
     def _get_sequence_prefix(self):
-        """ computes the number that will be assigned to the first invoice/bill/refund of a journal, in order to
+        """ computes the prefix of the number that will be assigned to the first invoice/bill/refund of a journal, in order to
         let the user manually change it.
         """
         if not self.env.user._is_admin():
@@ -396,31 +399,38 @@ class AccountInvoice(models.Model):
                 invoice.sequence_number_next = ''
             return
         for invoice in self:
-            if invoice.journal_id.refund_sequence:
-                journal_sequence = invoice.type in ['in_refund', 'out_refund'] and invoice.journal_id.refund_sequence_id or invoice.journal_id.sequence_id
-            else:
-                journal_sequence = invoice.journal_id.sequence_id
-
-            if (invoice.state == 'draft') and self._no_existing_validated_invoice():
-                prefix, dummy = journal_sequence.with_context(ir_sequence_date=invoice.date_invoice)._get_prefix_suffix()
+            journal_sequence, domain = invoice._get_seq_number_next_stuff()
+            if (invoice.state == 'draft') and not self.search(domain, limit=1):
+                prefix, dummy = journal_sequence.with_context(ir_sequence_date=invoice.date_invoice,
+                                                              ir_sequence_date_range=invoice.date_invoice)._get_prefix_suffix()
                 invoice.sequence_number_next_prefix = prefix
+            else:
+                invoice.sequence_number_next_prefix = False
+
+    @api.depends('state', 'journal_id')
+    def _get_sequence_number_next(self):
+        """ computes the number that will be assigned to the first invoice/bill/refund of a journal, in order to
+        let the user manually change it.
+        """
+        for invoice in self:
+            journal_sequence, domain = invoice._get_seq_number_next_stuff()
+            if (invoice.state == 'draft') and not self.search(domain, limit=1):
                 number_next = journal_sequence._get_current_sequence().number_next_actual
                 invoice.sequence_number_next = '%%0%sd' % journal_sequence.padding % number_next
             else:
-                invoice.sequence_number_next_prefix = False
                 invoice.sequence_number_next = ''
 
     @api.multi
     def _set_sequence_next(self):
         ''' Set the number_next on the sequence related to the invoice/bill/refund'''
         self.ensure_one()
-        if not self.env.user._is_admin() or not self.sequence_number_next or not self._no_existing_validated_invoice():
+        journal_sequence, domain = self._get_seq_number_next_stuff()
+        if not self.env.user._is_admin() or not self.sequence_number_next or self.search_count(domain):
             return
         nxt = re.sub("[^0-9]", '', self.sequence_number_next)
         result = re.match("(0*)([0-9]+)", nxt)
-        journal_sequence = self.journal_id.refund_sequence and self.journal_id.refund_sequence_id or self.journal_id.sequence_id
         if result and journal_sequence:
-            #use _get_current_sequence to manage the date range sequences
+            # use _get_current_sequence to manage the date range sequences
             sequence = journal_sequence._get_current_sequence()
             sequence.number_next = int(result.group(2))
 
@@ -1384,7 +1394,8 @@ class AccountInvoiceLine(models.Model):
         if self.invoice_line_tax_ids:
             taxes = self.invoice_line_tax_ids.compute_all(price, currency, self.quantity, product=self.product_id, partner=self.invoice_id.partner_id)
         self.price_subtotal = price_subtotal_signed = taxes['total_excluded'] if taxes else self.quantity * price
-        if self.invoice_id.currency_id and self.invoice_id.company_id and self.invoice_id.currency_id != self.invoice_id.company_id.currency_id:
+        self.price_total = taxes['total_included'] if taxes else self.price_subtotal
+        if self.invoice_id.currency_id and self.invoice_id.currency_id != self.invoice_id.company_id.currency_id:
             price_subtotal_signed = self.invoice_id.currency_id.with_context(date=self.invoice_id.date_invoice).compute(price_subtotal_signed, self.invoice_id.company_id.currency_id)
         sign = self.invoice_id.type in ['in_refund', 'out_refund'] and -1 or 1
         self.price_subtotal_signed = price_subtotal_signed * sign
@@ -1415,7 +1426,9 @@ class AccountInvoiceLine(models.Model):
         help="The income or expense account related to the selected product.")
     price_unit = fields.Float(string='Unit Price', required=True, digits=dp.get_precision('Product Price'))
     price_subtotal = fields.Monetary(string='Amount',
-        store=True, readonly=True, compute='_compute_price')
+        store=True, readonly=True, compute='_compute_price', help="Total amount without taxes")
+    price_total = fields.Monetary(string='Amount',
+        store=True, readonly=True, compute='_compute_price', help="Total amount with taxes")
     price_subtotal_signed = fields.Monetary(string='Amount Signed', currency_field='company_currency_id',
         store=True, readonly=True, compute='_compute_price',
         help="Total amount in the currency of the company, negative for credit note.")
