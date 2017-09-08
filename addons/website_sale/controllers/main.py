@@ -760,27 +760,6 @@ class WebsiteSale(http.Controller):
 
         return request.render("website_sale.payment", render_values)
 
-    @http.route(['/shop/payment/transaction_token/confirm'], type='json', auth="public", website=True)
-    def payment_transaction_token_confirm(self, tx, **kwargs):
-        tx = request.env['payment.transaction'].sudo().browse(int(tx))
-        if not tx or not request.website.sale_get_transaction() or tx != request.website.sale_get_transaction():
-            return dict(success=False, error='Tx missmatch')
-        res = tx.confirm_sale_token()
-        if res is not True:
-            return dict(success=False, error=res)
-        return dict(success=True, url='/shop/payment/validate')
-
-    @http.route(['/shop/payment/transaction_token'], type='http', methods=['POST'], auth="public", website=True)
-    def payment_transaction_token(self, tx_id, **kwargs):
-        tx = request.env['payment.transaction'].sudo().browse(int(tx_id))
-        if (tx and request.website.sale_get_transaction() and
-                tx.id == request.website.sale_get_transaction().id and
-                tx.payment_token_id and
-                tx.partner_id == tx.sale_order_id.partner_id):
-            return request.render("website_sale.payment_token_form_confirm", dict(tx=tx))
-        else:
-            return request.redirect("/shop/payment?error=no_token_or_missmatch_tx")
-
     @http.route(['/shop/payment/transaction/',
         '/shop/payment/transaction/<int:so_id>',
         '/shop/payment/transaction/<int:so_id>/<string:access_token>'], type='json', auth="public", website=True)
@@ -813,7 +792,7 @@ class WebsiteSale(http.Controller):
         tx = request.website.sale_get_transaction() or request.env['payment.transaction'].sudo()
         acquirer = request.env['payment.acquirer'].browse(int(acquirer_id))
         payment_token = request.env['payment.token'].sudo().browse(int(token)) if token else None
-        tx = tx.check_or_create_sale_tx(order, acquirer, payment_token=payment_token, tx_type=tx_type)
+        tx = tx._check_or_create_sale_tx(order, acquirer, payment_token=payment_token, tx_type=tx_type)
         request.session['sale_transaction_id'] = tx.id
 
         return tx.render_sale_button(order, '/shop/payment/validate')
@@ -844,7 +823,7 @@ class WebsiteSale(http.Controller):
         # we retrieve an existing transaction (if it exists obviously)
         tx = request.website.sale_get_transaction() or request.env['payment.transaction'].sudo()
         # we check if the transaction is Ok, if not then we create it
-        tx = tx.check_or_create_sale_tx(order, token.acquirer_id, payment_token=token, tx_type='server2server')
+        tx = tx._check_or_create_sale_tx(order, token.acquirer_id, payment_token=token, tx_type='server2server')
         # we set the transaction id into the session (so `sale_get_transaction` can retrieve it )
         request.session['sale_transaction_id'] = tx.id
         # we proceed the s2s payment

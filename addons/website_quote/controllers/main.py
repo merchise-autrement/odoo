@@ -1,16 +1,43 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import base64
 
 import werkzeug
 
-from odoo import fields, http, _
+from odoo import exceptions, fields, http, _
 from odoo.http import request
-from odoo.addons.portal.controllers.portal import get_records_pager
+from odoo.addons.portal.controllers.portal import CustomerPortal, get_records_pager
 from odoo.addons.portal.controllers.mail import _message_post_helper
 
 
+class CustomerPortal(CustomerPortal):
+
+    @http.route()
+    def portal_order_page(self, order=None, access_token=None, **kw):
+        try:
+            order_sudo = self._order_check_access(order, access_token=access_token)
+        except exceptions.AccessError:
+            pass
+        else:
+            if order_sudo.template_id and order_sudo.template_id.active:
+                return request.redirect('/quote/%s/%s' % (order, access_token or ''))
+        return super(CustomerPortal, self).portal_order_page(order=order, access_token=access_token, **kw)
+
+    @http.route(['/my/quotes/accept'], type='json', auth="public", website=True)
+    def portal_quote_accept(self, res_id, access_token=None, partner_name=None, signature=None):
+        try:
+            order_sudo = self._order_check_access(res_id, access_token=access_token)
+        except exceptions.AccessError:
+            pass
+        else:
+            if order_sudo.require_payment:
+                return {
+                    'error': _('Order is not in a state requiring customer validation.')
+                }
+        return super(CustomerPortal, self).portal_quote_accept(res_id, access_token=access_token, partner_name=partner_name, signature=signature)
+
+
 class sale_quote(http.Controller):
+
     @http.route("/quote/<int:order_id>", type='http', auth="user", website=True)
     def view_user(self, *args, **kwargs):
         return self.view(*args, **kwargs)
@@ -86,19 +113,6 @@ class sale_quote(http.Controller):
         history = request.session.get('my_quotes_history', [])
         values.update(get_records_pager(history, order_sudo))
         return request.render('website_quote.so_quotation', values)
-
-    @http.route(['/quote/accept'], type='json', auth="public", website=True)
-    def accept(self, order_id, token=None, signer=None, sign=None, **post):
-        Order = request.env['sale.order'].sudo().browse(order_id)
-        if token != Order.access_token or Order.require_payment:
-            return request.render('website.404')
-        if Order.state != 'sent':
-            return False
-        attachments = [('signature.png', base64.b64decode(sign))] if sign else []
-        Order.action_confirm()
-        message = _('Order signed by %s') % (signer,)
-        _message_post_helper(message=message, res_id=order_id, res_model='sale.order', attachments=attachments, **({'token': token, 'token_field': 'access_token'} if token else {}))
-        return True
 
     @http.route(['/quote/<int:order_id>/<token>/decline'], type='http', auth="public", methods=['POST'], website=True)
     def decline(self, order_id, token, **post):
@@ -179,7 +193,7 @@ class sale_quote(http.Controller):
         token = request.env['payment.token'].sudo()  # currently no support of payment tokens
         tx = request.env['payment.transaction'].sudo().search([('reference', '=', order.name)], limit=1)
         tx_type = order._get_payment_type()
-        tx = tx.check_or_create_sale_tx(order, acquirer, payment_token=token, tx_type=tx_type, add_tx_values={
+        tx = tx._check_or_create_sale_tx(order, acquirer, payment_token=token, tx_type=tx_type, add_tx_values={
             'callback_model_id': request.env['ir.model'].sudo().search([('model', '=', order._name)], limit=1).id,
             'callback_res_id': order.id,
             'callback_method': '_confirm_online_quote',
@@ -215,7 +229,7 @@ class sale_quote(http.Controller):
         # set the transaction type to server2server
         tx_type = 'server2server'
         # check if the transaction exists, if not then it create one
-        tx = tx.check_or_create_sale_tx(order, token.acquirer_id, payment_token=token, tx_type=tx_type, add_tx_values={
+        tx = tx._check_or_create_sale_tx(order, token.acquirer_id, payment_token=token, tx_type=tx_type, add_tx_values={
             'callback_model_id': request.env['ir.model'].sudo().search([('model', '=', order._name)], limit=1).id,
             'callback_res_id': order.id,
             'callback_method': '_confirm_online_quote',

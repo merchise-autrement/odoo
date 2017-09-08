@@ -1633,6 +1633,25 @@ QUnit.module('basic_fields', {
         form.destroy();
     });
 
+    QUnit.test('date field value should not set on first click', function (assert) {
+        assert.expect(2);
+
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch:'<form string="Partners"><field name="date"/></form>',
+            res_id: 4,
+        });
+        form.$buttons.find('.o_form_button_edit').click();
+        form.$('.o_datepicker_input').click();
+        assert.strictEqual(form.$('.o_datepicker_input').val(), '', "date field's input should be empty on first click");
+        $('.day:contains(22)').click();
+        form.$('.o_datepicker_input').click(); // Open Datepicker second time
+        assert.strictEqual($('.day.active').text(), '22', 'datepicker should be highlight with 22nd day of month');
+        form.destroy();
+    });
+
     QUnit.test('date field in form view (with positive time zone offset)', function (assert) {
         assert.expect(8);
 
@@ -2646,10 +2665,10 @@ QUnit.module('basic_fields', {
     });
 
     QUnit.test('phone field in form view on normal screens', function (assert) {
-        // The behavior of this widget is completely altered by crm_voip so this
-        // test is irrelevant and fails if crm_voip is installed. The enterprise
+        // The behavior of this widget is completely altered by voip so this
+        // test is irrelevant and fails if voip is installed. The enterprise
         // module is responsible for testing its own behavior in its own tests.
-        if ('crm.voip' in odoo.__DEBUG__.services) {
+        if ('voip.user_agent' in odoo.__DEBUG__.services) {
             assert.expect(0);
             return;
         }
@@ -2701,10 +2720,10 @@ QUnit.module('basic_fields', {
     });
 
     QUnit.test('phone field in editable list view on normal screens', function (assert) {
-        // The behavior of this widget is completely altered by crm_voip so this
-        // test is irrelevant and fails if crm_voip is installed. The enterprise
+        // The behavior of this widget is completely altered by voip so this
+        // test is irrelevant and fails if voip is installed. The enterprise
         // module is responsible for testing its own behavior in its own tests.
-        if ('crm.voip' in odoo.__DEBUG__.services) {
+        if ('voip.user_agent' in odoo.__DEBUG__.services) {
             assert.expect(0);
             return;
         }

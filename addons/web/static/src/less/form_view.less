@@ -128,14 +128,32 @@
         }
     }
 
+    // No sheet
+    &.o_form_nosheet {
+        display: block;
+        .o-webclient-padding(@top: @odoo-sheet-vpadding, @bottom: @odoo-sheet-vpadding);
+
+        .o_form_statusbar {
+            margin: -@odoo-sheet-vpadding -@odoo-horizontal-padding @odoo-sheet-vpadding -@odoo-horizontal-padding;
+        }
+    }
+
+    // Non-chatter rules
+    .o_form_sheet_bg {
+        position: relative;
+
+        > .o_form_sheet {
+            margin: @odoo-sheet-vpadding auto;
+        }
+    }
+
     // Statusbar
     .o_form_statusbar {
-        .o-flex(0, 0, auto);
         position: relative; // Needed for the "More" dropdown
         .o-flex-display();
         .o-justify-content(space-between);
         padding-left: @odoo-horizontal-padding;
-        border-bottom: 1px solid @gray-lighter-dark;
+        border-bottom: 1px solid @gray-lighter-darker;
         background-color: @odoo-view-background-color;
 
         > .o_statusbar_buttons, > .o_statusbar_status {
@@ -181,7 +199,7 @@
                 }
                 &:last-child {
                     padding-left: @odoo-horizontal-padding - 1;
-                    border-left: 1px solid @gray-lighter-dark;
+                    border-left: 1px solid @gray-lighter-darker;
                 }
 
                 &:active {
@@ -638,6 +656,11 @@ label.o_light_label, .o_light_label label {
         .o_setting_left_pane {
             width: 24px;
             float: left;
+            .o_enterprise_label {
+                position: absolute;
+                top: 0px;
+                right: 40px;
+            }
         }
         .o_setting_right_pane {
             margin-left: 30px;

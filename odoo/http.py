@@ -362,7 +362,7 @@ class WebRequest(object):
             odoo.tools.debugger.post_mortem(
                 odoo.tools.config, sys.exc_info())
         # otherwise "no active exception to reraise"
-        raise exception
+        raise pycompat.reraise(type(exception), exception, sys.exc_info()[2])
 
     def _call_function(self, *args, **kwargs):
         request = self
@@ -1555,6 +1555,7 @@ class Root(object):
                 max_age=get_conf('session_cookie_age', COOKIE_MAX_AGE),
                 domain=self._get_matching_domain(httprequest, get_conf('session_cookie_domain', '')),
                 secure=get_conf('session_cookie_secure', False),
+                httponly=True,
             )
         return response
 
