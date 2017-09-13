@@ -9,8 +9,8 @@ from itertools import groupby
 from odoo import api, fields, models, _
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from odoo.tools.float_utils import float_compare, float_round
-from odoo.addons.procurement.models import procurement
 from odoo.exceptions import UserError
+from odoo.addons.stock.models.stock_move import PROCUREMENT_PRIORITIES
 from operator import itemgetter
 
 
@@ -46,7 +46,7 @@ class PickingType(models.Model):
         'Show Detailed Operations', default=False,
         help="If this checkbox is ticked, the pickings lines will represent detailed stock operations. If not, the picking lines will represent an aggregate of detailed stock operations.")
     show_reserved = fields.Boolean(
-        'Show Reserved', default=True)
+        'Show Reserved', default=True, help="If this checkbox is ticked, Odoo will show which products are reserved (lot/serial number, source location, source package).")
 
     # Statistics for the kanban view
     last_done_picking = fields.Char('Last 10 Done Pickings', compute='_compute_last_done_picking')
@@ -213,7 +213,7 @@ class Picking(models.Model):
         readonly=True, related='move_lines.group_id', store=True)
 
     priority = fields.Selection(
-        procurement.PROCUREMENT_PRIORITIES, string='Priority',
+        PROCUREMENT_PRIORITIES, string='Priority',
         compute='_compute_priority', inverse='_set_priority', store=True,
         # default='1', required=True,  # TDE: required, depending on moves ? strange
         index=True, track_visibility='onchange',
@@ -265,9 +265,7 @@ class Picking(models.Model):
         index=True, required=True,
         states={'done': [('readonly', True)], 'cancel': [('readonly', True)]})
 
-    move_line_ids = fields.One2many(
-        'stock.move.line', 'picking_id', 'Operations',
-        states={'done': [('readonly', True)], 'cancel': [('readonly', True)]})
+    move_line_ids = fields.One2many('stock.move.line', 'picking_id', 'Operations')
 
     move_line_exist = fields.Boolean(
         'Has Pack Operations', compute='_compute_move_line_exist',
@@ -282,6 +280,9 @@ class Picking(models.Model):
         states={'done': [('readonly', True)], 'cancel': [('readonly', True)]},
         help="Default Owner")
     printed = fields.Boolean('Printed')
+    is_locked = fields.Boolean(default=True, help='When the picking is not done this allows changing the '
+                               'initial demand. When the picking is done this allows '
+                               'changing the done quantities.')
     # Used to search on pickings
     product_id = fields.Many2one('product.product', 'Product', related='move_lines.product_id')
     show_operations = fields.Boolean(related='picking_type_id.show_operations')
@@ -649,6 +650,10 @@ class Picking(models.Model):
             'context': self.env.context,
         }
 
+    def action_toggle_is_locked(self):
+        self.is_locked = not self.is_locked
+        return True
+
     def check_backorder(self):
         self.ensure_one()
         quantity_todo = {}
@@ -709,7 +714,6 @@ class Picking(models.Model):
             'location_id': picking.location_id.id,
             'location_dest_id': picking.location_dest_id.id,
             'product_id': product.id,
-            'procurement_id': proc_id,
             'product_uom': uom_id,
             'product_uom_qty': qty,
             'name': _('Extra Move: ') + name,

@@ -8,6 +8,8 @@ var FormView = require('web.FormView');
 var pyeval = require('web.pyeval');
 var RainbowMan = require('web.rainbow_man');
 var testUtils = require('web.test_utils');
+var widgetRegistry = require('web.widget_registry');
+var Widget = require('web.Widget');
 
 var _t = core._t;
 var createView = testUtils.createView;
@@ -3921,7 +3923,7 @@ QUnit.module('Views', {
 
     QUnit.test('*_view_ref in context are passed correctly', function (assert) {
         var done = assert.async();
-        assert.expect(4);
+        assert.expect(3);
 
         createAsyncView({
             View: FormView,
@@ -3938,8 +3940,6 @@ QUnit.module('Views', {
                     var context = event.data.context.eval();
                     assert.strictEqual(context.tree_view_ref, 'module.tree_view_ref',
                         "context should contain tree_view_ref");
-                    assert.notOk('some_context' in context,
-                        "should not send record's context to load p's fields_view");
                     event.data.on_success();
                 }
             },
@@ -5790,6 +5790,61 @@ QUnit.module('Views', {
         form.destroy();
     });
 
+    QUnit.test('process the context for inline subview', function (assert) {
+        assert.expect(1);
+
+        this.data.partner.records[0].p = [2];
+
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form string="Partners">' +
+                    '<field name="p">' +
+                        '<tree>' +
+                            '<field name="foo"/>' +
+                            '<field name="bar" invisible="context.get(\'hide_bar\', False)"/>' +
+                        '</tree>' +
+                    '</field>' +
+                '</form>',
+            res_id: 1,
+            viewOptions: {
+                context: {hide_bar: true},
+            },
+        });
+        assert.strictEqual(form.$('.o_list_view thead tr th').length, 1,
+            "there should be only one column");
+        form.destroy();
+    });
+
+    QUnit.test('process the context for subview not inline', function (assert) {
+        assert.expect(1);
+
+        this.data.partner.records[0].p = [2];
+
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form string="Partners">' +
+                    '<field name="p"/>' +
+                '</form>',
+            archs: {
+                "partner,false,list": '<tree>' +
+                    '<field name="foo"/>' +
+                    '<field name="bar" invisible="context.get(\'hide_bar\', False)"/>' +
+                '</tree>',
+            },
+            res_id: 1,
+            viewOptions: {
+                context: {hide_bar: true},
+            },
+        });
+        assert.strictEqual(form.$('.o_list_view thead tr th').length, 1,
+            "there should be only one column");
+        form.destroy();
+    });
+
     QUnit.test('rainbowman attributes correctly passed on button click', function (assert) {
         assert.expect(1);
 
@@ -5812,6 +5867,37 @@ QUnit.module('Views', {
 
         form.$('.o_form_statusbar .btn-default').click();
         form.destroy();
+    });
+
+    QUnit.test('basic support for widgets', function (assert) {
+        assert.expect(1);
+
+        var MyWidget = Widget.extend({
+            init: function (parent, dataPoint) {
+                this.data = dataPoint.data;
+            },
+            start: function () {
+                this.$el.text(JSON.stringify(this.data));
+            },
+        });
+        widgetRegistry.add('test', MyWidget);
+
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form string="Partners">' +
+                    '<field name="foo"/>' +
+                    '<field name="bar"/>' +
+                    '<widget name="test"/>' +
+                '</form>',
+        });
+
+        assert.strictEqual(form.$el.text(), '{"foo":"My little Foo Value","bar":false}',
+            "widget should have been instantiated");
+
+        form.destroy();
+        delete widgetRegistry.map.test;
     });
 
 });

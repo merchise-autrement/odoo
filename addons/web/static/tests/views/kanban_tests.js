@@ -3,6 +3,8 @@ odoo.define('web.kanban_tests', function (require) {
 
 var KanbanView = require('web.KanbanView');
 var testUtils = require('web.test_utils');
+var widgetRegistry = require('web.widget_registry');
+var Widget = require('web.Widget');
 
 var createView = testUtils.createView;
 
@@ -558,6 +560,43 @@ QUnit.module('Views', {
         assert.strictEqual(kanban.$('.o_kanban_record:first()').find('.o_field_many2manytags .o_tag').length, 2,
             'first record should still contain only 2 tags');
 
+        // click on a tag to trigger a search by tag
+        kanban.$('.o_tag:contains(gold):first').click();
+
+        kanban.destroy();
+    });
+
+    QUnit.test('many2many_tags with no color field and search by tag', function (assert) {
+        assert.expect(3);
+
+        delete this.data.category.fields.color;
+        this.data.partner.records[0].category_ids = [6, 7];
+
+        var kanban = createView({
+            View: KanbanView,
+            model: 'partner',
+            data: this.data,
+            arch: '<kanban><templates><t t-name="kanban-box">' +
+                    '<div>' +
+                        '<field name="category_ids" widget="many2many_tags"/>' +
+                        '<field name="foo"/>' +
+                    '</div>' +
+                '</t></templates></kanban>',
+            intercepts: {
+                add_filter: function (event) {
+                    assert.deepEqual(event.data, {
+                        domain: "[['category_ids','=','gold']]",
+                        help: 'gold',
+                    }, "should trigger an 'add_filter' event with correct data");
+                },
+            },
+        });
+
+        var $first_record = kanban.$('.o_kanban_record:first()');
+        assert.strictEqual($first_record.find('.o_field_many2manytags .o_tag').length, 2,
+            'first record should contain 2 tags');
+        assert.ok($first_record.find('.o_tag.o_tag_color_0').hasClass('o_tag_color_0'),
+            'both tags should have the default color');
         // click on a tag to trigger a search by tag
         kanban.$('.o_tag:contains(gold):first').click();
 
@@ -1764,6 +1803,75 @@ QUnit.module('Views', {
         kanban.destroy();
     });
 
+    QUnit.test('resequence a record twice', function (assert) {
+        assert.expect(10);
+
+        this.data.partner.records = [];
+
+        var nbResequence = 0;
+        var kanban = createView({
+            View: KanbanView,
+            model: 'partner',
+            data: this.data,
+            arch: '<kanban>' +
+                    '<field name="product_id"/>' +
+                    '<templates><t t-name="kanban-box">' +
+                    '<div><field name="display_name"/></div>' +
+                '</t></templates></kanban>',
+            groupBy: ['product_id'],
+            mockRPC: function (route) {
+                if (route === '/web/dataset/resequence') {
+                    nbResequence++;
+                    return $.when();
+                }
+                return this._super.apply(this, arguments);
+            },
+        });
+
+        kanban.$('.o_column_quick_create').click();
+        kanban.$('.o_column_quick_create input').val('column1');
+        kanban.$('.o_column_quick_create button.o_kanban_add').click();
+
+        kanban.$('.o_kanban_group:eq(0) .o_kanban_quick_add i').click();
+        var $quickCreate = kanban.$('.o_kanban_group:eq(0) .o_kanban_quick_create');
+        $quickCreate.find('input').val('record1');
+        $quickCreate.find('button.o_kanban_add').click();
+
+        kanban.$('.o_kanban_group:eq(0) .o_kanban_quick_add i').click();
+        $quickCreate = kanban.$('.o_kanban_group:eq(0) .o_kanban_quick_create');
+        $quickCreate.find('input').val('record2');
+        $quickCreate.find('button.o_kanban_add').click();
+
+        assert.strictEqual(kanban.$('.o_kanban_group:eq(0) .o_kanban_record').length, 2,
+                        "column should contain 2 records");
+        assert.strictEqual(kanban.$('.o_kanban_group:eq(0) .o_kanban_record:eq(0)').text(), "record2",
+                        "records should be correctly ordered");
+        assert.strictEqual(kanban.$('.o_kanban_group:eq(0) .o_kanban_record:eq(1)').text(), "record1",
+                        "records should be correctly ordered");
+
+        var $record1 = kanban.$('.o_kanban_group:eq(0) .o_kanban_record:eq(1)');
+        var $record2 = kanban.$('.o_kanban_group:eq(0) .o_kanban_record:eq(0)');
+        testUtils.dragAndDrop($record1, $record2, {position: 'top'});
+
+        assert.strictEqual(kanban.$('.o_kanban_group:eq(0) .o_kanban_record').length, 2,
+                        "column should contain 2 records");
+        assert.strictEqual(kanban.$('.o_kanban_group:eq(0) .o_kanban_record:eq(0)').text(), "record1",
+                        "records should be correctly ordered");
+        assert.strictEqual(kanban.$('.o_kanban_group:eq(0) .o_kanban_record:eq(1)').text(), "record2",
+                        "records should be correctly ordered");
+
+        testUtils.dragAndDrop($record2, $record1, {position: 'top'});
+
+        assert.strictEqual(kanban.$('.o_kanban_group:eq(0) .o_kanban_record').length, 2,
+                        "column should contain 2 records");
+        assert.strictEqual(kanban.$('.o_kanban_group:eq(0) .o_kanban_record:eq(0)').text(), "record2",
+                        "records should be correctly ordered");
+        assert.strictEqual(kanban.$('.o_kanban_group:eq(0) .o_kanban_record:eq(1)').text(), "record1",
+                        "records should be correctly ordered");
+        assert.strictEqual(nbResequence, 2, "should have resequenced twice");
+        kanban.destroy();
+    });
+
     QUnit.test('don\'t fold column quick create after creation', function (assert) {
         assert.expect(2);
 
@@ -1792,6 +1900,40 @@ QUnit.module('Views', {
             "the add button should still be visible");
         kanban.destroy();
     });
+
+    QUnit.test('basic support for widgets', function (assert) {
+        assert.expect(1);
+
+        var MyWidget = Widget.extend({
+            init: function (parent, dataPoint) {
+                this.data = dataPoint.data;
+            },
+            start: function () {
+                this.$el.text(JSON.stringify(this.data));
+            },
+        });
+        widgetRegistry.add('test', MyWidget);
+
+        var kanban = createView({
+            View: KanbanView,
+            model: 'partner',
+            data: this.data,
+            arch: '<kanban class="o_kanban_test"><templates><t t-name="kanban-box">' +
+                    '<div>' +
+                    '<t t-esc="record.foo.value"/>' +
+                    '<field name="foo" blip="1"/>' +
+                    '<widget name="test"/>' +
+                    '</div>' +
+                '</t></templates></kanban>',
+        });
+
+        assert.strictEqual(kanban.$('.o_widget:eq(2)').text(), '{"foo":"gnap","id":3}',
+            "widget should have been instantiated");
+
+        kanban.destroy();
+        delete widgetRegistry.map.test;
+    });
+
 });
 
 });

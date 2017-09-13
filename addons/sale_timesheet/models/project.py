@@ -8,6 +8,8 @@ from odoo.exceptions import ValidationError
 class Project(models.Model):
     _inherit = 'project.project'
 
+    sale_line_id = fields.Many2one('sale.order.line', 'Sales Order Line', readonly=True, help="Sale order line from which the project has been created. Used for tracability.")
+
     @api.multi
     def action_view_timesheet(self):
         self.ensure_one()
@@ -40,7 +42,7 @@ class Project(models.Model):
     @api.multi
     def action_view_timesheet_plan(self):
         return {
-            'name': _('Overview of %s') % self.name,
+            'name': _('Overview'),
             'type': 'ir.actions.client',
             'tag': 'timesheet.plan',
             'context': {
@@ -54,8 +56,17 @@ class Project(models.Model):
 class ProjectTask(models.Model):
     _inherit = "project.task"
 
-    procurement_id = fields.Many2one('procurement.order', 'Assign to Order', ondelete='set null', help="Procurement of the sale order line on which the timesheets should be assigned")
-    sale_line_id = fields.Many2one('sale.order.line', 'Sales Order Line', related='procurement_id.sale_line_id', store=True)
+    sale_line_id = fields.Many2one('sale.order.line', 'Sales Order Item', domain=[('is_service', '=', True)])
+
+    @api.multi
+    def write(self, values):
+        result = super(ProjectTask, self).write(values)
+        # reassign SO line on related timesheet lines
+        if 'sale_line_id' in values:
+            self.sudo().mapped('timesheet_ids').write({
+                'so_line': values['sale_line_id']
+            })
+        return result
 
     @api.multi
     def unlink(self):
@@ -76,5 +87,4 @@ class ProjectTask(models.Model):
 
     @api.onchange('parent_id')
     def onchange_parent_id(self):
-        self.procurement_id = self.parent_id.procurement_id.id
         self.sale_line_id = self.parent_id.sale_line_id.id
