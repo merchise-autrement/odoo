@@ -378,6 +378,11 @@
     </template>
 
     <!-- /shop/product product page -->
+    <template id="product_edit_options" inherit_id="website.user_navbar" name="Edit Product Options">
+        <xpath expr="//li[@id='edit-page-menu']" position="after">
+            <t t-if="main_object._name == 'product.template'" t-set="action" t-value="'product.product_template_action'" />
+        </xpath>
+    </template>
     <template id="product" name="Product">
         <t t-call="website.layout">
             <t t-set="additional_title" t-value="product.name" />
@@ -401,11 +406,6 @@
                             <t t-call="website_sale.search" />
                         </div>
                         <div id="website_published_button" class="col-sm-3">
-                            <t t-call="website.publish_management" groups="sales_team.group_sale_manager">
-                                <t t-set="object" t-value="product" />
-                                <t t-set="publish_edit" t-value="True" />
-                                <t t-set="action" t-value="'product.product_template_action'" />
-                            </t>
                         </div>
                         <div class="col-sm-2 text-right">
                             <t t-call="website_sale.pricelist_list" />
@@ -879,6 +879,20 @@
                     </div>
                     <div class="row">
                         <div class="col-md-8 col-sm-9 oe_cart">
+                            <div t-if="abandoned_proceed or access_token" class="mt8 mb8 alert alert-info"> <!-- abandoned cart choices -->
+                                <t t-if="abandoned_proceed">
+                                    <p>Your previous cart has already been completed.</p>
+                                    <p t-if="website_sale_order">Please proceed your current cart.</p>
+                                </t>
+                                <t t-if="access_token">
+                                    <p>This is your current cart.</p>
+                                    <p>
+                                        <strong><a t-attf-href="/shop/cart/?access_token=#{access_token}&amp;revive=squash">Click here</a></strong> if you want to restore your previous cart. Your current cart will be replaced with your previous cart.</p>
+                                    <p>
+                                        <strong><a t-attf-href="/shop/cart/?access_token=#{access_token}&amp;revive=merge">Click here</a></strong> if you want to merge your previous cart into current cart.
+                                    </p>
+                                </t>
+                            </div>
                             <t t-call="website_sale.cart_lines" />
                             <div class="clearfix" />
                             <a t-if="not optional_products and website_sale_order and website_sale_order.website_order_line" class="btn btn-primary pull-right mb32" href="/shop/checkout">
@@ -1648,4 +1662,5 @@
           </div>
         </t>
     </template>
+
 </odoo>

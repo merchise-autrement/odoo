@@ -83,6 +83,10 @@ function transformQwebTemplate(node, fields) {
 
 var KanbanRenderer = BasicRenderer.extend({
     className: 'o_kanban_view',
+    custom_events: _.extend({}, BasicRenderer.prototype.custom_events || {}, {
+        'set_progress_bar_state': '_onSetProgressBarState',
+    }),
+
     /**
      * @override
      */
@@ -100,6 +104,9 @@ var KanbanRenderer = BasicRenderer.extend({
             viewType: 'kanban',
         });
         this.columnOptions = _.extend({}, params.column_options, { qweb: this.qweb });
+        if (this.columnOptions.hasProgressBar) {
+            this.columnOptions.progressBarStates = {};
+        }
 
         this._setState(state);
     },
@@ -138,10 +145,10 @@ var KanbanRenderer = BasicRenderer.extend({
      * @returns {Deferred}
      */
     updateColumn: function (localID, columnState) {
-        var column = _.findWhere(this.widgets, {db_id: localID});
-        this.widgets.splice(_.indexOf(this.widgets, column), 1); // remove column from widgets' list
         var newColumn = new KanbanColumn(this, columnState, this.columnOptions, this.recordOptions);
-        this.widgets.push(newColumn);
+        var index = _.findIndex(this.widgets, {db_id: localID});
+        var column = this.widgets[index];
+        this.widgets[index] = newColumn;
         return newColumn.insertAfter(column.$el).then(column.destroy.bind(column));
     },
     /**
@@ -233,7 +240,7 @@ var KanbanRenderer = BasicRenderer.extend({
             this.$el.sortable({
                 axis: 'x',
                 items: '> .o_kanban_group',
-                handle: '.o_kanban_header',
+                handle: '.o_kanban_header_title',
                 cursor: 'move',
                 revert: 150,
                 delay: 100,
@@ -335,6 +342,24 @@ var KanbanRenderer = BasicRenderer.extend({
             relation: grouped_by_field,
         });
         this.createColumnEnabled = this.groupedByM2O && this.columnOptions.group_creatable;
+    },
+
+    //--------------------------------------------------------------------------
+    // Handlers
+    //--------------------------------------------------------------------------
+
+    /**
+     * Updates progressbar internal states (necessary for animations) with
+     * received data.
+     *
+     * @private
+     * @param {OdooEvent} ev
+     */
+    _onSetProgressBarState: function (ev) {
+        if (!this.columnOptions.progressBarStates[ev.data.columnID]) {
+            this.columnOptions.progressBarStates[ev.data.columnID] = {};
+        }
+        _.extend(this.columnOptions.progressBarStates[ev.data.columnID], ev.data.values);
     },
 });
 

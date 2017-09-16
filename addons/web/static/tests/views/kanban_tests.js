@@ -5,10 +5,18 @@ var KanbanView = require('web.KanbanView');
 var testUtils = require('web.test_utils');
 var widgetRegistry = require('web.widget_registry');
 var Widget = require('web.Widget');
+var KanbanColumnProgressBar = require('web.KanbanColumnProgressBar');
 
 var createView = testUtils.createView;
 
 QUnit.module('Views', {
+    before: function () {
+        this._initialKanbanProgressBarAnimate = KanbanColumnProgressBar.prototype.ANIMATE;
+        KanbanColumnProgressBar.prototype.ANIMATE = false;
+    },
+    after: function () {
+        KanbanColumnProgressBar.prototype.ANIMATE = this._initialKanbanProgressBarAnimate;
+    },
     beforeEach: function () {
         this.data = {
             partner: {
@@ -51,7 +59,7 @@ QUnit.module('Views', {
                 ]
             },
         };
-    }
+    },
 }, function () {
 
     QUnit.module('KanbanView');
@@ -651,6 +659,48 @@ QUnit.module('Views', {
         assert.strictEqual(kanban.$('.o_kanban_group:nth-child(2) .o_kanban_record').length, 3,
                         "column should contain 3 record(s)");
         assert.strictEqual(kanban.$('.thisiseditable').length, 4, "all records should be editable");
+        kanban.destroy();
+    });
+
+    QUnit.test('drag and drop a record, grouped by selection', function (assert) {
+        assert.expect(6);
+
+        var kanban = createView({
+            View: KanbanView,
+            model: 'partner',
+            data: this.data,
+            arch: '<kanban class="o_kanban_test" on_create="quick_create">' +
+                        '<templates>' +
+                            '<t t-name="kanban-box">' +
+                                '<div><field name="state"/></div>' +
+                            '</t>' +
+                        '</templates>' +
+                    '</kanban>',
+            groupBy: ['state'],
+            mockRPC: function (route, args) {
+                if (route === '/web/dataset/resequence') {
+                    assert.ok(true, "should call resequence");
+                    return $.when(true);
+                }
+                if (args.model === 'partner' && args.method === 'write') {
+                    assert.deepEqual(args.args[1], {state: 'def'});
+                }
+                return this._super(route, args);
+            },
+        });
+        assert.strictEqual(kanban.$('.o_kanban_group:nth-child(1) .o_kanban_record').length, 1,
+                        "column should contain 1 record(s)");
+        assert.strictEqual(kanban.$('.o_kanban_group:nth-child(2) .o_kanban_record').length, 1,
+                        "column should contain 1 record(s)");
+
+        var $record = kanban.$('.o_kanban_group:nth-child(1) .o_kanban_record:first');
+        var $group = kanban.$('.o_kanban_group:nth-child(2)');
+        testUtils.dragAndDrop($record, $group);
+
+        assert.strictEqual(kanban.$('.o_kanban_group:nth-child(1) .o_kanban_record').length, 0,
+                        "column should now contain 0 record(s)");
+        assert.strictEqual(kanban.$('.o_kanban_group:nth-child(2) .o_kanban_record').length, 2,
+                        "column should contain 2 record(s)");
         kanban.destroy();
     });
 
@@ -1734,13 +1784,13 @@ QUnit.module('Views', {
                         "column should contain 1 record(s)");
         assert.ok(kanban.$('.o_kanban_group:first span.o_column_title:contains(Undefined)').length,
             "first column should have a default title for when no value is provided");
-        assert.strictEqual(kanban.$('.o_kanban_group:first .o_kanban_header').data('original-title'),
+        assert.strictEqual(kanban.$('.o_kanban_group:first .o_kanban_header_title').data('original-title'),
             "<p>1 records</p>",
             "first column should have a tooltip with the number of records, but not" +
             "the group_by_tooltip title and the many2one field value since it has no value");
         assert.ok(kanban.$('.o_kanban_group:eq(1) span.o_column_title:contains(hello)').length,
             "second column should have a title with a value from the many2one");
-        assert.strictEqual(kanban.$('.o_kanban_group:eq(1) .o_kanban_header').data('original-title'),
+        assert.strictEqual(kanban.$('.o_kanban_group:eq(1) .o_kanban_header_title').data('original-title'),
             "<p>2 records</p><div>Kikou<br>hello</div>",
             "second column should have a tooltip with the number of records, the group_by_tooltip title and many2one field value");
 
@@ -1934,6 +1984,73 @@ QUnit.module('Views', {
         delete widgetRegistry.map.test;
     });
 
+    QUnit.test('column progressbars properly work', function (assert) {
+        assert.expect(2);
+
+        var kanban = createView({
+            View: KanbanView,
+            model: 'partner',
+            data: this.data,
+            arch:
+                '<kanban>' +
+                    '<field name="bar"/>' +
+                    '<field name="int_field"/>' +
+                    '<progressbar field="foo" colors=\'{"yop": "success", "gnap": "warning", "blip": "danger"}\' sum="int_field"/>' +
+                    '<templates><t t-name="kanban-box">' +
+                        '<div>' +
+                            '<field name="name"/>' +
+                        '</div>' +
+                    '</t></templates>' +
+                '</kanban>',
+            groupBy: ['bar'],
+        });
+
+        assert.strictEqual(kanban.$('.o_kanban_counter').length, this.data.product.records.length,
+            "kanban counters should have been created");
+
+        assert.strictEqual(parseInt(kanban.$('.o_kanban_counter_side').last().text()), 36,
+            "counter should display the sum of int_field values");
+        kanban.destroy();
+    });
+
+    QUnit.test('keep adding quickcreate in first column after a record from this column was moved', function (assert) {
+        assert.expect(2);
+
+        var kanban = createView({
+            View: KanbanView,
+            model: 'partner',
+            data: this.data,
+            arch:
+                '<kanban on_create="quick_create">' +
+                    '<field name="int_field"/>' +
+                    '<templates><t t-name="kanban-box">' +
+                        '<div><field name="foo"/></div>' +
+                    '</t></templates>' +
+                '</kanban>',
+            groupBy: ['int_field'],
+            mockRPC: function (route, args) {
+                if (route === '/web/dataset/resequence') {
+                    return $.when(true);
+                }
+                return this._super(route, args);
+            },
+        });
+
+        var $quickCreateGroup;
+        var $groups;
+        _quickCreateAndTest();
+        testUtils.dragAndDrop($groups.first().find('.o_kanban_record:first'), $groups.eq(1));
+        _quickCreateAndTest();
+        kanban.destroy();
+
+        function _quickCreateAndTest() {
+            kanban.$buttons.find('.o-kanban-button-new').click();
+            $quickCreateGroup = kanban.$('.o_kanban_quick_create').closest('.o_kanban_group');
+            $groups = kanban.$('.o_kanban_group');
+            assert.strictEqual($quickCreateGroup[0], $groups[0],
+                "quick create should have been added in the first column");
+        }
+    });
 });
 
 });

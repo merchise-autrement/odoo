@@ -98,7 +98,11 @@ class ResPartner(models.Model):
 
     @api.constrains('vat', 'commercial_partner_country_id')
     def check_vat(self):
-        if self.env.user.company_id.vat_check_vies:
+        if self.env.context.get('company_id'):
+            company = self.env['res.company'].browse(self.env.context['company_id'])
+        else:
+            company = self.env.user.company_id
+        if company.vat_check_vies:
             # force full VIES online check
             check_func = self.vies_vat_check
         else:
@@ -121,7 +125,11 @@ class ResPartner(models.Model):
         self.ensure_one()
         vat_no = "'CC##' (CC=Country Code, ##=VAT Number)"
         vat_no = _ref_vat.get(country_code) or vat_no
-        if self.env.user.company_id.vat_check_vies:
+        if self.env.context.get('company_id'):
+            company = self.env['res.company'].browse(self.env.context['company_id'])
+        else:
+            company = self.env.user.company_id
+        if company.vat_check_vies:
             return '\n' + _('The VAT number [%s] for partner [%s] either failed the VIES VAT validation check or did not respect the expected format %s.') % (self.vat, self.name, vat_no)
         return '\n' + _('The VAT number [%s] for partner [%s] does not seem to be valid. \nNote: the expected format is %s') % (self.vat, self.name, vat_no)
 
@@ -192,11 +200,11 @@ class ResPartner(models.Model):
 
     # Mexican VAT verification, contributed by Vauxoo
     # and Panos Christeas <p_christ@hol.gr>
-    __check_vat_mx_re = re.compile(r"(?P<primeras>[A-Za-z\xd1\xf1&]{3,4})" \
-                                   r"[ \-_]?" \
-                                   r"(?P<ano>[0-9]{2})(?P<mes>[01][0-9])(?P<dia>[0-3][0-9])" \
-                                   r"[ \-_]?" \
-                                   r"(?P<code>[A-Za-z0-9&\xd1\xf1]{3})$")
+    __check_vat_mx_re = re.compile(br"(?P<primeras>[A-Za-z\xd1\xf1&]{3,4})" \
+                                   br"[ \-_]?" \
+                                   br"(?P<ano>[0-9]{2})(?P<mes>[01][0-9])(?P<dia>[0-3][0-9])" \
+                                   br"[ \-_]?" \
+                                   br"(?P<code>[A-Za-z0-9&\xd1\xf1]{3})$")
 
     def check_vat_mx(self, vat):
         ''' Mexican VAT verification

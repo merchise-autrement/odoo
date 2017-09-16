@@ -1,5 +1,5 @@
-@o-kanban-record-margin: 10px;
-@o-kanban-group-padding: 10px;
+@o-kanban-record-margin: @odoo-horizontal-padding/2;
+@o-kanban-group-padding: @odoo-horizontal-padding; // Cannot be higher than this
 
 @o-kanban-default-record-width: 300px;
 @o-kanban-small-record-width: 240px;
@@ -47,10 +47,9 @@
     padding: 0 @o-kanban-group-padding * 0.5;
     cursor: pointer;
 }
-.o-kanban-header() {
+.o-kanban-header-title() {
     .o-flex-display();
     height: 50px;
-    margin: 0 @o-kanban-record-margin;
     line-height: 2.2;
     color: @headings-color;
 }
@@ -174,7 +173,7 @@
         display: inline-block; // Force the creation of a block formatting context to clear float items
         border-color: @gray-lighter-darker;
         min-width: 150px;
-        margin: 0 @o-kanban-record-margin -1px;
+        margin: 0 0 -1px;
 
         // ------- Kanban Record, v11 Layout -------
         // Records colours
@@ -231,6 +230,7 @@
 
                 > * {
                     margin-right: 6px;
+                    line-height: 1;
                 }
 
                 .o_priority_star {
@@ -263,27 +263,6 @@
     // Provide a basic style for different kanban record layouts
     // ---------------------------------------------------------
     .oe_kanban_card, .o_kanban_record {
-        // Identify the Title
-        .oe_partner_heading,                                      // Contacts
-        .oe_module_desc > h4,                                     // Apps List
-        .oe_kanban_details > strong,                              // Fleet, Employees
-        > .row:first-child > .col-xs-6:first-child > strong,      // Quotations (Sales)
-        > .row:first-child > .col-xs-10:last-child > div > strong // Timesheets
-        {
-            .o-kanban-record-title(@font-size: 13px);
-            display: block;
-        }
-
-        // If record has multiple rows, the Title column is always 100% width.
-        > .row:first-child {
-            margin-bottom: @o-kanban-inner-hmargin*0.5;
-
-            > .col-xs-6 {
-                width: 100%;
-                text-align: left;
-            }
-        }
-
         // Apps List records sizing
         &.oe_module_vignette {
             .o-flex(1, 1, 350px);
@@ -458,16 +437,18 @@
     // Kanban Grouped Layout
     &.o_kanban_grouped {
         min-height: 100%;
-        padding: 0 @odoo-horizontal-padding - @o-kanban-group-padding - @o-kanban-record-margin;
+        padding: 0;
         background-color: @gray-lighter;
 
         .o_kanban_record, .o_kanban_quick_create {
-            width: @o-kanban-default-record-width;
+            width: 100%;
+            margin-left: 0;
+            margin-right: 0;
         }
 
         &.o_kanban_small_column .o_kanban_group {
             &:not(.o_column_folded) {
-                width: @o-kanban-small-record-width + 2*@o-kanban-group-padding + 2*@o-kanban-record-margin;
+                width: @o-kanban-small-record-width + 2*@o-kanban-group-padding;
                 .o_kanban_record, .o_kanban_quick_create {
                     width: @o-kanban-small-record-width;
                 }
@@ -484,8 +465,8 @@
         border-width: 0 1px;
         margin-left: -1px;
 
-        .o_kanban_header {
-            .o-kanban-header();
+        .o_kanban_header > .o_kanban_header_title {
+            .o-kanban-header-title();
 
             .o_column_title {
                 .o-flex(1, 1, auto);
@@ -531,7 +512,7 @@
         }
 
         &:not(.o_column_folded) {
-            width: @o-kanban-default-record-width + 2*@o-kanban-group-padding + 2*@o-kanban-record-margin;
+            width: @o-kanban-default-record-width + 2*@o-kanban-group-padding;
         }
 
         &.o_kanban_dragged {
@@ -543,7 +524,7 @@
         }
     }
 
-    &.ui-sortable .o_kanban_header {
+    &.ui-sortable .o_kanban_header_title {
         cursor: move;
     }
 
@@ -556,7 +537,7 @@
             margin-left: 1px;
         }
 
-        .o_kanban_header {
+        .o_kanban_header_title {
             position: relative;
             opacity: 0.5;
 
@@ -582,7 +563,7 @@
         .o-kanban-slim-col();
 
         .o_column_header {
-            .o-kanban-header();
+            .o-kanban-header-title();
             position: relative;
             opacity: 0.5;
 
