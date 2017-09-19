@@ -28,7 +28,7 @@ finally:
     os.chdir(_cwd)
     del _cwd
 
-version_info = (11, 0, 0, ALPHA, 1, '')
+version_info = (11, 0, 0, ALPHA, 2, '')
 version = '.'.join(str(s) for s in version_info[:2]) + RELEASE_LEVELS_DISPLAY[version_info[3]] + str(version_info[4] or '') + version_info[5]
 series = serie = major_version = '.'.join(str(s) for s in version_info[:2])
 
