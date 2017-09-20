@@ -191,7 +191,10 @@ class IrQWeb(models.AbstractModel, QWeb):
     def _get_asset(self, xmlid, options, css=True, js=True, debug=False, async=False, values=None):
         files, remains = self._get_asset_content(xmlid, options)
         asset = AssetsBundle(xmlid, files, remains, env=self.env)
-        spdy = request.httprequest.is_spdy or request.httprequest.is_http2
+        try:
+            spdy = request.httprequest.is_spdy or request.httprequest.is_http2
+        except RuntimeError:
+            spdy = False
         return asset.to_html(
             css=css, js=js, debug=debug, async=async,
             url_for=(values or {}).get('url_for', lambda url: url), spdy=spdy)
