@@ -477,7 +477,11 @@ class QWeb(orm.AbstractModel):
         performed.
 
         """
-        request = getattr(qwebcontext.get('request'), 'httprequest', None)
+        try:
+            request = getattr(qwebcontext.get('request'), 'httprequest', None)
+        except RuntimeError:
+            # Werkzeug raises RuntimeError instead of AttributeError.
+            request = None
         if len(element):
             # An asset bundle is rendered in two differents contexts (when genereting html and
             # when generating the bundle itself) so they must be qwebcontext free
@@ -490,7 +494,7 @@ class QWeb(orm.AbstractModel):
         css = self.get_attr_bool(template_attributes.get('css'), default=True)
         js = self.get_attr_bool(template_attributes.get('js'), default=True)
         async = self.get_attr_bool(template_attributes.get('async'), default=False)
-        spdy = request.is_spdy or request.is_http2
+        spdy = request and (request.is_spdy or request.is_http2)
         return bundle.to_html(css=css, js=js, debug=bool(qwebcontext.get('debug')), async=async, qwebcontext=qwebcontext, spdy=spdy)
 
     def render_tag_set(self, element, template_attributes, generated_attributes, qwebcontext):
