@@ -157,7 +157,7 @@ class FSWatcher(object):
                 path = getattr(event, 'dest_path', event.src_path)
                 if path.endswith('.py'):
                     try:
-                        source = open(path, 'rb').read() + '\n'
+                        source = open(path, 'rb').read() + b'\n'
                         compile(source, path, 'exec')
                     except SyntaxError:
                         _logger.error('autoreload: python code change detected, SyntaxError in %s', path)

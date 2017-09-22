@@ -3444,7 +3444,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             # call the 'write' method of fields which are not columns
             for name in sorted(upd_todo, key=lambda name: self._fields[name]._sequence):
                 field = self._fields[name]
-                field.write(self.with_context(rel_context), vals[name])
+                field.write(self.with_context(rel_context), vals[name], create=True)
 
             # for recomputing new-style fields
             self.modified(upd_todo)
@@ -4948,6 +4948,17 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         if not all(name in self._fields for name in names):
             return {}
 
+        # filter out keys in field_onchange that do not refer to actual fields
+        dotnames = []
+        for dotname in field_onchange:
+            try:
+                model = self.browse()
+                for name in dotname.split('.'):
+                    model = model[name]
+                dotnames.append(dotname)
+            except Exception:
+                pass
+
         # create a new record with values, and attach ``self`` to it
         with env.do_in_onchange():
             record = self.new(values)
@@ -4957,7 +4968,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
 
         # load fields on secondary records, to avoid false changes
         with env.do_in_onchange():
-            for dotname in field_onchange:
+            for dotname in dotnames:
                 record.mapped(dotname)
 
         # determine which field(s) should be triggered an onchange
@@ -4991,7 +5002,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                     record._onchange_eval(name, field_onchange[name], result)
 
                 # force re-evaluation of function fields on secondary records
-                for dotname in field_onchange:
+                for dotname in dotnames:
                     record.mapped(dotname)
 
                 # determine which fields have been modified
@@ -5007,7 +5018,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         # determine subfields for field.convert_to_onchange() below
         Tree = lambda: defaultdict(Tree)
         subnames = Tree()
-        for dotname in field_onchange:
+        for dotname in dotnames:
             subtree = subnames
             for name in dotname.split('.'):
                 subtree = subtree[name]
