@@ -272,7 +272,7 @@ class Signal(object):
         module = get_object_module(receiver, typed=True)
         env = getattr(sender, 'env', None)
         if module and env:
-            mm = env['ir.module.module']
+            mm = env['ir.module.module'].sudo()
             query = [('state', '=', 'installed'), ('name', '=', module)]
             return bool(mm.search(query))
         else:
