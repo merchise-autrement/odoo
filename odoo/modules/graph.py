@@ -100,7 +100,10 @@ class Graph(dict):
         return len(self) - len_graph
 
     def __iter__(self):
-        return (module for _, module in sorted(self.items(), key=lambda (n, m): (m.depth, n)))
+        def key(item):
+            name, module = item
+            return module.depth, name
+        return (module for _, module in sorted(self.items(), key=key))
 
     def __str__(self):
         return '\n'.join(str(n) for n in self if n.depth == 0)
