@@ -6,14 +6,11 @@
 Miscellaneous tools used by OpenERP.
 """
 from functools import wraps
-import io
 import babel
-import cPickle
-import cProfile
 from contextlib import contextmanager
 import datetime
 import subprocess
-import logging
+import io
 import os
 
 import collections
@@ -27,12 +24,11 @@ import time
 import types
 import werkzeug.utils
 import zipfile
-from cStringIO import StringIO
 from collections import defaultdict, Iterable, Mapping, MutableSet, OrderedDict
 from itertools import islice, groupby, repeat
 from lxml import etree
 
-from which import which
+from .which import which
 import traceback
 from operator import itemgetter
 
@@ -43,8 +39,8 @@ except ImportError:
     import profile as cProfile
 
 
-from config import config
-from cache import *
+from .config import config
+from .cache import *
 from .parse_version import parse_version
 from . import pycompat
 
@@ -239,10 +235,9 @@ def _fileopen(path, mode, basedir, pathinfo, basename=None):
             zipname = tail
         zpath = os.path.join(basedir, head + '.zip')
         if zipfile.is_zipfile(zpath):
-            from cStringIO import StringIO
             zfile = zipfile.ZipFile(zpath)
             try:
-                fo = StringIO()
+                fo = io.BytesIO()
                 fo.write(zfile.read(os.path.join(
                     os.path.basename(head), zipname).replace(
                         os.sep, '/')))
