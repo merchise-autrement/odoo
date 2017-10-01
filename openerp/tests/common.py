@@ -370,7 +370,8 @@ class HttpCase(TransactionCase):
         _logger.info('phantom_run executing %s', ' '.join(cmd))
 
         ls_glob = os.path.expanduser('~/.qws/share/data/Ofi Labs/PhantomJS/http_%s_%s.*' % (HOST, PORT))
-        for i in glob.glob(ls_glob):
+        ls_glob2 = os.path.expanduser('~/.local/share/Ofi Labs/PhantomJS/http_%s_%s.*' % (HOST, PORT))
+        for i in (glob.glob(ls_glob) + glob.glob(ls_glob2)):
             _logger.info('phantomjs unlink localstorage %s', i)
             os.unlink(i)
         try:
