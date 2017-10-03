@@ -484,7 +484,7 @@ def fields_view_get(self, view_id=None, view_type='form',
 
 
 @api.model
-@api.returns('self', lambda value: value.id)
+@api.returns('self', lambda value: value.id if value else value)
 def create(self, vals):
     pre_create.send(sender=self, values=vals)
     res = super_create(self, vals)
