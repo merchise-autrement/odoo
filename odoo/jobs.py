@@ -692,7 +692,7 @@ def _extract_signature(args, kwargs):
     from odoo.sql_db import Cursor
     from odoo.tools import frozendict
     method = args[0]
-    self = getattr(method, 'im_self', Unset)
+    self = getattr(method, '__self__', Unset)
     env = getattr(self, 'env', Unset)
     if isinstance(self, BaseModel) and isinstance(env, Environment):
         db, uid, context = env.args
