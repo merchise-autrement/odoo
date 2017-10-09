@@ -88,6 +88,16 @@
         <script type="text/javascript" src="/web/static/src/js/core/local_storage.js"></script>
         <script type="text/javascript" src="/web/static/src/js/services/local_storage_service.js"></script>
         <script type="text/javascript" src="/web/static/src/js/widgets/rainbow_man.js"></script>
+
+        <!-- Merchise's lib -->
+        <script type="text/javascript" src="/web/static/lib/xopgi/js/xopgi.js"></script>
+        <script type="text/javascript" src="/web/static/lib/raven.js"></script>
+        <script type="text/javascript">
+          $(function(){
+             var dsn = "<t t-raw='sentry_client_dsn'/>";
+             if (!!dsn) Raven.config(dsn).install();
+          });
+        </script>
     </template>
 
     <template id="web.assets_backend" name="Backend Assets (used in backend interface)">

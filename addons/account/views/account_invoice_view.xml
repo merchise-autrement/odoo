@@ -538,7 +538,8 @@
                     <field name="user_id" string="Salesperson" domain="[('share','=', False)]"/>
                     <field name="date" string="Period"/>
                     <separator/>
-                    <filter domain="[('user_id','=',uid)]" help="My Invoices"/>
+                    <filter name="my_invoices"
+                            domain="[('user_id','=',uid)]" help="My Invoices"/>
                     <separator/>
                     <filter string="My Activities" name="activities_my"
                         domain="[('activity_ids.user_id', '=', uid)]"/>

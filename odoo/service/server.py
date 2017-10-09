@@ -17,17 +17,39 @@ import threading
 import time
 import unittest
 
+try:
+    from cProfile import Profile
+except ImportError:
+    from profile import Profile
+from pstats import Stats
+
 import werkzeug.serving
 from werkzeug.debug import DebuggedApplication
+
+_signals = {getattr(signal, name): name for name in dir(signal) if name.startswith('SIG')}
+
+
+class WorkerRuntimeError(RuntimeError):
+    _sentry_fingerprint = ['worker runtime error', ]
+
+
+class WorkerLimitException(WorkerRuntimeError):
+    _sentry_fingerprint = ['worker limit', ]
+
 
 if os.name == 'posix':
     # Unix only for workers
     import fcntl
     import resource
     import psutil
+    from os import WEXITSTATUS
 else:
     # Windows shim
     signal.SIGHUP = -1
+    WEXITSTATUS = lambda st: (st & 0xff00) >> 8
+
+# The max amount of time a profiler can be active.
+FIVE_MINUTES = 300  # seconds
 
 # Optional process names for workers
 try:
@@ -337,6 +359,7 @@ class ThreadedServer(CommonServer):
     def reload(self):
         os.kill(self.pid, signal.SIGHUP)
 
+
 class GeventServer(CommonServer):
     def __init__(self, app):
         super(GeventServer, self).__init__(app)
@@ -393,6 +416,7 @@ class GeventServer(CommonServer):
         self.start()
         self.stop()
 
+
 class PreforkServer(CommonServer):
     """ Multiprocessing inspired by (g)unicorn.
     PreforkServer (aka Multicorn) currently uses accept(2) as dispatching
@@ -440,15 +464,16 @@ class PreforkServer(CommonServer):
                 raise
 
     def signal_handler(self, sig, frame):
+        _logger.debug('%s sent to the server', _signals.get(sig, 'UNK'))
         if len(self.queue) < 5 or sig == signal.SIGCHLD:
             self.queue.append(sig)
             self.pipe_ping(self.pipe)
         else:
             _logger.warn("Dropping signal: %s", sig)
 
-    def worker_spawn(self, klass, workers_registry):
+    def worker_spawn(self, klass, workers_registry, *args, **kwargs):
         self.generation += 1
-        worker = klass(self)
+        worker = klass(self, *args, **kwargs)
         pid = os.fork()
         if pid != 0:
             worker.pid = pid
@@ -462,6 +487,7 @@ class PreforkServer(CommonServer):
     def long_polling_spawn(self):
         nargs = stripped_sys_argv()
         cmd = [sys.executable, sys.argv[0], 'gevent'] + nargs[1:]
+        _logger.info('Spawning longpolling server %s', cmd)
         popen = subprocess.Popen(cmd)
         self.long_polling_pid = popen.pid
 
@@ -482,7 +508,7 @@ class PreforkServer(CommonServer):
         try:
             os.kill(pid, sig)
         except OSError as e:
-            if e.errno == errno.ESRCH:
+            if e.errno == errno.ESRCH:  # No such process
                 self.worker_pop(pid)
 
     def process_signals(self):
@@ -508,16 +534,17 @@ class PreforkServer(CommonServer):
                 self.population -= 1
 
     def process_zombie(self):
-        # reap dead workers
+        # reap dead workers.  See manual page for waitpid(2) to learn about
+        # zombie processes and why this is needed.
         while 1:
             try:
                 wpid, status = os.waitpid(-1, os.WNOHANG)
                 if not wpid:
                     break
-                if (status >> 8) == 3:
-                    msg = "Critial worker error (%s)"
+                if WEXITSTATUS(status) == 3:
+                    msg = "Critical worker error (%s)"
                     _logger.critical(msg, wpid)
-                    raise Exception(msg % wpid)
+                    raise WorkerRuntimeError(msg % wpid)
                 self.worker_pop(wpid)
             except OSError as e:
                 if e.errno == errno.ECHILD:
@@ -539,7 +566,7 @@ class PreforkServer(CommonServer):
         if config['http_enable']:
             while len(self.workers_http) < self.population:
                 self.worker_spawn(WorkerHTTP, self.workers_http)
-            if not self.long_polling_pid:
+            if not self.long_polling_pid and config.get('longpolling_autospawn', True):
                 self.long_polling_spawn()
         while len(self.workers_cron) < config['max_cron_threads']:
             self.worker_spawn(WorkerCron, self.workers_cron)
@@ -566,10 +593,21 @@ class PreforkServer(CommonServer):
             if e.args[0] not in [errno.EINTR]:
                 raise
 
-    def start(self):
+    def start(self, stop=False):
         # wakeup pipe, python doesnt throw EINTR when a syscall is interrupted
-        # by a signal simulating a pseudo SA_RESTART. We write to a pipe in the
-        # signal handler to overcome this behaviour
+        # by a signal simulating a pseudo SA_RESTART. We write to a pipe in
+        # the signal handler to overcome this behaviour.
+        #
+        # merchise: The previous means: The select in `sleep` could block
+        # forever if actually interrupted (EINTR) and the signal handler does
+        # not "break" the loop.
+        #
+        # So, inside the signal handler we send a single byte into the pipe,
+        # so that the select in `sleep` does not block forever if it was
+        # interrupted halfway.
+        #
+        # Useful reference: http://250bpm.com/blog:12
+        #
         self.pipe = self.pipe_new()
         # set signal handlers
         signal.signal(signal.SIGINT, self.signal_handler)
@@ -581,7 +619,7 @@ class PreforkServer(CommonServer):
         signal.signal(signal.SIGQUIT, dumpstacks)
         signal.signal(signal.SIGUSR1, log_ormcache_stats)
 
-        if self.address:
+        if self.address and not stop:
             # listen to socket
             _logger.info('HTTP service (werkzeug) running on %s:%s', *self.address)
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -591,6 +629,7 @@ class PreforkServer(CommonServer):
             self.socket.listen(8 * self.population)
 
     def stop(self, graceful=True):
+        from itertools import chain
         if self.long_polling_pid is not None:
             # FIXME make longpolling process handle SIGTERM correctly
             self.worker_kill(self.long_polling_pid, signal.SIGKILL)
@@ -616,7 +655,7 @@ class PreforkServer(CommonServer):
             self.socket.close()
 
     def run(self, preload, stop):
-        self.start()
+        self.start(stop=stop)
 
         rc = preload_registries(preload)
 
@@ -647,13 +686,19 @@ class PreforkServer(CommonServer):
 
 class Worker(object):
     """ Workers """
-    def __init__(self, multi):
+    def __init__(self, multi, profile=False):
         self.multi = multi
+        self.profile = profile
         self.watchdog_time = time.time()
         self.watchdog_pipe = multi.pipe_new()
         self.eintr_pipe = multi.pipe_new()
         # Can be set to None if no watchdog is desired.
         self.watchdog_timeout = multi.timeout
+        #  XXX: The worker is instantiated before forking, so the parent's pid
+        #  (ppid) is actually the running process.  This attribute will be
+        #  "inherited" by children processes.  Notice both parent and children
+        #  keep their "unique view" of the Worker instance.  The pid attribute
+        #  is set by both processes after the fork.
         self.ppid = os.getpid()
         self.pid = None
         self.alive = True
@@ -662,7 +707,10 @@ class Worker(object):
         self.request_count = 0
 
     def setproctitle(self, title=""):
-        setproctitle('odoo: %s %s %s' % (self.__class__.__name__, self.pid, title))
+        setproctitle('[%s%s] odoo: %s %s %s' % (
+            sys.argv[0], ('*' if self.profile else ''),
+            self.__class__.__name__, self.pid, title
+        ))
 
     def close(self):
         os.close(self.watchdog_pipe[0])
@@ -671,7 +719,14 @@ class Worker(object):
         os.close(self.eintr_pipe[1])
 
     def signal_handler(self, sig, frame):
-        self.alive = False
+        _logger.debug('%s sent to the worker', _signals.get(sig, 'UNK'))
+        # Handles SIGINT (Ctrl-C).  This will make the worker quit nicely.
+        self.alive = (sig != signal.SIGINT)
+        if sig == signal.SIGUSR2:
+            _logger.info('Profile %s -> %s', self.profile, not self.profile)
+            self.profile = not self.profile
+            if self.profile:
+                self.age = time.time()
 
     def sleep(self):
         try:
@@ -682,7 +737,7 @@ class Worker(object):
                 raise
 
     def process_limit(self):
-        # If our parent changed sucide
+        # If our parent changed suicide
         if self.ppid != os.getppid():
             _logger.info("Worker (%s) Parent changed", self.pid)
             self.alive = False
@@ -704,9 +759,12 @@ class Worker(object):
         r = resource.getrusage(resource.RUSAGE_SELF)
         cpu_time = r.ru_utime + r.ru_stime
         def time_expired(n, stack):
-            _logger.info('Worker (%d) CPU time limit (%s) reached.', self.pid, config['limit_time_cpu'])
-            # We dont suicide in such case
-            raise Exception('CPU time limit exceeded.')
+            # We dont suicide in such case, this will raise the exception at
+            # the point in the code where the Python process was when it
+            # received the signal.
+            error = WorkerLimitException('CPU time limit exceeded.')
+            error._sentry_fingerprint = ['cpu']
+            raise error
         signal.signal(signal.SIGXCPU, time_expired)
         soft, hard = resource.getrlimit(resource.RLIMIT_CPU)
         resource.setrlimit(resource.RLIMIT_CPU, (cpu_time + config['limit_time_cpu'], hard))
@@ -715,10 +773,12 @@ class Worker(object):
         pass
 
     def start(self):
+        self.profiler = Profile(builtins=False)
         self.pid = os.getpid()
         self.setproctitle()
         _logger.info("Worker %s (%s) alive", self.__class__.__name__, self.pid)
-        # Reseed the random number generator
+        # Reseed the random number generator, so that it diverts from parent
+        # and siblings.
         random.seed()
         if self.multi.socket:
             # Prevent fd inheritance: close_on_exec
@@ -731,21 +791,48 @@ class Worker(object):
         signal.signal(signal.SIGTERM, signal.SIG_DFL)
         signal.signal(signal.SIGCHLD, signal.SIG_DFL)
         signal.set_wakeup_fd(self.eintr_pipe[1])
+        signal.signal(signal.SIGUSR2, self.signal_handler)
 
     def stop(self):
         pass
 
     def run(self):
+        profile = self.profile
+        self.age = time.time()
         try:
             self.start()
             while self.alive:
                 self.process_limit()
                 self.multi.pipe_ping(self.watchdog_pipe)
+                if self.profile and (time.time() - self.age) > FIVE_MINUTES:
+                    _logger.warn('Forcing profile dump cause it was active'
+                                 'more than 5 minutes')
+                    self.profile = False
+                if self.profile and not profile:
+                    # NOT TRACING ---> TRACING
+                    _logger.info('Activating profiling...')
+                    self.setproctitle()
+                    profile = self.profile
+                    self.profiler.enable()
+                    self.age = time.time()
+
+                if not self.profile and profile:
+                    _logger.info('Dumping profiling information...')
+                    # TRACING ---> NOT TRACING
+                    self.profiler.create_stats()
+                    with open('/tmp/odoo.stats-%d.txt' % self.pid, 'w') as st:
+                        st = Stats(self.profiler, stream=st).sort_stats('cumulative')
+                        st.print_stats()
+                    self.setproctitle()
+                    profile = self.profile
+
                 self.sleep()
                 self.process_work()
-            _logger.info("Worker (%s) exiting. request_count: %s, registry count: %s.",
-                         self.pid, self.request_count,
-                         len(odoo.modules.registry.Registry.registries))
+            _logger.info(
+                "Worker (%s) exiting. request_count: %s, registry count: %s.",
+                self.pid, self.request_count,
+                len(odoo.modules.registry.Registry.registries)
+            )
             self.stop()
         except Exception:
             _logger.exception("Worker (%s) Exception occured, exiting..." % self.pid)
@@ -794,6 +881,7 @@ class WorkerCron(Worker):
         # process.
         self.db_index = 0
         self.watchdog_timeout = multi.cron_timeout  # Use a distinct value for CRON Worker
+
 
     def sleep(self):
         # Really sleep once all the databases have been processed.
@@ -857,9 +945,10 @@ class WorkerCron(Worker):
         if self.multi.socket:
             self.multi.socket.close()
 
-#----------------------------------------------------------
+
+# ---------------------------------------------------------
 # start/stop public api
-#----------------------------------------------------------
+# ---------------------------------------------------------
 
 server = None
 
@@ -1003,3 +1092,7 @@ def restart():
         threading.Thread(target=_reexec).start()
     else:
         os.kill(server.pid, signal.SIGHUP)
+
+# Local Variables:
+# fill-column: 80
+# End:

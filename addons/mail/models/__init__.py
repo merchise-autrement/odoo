@@ -9,6 +9,11 @@ from . import mail_message
 from . import mail_activity
 from . import mail_mail
 from . import mail_thread
+
+# Needed at this point cause mail_group and other objects are injected with
+# mail.thread behaviour when imported below.
+from . import xopgi  # noqa
+
 from . import mail_channel
 from . import mail_template
 from . import mail_shortcode

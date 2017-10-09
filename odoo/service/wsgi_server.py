@@ -140,7 +140,7 @@ def application_unproxied(environ, start_response):
     # web.session.OpenERPSession.send() and at RPC dispatch in
     # odoo.service.web_services.objects_proxy.dispatch().
     # /!\ The cleanup cannot be done at the end of this `application`
-    # method because werkzeug still produces relevant logging afterwards 
+    # method because werkzeug still produces relevant logging afterwards
     if hasattr(threading.current_thread(), 'uid'):
         del threading.current_thread().uid
     if hasattr(threading.current_thread(), 'dbname'):
@@ -151,7 +151,12 @@ def application_unproxied(environ, start_response):
     with odoo.api.Environment.manage():
         # Try all handlers until one returns some result (i.e. not None).
         for handler in [wsgi_xmlrpc, odoo.http.root]:
-            result = handler(environ, start_response)
+            try:
+                result = handler(environ, start_response)
+            except:
+                _logger.exception('Error while trying handler %s',
+                                  handler)
+                raise
             if result is None:
                 continue
             return result

@@ -248,6 +248,8 @@ class configmanager(object):
                             help="Disable the ability to obtain or view the list of databases. "
                                  "Also disable access to the database manager and selector, "
                                  "so be sure to set a proper --database parameter first")
+        security.add_option('--disable-database-manager', action='store_true', dest='disable_database_manager', my_default=False,
+                            help='Disable the ability to manage the databases from the web interface.')
         parser.add_option_group(security)
 
         # Advanced options
@@ -285,10 +287,10 @@ class configmanager(object):
                              help="Specify the number of workers, 0 disable prefork mode.",
                              type="int")
             group.add_option("--limit-memory-soft", dest="limit_memory_soft", my_default=2048 * 1024 * 1024,
-                             help="Maximum allowed virtual memory per worker, when reached the worker be reset after the current request (default 671088640 aka 640MB).",
+                             help="Maximum allowed virtual memory per worker, when reached the worker be reset after the current request (default 2048MB).",
                              type="int")
             group.add_option("--limit-memory-hard", dest="limit_memory_hard", my_default=2560 * 1024 * 1024,
-                             help="Maximum allowed virtual memory per worker, when reached, any memory allocation will fail (default 805306368 aka 768MB).",
+                             help="Maximum allowed virtual memory per worker, when reached, any memory allocation will fail (default 2560MB).",
                              type="int")
             group.add_option("--limit-time-cpu", dest="limit_time_cpu", my_default=60,
                              help="Maximum allowed CPU time per request (default 60).",
@@ -601,6 +603,9 @@ class configmanager(object):
 
     def __getitem__(self, key):
         return self.options[key]
+
+    def setdefault(self, key, default):
+        return self.options.setdefault(key, default)
 
     @property
     def addons_data_dir(self):

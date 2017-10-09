@@ -145,6 +145,9 @@ function make_message (data) {
         url: session.url("/mail/view?message_id=" + data.id),
         module_icon:data.module_icon,
     };
+    // Well, Odoo has nicely stripped all data we managed to include in our
+    // RPC reply.  We need our data!!!
+    msg.merchise_extra = data;
 
     _.each(_.keys(emoji_substitutions), function (key) {
         var escaped_key = String(key).replace(/([.*+?=^!:${}()|[\]\/\\])/g, '\\$1');

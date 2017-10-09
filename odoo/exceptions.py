@@ -25,7 +25,7 @@ class except_orm(Exception):
             _logger.warn('except_orm is deprecated. Please use specific exceptions like UserError or AccessError. Caller: %s:%s', *caller)
         self.name = name
         self.value = value
-        self.args = (name, value)
+        super(except_orm, self).__init__(name, value)
 
 
 class UserError(except_orm):
@@ -52,8 +52,8 @@ class AccessDenied(Exception):
     """ Login/password error. No message, no traceback.
     Example: When you try to log with a wrong password."""
     def __init__(self):
-        super(AccessDenied, self).__init__('Access denied')
         self.traceback = ('', '', '')
+        super(AccessDenied, self).__init__()
 
 
 class AccessError(except_orm):
@@ -90,6 +90,7 @@ class DeferredException(Exception):
     def __init__(self, msg, tb):
         self.message = msg
         self.traceback = tb
+        super(DeferredException, self).__init__(msg, tb)
 
 
 class QWebException(Exception):
