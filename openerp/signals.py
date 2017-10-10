@@ -114,7 +114,8 @@ class Signal(object):
         self.action = action
         self.__doc__ = doc
 
-    def connect(self, receiver, sender=None, require_registry=True):
+    def connect(self, receiver, sender=None, require_registry=True,
+                framework=False):
         """Connect receiver to sender for signal.
 
         :param receiver: A function or an instance method which is to receive
@@ -128,18 +129,22 @@ class Signal(object):
         :param require_registry: If True the receiver will only be called if a
                the actual `sender` of the signal has a ready DB registry.
 
+        :keyword framework: Set to True to make this a `framework-level
+                            receiver <FrameworkReceiver>`:class:.
+
         :return: None
 
         """
         if not isinstance(sender, (list, tuple)):
             sender = [sender]
+        ReceiverClass = Receiver if not framework else FrameworkReceiver
         for s in sender:
             lookup_key = (_make_id(receiver), _make_model_id(s))
             if not any(lookup_key == r_key for r_key, _ in self.receivers):
                 self.receivers.append(
                     (lookup_key,
-                     Receiver(receiver, sender=sender,
-                              require_registry=require_registry))
+                     ReceiverClass(receiver, sender=sender,
+                                   require_registry=require_registry))
                 )
 
     def disconnect(self, receiver=None, sender=None):
@@ -267,6 +272,8 @@ class Signal(object):
         framework.)
 
         '''
+        if isinstance(receiver, FrameworkReceiver):
+            return True
         if isinstance(receiver, Receiver):
             receiver = receiver.receiver
         module = get_object_module(receiver, typed=True)
@@ -304,6 +311,15 @@ class Receiver(object):
         return self.receiver == other
 
 
+class FrameworkReceiver(Receiver):
+    '''A receiver that is defined in a framework-level module.
+
+    Framework-level receivers are always considered installed in any DB.  So
+    you should be careful no requiring addon-level stuff.
+
+    '''
+
+
 def receiver(signal, **kwargs):
     """A decorator for connecting receivers to signals.
 
@@ -311,6 +327,9 @@ def receiver(signal, **kwargs):
 
     :keyword require_registry: If set to True the receiver will only be called
              if the Odoo DB registry is ready.
+
+    :keyword framework: Set to True to make this a `framework-level receiver
+                        <FrameworkReceiver>`:class:.
 
     Used by passing in the signal (or list of signals) and keyword arguments
     to connect::
