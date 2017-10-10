@@ -4613,7 +4613,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                 filename, lineno = frame_codeinfo(currentframe(), 1)
                 _logger.warning("Comparing apples and oranges: %r == %r (%s:%s)",
                                 self, other, filename, lineno)
-            return False
+            return NotImplemented
         return self._name == other._name and set(self._ids) == set(other._ids)
 
     def __ne__(self, other):
