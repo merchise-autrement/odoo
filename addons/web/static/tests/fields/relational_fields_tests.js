@@ -1063,6 +1063,44 @@ QUnit.module('relational_fields', {
         form.destroy();
     });
 
+    QUnit.test('list in form: default_get with x2many create and onchange', function (assert) {
+        assert.expect(1);
+
+        this.data.partner.onchanges.turtles = function (obj) {
+            assert.deepEqual(
+                obj.turtles,
+                [
+                    [0, 2, {turtle_foo: 'blip', id: 2}],
+                    [0, 3, {turtle_foo: 'kawa', id: 3}]
+                ],
+                "should have properly created the x2many command list");
+        };
+
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form>' +
+                    '<sheet>' +
+                        '<field name="turtles">' +
+                            '<tree editable="bottom">' +
+                                '<field name="turtle_foo"/>' +
+                            '</tree>' +
+                        '</field>' +
+                        '<field name="int_field"/>' +
+                    '</sheet>' +
+                '</form>',
+            mockRPC: function (route, args) {
+                if (args.method === 'default_get') {
+                    return $.when({turtles: [[6, 0, [2,3]]]});
+                }
+                return this._super.apply(this, arguments);
+            },
+        });
+
+        form.destroy();
+    });
+
     QUnit.test('list in form: call button in sub view', function (assert) {
         assert.expect(6);
 
@@ -1491,7 +1529,7 @@ QUnit.module('relational_fields', {
 
     QUnit.test('pressing ENTER on a \'no_quick_create\' many2one should not trigger M2ODialog', function (assert) {
         var done = assert.async();
-        assert.expect(1);
+        assert.expect(2);
 
         var M2O_DELAY = relationalFields.FieldMany2One.prototype.AUTOCOMPLETE_DELAY;
         relationalFields.FieldMany2One.prototype.AUTOCOMPLETE_DELAY = 0;
@@ -1529,6 +1567,10 @@ QUnit.module('relational_fields', {
                 $input.blur();
                 assert.strictEqual($('.modal').length, 1,
                     "should have one modal in body");
+                // Check that discarding clears $input
+                $('.modal .o_form_button_cancel').click();
+                assert.strictEqual($input.val(), '',
+                    "the field should be empty");
                 form.destroy();
                 relationalFields.FieldMany2One.prototype.AUTOCOMPLETE_DELAY = M2O_DELAY;
                 done();
@@ -7494,6 +7536,26 @@ QUnit.module('relational_fields', {
         form.destroy();
     });
 
+    QUnit.test('field selection with many2ones and special characters', function (assert) {
+        assert.expect(1);
+
+        // edit the partner with id=4
+        this.data.partner.records[2].display_name = '<span>hey</span>';
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form string="Partners">' +
+                        '<field name="trululu" widget="selection"/>' +
+                '</form>',
+            res_id: 1,
+            viewOptions: {mode: 'edit'},
+        });
+        assert.strictEqual(form.$('select option[value="4"]').text(), '<span>hey</span>');
+
+        form.destroy();
+    });
+
     QUnit.test('widget selection on a many2one: domain updated by an onchange', function (assert) {
         assert.expect(4);
 
@@ -7884,6 +7946,29 @@ QUnit.module('relational_fields', {
         assert.strictEqual($('.modal tbody:nth(1) .o_data_row').length, 1,
             "should display 1 record in the second page");
 
+        form.destroy();
+    });
+
+    QUnit.test('many2many_tags can load more than 40 records', function (assert) {
+        assert.expect(1);
+
+        this.data.partner.fields.partner_ids = {string: "Partner", type: "many2many", relation: 'partner'};
+        this.data.partner.records[0].partner_ids = [];
+        for (var i = 15; i < 115; i++) {
+            this.data.partner.records.push({id: i, display_name: 'walter' + i});
+            this.data.partner.records[0].partner_ids.push(i);
+        }
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form string="Partners">' +
+                    '<field name="partner_ids" widget="many2many_tags"/>' +
+                '</form>',
+            res_id: 1,
+        });
+        assert.strictEqual(form.$('.o_field_widget[name="partner_ids"] > span').length, 100,
+            'should have rendered 100 tags');
         form.destroy();
     });
 

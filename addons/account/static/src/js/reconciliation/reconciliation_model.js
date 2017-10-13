@@ -3,6 +3,8 @@ odoo.define('account.ReconciliationModel', function (require) {
 
 var BasicModel = require('web.BasicModel');
 var field_utils = require('web.field_utils');
+var utils = require('web.utils');
+var session = require('web.session');
 var CrashManager = require('web.CrashManager');
 var core = require('web.core');
 var _t = core._t;
@@ -397,7 +399,7 @@ var StatementModel = BasicModel.extend({
     /**
      * Load more bank statement line
      *
-     * @param {integer} quantity to load
+     * @param {integer} qty quantity to load
      * @returns {Deferred}
      */
     loadMore: function(qty) {
@@ -412,8 +414,8 @@ var StatementModel = BasicModel.extend({
     /**
      * RPC method to load informations on lines
      * 
-     * @param {Array} ids of bank statement line passed to rpc call
-     * @param {Array} list of move_line ids that needs to be excluded from search
+     * @param {Array} ids ids of bank statement line passed to rpc call
+     * @param {Array} excluded_ids list of move_line ids that needs to be excluded from search
      * @returns {Deferred}
      */
     loadData: function(ids, excluded_ids) {
@@ -582,7 +584,7 @@ var StatementModel = BasicModel.extend({
                 }));
             }
             ids.push(line.id);
-            values.push({
+            var values_dict = {
                 "partner_id": line.st_line.partner_id,
                 "counterpart_aml_dicts": _.map(_.filter(props, function (prop) {
                     return !isNaN(prop.id) && !prop.already_paid;
@@ -593,7 +595,23 @@ var StatementModel = BasicModel.extend({
                 "new_aml_dicts": _.map(_.filter(props, function (prop) {
                     return isNaN(prop.id);
                 }), self._formatToProcessReconciliation.bind(self, line)),
-            });
+            };
+            // If the lines are not fully balanced, create an unreconciled amount.
+            // line.st_line.currency_id is never false here because its equivalent to
+            // statement_line.currency_id or statement_line.journal_id.currency_id or statement_line.journal_id.company_id.currency_id (Python-side).
+            // see: get_statement_line_for_reconciliation_widget method in account/models/account_bank_statement.py for more details
+            var currency = session.get_currency(line.st_line.currency_id);
+            var balance = line.balance.amount;
+            if (!utils.float_is_zero(balance, currency.digits[1])) {
+                var unreconciled_amount_dict = {
+                    'account_id': line.st_line.open_balance_account_id,
+                    'credit': balance > 0 ? balance : 0,
+                    'debit': balance < 0 ? -balance : 0,
+                    'name': line.st_line.name + ' : ' + _t("Open balance"),
+                };
+                values_dict['new_aml_dicts'].push(unreconciled_amount_dict);
+            }
+            values.push(values_dict);
             line.reconciled = true;
             self.valuenow++;
         });
