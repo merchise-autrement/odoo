@@ -236,7 +236,7 @@ def until_timeout(iterator, on_timeout=None):
                        iteration because of a SoftTimeLimitExceeded error.
 
     Although you may call `until_timeout`:func: inside another call to
-    `until_timeout`:func: we strongly advice againts it.
+    `until_timeout`:func: we strongly advice against it.
 
     In a iterator pattern like::
 
@@ -249,7 +249,7 @@ def until_timeout(iterator, on_timeout=None):
     patterns the behaviour is well established: only the instances enclosing
     the point where the exceptions happens will be called its timeout.
 
-    However in tree-like structures an automatic 'linearzation' of the tree
+    However in tree-like structures an automatic 'linearisation' of the tree
     nodes is performed and as such, a timeout in one branch of the tree may be
     signaled to the other branch.
 
