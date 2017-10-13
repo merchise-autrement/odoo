@@ -389,11 +389,11 @@ class SaleOrder(models.Model):
             'state': 'draft',
             'procurement_group_id': False,
         })
-        orders.mapped('order_line').mapped('procurement_ids').write({'sale_line_id': False})
+        return orders.mapped('order_line').mapped('procurement_ids').write({'sale_line_id': False})
 
     @api.multi
     def action_cancel(self):
-        self.write({'state': 'cancel'})
+        return self.write({'state': 'cancel'})
 
     @api.multi
     def action_quotation_send(self):
@@ -443,7 +443,7 @@ class SaleOrder(models.Model):
 
     @api.multi
     def action_done(self):
-        self.write({'state': 'done'})
+        return self.write({'state': 'done'})
 
     def _prepare_procurement_group(self):
         return {'name': self.name}
@@ -791,8 +791,8 @@ class SaleOrderLine(models.Model):
     procurement_ids = fields.One2many('procurement.order', 'sale_line_id', string='Procurements')
 
     layout_category_id = fields.Many2one('sale.layout_category', string='Section')
-    layout_category_sequence = fields.Integer(related='layout_category_id.sequence', string='Layout Sequence', store=True)
-    #  Store is intentionally set in order to keep the "historic" order.
+    layout_category_sequence = fields.Integer(string='Layout Sequence')
+    # TODO: remove layout_category_sequence in master or make it work properly
 
     @api.multi
     def _prepare_invoice_line(self, qty):
