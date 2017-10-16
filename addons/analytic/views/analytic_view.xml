@@ -136,7 +136,7 @@
                     <field name="tag_ids"/>
                     <field name="partner_id"/>
                     <filter string="Active" domain="[('account_type','=','normal')]" name="active"/>
-                    <group expand="0" string="Group By...">
+                    <group expand="0" name="group_by" string="Group By...">
                         <filter string="Associated Partner" domain="[]" context="{'group_by':'partner_id'}"/>
                     </group>
                 </search>

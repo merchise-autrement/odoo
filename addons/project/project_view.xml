@@ -29,7 +29,7 @@
                     <field name="project_id"/>
                     <field name="user_id"/>
                     <field name="stage_id"/>
-                    <filter string="My Tasks" domain="[('user_id','=',uid)]"/>
+                    <filter string="My Tasks" name="my_tasks" domain="[('user_id','=',uid)]"/>
                     <filter string="Unassigned" name="unassigned" domain="[('user_id', '=', False)]"/>
                     <separator/>
                     <filter string="New" name="draft" domain="[('stage_id.sequence', '&lt;=', 1)]"/>
@@ -161,7 +161,7 @@
                     <filter string="Open" name="Current" domain="[('state', '=','open')]"/>
                     <filter string="Pending" name="Pending" domain="[('state', '=','pending')]"/>
                     <separator/>
-                    <filter string="Manager" domain="[('user_id','=',uid)]"/>
+                    <filter string="Manager" name="Manager" domain="[('user_id','=',uid)]"/>
                     <filter string="Followed by Me" domain="[('message_is_follower','=',True)]"/>
                     <separator/>
                     <filter string="Unread Messages" name="message_needaction" domain="[('message_needaction','=',True)]"/>

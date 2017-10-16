@@ -519,9 +519,9 @@
                     <filter
                         name='my_invoices_filter'
                         domain="[('user_id','=',uid)]" help="My Invoices"/>
-                    <group expand="0" string="Group By">
+                    <group expand="0" name="group_by" string="Group By">
                         <filter name="group_by_partner_id" string="Partner" context="{'group_by':'commercial_partner_id'}"/>
-                        <filter string="Salesperson" context="{'group_by':'user_id'}"/>
+                        <filter string="Salesperson" name="group_by_salesperson" context="{'group_by':'user_id'}"/>
                         <filter name="status" string="Status" context="{'group_by':'state'}"/>
                         <separator/>
                         <filter string="Invoice Date" context="{'group_by':'date_invoice'}"/>

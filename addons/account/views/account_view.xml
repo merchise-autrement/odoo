@@ -1144,8 +1144,8 @@
                     <field name="account_id"/>
                     <field name="partner_id"/>
                     <field name="journal_id"/> 
-                    <group expand="0" string="Group By">
-                        <filter string="Partner" domain="[]" context="{'group_by':'partner_id'}"/>
+                    <group expand="0" name="group_by" string="Group By">
+                        <filter string="Partner" name="partner" domain="[]" context="{'group_by':'partner_id'}"/>
                         <filter string="Journal" domain="[]" context="{'group_by':'journal_id'}"/>
                         <filter string="Account"  context="{'group_by':'account_id'}"/>
                         <filter string="Date" domain="[]" context="{'group_by':'date'}"/>

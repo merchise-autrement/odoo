@@ -132,7 +132,7 @@
                         <field name="date_closed"/>
                     </group>
                     <group expand="1" string="Group By">
-                        <filter string="Salesperson" context="{'group_by':'user_id'}" />
+                        <filter string="Salesperson" name="user" context="{'group_by':'user_id'}" />
                         <filter string="Sales Team" context="{'group_by':'team_id'}"/>
                         <filter string="Country" context="{'group_by':'country_id'}" />
                         <filter string="Company" context="{'group_by':'company_id'}" groups="base.group_multi_company"/>
