@@ -175,7 +175,7 @@ class ir_cron(models.Model):
                     cron_values.update({
                         key: value
                         for key, value in result.items()
-                        if key in self._columns
+                        if key in cron._fields
                     })
                 # Use dict.items() to make guarantees about the proper
                 # matching of keys and values in the update query.
