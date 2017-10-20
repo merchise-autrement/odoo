@@ -56,7 +56,7 @@
                 </tree>
             </field>
         </record>
-        
+
         <record model="ir.actions.act_window" id="account_analytic_line_action">
             <field name="context">{'search_default_group_date': 1, 'default_account_id': active_id}</field>
             <field name="domain">[('account_id','=', active_id)]</field>
@@ -182,7 +182,7 @@
                     <field name="tag_ids"/>
                     <field name="partner_id"/>
                     <filter string="Archived" domain="[('active', '=', False)]" name="inactive"/>
-                    <group expand="0" string="Group By...">
+                    <group expand="0" name="group_by" string="Group By...">
                         <filter string="Associated Partner" domain="[]" context="{'group_by':'partner_id'}"/>
                     </group>
                 </search>
