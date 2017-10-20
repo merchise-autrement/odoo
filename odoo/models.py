@@ -1065,7 +1065,9 @@ class BaseModel(object):
                 valid = names and not (set(names) & field_names)
                 valid = valid or func(self)
                 extra_error = None
-            except Exception, e:
+            except SoftTimeLimitExceeded:
+                raise
+            except Exception as e:
                 _logger.debug('Exception while validating constraint', exc_info=True)
                 valid = False
                 extra_error = tools.ustr(e)
