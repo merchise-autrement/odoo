@@ -330,8 +330,8 @@ class QuantPackage(models.Model):
     def _compute_package_info(self):
         for package in self:
             values = {'location_id': False, 'company_id': self.env.user.company_id.id, 'owner_id': False}
-            if self.quant_ids:
-                values['location_id'] = self.quant_ids[0].location_id
+            if package.quant_ids:
+                values['location_id'] = package.quant_ids[0].location_id
             package.location_id = values['location_id']
             package.company_id = values['company_id']
             package.owner_id = values['owner_id']
@@ -407,7 +407,8 @@ class QuantPackage(models.Model):
 
     def action_view_picking(self):
         action = self.env.ref('stock.action_picking_tree_all').read()[0]
-        pickings = self.env['stock.move.line'].search([('result_package_id', 'in', self.ids)]).mapped('picking_id')
+        domain = ['|', ('result_package_id', 'in', self.ids), ('package_id', 'in', self.ids)]
+        pickings = self.env['stock.move.line'].search(domain).mapped('picking_id')
         action['domain'] = [('id', 'in', pickings.ids)]
         return action
 

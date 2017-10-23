@@ -57,7 +57,7 @@
             <div class='availability_messages'/>
         </xpath>
         <xpath expr="//div[hasclass('js_cart_lines')]" position="after">
-          <t t-if='website_sale_order and not website_sale_order.website_order_line'>
+          <t t-if='website_sale_order'>
             <div t-if='website_sale_order._get_stock_warning(clear=False)' class="alert alert-warning">
               <strong>Warning!</strong> <t t-esc='website_sale_order._get_stock_warning()'/>
             </div>
@@ -65,7 +65,7 @@
         </xpath>
     </template>
 
-  <template id="website_sale_stock_product" inherit_id="website_sale.product" priority="8">
+  <template id="website_sale_stock_product" inherit_id="website_sale.product" priority="4">
     <xpath expr="//a[@id='add_to_cart']" position="after">
       <div class='availability_messages'/>
     </xpath>

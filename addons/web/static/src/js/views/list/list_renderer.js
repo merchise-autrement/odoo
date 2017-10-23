@@ -323,7 +323,15 @@ var ListRenderer = BasicRenderer.extend({
                 });
             });
         } else {
-            $button.prop('disabled', true);
+            if (node.attrs.options.warn) {
+                var self = this;
+                $button.on("click", function (e) {
+                    e.stopPropagation();
+                    self.do_warn(_t("Warning"), _t('Please click on the "save" button first'));
+                });
+            } else {
+                $button.prop('disabled', true);
+            }
         }
 
         return $button;

@@ -17,7 +17,7 @@
         <menuitem id="res_partner_menu"
             parent="sale_order_menu"
             action="base.action_partner_form"
-            sequence="3"/>
+            sequence="3" groups="sales_team.group_sale_salesman"/>
 
         <menuitem id="menu_sale_config"
             name="Configuration"
@@ -29,7 +29,7 @@
             parent= "menu_sale_config"
             sequence= "3"
             name= "Sales Orders"
-            groups= "sales_team.group_sale_manager,sales_team.group_sale_salesman,account.group_account_manager,account.group_account_user"/>
+            groups= "sales_team.group_sale_manager,account.group_account_manager,account.group_account_user"/>
 
         <menuitem id="sales_team_config"
             name="Sales Channels"
@@ -61,7 +61,7 @@
             parent="menu_sale_report"
             sequence="3"/>
 
-        <menuitem id="product_menu_catalog" name="Catalog" action="product.product_template_action" parent="sale_menu_root" sequence="4"/>
+        <menuitem id="product_menu_catalog" name="Catalog" action="product.product_template_action" parent="sale_menu_root" sequence="4" groups="sales_team.group_sale_salesman"/>
         <menuitem id="menu_product" name="Product Variants" parent="product_menu_catalog" sequence="2" groups="product.group_product_variant" active="False"/>
         <menuitem action="product.product_template_action" id="menu_product_template_action" parent="product_menu_catalog" sequence="1" active="False"/>
         <menuitem id="prod_config_main" name="Products" parent="menu_sale_config" sequence="5"/>
@@ -239,9 +239,10 @@
                                 <form string="Sales Order Lines">
                                     <group>
                                         <group>
+                                            <field name="product_updatable" invisible="1"/>
                                             <field name="product_id"
                                                 context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id}"
-                                                attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"
+                                                attrs="{'readonly': [('product_updatable', '=', False)]}"
                                                 force_save="1"
                                                />
                                             <field name="layout_category_id" groups="sale.group_sale_layout"/>
@@ -294,8 +295,9 @@
                                 </form>
                                 <tree string="Sales Order Lines" editable="bottom" decoration-info="invoice_status=='to invoice'">
                                     <field name="sequence" widget="handle"/>
+                                    <field name="product_updatable" invisible="1"/>
                                     <field name="product_id"
-                                        attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"
+                                        attrs="{'readonly': [('product_updatable', '=', False)]}"
                                         context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id}"
                                        />
                                     <field name="layout_category_id" groups="sale.group_sale_layout"/>
@@ -443,9 +445,9 @@
                         domain="[('activity_ids.date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))
                         ]"/>
                     <group expand="0" string="Group By">
-                        <filter string="Salesperson" domain="[]" context="{'group_by':'user_id'}"/>
+                        <filter string="Salesperson" name="salesperson" domain="[]" context="{'group_by':'user_id'}"/>
                         <filter name="customer" string="Customer" domain="[]" context="{'group_by':'partner_id'}"/>
-                        <filter string="Order Month" domain="[]" context="{'group_by':'date_order'}"/>
+                        <filter string="Order Month" name="order_month" domain="[]" context="{'group_by':'date_order'}"/>
                     </group>
                </search>
             </field>
@@ -476,8 +478,8 @@
                     <separator/>
                     <filter string="Sales" name="sales" domain="[('state','in',('progress','done'))]" />
                     <separator/>
-                    <filter string="To Invoice" domain="[('invoice_status','=','to invoice')]" />
-                    <filter string="Upselling" domain="[('invoice_status','=','upselling')]" />
+                    <filter string="To Invoice" name="to_invoice" domain="[('invoice_status','=','to invoice')]" />
+                    <filter string="Upselling" name="upselling" domain="[('invoice_status','=','upselling')]" />
                 </xpath>
             </field>
         </record>
@@ -507,7 +509,7 @@
             name="Orders"
             action="action_orders"
             parent="sale_order_menu"
-            sequence="2" groups="sales_team.group_sale_salesman,sales_team.group_sale_manager"/>
+            sequence="2" groups="sales_team.group_sale_salesman"/>
 
         <record id="action_orders_to_invoice" model="ir.actions.act_window">
             <field name="name">Orders to Invoice</field>
@@ -531,7 +533,7 @@
         <menuitem id="menu_sale_invoicing"
             name="Invoicing"
             parent="sale_menu_root"
-            sequence="3"/>
+            sequence="3" groups="sales_team.group_sale_salesman"/>
 
         <menuitem id="menu_sale_order_invoice"
             action="action_orders_to_invoice"
@@ -588,7 +590,7 @@
         <menuitem id="menu_sale_quotations"
                 action="action_quotations"
                 parent="sale_order_menu"
-                sequence="1"/>
+                sequence="1" groups="sales_team.group_sale_salesman"/>
 
         <record id="view_order_line_tree" model="ir.ui.view">
             <field name="name">sale.order.line.tree</field>
@@ -615,17 +617,17 @@
             <field name="model">sale.order.line</field>
             <field name="arch" type="xml">
                 <search string="Search Sales Order">
-                    <filter string="To Invoice" domain="[('qty_to_invoice','!=', 0)]"  help="Sales Order Lines ready to be invoiced"/>
+                    <filter string="To Invoice" name="to_invoice" domain="[('qty_to_invoice','!=', 0)]"  help="Sales Order Lines ready to be invoiced"/>
                     <separator/>
-                    <filter string="My Sales Order Lines" domain="[('salesman_id','=',uid)]" help="Sales Order Lines related to a Sales Order of mine"/>
+                    <filter string="My Sales Order Lines" name="my_sales_order_lines" domain="[('salesman_id','=',uid)]" help="Sales Order Lines related to a Sales Order of mine"/>
                     <field name="order_id"/>
                     <field name="order_partner_id" operator="child_of"/>
                     <field name="product_id"/>
                     <field name="salesman_id"/>
                     <group expand="0" string="Group By">
-                        <filter string="Product" domain="[]" context="{'group_by':'product_id'}"/>
-                        <filter string="Order" domain="[]" context="{'group_by':'order_id'}"/>
-                        <filter string="Salesperson" domain="[]" context="{'group_by':'salesman_id'}"/>
+                        <filter string="Product" name="product" domain="[]" context="{'group_by':'product_id'}"/>
+                        <filter string="Order" name="order" domain="[]" context="{'group_by':'order_id'}"/>
+                        <filter string="Salesperson" name="salesperson" domain="[]" context="{'group_by':'salesman_id'}"/>
                     </group>
                 </search>
             </field>
@@ -651,7 +653,7 @@
                         <field string="Sales" name="sales_count" widget="statinfo" />
                     </button>
                 </button>
-                <group name="sale_warning" position="replace">
+                <group name="description" position="after">
                     <group string="Warning when Selling this Product" groups="sale.group_warning_sale">
                         <field name="sale_line_warn" nolabel="1"/>
                         <field name="sale_line_warn_msg" colspan="3" nolabel="1"
@@ -669,11 +671,11 @@
             <field name="arch" type="xml">
                 <button name="toggle_active" position="before">
                     <button class="oe_stat_button" name="action_view_sales"
-                        type="object" icon="fa-usd">
+                        type="object" icon="fa-usd" attrs="{'invisible': [('sale_ok', '=', False)]}">
                         <field string="Sales" name="sales_count" widget="statinfo" />
                     </button>
                 </button>
-                <group name="sale_warning" position="replace">
+                <group name="description" position="after">
                     <group string="Warning when Selling this Product" groups="sale.group_warning_sale">
                         <field name="sale_line_warn" nolabel="1"/>
                         <field name="sale_line_warn_msg" colspan="3" nolabel="1"
@@ -688,8 +690,8 @@
             <field name="model">product.template</field>
             <field name="inherit_id" ref="product.product_template_form_view"/>
             <field name="arch" type="xml">
-                <group name="invoicing" position="inside">
-                    <group string="Invoicing" name="invoicing" attrs="{'invisible': [('sale_ok','=',False)]}">
+                <group name="sale" position="inside">
+                    <group string="Invoicing" name="invoicing">
                         <field name="invoice_policy" widget="radio"/>
                         <field name="service_type" widget="radio" invisible="True"/>
                     </group>
@@ -707,7 +709,7 @@
                     <field name="team_id"/>
                 </xpath>
                 <xpath expr="//group/filter[@name='status']" position="after">
-                    <filter string="Sales Channel" domain="[]" context="{'group_by':'team_id'}"/>
+                    <filter string="Sales Channel" name="sales_channel" domain="[]" context="{'group_by':'team_id'}"/>
                 </xpath>
             </field>
         </record>

@@ -208,8 +208,10 @@
                                                     </a>
                                                 </div>
                                                 <div class="col-xs-6 text-right">
-                                                    <span t-att-class="record.oee_target.value and (record.oee.value &lt; record.oee_target.value) and 'label label-danger' or None">
-                                                        <field name="oee"/>%
+                                                    <span t-att-class="record.oee_target.raw_value and (record.oee.raw_value &lt; record.oee_target.raw_value) and 'text-danger' or (record.oee.raw_value &gt; record.oee_target.raw_value) and 'text-success' or 'text-warning'">
+                                                        <strong>
+                                                            <field name="oee"/>%
+                                                        </strong>
                                                     </span>
                                                 </div>
                                             </div>
@@ -359,9 +361,9 @@
             <field name="arch" type="xml">
                 <search string="Search for mrp workcenter">
                     <field name="name" string="Mrp Workcenter" filter_domain="['|',('name','ilike',self),('code','ilike',self)]"/>
-                    <filter string="Archived" domain="[('active','=',False)]"/>
+                    <filter string="Archived" name="archived" domain="[('active','=',False)]"/>
                     <group expand="0" string="Group By...">
-                        <filter string="Company" domain="[]" context="{'group_by':'company_id'}" groups="base.group_multi_company"/>
+                        <filter string="Company" name="company" domain="[]" context="{'group_by':'company_id'}" groups="base.group_multi_company"/>
                     </group>
                 </search>
             </field>

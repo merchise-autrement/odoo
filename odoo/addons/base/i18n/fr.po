@@ -56,10 +56,10 @@
 # Sébastien LANGE (SYLEAM) <sebastien.lange@syleam.fr>, 2017
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 10.saas~18\n"
+"Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-02 11:56+0000\n"
-"PO-Revision-Date: 2017-10-02 11:56+0000\n"
+"POT-Creation-Date: 2017-10-10 13:14+0000\n"
+"PO-Revision-Date: 2017-10-10 13:14+0000\n"
 "Last-Translator: Sébastien LANGE (SYLEAM) <sebastien.lange@syleam.fr>, 2017\n"
 "Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
@@ -102,7 +102,7 @@ msgid ""
 msgstr ""
 "\n"
 "\n"
-"Autoriser le caissier à réimprimer le reçu\n"
+"Autoriser le caissier à ré-imprimer les tickets\n"
 "\n"
 
 #. module: base
@@ -866,13 +866,6 @@ msgid ""
 "\n"
 "    Resource management for Project\n"
 "    "
-msgstr ""
-
-#. module: base
-#: model:ir.module.module,description:base.module_sms_fortytwo
-msgid ""
-"\n"
-"    Send SMS text messages with FortyTwo SMS Services.\n"
 msgstr ""
 
 #. module: base
@@ -4759,14 +4752,6 @@ msgstr ""
 "**Credits:** General Solutions.\n"
 
 #. module: base
-#: model:ir.module.module,description:base.module_test_main_flows
-msgid ""
-"\n"
-"This mobule will test the main workflow of Odoo.\n"
-"It will install some main apps and will try to execute the most important actions.\n"
-msgstr ""
-
-#. module: base
 #: model:ir.module.module,description:base.module_rating_project
 msgid ""
 "\n"
@@ -5170,7 +5155,7 @@ msgid ""
 "This module gives a framework for SMS text messaging\n"
 "----------------------------------------------------\n"
 "\n"
-"You need to install a provider alongside of this module in order to be able send SMS text messages.\n"
+"The service is provided by the In App Purchase Odoo platform.\n"
 msgstr ""
 
 #. module: base
@@ -5344,6 +5329,13 @@ msgstr ""
 "Il ajoute le nom et la référence des ventes sur l'ordre de fabrication."
 
 #. module: base
+#: model:ir.module.module,description:base.module_iap
+msgid ""
+"\n"
+"This module provides standard tools (account model, context manager and helpers) to support In-App purchases inside Odoo.\n"
+msgstr ""
+
+#. module: base
 #: model:ir.module.module,description:base.module_l10n_at
 #: model:ir.module.module,description:base.module_l10n_at_reports
 msgid ""
@@ -5401,6 +5393,14 @@ msgid ""
 "This module will give an option of bill my account on ups delivery methods\n"
 "==========================================================================\n"
 "    "
+msgstr ""
+
+#. module: base
+#: model:ir.module.module,description:base.module_test_main_flows
+msgid ""
+"\n"
+"This module will test the main workflow of Odoo.\n"
+"It will install some main apps and will try to execute the most important actions.\n"
 msgstr ""
 
 #. module: base
@@ -6064,8 +6064,13 @@ msgstr "<b>Pas de module trouvé !</b>"
 msgid ""
 "<code style=\"white-space: pre-wrap\">\n"
 "partner_name = record.name + '_code'\n"
-"env[\"res.partner\"].create({\"name\": partner_name})\n"
+"env['res.partner'].create({'name': partner_name})\n"
 "</code>"
+msgstr ""
+
+#. module: base
+#: model:ir.ui.view,arch_db:base.view_server_action_form
+msgid "<code>Warning</code>: Warning Exception to use with <code>raise</code>"
 msgstr ""
 
 #. module: base
@@ -6081,6 +6086,38 @@ msgid "<code>dateutil</code> (Python module)"
 msgstr "<code>dateutil</code> (module Python)"
 
 #. module: base
+#: model:ir.ui.view,arch_db:base.view_server_action_form
+msgid "<code>env</code>: Odoo Environment on which the action is triggered"
+msgstr ""
+
+#. module: base
+#: model:ir.ui.view,arch_db:base.view_server_action_form
+msgid ""
+"<code>log(message, level='info')</code>:logging function to record debug "
+"information in <code>ir.logging</code> table"
+msgstr ""
+
+#. module: base
+#: model:ir.ui.view,arch_db:base.view_server_action_form
+msgid ""
+"<code>model</code>: Odoo Model of the record on which the action is "
+"triggered; is a void recordset"
+msgstr ""
+
+#. module: base
+#: model:ir.ui.view,arch_db:base.view_server_action_form
+msgid ""
+"<code>record</code>: record on which the action is triggered; may be be void"
+msgstr ""
+
+#. module: base
+#: model:ir.ui.view,arch_db:base.view_server_action_form
+msgid ""
+"<code>records</code>: recordset of all records on which the action is "
+"triggered in multi mode; may be void"
+msgstr ""
+
+#. module: base
 #: model:ir.ui.view,arch_db:base.view_model_fields_form
 #: model:ir.ui.view,arch_db:base.view_model_form
 msgid "<code>self</code> (the set of records to compute)"
@@ -6091,6 +6128,13 @@ msgstr "<code>self</code> (l'ensemble d'enregistrements à traiter)"
 #: model:ir.ui.view,arch_db:base.view_model_form
 msgid "<code>time</code> (Python module)"
 msgstr "<code>time</code> (module Python)"
+
+#. module: base
+#: model:ir.ui.view,arch_db:base.view_server_action_form
+msgid ""
+"<code>time</code>, <code>datetime</code>, <code>dateutil</code>, "
+"<code>timezone</code>: useful Python libraries"
+msgstr ""
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_currency_kanban
@@ -6920,7 +6964,7 @@ msgstr "Affero GPL-3"
 #. module: base
 #: model:res.country,name:base.af
 msgid "Afghanistan"
-msgstr ""
+msgstr "Afghanistan"
 
 #. module: base
 #: selection:res.country,name_position:0
@@ -6935,7 +6979,7 @@ msgstr "Montant après"
 #. module: base
 #: model:res.partner.industry,name:base.res_partner_industry_A
 msgid "Agriculture"
-msgstr ""
+msgstr "Agriculture"
 
 #. module: base
 #: model:res.country,name:base.al
@@ -7060,7 +7104,7 @@ msgstr ""
 #. module: base
 #: model:res.country,name:base.ad
 msgid "Andorra"
-msgstr ""
+msgstr "Andorre"
 
 #. module: base
 #: model:res.country,name:base.ao
@@ -7653,6 +7697,11 @@ msgid "Basic 2D Grid view for odoo"
 msgstr ""
 
 #. module: base
+#: model:ir.module.module,summary:base.module_iap
+msgid "Basic models and helpers to support In-App purchases."
+msgstr ""
+
+#. module: base
 #: model:ir.module.module,shortdesc:base.module_account_batch_deposit
 msgid "Batch Deposit"
 msgstr "Bordereaux de dépôt"
@@ -7820,7 +7869,7 @@ msgstr "Thème Bootswatch"
 #. module: base
 #: model:res.country,name:base.ba
 msgid "Bosnia and Herzegovina"
-msgstr ""
+msgstr "Bosnie-Herzégovine"
 
 #. module: base
 #: model:res.country,name:base.bw
@@ -7979,7 +8028,7 @@ msgstr ""
 #. module: base
 #: model:res.country,name:base.kh
 msgid "Cambodia"
-msgstr ""
+msgstr "Cambodge"
 
 #. module: base
 #: model:res.country,name:base.cm
@@ -8286,7 +8335,7 @@ msgid "China"
 msgstr "Chine"
 
 #. module: base
-#: code:addons/base/ir/ir_actions_report.py:683
+#: code:addons/base/ir/ir_actions_report.py:685
 #, python-format
 msgid "Choose Your Document Layout"
 msgstr "Choisissez le layout de votre document"
@@ -8373,14 +8422,14 @@ msgid "Click to create a new bank."
 msgstr "Cliquer pour créer une nouvelle banque."
 
 #. module: base
+#: model:ir.actions.act_window,help:base.res_partner_industry_action
+msgid "Click to create a new industry."
+msgstr ""
+
+#. module: base
 #: model:ir.actions.act_window,help:base.action_partner_category_form
 msgid "Click to create a new partner tag."
 msgstr "Cliquer pour créer une nouvelle étiquette de partenaire."
-
-#. module: base
-#: model:ir.actions.act_window,help:base.res_partner_industry_action
-msgid "Click to create a new sector of activity."
-msgstr ""
 
 #. module: base
 #: selection:ir.logging,type:0
@@ -8764,7 +8813,7 @@ msgstr "Les contraintes de même nom sont uniques dans un module."
 #. module: base
 #: model:res.partner.industry,name:base.res_partner_industry_F
 msgid "Construction"
-msgstr ""
+msgstr "Construction"
 
 #. module: base
 #: model:res.partner.category,name:base.res_partner_category_8
@@ -9451,7 +9500,7 @@ msgstr "République tchèque"
 #. module: base
 #: model:res.country,name:base.ci
 msgid "Côte d'Ivoire"
-msgstr ""
+msgstr "Côte d'Ivoire"
 
 #. module: base
 #: model:res.partner.industry,full_name:base.res_partner_industry_D
@@ -9462,11 +9511,6 @@ msgstr ""
 #: model:ir.module.module,shortdesc:base.module_delivery_dhl
 msgid "DHL Shipping"
 msgstr "Expédition par DHL"
-
-#. module: base
-#: model:ir.ui.view,arch_db:base.res_config_settings_view_form
-msgid "DISCARD"
-msgstr ""
 
 #. module: base
 #: selection:report.paperformat,format:0
@@ -9717,7 +9761,7 @@ msgstr "Données de démonstration"
 #. module: base
 #: model:res.country,name:base.cd
 msgid "Democratic Republic of the Congo"
-msgstr ""
+msgstr "République démocratique du Congo "
 
 #. module: base
 #: model:res.country,name:base.dk
@@ -9842,6 +9886,11 @@ msgid ""
 msgstr ""
 "Désactiver cette option désinstallera également les modules suivants\n"
 "%s"
+
+#. module: base
+#: model:ir.ui.view,arch_db:base.res_config_settings_view_form
+msgid "Discard"
+msgstr "Abandonner"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_discuss
@@ -10310,7 +10359,7 @@ msgstr ""
 #. module: base
 #: model:res.partner.industry,name:base.res_partner_industry_R
 msgid "Entertainment"
-msgstr ""
+msgstr "Divertissement"
 
 #. module: base
 #: model:res.country,name:base.gq
@@ -10442,6 +10491,11 @@ msgid "Events Sales"
 msgstr " Ventes sur événements  "
 
 #. module: base
+#: model:ir.ui.view,arch_db:base.view_server_action_form
+msgid "Example of Python code"
+msgstr ""
+
+#. module: base
 #: model:ir.module.module,description:base.module_gamification_sale_crm
 msgid ""
 "Example of goal definitions and challenges that can be used related to the "
@@ -10449,11 +10503,6 @@ msgid ""
 msgstr ""
 "Exemple de définition d'objectifs et de défis qui peuvent être utilisées en "
 "relation avec l'utilisation du module CRM des Ventes."
-
-#. module: base
-#: model:ir.ui.view,arch_db:base.view_server_action_form
-msgid "Example of python code"
-msgstr "Exemple de code python"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_rule_form
@@ -10978,7 +11027,7 @@ msgstr "Filtres visibles par un seul utilisateur"
 #. module: base
 #: model:res.partner.industry,name:base.res_partner_industry_K
 msgid "Finance/Insurance"
-msgstr ""
+msgstr "Finance/Assurance"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_account_accountant
@@ -11095,11 +11144,6 @@ msgid "Formatted Email"
 msgstr "Courriel mis en forme"
 
 #. module: base
-#: model:ir.module.module,summary:base.module_sms_fortytwo
-msgid "FortyTwo SMS Gateway"
-msgstr ""
-
-#. module: base
 #: model:ir.module.module,shortdesc:base.module_website_forum
 msgid "Forum"
 msgstr "Forum"
@@ -11145,7 +11189,7 @@ msgstr "France - FEC"
 #. module: base
 #: model:res.country,name:base.gf
 msgid "French Guiana"
-msgstr ""
+msgstr "Guyane française"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_fr_hr_payroll
@@ -11155,7 +11199,7 @@ msgstr "Paie française"
 #. module: base
 #: model:res.country,name:base.pf
 msgid "French Polynesia"
-msgstr ""
+msgstr "Polynésie française"
 
 #. module: base
 #: model:res.country,name:base.tf
@@ -11558,12 +11602,12 @@ msgstr "Groupes (pas de groupe = global)"
 #. module: base
 #: model:res.country,name:base.gp
 msgid "Guadeloupe"
-msgstr ""
+msgstr "Guadeloupe"
 
 #. module: base
 #: model:res.country,name:base.gu
 msgid "Guam"
-msgstr ""
+msgstr "Guam"
 
 #. module: base
 #: model:res.country,name:base.gt
@@ -11588,7 +11632,7 @@ msgstr "Guinée"
 #. module: base
 #: model:res.country,name:base.gw
 msgid "Guinea-Bissau"
-msgstr ""
+msgstr "Guinée-Bissau"
 
 #. module: base
 #: model:res.country,name:base.gy
@@ -11673,7 +11717,7 @@ msgstr "Espacement de l'en-tête"
 #. module: base
 #: model:res.partner.industry,name:base.res_partner_industry_Q
 msgid "Health/Social"
-msgstr ""
+msgstr "Santé/Social"
 
 #. module: base
 #: model:res.country,name:base.hm
@@ -11694,8 +11738,8 @@ msgstr "Aide pour la configuration des applications"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_server_action_form
-msgid "Help with Python expressions."
-msgstr "Aide avec les expressions Python"
+msgid "Help with Python expressions"
+msgstr ""
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_helpdesk
@@ -12393,6 +12437,11 @@ msgid "In Apps"
 msgstr "Dans Applications"
 
 #. module: base
+#: model:ir.module.module,shortdesc:base.module_iap
+msgid "In-App Purchases"
+msgstr ""
+
+#. module: base
 #: model:ir.ui.view,arch_db:base.view_currency_search
 #: model:ir.ui.view,arch_db:base.view_view_search
 msgid "Inactive"
@@ -12463,6 +12512,16 @@ msgstr "Particulier"
 #: model:res.country,name:base.id
 msgid "Indonesia"
 msgstr "Indonésie"
+
+#. module: base
+#: model:ir.actions.act_window,name:base.res_partner_industry_action
+#: model:ir.model,name:base.model_res_partner_industry
+#: model:ir.model.fields,field_description:base.field_res_partner_industry_id
+#: model:ir.model.fields,field_description:base.field_res_users_industry_id
+#: model:ir.ui.view,arch_db:base.res_partner_industry_view_form
+#: model:ir.ui.view,arch_db:base.res_partner_industry_view_tree
+msgid "Industry"
+msgstr ""
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_model_info
@@ -12992,7 +13051,7 @@ msgstr "Koweït"
 #. module: base
 #: model:res.country,name:base.kg
 msgid "Kyrgyzstan"
-msgstr ""
+msgstr "Kirghizistan"
 
 #. module: base
 #: model:res.partner.industry,full_name:base.res_partner_industry_L
@@ -13943,7 +14002,7 @@ msgstr "Îles Marshall"
 #. module: base
 #: model:res.country,name:base.mq
 msgid "Martinique"
-msgstr ""
+msgstr "Martinique"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_mass_mailing
@@ -14361,7 +14420,7 @@ msgstr ""
 #. module: base
 #: model:res.country,name:base.md
 msgid "Moldova"
-msgstr ""
+msgstr "Moldavie"
 
 #. module: base
 #: model:res.country,name:base.mc
@@ -14535,7 +14594,7 @@ msgstr "Rapports comptables - Pays-Bas"
 #. module: base
 #: model:res.country,name:base.nc
 msgid "New Caledonia"
-msgstr ""
+msgstr "Nouvelle-Calédonie"
 
 #. module: base
 #: code:addons/base/module/wizard/base_export_language.py:18
@@ -17880,7 +17939,7 @@ msgstr "Rwanda"
 #. module: base
 #: model:res.country,name:base.re
 msgid "Réunion"
-msgstr ""
+msgstr "La Réunion"
 
 #. module: base
 #: model:res.partner.industry,full_name:base.res_partner_industry_S
@@ -17903,18 +17962,13 @@ msgid "SEPA Direct Debit"
 msgstr ""
 
 #. module: base
-#: model:ir.module.module,shortdesc:base.module_sms_fortytwo
-msgid "SMS FortyTwo Provider"
-msgstr ""
-
-#. module: base
 #: model:ir.module.module,summary:base.module_sms
 msgid "SMS Text Messaging"
 msgstr ""
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_sms
-msgid "SMS base"
+msgid "SMS gateway"
 msgstr ""
 
 #. module: base
@@ -17951,12 +18005,12 @@ msgstr "Saint Barthélémy"
 #. module: base
 #: model:res.country,name:base.sh
 msgid "Saint Helena, Ascension and Tristan da Cunha"
-msgstr ""
+msgstr "Sainte-Hélène, Ascension et Tristan da Cunha,"
 
 #. module: base
 #: model:res.country,name:base.kn
 msgid "Saint Kitts and Nevis"
-msgstr ""
+msgstr "Saint-Christophe-et-Niévès"
 
 #. module: base
 #: model:res.country,name:base.lc
@@ -17976,7 +18030,7 @@ msgstr "Saint Pierre et Miquelon"
 #. module: base
 #: model:res.country,name:base.vc
 msgid "Saint Vincent and the Grenadines"
-msgstr ""
+msgstr "Saint-Vincent-et-les-Grenadines"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_hr_contract_salary
@@ -18195,16 +18249,6 @@ msgstr "Recherche…"
 #: model:ir.ui.view,arch_db:base.sequence_view
 msgid "Second: %(sec)s"
 msgstr "Seconde : %(sec)s"
-
-#. module: base
-#: model:ir.actions.act_window,name:base.res_partner_industry_action
-#: model:ir.model,name:base.model_res_partner_industry
-#: model:ir.model.fields,field_description:base.field_res_partner_industry_id
-#: model:ir.model.fields,field_description:base.field_res_users_industry_id
-#: model:ir.ui.view,arch_db:base.res_partner_industry_view_form
-#: model:ir.ui.view,arch_db:base.res_partner_industry_view_tree
-msgid "Sector of Activity"
-msgstr ""
 
 #. module: base
 #: model:ir.ui.menu,name:base.menu_security
@@ -18839,7 +18883,7 @@ msgstr "Nom de l'État"
 #. module: base
 #: model:res.country,name:base.ps
 msgid "State of Palestine"
-msgstr ""
+msgstr "Palestine"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_country_state_ids
@@ -19022,7 +19066,7 @@ msgstr "Sondages"
 #. module: base
 #: model:res.country,name:base.sj
 msgid "Svalbard and Jan Mayen"
-msgstr ""
+msgstr "Svalbard et Jan Mayen"
 
 #. module: base
 #: model:res.country,name:base.sz
@@ -19103,7 +19147,7 @@ msgstr "Mise à jour du système"
 #. module: base
 #: model:res.country,name:base.st
 msgid "São Tomé and Príncipe"
-msgstr ""
+msgstr "Sao Tomé-et-Principe"
 
 #. module: base
 #: model:res.partner.industry,full_name:base.res_partner_industry_T
@@ -19942,7 +19986,7 @@ msgstr "Décalage horaire"
 #. module: base
 #: model:res.country,name:base.tl
 msgid "Timor-Leste"
-msgstr ""
+msgstr "Timor oriental"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_partner_title
@@ -19996,6 +20040,11 @@ msgid ""
 msgstr ""
 "Pour l'activer, assurez-vous que le répertoire suivant existe et est "
 "accessible en écriture sur le serveur :"
+
+#. module: base
+#: model:ir.ui.view,arch_db:base.view_server_action_form
+msgid "To return an action, assign: <code>action = {...}</code>"
+msgstr ""
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.ir_actions_todo_tree
@@ -20162,7 +20211,7 @@ msgstr "Traductions"
 #. module: base
 #: model:res.partner.industry,name:base.res_partner_industry_H
 msgid "Transportation"
-msgstr ""
+msgstr "Transport"
 
 #. module: base
 #: selection:ir.actions.act_window,view_type:0
@@ -20342,7 +20391,7 @@ msgstr ""
 "par défaut"
 
 #. module: base
-#: code:addons/base/ir/ir_actions_report.py:622
+#: code:addons/base/ir/ir_actions_report.py:624
 #, python-format
 msgid "Unable to find Wkhtmltopdf on this system. The PDF can not be created."
 msgstr ""
@@ -21383,7 +21432,7 @@ msgid "Wizards to be Launched"
 msgstr "Assistants à activer"
 
 #. module: base
-#: code:addons/base/ir/ir_actions_report.py:393
+#: code:addons/base/ir/ir_actions_report.py:394
 #, python-format
 msgid ""
 "Wkhtmltopdf failed (error code: %s). Memory limit too low or maximum file "
@@ -21391,7 +21440,7 @@ msgid ""
 msgstr ""
 
 #. module: base
-#: code:addons/base/ir/ir_actions_report.py:396
+#: code:addons/base/ir/ir_actions_report.py:397
 #, python-format
 msgid "Wkhtmltopdf failed (error code: %s). Message: %s"
 msgstr "Wkhtmltopdf a échoué (code d'erreur : %s). Message : %s"
@@ -21830,11 +21879,6 @@ msgid "email@yourcompany.com"
 msgstr "email@yourcompany.com"
 
 #. module: base
-#: model:ir.ui.view,arch_db:base.view_server_action_form
-msgid "env: Odoo Environement on which the action is triggered"
-msgstr ""
-
-#. module: base
 #: code:addons/base/ir/ir_fields.py:328
 #, python-format
 msgid "external id"
@@ -22144,14 +22188,6 @@ msgid "ir.ui.view.custom"
 msgstr "ir.ui.view.custom"
 
 #. module: base
-#: model:ir.ui.view,arch_db:base.view_server_action_form
-msgid ""
-"log(message, level='info'): a logging function to create ir_logging records"
-msgstr ""
-"log(message, level='info') : une fonction de journalisation pour créer des "
-"enregistrements \"ir_logging\""
-
-#. module: base
 #: selection:ir.model.fields,ttype:0
 msgid "many2many"
 msgstr "many2many"
@@ -22160,13 +22196,6 @@ msgstr "many2many"
 #: selection:ir.model.fields,ttype:0
 msgid "many2one"
 msgstr "many2one"
-
-#. module: base
-#: model:ir.ui.view,arch_db:base.view_server_action_form
-msgid ""
-"model: Odoo Model of the record on which the action is triggered; is a void "
-"recordset"
-msgstr ""
 
 #. module: base
 #: selection:ir.model.fields,ttype:0
@@ -22209,18 +22238,6 @@ msgstr "pos_cache"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_pos_sale
 msgid "pos_sale"
-msgstr ""
-
-#. module: base
-#: model:ir.ui.view,arch_db:base.view_server_action_form
-msgid "record: browse record on which the action is triggered"
-msgstr ""
-
-#. module: base
-#: model:ir.ui.view,arch_db:base.view_server_action_form
-msgid ""
-"records: record set of records on which the action is triggered in multi "
-"mode"
 msgstr ""
 
 #. module: base
@@ -22337,11 +22354,6 @@ msgstr "test_conversion"
 #: selection:ir.model.fields,ttype:0
 msgid "text"
 msgstr "texte"
-
-#. module: base
-#: model:ir.ui.view,arch_db:base.view_server_action_form
-msgid "time, datetime, timezone: Python module"
-msgstr ""
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.res_config_installer

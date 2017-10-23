@@ -19,7 +19,7 @@ from odoo.exceptions import QWebException
 from odoo.tools.safe_eval import safe_eval
 from odoo.osv.expression import FALSE_DOMAIN
 
-from odoo.addons.http_routing.models.ir_http import ModelConverter
+from odoo.addons.http_routing.models.ir_http import ModelConverter, _guess_mimetype
 
 logger = logging.getLogger(__name__)
 
@@ -37,20 +37,6 @@ def sitemap_qs2dom(qs, route, field='name'):
         else:
             dom = FALSE_DOMAIN
     return dom
-
-
-def _guess_mimetype(ext=False, default=False):
-    exts = {
-        '.css': ['text/css', 'website.default_css'],
-        '.less': ['text/less', 'website.default_less'],
-        '.js': ['text/javascript', 'website.default_javascript'],
-        '.xml': ['text/xml', 'website.default_xml'],
-        '.csv': ['text/csv', 'website.default_csv'],
-        '.html': ['text/html', False],
-    }
-    if not default:
-        default = exts['.html']
-    return ext is not False and exts.get(ext, default) or exts
 
 
 class Http(models.AbstractModel):
@@ -119,18 +105,19 @@ class Http(models.AbstractModel):
         req_page = request.httprequest.path
 
         domain = [('url', '=', req_page), '|', ('website_ids', 'in', request.website.id), ('website_ids', '=', False)]
+        pages = request.env['website.page'].search(domain)
 
-        if not request.website.is_publisher:
-            domain += [('is_visible', '=', True)]
+        if not request.website.is_publisher():
+            pages = pages.filtered('is_visible')
 
-        mypage = request.env['website.page'].search(domain, limit=1)
+        mypage = pages[0] if pages else False
         _, ext = os.path.splitext(req_page)
         if mypage:
             return request.render(mypage.view_id.id, {
                 # 'path': req_page[1:],
                 'deletable': True,
                 'main_object': mypage,
-            }, mimetype=_guess_mimetype(ext)[0])
+            }, mimetype=_guess_mimetype(ext))
         return False
 
     @classmethod

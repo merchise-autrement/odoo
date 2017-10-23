@@ -670,27 +670,27 @@ class Meeting(models.Model):
                 1) if user add duration for 2 hours, return : August-23-2013 at (04-30 To 06-30) (Europe/Brussels)
                 2) if event all day ,return : AllDay, July-31-2013
         """
-        timezone = self._context.get('tz')
-        if not timezone:
-            timezone = self.env.user.partner_id.tz or 'UTC'
-        timezone = tools.ustr(timezone).encode('utf-8')  # make safe for str{p,f}time()
+        timezone = self._context.get('tz') or self.env.user.partner_id.tz or 'UTC'
+        timezone = pycompat.to_native(timezone)  # make safe for str{p,f}time()
 
         # get date/time format according to context
-        format_date, format_time = self.with_context(tz=timezone)._get_date_formats()
+        format_date, format_time = self._get_date_formats()
 
         # convert date and time into user timezone
-        date = fields.Datetime.context_timestamp(self.with_context(tz=timezone), fields.Datetime.from_string(start))
-        date_deadline = fields.Datetime.context_timestamp(self.with_context(tz=timezone), fields.Datetime.from_string(stop))
+        self_tz = self.with_context(tz=timezone)
+        date = fields.Datetime.context_timestamp(self_tz, fields.Datetime.from_string(start))
+        date_deadline = fields.Datetime.context_timestamp(self_tz, fields.Datetime.from_string(stop))
 
         # convert into string the date and time, using user formats
-        date_str = date.strftime(format_date).decode('utf-8')
-        time_str = date.strftime(format_time).decode('utf-8')
+        to_text = pycompat.to_text
+        date_str = to_text(date.strftime(format_date))
+        time_str = to_text(date.strftime(format_time))
 
         if zallday:
             display_time = _("AllDay , %s") % (date_str)
         elif zduration < 24:
             duration = date + timedelta(hours=zduration)
-            duration_time = duration.strftime(format_time).decode('utf-8')
+            duration_time = to_text(duration.strftime(format_time))
             display_time = _(u"%s at (%s To %s) (%s)") % (
                 date_str,
                 time_str,
@@ -698,8 +698,8 @@ class Meeting(models.Model):
                 timezone,
             )
         else:
-            dd_date = date_deadline.strftime(format_date).decode('utf-8')
-            dd_time = date_deadline.strftime(format_time).decode('utf-8')
+            dd_date = to_text(date_deadline.strftime(format_date))
+            dd_time = to_text(date_deadline.strftime(format_time))
             display_time = _(u"%s at %s To\n %s at %s (%s)") % (
                 date_str,
                 time_str,
@@ -738,13 +738,6 @@ class Meeting(models.Model):
     allday = fields.Boolean('All Day', states={'done': [('readonly', True)]}, default=False)
     start_date = fields.Date('Start Date', compute='_compute_dates', inverse='_inverse_dates', store=True, states={'done': [('readonly', True)]}, track_visibility='onchange')
     start_datetime = fields.Datetime('Start DateTime', compute='_compute_dates', inverse='_inverse_dates', store=True, states={'done': [('readonly', True)]}, track_visibility='onchange')
-    # FIXME
-    # If you wonder why `start_datetime` is sometimes not properly recomputed
-    # and desperately returns `False`, this is due to the override of `read()`
-    # hereunder that pollutes the cache at recomputing time.
-    # According to RCO, fixing this should require a redesing of recurring
-    # events and is probably not trivial... Use `start` instead!
-
     stop_date = fields.Date('End Date', compute='_compute_dates', inverse='_inverse_dates', store=True, states={'done': [('readonly', True)]}, track_visibility='onchange')
     stop_datetime = fields.Datetime('End Datetime', compute='_compute_dates', inverse='_inverse_dates', store=True, states={'done': [('readonly', True)]}, track_visibility='onchange')  # old date_deadline
     duration = fields.Float('Duration', states={'done': [('readonly', True)]})
@@ -934,7 +927,7 @@ class Meeting(models.Model):
             # FIXME: why isn't this in CalDAV?
             import vobject
         except ImportError:
-            _logger.warning("The `vobject` Python module is not installed, so iCal file generation is unavailable. Use 'pip install vobject' to install it")
+            _logger.warning("The `vobject` Python module is not installed, so iCal file generation is unavailable. Please install the `vobject` Python module")
             return result
 
         for meeting in self:
@@ -1538,7 +1531,7 @@ class Meeting(models.Model):
         if not fields:
             fields = list(self._fields)
         fields2 = fields and fields[:]
-        EXTRAFIELDS = ('privacy', 'user_id', 'duration', 'allday', 'start', 'start_date', 'start_datetime', 'rrule')
+        EXTRAFIELDS = ('privacy', 'user_id', 'duration', 'allday', 'start', 'rrule')
         for f in EXTRAFIELDS:
             if fields and (f not in fields):
                 fields2.append(f)
@@ -1550,6 +1543,8 @@ class Meeting(models.Model):
 
         result = []
         for calendar_id, real_id in select:
+            if not real_data.get(real_id):
+                continue
             res = real_data[real_id].copy()
             ls = calendar_id2real_id(calendar_id, with_date=res and res.get('duration', 0) > 0 and res.get('duration') or 1)
             if not isinstance(ls, (pycompat.string_types, pycompat.integer_types)) and len(ls) >= 2:

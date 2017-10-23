@@ -12,13 +12,14 @@
 # Eric Geens <eric.geens@vitabiz.be>, 2017
 # e2f_nl_c4 <e2f_nl_c4@hotmail.com>, 2017
 # Melroy van den Berg <webmaster1989@gmail.com>, 2017
+# Pol Van Dingenen <pol.vandingenen@vanroey.be>, 2017
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 10.saas~18\n"
+"Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-02 11:56+0000\n"
-"PO-Revision-Date: 2017-10-02 11:56+0000\n"
-"Last-Translator: Melroy van den Berg <webmaster1989@gmail.com>, 2017\n"
+"POT-Creation-Date: 2017-10-10 13:14+0000\n"
+"PO-Revision-Date: 2017-10-10 13:14+0000\n"
+"Last-Translator: Pol Van Dingenen <pol.vandingenen@vanroey.be>, 2017\n"
 "Language-Team: Dutch (https://www.transifex.com/odoo/teams/41243/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -56,6 +57,10 @@ msgid ""
 "Allow cashier to reprint receipts\n"
 "\n"
 msgstr ""
+"\n"
+"\n"
+"Sta kassierster toe om kwitanties te printen\n"
+"\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_hu
@@ -559,6 +564,8 @@ msgid ""
 "        Allow to make call from next activities or with click-to-dial.\n"
 "    "
 msgstr ""
+"\n"
+"Sta toe om telefoongesprek te doen vanuit volgende activiteiten of met click-to-dial."
 
 #. module: base
 #: model:ir.module.module,summary:base.module_account_tax_python
@@ -576,6 +583,8 @@ msgid ""
 "        Bill timesheets logged on helpdesk tickets.\n"
 "    "
 msgstr ""
+"\n"
+"Factureer urenstaten geboekt op helpdesk tickets."
 
 #. module: base
 #: model:ir.module.module,description:base.module_hr_maintenance
@@ -691,6 +700,8 @@ msgid ""
 "        This module adds support for barcodes scanning to the delivery packages.\n"
 "    "
 msgstr ""
+"\n"
+"Deze module voegt ondersteuning toe om barcodes te scannen naar de afleveringen."
 
 #. module: base
 #: model:ir.module.module,description:base.module_stock_barcode
@@ -915,15 +926,6 @@ msgstr ""
 "Resource beheer voor project"
 
 #. module: base
-#: model:ir.module.module,description:base.module_sms_fortytwo
-msgid ""
-"\n"
-"    Send SMS text messages with FortyTwo SMS Services.\n"
-msgstr ""
-"\n"
-"Verzend SMS berichten met FortyTwo SMS diensten.\n"
-
-#. module: base
 #: model:ir.module.module,summary:base.module_sale_ebay
 msgid ""
 "\n"
@@ -1004,6 +1006,10 @@ msgid ""
 "==================\n"
 "    "
 msgstr ""
+"\n"
+"Boekhoudkundige rapporten\n"
+"==================\n"
+"    "
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_ar_reports
@@ -1130,6 +1136,10 @@ msgid ""
 "=================================\n"
 "    "
 msgstr ""
+"\n"
+"Boekhoudkundige rapporten voor Luxemburg\n"
+"=================================\n"
+"    "
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_ma_reports
@@ -1436,6 +1446,11 @@ msgid ""
 "\n"
 "* Cost structure report\n"
 msgstr ""
+"\n"
+"Kostenplaatsen in MRP\n"
+"==========================\n"
+"\n"
+"* Kostenstructuur rapportage\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_ar
@@ -1557,6 +1572,11 @@ msgid ""
 "GST Reporting for Australian Accounting.\n"
 "    "
 msgstr ""
+"\n"
+"Boekhoudkundige rapporten voor Australië\n"
+"=============================\n"
+"\n"
+"GST Reporting for Australian Accounting."
 
 #. module: base
 #: model:ir.module.module,description:base.module_base_vat_autocomplete
@@ -2251,6 +2271,14 @@ msgid ""
 "that would need such functionality.\n"
 "\n"
 msgstr ""
+"\n"
+"ECS/POS hardware driver\n"
+"=======================\n"
+"\n"
+"Deze module staat toe dat Odoo kan afdrukken met ECS/POS compatibele printers en\n"
+"het openen van ECS/POS gecontroleerde kassa's in de 'point of sale' en andere modules\n"
+"die deze functionaliteit nodig hebben.\n"
+"\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_eu_service
@@ -3984,6 +4012,14 @@ msgid ""
 "and should not be installed on regular Odoo servers.\n"
 "\n"
 msgstr ""
+"\n"
+"PosBox software updater\n"
+"========================\n"
+"\n"
+"Deze module staat toe om van op afstand de PosBox software te upgraden naar een\n"
+"nieuwe versie. Deze module is specifiek voor de PosBox en zijn omgeving\n"
+"en moet niet geïnstalleerd worden op een gewone Odoo server.\n"
+"\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_mrp_plm
@@ -4148,6 +4184,12 @@ msgid ""
 "2) Analyse the subscriptions modifications by salesman and compute their value.\n"
 "    "
 msgstr ""
+"\n"
+"Verkoop abonnementen dashboard\n"
+"========================\n"
+"Het voegt dashboards toe aan:\n"
+"1) Analyseer de huidige opbrengst en andere kengetallen voor abonnemneten\n"
+"2) Analyseer de abonnement wijzigingen per verkoper en bereken hun waarde."
 
 #. module: base
 #: model:ir.module.module,description:base.module_hw_screen
@@ -5068,14 +5110,6 @@ msgstr ""
 "**Kredieten:** Algemene oplossingen.\n"
 
 #. module: base
-#: model:ir.module.module,description:base.module_test_main_flows
-msgid ""
-"\n"
-"This mobule will test the main workflow of Odoo.\n"
-"It will install some main apps and will try to execute the most important actions.\n"
-msgstr ""
-
-#. module: base
 #: model:ir.module.module,description:base.module_rating_project
 msgid ""
 "\n"
@@ -5416,6 +5450,12 @@ msgid ""
 "competing offers from different vendors and select the best ones. Blanket orders\n"
 "are agreements you have with vendors to benefit from a predetermined pricing.\n"
 msgstr ""
+"\n"
+"Deze module laat u toe uw koopovereenkomsten te beheren.\n"
+"===========================================================\n"
+"\n"
+"Beheer uw aanbestedingen en uw afroeporders. Aanbestedingen worden gebruikt om meerdere offertes te krijgen van verscheidene leveranciers en zo de beste te kiezen.\n"
+"Afroeporders zijn overeenkomsten die je hebt met leveranciers om te genieten van een voorgedefinieerde prijs.\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_mrp_byproduct
@@ -5492,7 +5532,7 @@ msgid ""
 "This module gives a framework for SMS text messaging\n"
 "----------------------------------------------------\n"
 "\n"
-"You need to install a provider alongside of this module in order to be able send SMS text messages.\n"
+"The service is provided by the In App Purchase Odoo platform.\n"
 msgstr ""
 
 #. module: base
@@ -5667,6 +5707,13 @@ msgstr ""
 "    "
 
 #. module: base
+#: model:ir.module.module,description:base.module_iap
+msgid ""
+"\n"
+"This module provides standard tools (account model, context manager and helpers) to support In-App purchases inside Odoo.\n"
+msgstr ""
+
+#. module: base
 #: model:ir.module.module,description:base.module_l10n_at
 #: model:ir.module.module,description:base.module_l10n_at_reports
 msgid ""
@@ -5724,6 +5771,14 @@ msgid ""
 "This module will give an option of bill my account on ups delivery methods\n"
 "==========================================================================\n"
 "    "
+msgstr ""
+
+#. module: base
+#: model:ir.module.module,description:base.module_test_main_flows
+msgid ""
+"\n"
+"This module will test the main workflow of Odoo.\n"
+"It will install some main apps and will try to execute the most important actions.\n"
 msgstr ""
 
 #. module: base
@@ -6392,13 +6447,14 @@ msgstr "<b>Geen module gevonden!</b>"
 msgid ""
 "<code style=\"white-space: pre-wrap\">\n"
 "partner_name = record.name + '_code'\n"
-"env[\"res.partner\"].create({\"name\": partner_name})\n"
+"env['res.partner'].create({'name': partner_name})\n"
 "</code>"
 msgstr ""
-"<code style=\"white-space: pre-wrap\">\n"
-"partner_name = record.name + '_code'\n"
-"env[\"res.partner\"].create({\"name\": partner_name})\n"
-"</code>"
+
+#. module: base
+#: model:ir.ui.view,arch_db:base.view_server_action_form
+msgid "<code>Warning</code>: Warning Exception to use with <code>raise</code>"
+msgstr ""
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_model_fields_form
@@ -6413,6 +6469,38 @@ msgid "<code>dateutil</code> (Python module)"
 msgstr "<code>dateutil</code> (Python module)"
 
 #. module: base
+#: model:ir.ui.view,arch_db:base.view_server_action_form
+msgid "<code>env</code>: Odoo Environment on which the action is triggered"
+msgstr ""
+
+#. module: base
+#: model:ir.ui.view,arch_db:base.view_server_action_form
+msgid ""
+"<code>log(message, level='info')</code>:logging function to record debug "
+"information in <code>ir.logging</code> table"
+msgstr ""
+
+#. module: base
+#: model:ir.ui.view,arch_db:base.view_server_action_form
+msgid ""
+"<code>model</code>: Odoo Model of the record on which the action is "
+"triggered; is a void recordset"
+msgstr ""
+
+#. module: base
+#: model:ir.ui.view,arch_db:base.view_server_action_form
+msgid ""
+"<code>record</code>: record on which the action is triggered; may be be void"
+msgstr ""
+
+#. module: base
+#: model:ir.ui.view,arch_db:base.view_server_action_form
+msgid ""
+"<code>records</code>: recordset of all records on which the action is "
+"triggered in multi mode; may be void"
+msgstr ""
+
+#. module: base
 #: model:ir.ui.view,arch_db:base.view_model_fields_form
 #: model:ir.ui.view,arch_db:base.view_model_form
 msgid "<code>self</code> (the set of records to compute)"
@@ -6423,6 +6511,13 @@ msgstr "<code>self</code> (de set van records om te berekenen)"
 #: model:ir.ui.view,arch_db:base.view_model_form
 msgid "<code>time</code> (Python module)"
 msgstr "<code>time</code> (Python module)"
+
+#. module: base
+#: model:ir.ui.view,arch_db:base.view_server_action_form
+msgid ""
+"<code>time</code>, <code>datetime</code>, <code>dateutil</code>, "
+"<code>timezone</code>: useful Python libraries"
+msgstr ""
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_currency_kanban
@@ -7422,7 +7517,7 @@ msgstr "Sollicitatie"
 #: model:ir.ui.view,arch_db:base.user_groups_view
 #, python-format
 msgid "Application Accesses"
-msgstr ""
+msgstr "Applicatie toegangen"
 
 #. module: base
 #: model:ir.module.module,description:base.module_web_planner
@@ -7961,6 +8056,11 @@ msgid "Basic 2D Grid view for odoo"
 msgstr "Basis 2D grid weergave voor Odoo"
 
 #. module: base
+#: model:ir.module.module,summary:base.module_iap
+msgid "Basic models and helpers to support In-App purchases."
+msgstr ""
+
+#. module: base
 #: model:ir.module.module,shortdesc:base.module_account_batch_deposit
 msgid "Batch Deposit"
 msgstr "Verzamelbetaling"
@@ -8018,7 +8118,7 @@ msgstr "België - Loonadministratie"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_be_hr_payroll_fleet
 msgid "Belgium - Payroll - Fleet"
-msgstr ""
+msgstr "België - Loonadministratie - Wagenpark"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_be_hr_payroll_account
@@ -8083,7 +8183,7 @@ msgstr "Bindend model"
 #: model:ir.model.fields,field_description:base.field_ir_actions_binding_type_275
 #: model:ir.model.fields,field_description:base.field_ir_cron_binding_type
 msgid "Binding Type"
-msgstr ""
+msgstr "Soort binding"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_hw_blackbox_be
@@ -8595,7 +8695,7 @@ msgid "China"
 msgstr "China"
 
 #. module: base
-#: code:addons/base/ir/ir_actions_report.py:683
+#: code:addons/base/ir/ir_actions_report.py:685
 #, python-format
 msgid "Choose Your Document Layout"
 msgstr "Kies uw document lay-out"
@@ -8681,14 +8781,14 @@ msgid "Click to create a new bank."
 msgstr "Klik om een nieuwe bank aan te maken."
 
 #. module: base
+#: model:ir.actions.act_window,help:base.res_partner_industry_action
+msgid "Click to create a new industry."
+msgstr ""
+
+#. module: base
 #: model:ir.actions.act_window,help:base.action_partner_category_form
 msgid "Click to create a new partner tag."
 msgstr "Klik om een nieuw relatielabel aan te maken."
-
-#. module: base
-#: model:ir.actions.act_window,help:base.res_partner_industry_action
-msgid "Click to create a new sector of activity."
-msgstr "Klik om een nieuwe activiteit sector aan te maken."
 
 #. module: base
 #: selection:ir.logging,type:0
@@ -9772,11 +9872,6 @@ msgid "DHL Shipping"
 msgstr "DHL verzending"
 
 #. module: base
-#: model:ir.ui.view,arch_db:base.res_config_settings_view_form
-msgid "DISCARD"
-msgstr ""
-
-#. module: base
 #: selection:report.paperformat,format:0
 msgid "DLE 26 110 x 220 mm"
 msgstr "DLE 26 110 x 220 mm"
@@ -10147,6 +10242,11 @@ msgid ""
 msgstr ""
 "Indien u deze optie uitschakelt worden de volgende modules geïnstalleerd: \n"
 "%s"
+
+#. module: base
+#: model:ir.ui.view,arch_db:base.res_config_settings_view_form
+msgid "Discard"
+msgstr "Weggooien"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_discuss
@@ -10595,7 +10695,7 @@ msgstr "Lege afhankelijkheid in %r"
 #. module: base
 #: model:res.partner.industry,name:base.res_partner_industry_D
 msgid "Energy supply"
-msgstr ""
+msgstr "Energie aanbod"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_server_action_form
@@ -10728,12 +10828,12 @@ msgstr "Event barcode scanning"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_event_barcode_mobile
 msgid "Event Barcode in Mobile"
-msgstr ""
+msgstr "Evenement barcode in mobiel"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_event_barcode_mobile
 msgid "Event Barcode scan in Mobile"
-msgstr ""
+msgstr "Evenement barcode scan in mobiel"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_event_management
@@ -10751,6 +10851,11 @@ msgid "Events Sales"
 msgstr "Verkoopevenementen"
 
 #. module: base
+#: model:ir.ui.view,arch_db:base.view_server_action_form
+msgid "Example of Python code"
+msgstr ""
+
+#. module: base
 #: model:ir.module.module,description:base.module_gamification_sale_crm
 msgid ""
 "Example of goal definitions and challenges that can be used related to the "
@@ -10758,11 +10863,6 @@ msgid ""
 msgstr ""
 "Voorbeelden van doelstellingen en uitdagingen welke kunnen worden gebruikt "
 "voor het gebruik in de CRM verkoop module"
-
-#. module: base
-#: model:ir.ui.view,arch_db:base.view_server_action_form
-msgid "Example of python code"
-msgstr "\\Voorbeeld van python code"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_rule_form
@@ -11188,7 +11288,7 @@ msgstr "Omschrijving velden"
 #: code:addons/base/ir/ir_model.py:569
 #, python-format
 msgid "Fields: %s"
-msgstr ""
+msgstr "Velden: %s"
 
 #. module: base
 #: model:res.country,name:base.fj
@@ -11287,7 +11387,7 @@ msgstr "Filters alleen zichtbaar voor één gebruiker"
 #. module: base
 #: model:res.partner.industry,name:base.res_partner_industry_K
 msgid "Finance/Insurance"
-msgstr ""
+msgstr "Financiën/Verzekering"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_account_accountant
@@ -11401,11 +11501,6 @@ msgid "Formatted Email"
 msgstr "Geformatteerde e-mail"
 
 #. module: base
-#: model:ir.module.module,summary:base.module_sms_fortytwo
-msgid "FortyTwo SMS Gateway"
-msgstr ""
-
-#. module: base
 #: model:ir.module.module,shortdesc:base.module_website_forum
 msgid "Forum"
 msgstr "Forum"
@@ -11449,7 +11544,7 @@ msgstr "Frankrijk - FEC"
 #. module: base
 #: model:res.country,name:base.gf
 msgid "French Guiana"
-msgstr ""
+msgstr "Frans Guyana"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_fr_hr_payroll
@@ -11459,7 +11554,7 @@ msgstr "Franse loonadministratie"
 #. module: base
 #: model:res.country,name:base.pf
 msgid "French Polynesia"
-msgstr ""
+msgstr "Frans Polynesië"
 
 #. module: base
 #: model:res.country,name:base.tf
@@ -11535,17 +11630,17 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_in_sale
 msgid "GST Sale Report"
-msgstr ""
+msgstr "GST Verkoop rapport"
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_in_stock
 msgid "GST Stock Report"
-msgstr ""
+msgstr "GST Stock rapport"
 
 #. module: base
 #: model:res.country,vat_label:base.in
 msgid "GSTIN"
-msgstr ""
+msgstr "GSTIN"
 
 #. module: base
 #: model:res.country,name:base.ga
@@ -11864,12 +11959,12 @@ msgstr "Groepen (geen groep = iedereen)"
 #. module: base
 #: model:res.country,name:base.gp
 msgid "Guadeloupe"
-msgstr ""
+msgstr "Guadeloupe"
 
 #. module: base
 #: model:res.country,name:base.gu
 msgid "Guam"
-msgstr ""
+msgstr "Guam"
 
 #. module: base
 #: model:res.country,name:base.gt
@@ -11924,7 +12019,7 @@ msgstr "HR Gamificatie"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_hr_org_chart
 msgid "HR Org Chart"
-msgstr ""
+msgstr "HR organisatie grafiek"
 
 #. module: base
 #: selection:ir.actions.report,report_type:0
@@ -11979,7 +12074,7 @@ msgstr "Kop afstand"
 #. module: base
 #: model:res.partner.industry,name:base.res_partner_industry_Q
 msgid "Health/Social"
-msgstr ""
+msgstr "Gezondheid/Sociaal"
 
 #. module: base
 #: model:res.country,name:base.hm
@@ -12000,8 +12095,8 @@ msgstr "Help applicatie te configureren"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_server_action_form
-msgid "Help with Python expressions."
-msgstr "Help met Python expressies"
+msgid "Help with Python expressions"
+msgstr ""
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_helpdesk
@@ -12012,7 +12107,7 @@ msgstr "Helpdesk"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_helpdesk_timesheet
 msgid "Helpdesk Timesheet"
-msgstr ""
+msgstr "Helpdesk urenstaat"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_helpdesk_forum
@@ -12095,7 +12190,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.category,description:base.module_category_hr_holidays
 msgid "Helps you manage your leaves."
-msgstr ""
+msgstr "Helpt u bij het beheren van uw verloven."
 
 #. module: base
 #: model:ir.module.category,description:base.module_category_manufacturing
@@ -12213,7 +12308,7 @@ msgstr "Uren"
 #. module: base
 #: model:res.partner.industry,name:base.res_partner_industry_T
 msgid "Households"
-msgstr ""
+msgstr "Huishoudens"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_cron_numbercall
@@ -12238,7 +12333,7 @@ msgstr "HR - Sollicitatie formulier"
 #. module: base
 #: model:ir.module.category,name:base.module_category_human_resource
 msgid "Human Resource"
-msgstr ""
+msgstr "Personeelszaken"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_human_resources_survey
@@ -12405,12 +12500,12 @@ msgstr "ISO-code"
 #. module: base
 #: model:res.partner.category,name:base.res_partner_category_7
 msgid "IT Services"
-msgstr "IT Services"
+msgstr "IT diensten"
 
 #. module: base
 #: model:res.partner.industry,name:base.res_partner_industry_J
 msgid "IT/Communication"
-msgstr ""
+msgstr "IT/Communicatie"
 
 #. module: base
 #: model:res.country,name:base.is
@@ -12486,7 +12581,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_default_condition
 msgid "If set, applies the default upon condition."
-msgstr ""
+msgstr "Indien ingesteld wordt de standaard conditie toegepast."
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_server_action_form
@@ -12632,12 +12727,12 @@ msgstr "Beïnvloede apps"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_base_module_uninstall_model_ids
 msgid "Impacted data models"
-msgstr ""
+msgstr "Beïnvloede data modellen"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_base_module_uninstall_module_ids
 msgid "Impacted modules"
-msgstr ""
+msgstr "Beïnvloede modules"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_sequence_implementation
@@ -12647,7 +12742,7 @@ msgstr "Implementatie"
 #. module: base
 #: model:ir.module.module,summary:base.module_base_sparse_field
 msgid "Implementation of sparse fields."
-msgstr ""
+msgstr "Implementatie van sparse velden."
 
 #. module: base
 #: model:ir.module.module,summary:base.module_pos_blackbox_be
@@ -12698,6 +12793,11 @@ msgstr "Importeer de valutakoers vanaf het internet.\n"
 #: model:ir.model.fields,field_description:base.field_ir_model_modules
 msgid "In Apps"
 msgstr "In apps"
+
+#. module: base
+#: model:ir.module.module,shortdesc:base.module_iap
+msgid "In-App Purchases"
+msgstr "In-App aankopen"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_currency_search
@@ -12770,6 +12870,16 @@ msgstr "Persoon"
 #: model:res.country,name:base.id
 msgid "Indonesia"
 msgstr "Indonesië"
+
+#. module: base
+#: model:ir.actions.act_window,name:base.res_partner_industry_action
+#: model:ir.model,name:base.model_res_partner_industry
+#: model:ir.model.fields,field_description:base.field_res_partner_industry_id
+#: model:ir.model.fields,field_description:base.field_res_users_industry_id
+#: model:ir.ui.view,arch_db:base.res_partner_industry_view_form
+#: model:ir.ui.view,arch_db:base.res_partner_industry_view_tree
+msgid "Industry"
+msgstr ""
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_model_info
@@ -12916,7 +13026,7 @@ msgstr "Integreer kortingsbonnen mechanisme met verzendkosten."
 #. module: base
 #: model:ir.module.module,description:base.module_website_sale_coupon
 msgid "Integrate coupons mechanism in ecommerce."
-msgstr ""
+msgstr "Integreer kortingsbonnen in e-commerce."
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_inter_company_rules
@@ -13023,7 +13133,7 @@ msgstr ""
 #: code:addons/base/ir/ir_default.py:68
 #, python-format
 msgid "Invalid field %s.%s"
-msgstr ""
+msgstr "Foutief veld %s.%s"
 
 #. module: base
 #: sql_constraint:ir.ui.view:0
@@ -13115,7 +13225,7 @@ msgstr "Facturatie & Betalingen"
 #: model:ir.module.category,name:base.module_category_invoicing_management
 #: model:ir.module.module,shortdesc:base.module_account_invoicing
 msgid "Invoicing Management"
-msgstr ""
+msgstr "Factuur beheer"
 
 #. module: base
 #: model:res.country,name:base.ir
@@ -13285,7 +13395,7 @@ msgstr "Kiribati"
 #. module: base
 #: model:ir.module.module,summary:base.module_website_helpdesk_forum
 msgid "Knowledge base for helpdesk based on Odoo Forum"
-msgstr ""
+msgstr "Kennisbasis voor helpdesk gebaseerd op Odoo forum"
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_si
@@ -13300,7 +13410,7 @@ msgstr "Koeweit"
 #. module: base
 #: model:res.country,name:base.kg
 msgid "Kyrgyzstan"
-msgstr ""
+msgstr "Kyrgyzstan"
 
 #. module: base
 #: model:res.partner.industry,full_name:base.res_partner_industry_L
@@ -13668,7 +13778,7 @@ msgstr "Lead score"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_crm_project
 msgid "Lead to Tasks"
-msgstr ""
+msgstr "Lead naar taken"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_crm
@@ -13743,7 +13853,7 @@ msgstr "Lesotho"
 #. module: base
 #: model:ir.module.module,description:base.module_website_sale_wishlist
 msgid "Let returning shoppers save products in a wishlist"
-msgstr ""
+msgstr "Laat terugkerende winkelaars producten opslaan in een wenslijst"
 
 #. module: base
 #: selection:report.paperformat,format:0
@@ -13800,7 +13910,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,summary:base.module_sale_payment
 msgid "Link Sales and Payment"
-msgstr ""
+msgstr "Link verkopen en betaling"
 
 #. module: base
 #: model:ir.module.module,description:base.module_sale_payment
@@ -13977,7 +14087,7 @@ msgstr "Productie bijproducten"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_quality_mrp
 msgid "MRP features for Quality Control"
-msgstr ""
+msgstr "MRP opties voor kwaliteitscontrole"
 
 #. module: base
 #: model:res.country,name:base.mo
@@ -14039,7 +14149,7 @@ msgstr "Onderhoudpleger"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_mrp_maintenance
 msgid "Maintenance - MRP"
-msgstr ""
+msgstr "Onderhoud - MRP"
 
 #. module: base
 #: model:res.country,name:base.mw
@@ -14069,7 +14179,7 @@ msgstr "Malta"
 #. module: base
 #: model:ir.module.module,summary:base.module_website_event_sale
 msgid "Manage Events and Sell Tickets Online"
-msgstr ""
+msgstr "Beheer evenementen en verkoop online tickets"
 
 #. module: base
 #: model:ir.module.module,description:base.module_hr_recruitment
@@ -14253,7 +14363,7 @@ msgstr "Marshall-eilanden"
 #. module: base
 #: model:res.country,name:base.mq
 msgid "Martinique"
-msgstr ""
+msgstr "Martinique"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_mass_mailing
@@ -14268,7 +14378,7 @@ msgstr "Bulk mailing thema's"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_mass_mailing_event
 msgid "Mass mailing on attendees"
-msgstr ""
+msgstr "Mass mailing op deelnemers"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_mass_mailing_event_track
@@ -14389,7 +14499,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,summary:base.module_l10n_mx_edi
 msgid "Mexican Localization for EDI documents"
-msgstr ""
+msgstr "Mexicaanse lokalisatie voor EDI documenten"
 
 #. module: base
 #: model:res.country,name:base.mx
@@ -14414,7 +14524,7 @@ msgstr "Mime Type"
 #. module: base
 #: model:res.partner.industry,name:base.res_partner_industry_B
 msgid "Mining"
-msgstr ""
+msgstr "Mijnen"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.sequence_view
@@ -14663,12 +14773,12 @@ msgstr "Modules"
 #: code:addons/base/module/module.py:401
 #, python-format
 msgid "Modules \"%s\" and \"%s\" are incompatible."
-msgstr ""
+msgstr "Modules \"%s\" en \"%s\" zijn niet compatibel."
 
 #. module: base
 #: model:res.country,name:base.md
 msgid "Moldova"
-msgstr ""
+msgstr "Moldova"
 
 #. module: base
 #: model:res.country,name:base.mc
@@ -14723,7 +14833,7 @@ msgstr "Dhr."
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_mrp_workorder
 msgid "Mrp Workorder"
-msgstr ""
+msgstr "MRP werkorder"
 
 #. module: base
 #: model:res.partner.title,shortcut:base.res_partner_title_madam
@@ -14934,7 +15044,7 @@ msgstr "Niue"
 #. module: base
 #: model:ir.ui.view,arch_db:base.res_config_settings_view_form
 msgid "No Record Found"
-msgstr ""
+msgstr "Geen record gevonden"
 
 #. module: base
 #: code:addons/models.py:1287
@@ -18203,19 +18313,14 @@ msgid "SEPA Direct Debit"
 msgstr "SEPA Automatische Incasso"
 
 #. module: base
-#: model:ir.module.module,shortdesc:base.module_sms_fortytwo
-msgid "SMS FortyTwo Provider"
-msgstr "SMS FortyTwo provider"
-
-#. module: base
 #: model:ir.module.module,summary:base.module_sms
 msgid "SMS Text Messaging"
 msgstr "SMS berichten"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_sms
-msgid "SMS base"
-msgstr "SMS basis"
+msgid "SMS gateway"
+msgstr ""
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_mail_server_smtp_port
@@ -18494,16 +18599,6 @@ msgstr "Zoek.."
 #: model:ir.ui.view,arch_db:base.sequence_view
 msgid "Second: %(sec)s"
 msgstr "Seconde: %(sec)s"
-
-#. module: base
-#: model:ir.actions.act_window,name:base.res_partner_industry_action
-#: model:ir.model,name:base.model_res_partner_industry
-#: model:ir.model.fields,field_description:base.field_res_partner_industry_id
-#: model:ir.model.fields,field_description:base.field_res_users_industry_id
-#: model:ir.ui.view,arch_db:base.res_partner_industry_view_form
-#: model:ir.ui.view,arch_db:base.res_partner_industry_view_tree
-msgid "Sector of Activity"
-msgstr "Sector van activiteit"
 
 #. module: base
 #: model:ir.ui.menu,name:base.menu_security
@@ -20300,6 +20395,11 @@ msgstr ""
 "server:"
 
 #. module: base
+#: model:ir.ui.view,arch_db:base.view_server_action_form
+msgid "To return an action, assign: <code>action = {...}</code>"
+msgstr ""
+
+#. module: base
 #: model:ir.ui.view,arch_db:base.ir_actions_todo_tree
 msgid "Todo"
 msgstr "Te doen"
@@ -20645,7 +20745,7 @@ msgstr ""
 "standaard eigenschap"
 
 #. module: base
-#: code:addons/base/ir/ir_actions_report.py:622
+#: code:addons/base/ir/ir_actions_report.py:624
 #, python-format
 msgid "Unable to find Wkhtmltopdf on this system. The PDF can not be created."
 msgstr ""
@@ -21688,7 +21788,7 @@ msgid "Wizards to be Launched"
 msgstr "Wizards welke worden gestart"
 
 #. module: base
-#: code:addons/base/ir/ir_actions_report.py:393
+#: code:addons/base/ir/ir_actions_report.py:394
 #, python-format
 msgid ""
 "Wkhtmltopdf failed (error code: %s). Memory limit too low or maximum file "
@@ -21698,7 +21798,7 @@ msgstr ""
 "bestanden tegelijk bereikt. Bericht: %s"
 
 #. module: base
-#: code:addons/base/ir/ir_actions_report.py:396
+#: code:addons/base/ir/ir_actions_report.py:397
 #, python-format
 msgid "Wkhtmltopdf failed (error code: %s). Message: %s"
 msgstr "Fout in Wkhtmltopdf (fout code: %s). Bericht: %s"
@@ -22138,11 +22238,6 @@ msgid "email@yourcompany.com"
 msgstr "email@uwbedrijf.com"
 
 #. module: base
-#: model:ir.ui.view,arch_db:base.view_server_action_form
-msgid "env: Odoo Environement on which the action is triggered"
-msgstr "env: Odoo omgeving waarop de actie is getrickerd"
-
-#. module: base
 #: code:addons/base/ir/ir_fields.py:328
 #, python-format
 msgid "external id"
@@ -22452,14 +22547,6 @@ msgid "ir.ui.view.custom"
 msgstr "ir.ui.view.custom"
 
 #. module: base
-#: model:ir.ui.view,arch_db:base.view_server_action_form
-msgid ""
-"log(message, level='info'): a logging function to create ir_logging records"
-msgstr ""
-"log(message, level='info'): een logging functie die ir_logging records "
-"aanmaakt"
-
-#. module: base
 #: selection:ir.model.fields,ttype:0
 msgid "many2many"
 msgstr "many2many"
@@ -22468,13 +22555,6 @@ msgstr "many2many"
 #: selection:ir.model.fields,ttype:0
 msgid "many2one"
 msgstr "many2one"
-
-#. module: base
-#: model:ir.ui.view,arch_db:base.view_server_action_form
-msgid ""
-"model: Odoo Model of the record on which the action is triggered; is a void "
-"recordset"
-msgstr ""
 
 #. module: base
 #: selection:ir.model.fields,ttype:0
@@ -22518,18 +22598,6 @@ msgstr "pos_cache"
 #: model:ir.module.module,shortdesc:base.module_pos_sale
 msgid "pos_sale"
 msgstr "pos_sale"
-
-#. module: base
-#: model:ir.ui.view,arch_db:base.view_server_action_form
-msgid "record: browse record on which the action is triggered"
-msgstr ""
-
-#. module: base
-#: model:ir.ui.view,arch_db:base.view_server_action_form
-msgid ""
-"records: record set of records on which the action is triggered in multi "
-"mode"
-msgstr ""
 
 #. module: base
 #: selection:ir.model.fields,ttype:0
@@ -22645,11 +22713,6 @@ msgstr "test_convert"
 #: selection:ir.model.fields,ttype:0
 msgid "text"
 msgstr "tekst"
-
-#. module: base
-#: model:ir.ui.view,arch_db:base.view_server_action_form
-msgid "time, datetime, timezone: Python module"
-msgstr "tijd, tijd en datum, tijdzone: Python module"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.res_config_installer
