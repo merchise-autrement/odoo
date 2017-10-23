@@ -52,7 +52,6 @@
         'static/src/xml/thread.xml',
         'static/src/xml/chat_window.xml',
         'static/src/xml/extended_chat_window.xml',
-        'static/src/xml/announcement.xml',
         'static/src/xml/web_kanban_activity.xml',
     ],
 }

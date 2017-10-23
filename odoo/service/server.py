@@ -790,8 +790,8 @@ class Worker(object):
         signal.signal(signal.SIGINT, self.signal_handler)
         signal.signal(signal.SIGTERM, signal.SIG_DFL)
         signal.signal(signal.SIGCHLD, signal.SIG_DFL)
-        signal.signal(signal.SIGUSR2, self.signal_handler)
         signal.set_wakeup_fd(self.eintr_pipe[1])
+        signal.signal(signal.SIGUSR2, self.signal_handler)
 
     def stop(self):
         pass

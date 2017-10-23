@@ -1393,7 +1393,6 @@ def SessionStore(path):
         )
 
 
-
 class Root(object):
     """Root WSGI application for the OpenERP Web Client.
     """

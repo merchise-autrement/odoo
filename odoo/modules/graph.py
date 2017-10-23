@@ -100,8 +100,8 @@ class Graph(dict):
         return len(self) - len_graph
 
     def __iter__(self):
-        def key(item):
-            name, module = item
+        def key(node):
+            name, module = node
             return module.depth, name
         return (module for _, module in sorted(self.items(), key=key))
 

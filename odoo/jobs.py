@@ -236,7 +236,7 @@ def until_timeout(iterator, on_timeout=None):
                        iteration because of a SoftTimeLimitExceeded error.
 
     Although you may call `until_timeout`:func: inside another call to
-    `until_timeout`:func: we strongly advice againts it.
+    `until_timeout`:func: we strongly advice against it.
 
     In a iterator pattern like::
 
@@ -249,7 +249,7 @@ def until_timeout(iterator, on_timeout=None):
     patterns the behaviour is well established: only the instances enclosing
     the point where the exceptions happens will be called its timeout.
 
-    However in tree-like structures an automatic 'linearzation' of the tree
+    However in tree-like structures an automatic 'linearisation' of the tree
     nodes is performed and as such, a timeout in one branch of the tree may be
     signaled to the other branch.
 
@@ -692,7 +692,7 @@ def _extract_signature(args, kwargs):
     from odoo.sql_db import Cursor
     from odoo.tools import frozendict
     method = args[0]
-    self = getattr(method, 'im_self', Unset)
+    self = getattr(method, '__self__', Unset)
     env = getattr(self, 'env', Unset)
     if isinstance(self, BaseModel) and isinstance(env, Environment):
         db, uid, context = env.args
@@ -810,8 +810,8 @@ def MaybeRecords(dbname, uid, model, ids=None, cr=None, context=None):
 def OdooEnvironment(dbname, uid, cr=None, context=None):
     __traceback_hide__ = True  # noqa: hide from Celery Tracebacks
     with Environment.manage():
+        Registry(dbname).check_signaling()
         registry = Registry(dbname)
-        registry.check_signaling()
         # Several pieces of OpenERP code expect this attributes to be set in the
         # current thread.
         threading.current_thread().uid = uid
