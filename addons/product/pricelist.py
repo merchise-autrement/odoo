@@ -233,7 +233,7 @@ class product_pricelist(osv.osv):
             'AND (product_id IS NULL OR (product_id = ANY(%s))) '
             'AND ((categ_id IS NULL) OR (categ_id = ANY(%s))) '
             'AND (price_version_id = %s) '
-            'AND min_quantity <= %s'
+            'AND min_quantity <= %s '
             'ORDER BY sequence, min_quantity DESC '
             'LIMIT 1',
             (prod_tmpl_id, prod_ids, categ_ids, version.id,
