@@ -161,7 +161,7 @@ class StockMove(models.Model):
     def create_lots(self):
         lots = self.env['stock.move.lots']
         for move in self:
-            unlink_move_lots = move.move_lot_ids.filtered(lambda x : (x.quantity_done == 0) and not x.workorder_id)
+            unlink_move_lots = move.move_lot_ids.filtered(lambda x : (x.quantity_done == 0) and x.done_wo)
             unlink_move_lots.sudo().unlink()
             group_new_quant = {}
             old_move_lot = {}
@@ -284,7 +284,7 @@ class StockMove(models.Model):
                 quants = quant_obj.quants_get_preferred_domain(move.product_qty, move, domain=main_domain, preferred_domain_list=preferred_domain_list)
                 self.env['stock.quant'].quants_move(quants, move, move.location_dest_id)
             else:
-                for movelot in move.move_lot_ids:
+                for movelot in move.active_move_lot_ids:
                     if float_compare(movelot.quantity_done, 0, precision_rounding=rounding) > 0:
                         if not movelot.lot_id:
                             raise UserError(_('You need to supply a lot/serial number.'))
