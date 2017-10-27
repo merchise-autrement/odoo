@@ -1220,7 +1220,7 @@ class Export(http.Controller):
         """
         return [
             {'tag': 'csv', 'label': 'CSV'},
-            {'tag': 'xls', 'label': 'Excel', 'error': None if xlwt else "XLWT required"},
+            {'tag': 'xls', 'label': 'Excel', 'error': None if xlwt else "XLWT 1.3.0 required"},
         ]
 
     def fields_get(self, model):
