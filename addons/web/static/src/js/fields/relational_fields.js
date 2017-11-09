@@ -46,7 +46,7 @@ var M2ODialog = Dialog.extend({
                 click: function () {
                     if (this.$("input").val() !== ''){
                         this.trigger_up('quick_create', { value: this.$('input').val() });
-                        this.close();
+                        this.close(true);
                     } else {
                         this.$("input").focus();
                     }
@@ -71,12 +71,30 @@ var M2ODialog = Dialog.extend({
         this.$("p").text(_.str.sprintf(_t("You are creating a new %s, are you sure it does not exist yet?"), this.name));
         this.$("input").val(this.value);
     },
+    /**
+     * @override
+     * @param {boolean} isSet
+     */
+    close: function (isSet) {
+        this.isSet = isSet;
+        this._super.apply(this, arguments);
+    },
+    /**
+     * @override
+     */
+    destroy: function () {
+        if (!this.isSet) {
+            this.trigger_up('closed_unset');
+        }
+        this._super.apply(this, arguments);
+    },
 });
 
 var FieldMany2One = AbstractField.extend({
     supportedFieldTypes: ['many2one'],
     template: 'FieldMany2One',
     custom_events: _.extend({}, AbstractField.prototype.custom_events, {
+        'closed_unset': '_onDialogClosedUnset',
         'quick_create': '_onQuickCreate',
         'search_create_popup': '_onSearchCreatePopup',
     }),
@@ -451,6 +469,16 @@ var FieldMany2One = AbstractField.extend({
                 });
         }
     },
+
+    /**
+     * Reset the input as dialog has been closed without m2o creation.
+     *
+     * @private
+     */
+    _onDialogClosedUnset: function () {
+        this.floating = false;
+        this._render();
+    },
     /**
      * @private
      */
@@ -534,14 +562,17 @@ var FieldMany2One = AbstractField.extend({
      * start/end of the input element. Stops any navigation move event if the
      * user is selecting text.
      *
-     * TODO this is a duplicate of InputField._onNavigationMove, maybe this
-     * should be done in a mixin or, better, the m2o field should be an
-     * InputField (but this requires some refactoring).
-     *
      * @private
      * @param {OdooEvent} ev
      */
-    _onNavigationMove: basicFields.InputField.prototype._onNavigationMove,
+    _onNavigationMove: function (ev) {
+        // TODO Maybe this should be done in a mixin or, better, the m2o field
+        // should be an InputField (but this requires some refactoring).
+        basicFields.InputField.prototype._onNavigationMove.apply(this, arguments);
+        if (this.mode === 'edit' && $(this.$input.autocomplete('widget')).is(':visible')) {
+            ev.stopPropagation();
+        }
+    },
     /**
      * @private
      * @param {OdooEvent} event

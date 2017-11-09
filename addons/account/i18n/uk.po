@@ -15,13 +15,14 @@
 # Евгений Жердев <e.v.zherdev@gmail.com>, 2017
 # Аліна Семенюк <alinasemeniuk1@gmail.com>, 2017
 # Olha Koshelieva <olha.koshelieva@gmail.com>, 2017
+# Dmytro Kriesovich <dimscoffer@bigmir.net>, 2017
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 10.saas~18\n"
+"Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-02 11:26+0000\n"
-"PO-Revision-Date: 2017-10-02 11:26+0000\n"
-"Last-Translator: Olha Koshelieva <olha.koshelieva@gmail.com>, 2017\n"
+"POT-Creation-Date: 2017-10-24 08:59+0000\n"
+"PO-Revision-Date: 2017-10-24 08:59+0000\n"
+"Last-Translator: Dmytro Kriesovich <dimscoffer@bigmir.net>, 2017\n"
 "Language-Team: Ukrainian (https://www.transifex.com/odoo/teams/41243/uk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -204,12 +205,12 @@ msgid ""
 "<div>\n"
 "% set record = ctx.get('record')\n"
 "% set company = record and record.company_id or user.company_id\n"
-"<table border=\"0\" width=\"100%\" cellpadding=\"0\" bgcolor=\"#ededed\" style=\"padding: 20px; background-color: #ededed\" summary=\"o_mail_notification\">\n"
+"<table border=\"0\" width=\"100%\" cellpadding=\"0\" bgcolor=\"#ededed\" style=\"padding: 20px; background-color: #ededed; border-collapse:separate;\" summary=\"o_mail_notification\">\n"
 "<tbody>\n"
 "    <!-- HEADER -->\n"
 "    <tr>\n"
 "        <td align=\"center\" style=\"min-width: 590px;\">\n"
-"            <table width=\"590\" border=\"0\" cellpadding=\"0\" bgcolor=\"#875A7B\" style=\"min-width: 590px; background-color: rgb(135,90,123); padding: 20px;\">\n"
+"            <table width=\"590\" border=\"0\" cellpadding=\"0\" bgcolor=\"#875A7B\" style=\"min-width: 590px; background-color: rgb(135,90,123); padding: 20px; border-collapse:separate;\">\n"
 "                <tr>\n"
 "                    <td valign=\"middle\">\n"
 "                        <span style=\"font-size:20px; color:white; font-weight: bold;\">\n"
@@ -226,7 +227,7 @@ msgid ""
 "  <!-- CONTENT -->\n"
 "  <tr>\n"
 "        <td align=\"center\" style=\"min-width: 590px;\">\n"
-"            <table width=\"590\" border=\"0\" cellpadding=\"0\" bgcolor=\"#ffffff\" style=\"min-width: 590px; background-color: rgb(255, 255, 255); padding: 20px;\">\n"
+"            <table width=\"590\" border=\"0\" cellpadding=\"0\" bgcolor=\"#ffffff\" style=\"min-width: 590px; background-color: rgb(255, 255, 255); padding: 20px; border-collapse:separate;\">\n"
 "                <tbody>\n"
 "                    <td valign=\"top\" style=\"font-family:Arial,Helvetica,sans-serif; color: #555; font-size: 14px;\">\n"
 "                        ${object.body | safe}\n"
@@ -238,7 +239,7 @@ msgid ""
 "    <!-- FOOTER -->\n"
 "    <tr>\n"
 "        <td align=\"center\" style=\"min-width: 590px;\">\n"
-"            <table width=\"590\" border=\"0\" cellpadding=\"0\" bgcolor=\"#875A7B\" style=\"min-width: 590px; background-color: rgb(135,90,123); padding: 20px;\">\n"
+"            <table width=\"590\" border=\"0\" cellpadding=\"0\" bgcolor=\"#875A7B\" style=\"min-width: 590px; background-color: rgb(135,90,123); padding: 20px; border-collapse:separate;\">\n"
 "                <tr>\n"
 "                    <td valign=\"middle\" align=\"left\" style=\"color: #fff; padding-top: 10px; padding-bottom: 10px; font-size: 12px;\">\n"
 "                        ${company.name}<br/>\n"
@@ -749,12 +750,12 @@ msgstr "<strong>Витрати</strong>"
 #. module: account
 #: model:ir.ui.view,arch_db:account.setup_financial_year_opening_form
 msgid "<strong>Fiscal Year End</strong>"
-msgstr ""
+msgstr "Кінець Фіскального (податкового) Року"
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.report_tax
 msgid "<strong>From</strong>"
-msgstr ""
+msgstr "Від"
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.portal_invoice_report
@@ -822,12 +823,12 @@ msgstr ""
 #. module: account
 #: model:ir.ui.view,arch_db:account.report_payment_receipt
 msgid "<strong>Payment Date: </strong>"
-msgstr ""
+msgstr "Дата платежу:"
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.report_payment_receipt
 msgid "<strong>Payment Method: </strong>"
-msgstr ""
+msgstr "Спосіб платежу:"
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.report_agedpartnerbalance
@@ -1027,13 +1028,13 @@ msgid "A Cash transaction can't have a 0 amount."
 msgstr ""
 
 #. module: account
-#: code:addons/account/models/account_invoice.py:1728
+#: code:addons/account/models/account_invoice.py:1731
 #, python-format
 msgid "A Payment Terms should have its last line of type Balance."
 msgstr ""
 
 #. module: account
-#: code:addons/account/models/account_invoice.py:1731
+#: code:addons/account/models/account_invoice.py:1734
 #, python-format
 msgid "A Payment Terms should have only one line of type Balance."
 msgstr ""
@@ -1102,7 +1103,7 @@ msgstr ""
 "Оберіть, як ви створюватимете свої товари:"
 
 #. module: account
-#: code:addons/account/models/account_move.py:861
+#: code:addons/account/models/account_move.py:881
 #, python-format
 msgid "A reconciliation must involve at least 2 move lines."
 msgstr "Узгодження включає в себе як мінімум 2 рядки проведення."
@@ -1115,14 +1116,14 @@ msgid ""
 msgstr ""
 
 #. module: account
-#: code:addons/account/models/account_bank_statement.py:876
-#: code:addons/account/models/account_bank_statement.py:879
+#: code:addons/account/models/account_bank_statement.py:880
+#: code:addons/account/models/account_bank_statement.py:883
 #, python-format
 msgid "A selected move line was already reconciled."
 msgstr "Обраний рядок проведень було автоматично узгоджено"
 
 #. module: account
-#: code:addons/account/models/account_bank_statement.py:887
+#: code:addons/account/models/account_bank_statement.py:891
 #, python-format
 msgid "A selected statement line was already reconciled with an account move."
 msgstr ""
@@ -1149,8 +1150,8 @@ msgstr "Попередження можна встановити на партн
 
 #. module: account
 #. openerp-web
-#: code:addons/account/static/src/js/reconciliation/reconciliation_renderer.js:494
-#: code:addons/account/static/src/js/reconciliation/reconciliation_renderer.js:496
+#: code:addons/account/static/src/js/reconciliation/reconciliation_renderer.js:501
+#: code:addons/account/static/src/js/reconciliation/reconciliation_renderer.js:503
 #: code:addons/account/static/src/xml/account_reconciliation.xml:170
 #: code:addons/account/static/src/xml/account_reconciliation.xml:228
 #: code:addons/account/static/src/xml/account_reconciliation.xml:253
@@ -1326,12 +1327,6 @@ msgid "Account Reports"
 msgstr "Звіти по обліку"
 
 #. module: account
-#: model:ir.ui.menu,name:account.menu_account_report_tree_hierarchy
-#: model:ir.ui.view,arch_db:account.view_account_report_tree_hierarchy
-msgid "Account Reports Hierarchy"
-msgstr "Ієрархія звітів по обліку"
-
-#. module: account
 #: model:ir.model,name:account.model_account_cash_rounding
 msgid "Account Rounding"
 msgstr ""
@@ -1444,12 +1439,12 @@ msgstr "Скасувати узгодження по рахунку"
 #. module: account
 #: model:ir.ui.view,arch_db:account.view_account_group_search
 msgid "Account group"
-msgstr ""
+msgstr "Група рахунків"
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.view_account_group_search
 msgid "Account groups"
-msgstr ""
+msgstr "Групи рахуків"
 
 #. module: account
 #: model:ir.model,name:account.model_account_move_line_reconcile
@@ -1521,6 +1516,11 @@ msgstr ""
 #: model:ir.ui.menu,name:account.account_account_menu
 msgid "Accounting"
 msgstr "Бухоблік"
+
+#. module: account
+#: model:ir.ui.view,arch_db:account.view_account_journal_form
+msgid "Accounting App Options"
+msgstr ""
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.view_wizard_multi_chart
@@ -1884,6 +1884,7 @@ msgstr "дозволяє вам використовувати аналітич�
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line_amount
 #: model:ir.model.fields,field_description:account.field_account_invoice_line_price_subtotal
 #: model:ir.model.fields,field_description:account.field_account_invoice_tax_amount
+#: model:ir.model.fields,field_description:account.field_account_invoice_tax_amount_total
 #: model:ir.model.fields,field_description:account.field_account_move_amount
 #: model:ir.model.fields,field_description:account.field_account_partial_reconcile_amount
 #: model:ir.model.fields,field_description:account.field_account_reconcile_model_amount
@@ -1942,11 +1943,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:account.field_account_invoice_line_price_subtotal_signed
 msgid "Amount Signed"
 msgstr "Виписана сума"
-
-#. module: account
-#: model:ir.model.fields,field_description:account.field_account_invoice_tax_amount_total
-msgid "Amount Total"
-msgstr ""
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_reconcile_model_amount_type
@@ -3321,11 +3317,6 @@ msgid "Configure"
 msgstr "Налаштування"
 
 #. module: account
-#: model:ir.actions.act_window,name:account.action_account_config
-msgid "Configure Accounting"
-msgstr "Налаштувати бухоблік"
-
-#. module: account
 #: model:ir.ui.view,arch_db:account.view_account_bnk_stmt_cashbox
 #: model:ir.ui.view,arch_db:account.view_account_bnk_stmt_check
 #: model:ir.ui.view,arch_db:account.view_account_payment_form
@@ -3770,8 +3761,8 @@ msgid "Currency as per company's country."
 msgstr "Валюта за країною компанії."
 
 #. module: account
-#: code:addons/account/models/account_move.py:1569
-#: code:addons/account/models/account_move.py:1581
+#: code:addons/account/models/account_move.py:1589
+#: code:addons/account/models/account_move.py:1601
 #, python-format
 msgid "Currency exchange rate difference"
 msgstr "Курсова різниця"
@@ -4427,7 +4418,7 @@ msgid "EXCH"
 msgstr "ВАЛТ"
 
 #. module: account
-#: code:addons/account/models/account_move.py:1021
+#: code:addons/account/models/account_move.py:1041
 #, python-format
 msgid "Either pass both debit and credit or none."
 msgstr "Пройде як дебет, так і кредит або ні."
@@ -4499,7 +4490,7 @@ msgid "Entries Sorted by"
 msgstr "Записи сортовані за"
 
 #. module: account
-#: code:addons/account/models/account_move.py:986
+#: code:addons/account/models/account_move.py:1006
 #, python-format
 msgid "Entries are not of the same account!"
 msgstr "Записи не належать до спільного рахунку!"
@@ -4537,7 +4528,7 @@ msgid "Equity"
 msgstr "Капітал"
 
 #. module: account
-#: code:addons/account/models/res_config_settings.py:132
+#: code:addons/account/models/res_config_settings.py:131
 #, python-format
 msgid "Error!"
 msgstr "Помилка!"
@@ -4669,11 +4660,6 @@ msgstr "Стиль фінансового звіту"
 #: model:ir.ui.menu,name:account.menu_account_reports
 msgid "Financial Reports"
 msgstr "Фінансові звіти"
-
-#. module: account
-#: model:ir.actions.act_window,name:account.action_account_report_tree_hierarchy
-msgid "Financial Reports Hierarchy"
-msgstr "Ієрархія фінансових звітів"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_res_company_account_setup_fy_data_done
@@ -5503,7 +5489,7 @@ msgstr "Рахунок доходів у шаблоні товару"
 
 #. module: account
 #. openerp-web
-#: code:addons/account/static/src/js/reconciliation/reconciliation_model.js:628
+#: code:addons/account/static/src/js/reconciliation/reconciliation_model.js:672
 #, python-format
 msgid "Incorrect Operation"
 msgstr "Невірна операція"
@@ -5730,7 +5716,7 @@ msgid "Invoice paid"
 msgstr "Рахунок оплачений"
 
 #. module: account
-#: code:addons/account/models/account_invoice.py:1822
+#: code:addons/account/models/account_invoice.py:1825
 #, python-format
 msgid "Invoice sent"
 msgstr "Рахунок відправлено"
@@ -5866,7 +5852,7 @@ msgid "It indicates that the invoice has been sent."
 msgstr "Це означає, що рахунок був надісланий."
 
 #. module: account
-#: code:addons/account/models/account_move.py:1019
+#: code:addons/account/models/account_move.py:1039
 #, python-format
 msgid ""
 "It is mandatory to specify an account and a journal to create a write-off."
@@ -6044,7 +6030,7 @@ msgstr "Проведення"
 
 #. module: account
 #. openerp-web
-#: code:addons/account/static/src/js/reconciliation/reconciliation_action.js:304
+#: code:addons/account/static/src/js/reconciliation/reconciliation_action.js:323
 #: model:ir.actions.client,name:account.action_manual_reconcile
 #, python-format
 msgid "Journal Items to Reconcile"
@@ -6148,7 +6134,7 @@ msgstr ""
 
 #. module: account
 #. openerp-web
-#: code:addons/account/static/src/js/reconciliation/reconciliation_renderer.js:495
+#: code:addons/account/static/src/js/reconciliation/reconciliation_renderer.js:502
 #: code:addons/account/static/src/xml/account_reconciliation.xml:189
 #: code:addons/account/static/src/xml/account_reconciliation.xml:230
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line_name
@@ -6850,7 +6836,7 @@ msgid "Move Reconciled"
 msgstr ""
 
 #. module: account
-#: code:addons/account/models/account_move.py:1322
+#: code:addons/account/models/account_move.py:1342
 #, python-format
 msgid "Move name (id): %s (%s)"
 msgstr "Перемістити ім'я (id): %s(%s)"
@@ -6944,7 +6930,7 @@ msgid "New Transactions"
 msgstr "Нові операції"
 
 #. module: account
-#: code:addons/account/models/account_move.py:1299
+#: code:addons/account/models/account_move.py:1319
 #, python-format
 msgid "New expected payment date: "
 msgstr "Нова очікувана дата оплати:"
@@ -7315,6 +7301,7 @@ msgstr "Відкрити"
 
 #. module: account
 #. openerp-web
+#: code:addons/account/static/src/js/reconciliation/reconciliation_model.js:636
 #: code:addons/account/static/src/xml/account_reconciliation.xml:131
 #, python-format
 msgid "Open balance"
@@ -7387,7 +7374,7 @@ msgid "Operation Templates"
 msgstr "Шаблони операцій"
 
 #. module: account
-#: code:addons/account/models/account_bank_statement.py:1009
+#: code:addons/account/models/account_bank_statement.py:1013
 #, python-format
 msgid ""
 "Operation not allowed. Since your statement line already received a number, "
@@ -7886,7 +7873,7 @@ msgid "Percentage of balance"
 msgstr "Відсоток від балансу"
 
 #. module: account
-#: code:addons/account/models/account_invoice.py:1804
+#: code:addons/account/models/account_invoice.py:1807
 #, python-format
 msgid "Percentages for Payment Terms Line must be between 0 and 100."
 msgstr "Відсоток для термінів оплати Значення повинно бути від 0 до 100."
@@ -9034,6 +9021,7 @@ msgid "Set to Draft"
 msgstr "Зробити чернеткою"
 
 #. module: account
+#: model:ir.actions.act_window,name:account.action_account_config
 #: model:ir.ui.menu,name:account.menu_account_config
 #: model:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
 msgid "Settings"
@@ -9464,7 +9452,7 @@ msgstr "Застосувати податки"
 #. module: account
 #: model:ir.ui.view,arch_db:account.res_config_settings_view_form
 msgid "TaxCloud"
-msgstr ""
+msgstr "TaxCloud"
 
 #. module: account
 #: selection:account.account.tag,applicability:0
@@ -9758,13 +9746,13 @@ msgstr ""
 "оплати кредитними картками."
 
 #. module: account
-#: code:addons/account/models/account_move.py:1169
+#: code:addons/account/models/account_move.py:1189
 #, python-format
 msgid "The account %s (%s) is deprecated !"
 msgstr ""
 
 #. module: account
-#: code:addons/account/models/account_move.py:988
+#: code:addons/account/models/account_move.py:1008
 #, python-format
 msgid "The account %s (%s) is not marked as reconciliable !"
 msgstr "Обліковий запис %s(%s) не позначено як узгоджений!"
@@ -10043,7 +10031,7 @@ msgstr ""
 "рахунків та платежів."
 
 #. module: account
-#: code:addons/account/models/account_move.py:990
+#: code:addons/account/models/account_move.py:1010
 #, python-format
 msgid ""
 "The partner has to be the same on all lines for receivable and payable "
@@ -10095,7 +10083,7 @@ msgstr ""
 "додаткову валюту. Ви повинні вилучити додаткову валюту в обліковому записі."
 
 #. module: account
-#: code:addons/account/models/account_invoice.py:1641
+#: code:addons/account/models/account_invoice.py:1644
 #, python-format
 msgid ""
 "The selected unit of measure is not compatible with the unit of measure of "
@@ -10153,7 +10141,7 @@ msgid "There is no journal items in draft state to post."
 msgstr "У публікації немає штатних журнальних статей."
 
 #. module: account
-#: code:addons/account/models/account_move.py:1694
+#: code:addons/account/models/account_move.py:1714
 #, python-format
 msgid ""
 "There is no tax cash basis journal defined for this company: \"%s\" \n"
@@ -10398,7 +10386,7 @@ msgstr ""
 
 #. module: account
 #. openerp-web
-#: code:addons/account/static/src/js/reconciliation/reconciliation_renderer.js:377
+#: code:addons/account/static/src/js/reconciliation/reconciliation_renderer.js:378
 #, python-format
 msgid ""
 "This move's amount is higher than the transaction's amount. Click to "
@@ -10557,7 +10545,7 @@ msgid "To pay"
 msgstr "Оплатити"
 
 #. module: account
-#: code:addons/account/models/account_move.py:984
+#: code:addons/account/models/account_move.py:1004
 #, python-format
 msgid "To reconcile the entries company should be the same for all entries!"
 msgstr ""
@@ -10774,6 +10762,14 @@ msgid "UP"
 msgstr ""
 
 #. module: account
+#: code:addons/account/models/account.py:944
+#, python-format
+msgid ""
+"Unable to mix any taxes being price included with taxes affecting the base "
+"amount but not included in price."
+msgstr ""
+
+#. module: account
 #: selection:account.journal,bank_statements_source:0
 msgid "Undefined Yet"
 msgstr ""
@@ -10786,7 +10782,7 @@ msgstr "Нерозподілений прибуток/збиток"
 
 #. module: account
 #. openerp-web
-#: code:addons/account/static/src/js/reconciliation/reconciliation_renderer.js:374
+#: code:addons/account/static/src/js/reconciliation/reconciliation_renderer.js:375
 #, python-format
 msgid "Undo the partial reconciliation."
 msgstr "Скасувати часткове узгодження."
@@ -11200,7 +11196,7 @@ msgstr "Попередження в рахунку-фактурі"
 
 #. module: account
 #: code:addons/account/models/account_invoice.py:1581
-#: code:addons/account/models/account_invoice.py:1640
+#: code:addons/account/models/account_invoice.py:1643
 #, python-format
 msgid "Warning!"
 msgstr "Увага!"
@@ -11301,7 +11297,7 @@ msgid "Wizard for Tax Adjustments"
 msgstr "Майстер корегування податків"
 
 #. module: account
-#: code:addons/account/models/account_move.py:1025
+#: code:addons/account/models/account_move.py:1045
 #: model:ir.ui.view,arch_db:account.view_account_move_line_reconcile_full
 #, python-format
 msgid "Write-Off"
@@ -11333,7 +11329,7 @@ msgid "Wrong credit or debit value in accounting entry !"
 msgstr "Невідне значення кредиту чи дебету у записі!"
 
 #. module: account
-#: code:addons/account/models/account_move.py:982
+#: code:addons/account/models/account_move.py:1002
 #, python-format
 msgid "You are trying to reconcile some entries that are already reconciled!"
 msgstr "Ви намагаєтесь узгодити записи, що вже були узгоджені!"
@@ -11379,7 +11375,7 @@ msgid "You can not delete a payment that is already posted"
 msgstr "Ви не можете вилучити платіж, який має проведення"
 
 #. module: account
-#: code:addons/account/models/account_invoice.py:1662
+#: code:addons/account/models/account_invoice.py:1665
 #, python-format
 msgid "You can only delete an invoice line if the invoice is in draft state."
 msgstr ""
@@ -11482,7 +11478,7 @@ msgid ""
 msgstr ""
 
 #. module: account
-#: code:addons/account/models/res_config_settings.py:133
+#: code:addons/account/models/res_config_settings.py:132
 #, python-format
 msgid ""
 "You cannot disable this setting because some of your taxes are cash basis. "
@@ -11497,7 +11493,7 @@ msgstr ""
 "Ви не можете це зробити в обліковому записі, що містить елементи журналу."
 
 #. module: account
-#: code:addons/account/models/account_move.py:1324
+#: code:addons/account/models/account_move.py:1344
 #, python-format
 msgid ""
 "You cannot do this modification on a posted journal entry, you can just change some non legal fields. You must revert the journal entry to cancel it.\n"
@@ -11507,7 +11503,7 @@ msgstr ""
 "%s"
 
 #. module: account
-#: code:addons/account/models/account_move.py:1326
+#: code:addons/account/models/account_move.py:1346
 #, python-format
 msgid ""
 "You cannot do this modification on a reconciled entry. You can just change some non legal fields or you must unreconcile first.\n"
@@ -11534,7 +11530,7 @@ msgstr ""
 
 #. module: account
 #. openerp-web
-#: code:addons/account/static/src/js/reconciliation/reconciliation_model.js:629
+#: code:addons/account/static/src/js/reconciliation/reconciliation_model.js:673
 #, python-format
 msgid "You cannot mix items from receivable and payable accounts."
 msgstr ""
@@ -11579,13 +11575,13 @@ msgstr ""
 "клієнта або постачальника."
 
 #. module: account
-#: code:addons/account/models/account_move.py:1290
+#: code:addons/account/models/account_move.py:1310
 #, python-format
 msgid "You cannot use deprecated account."
 msgstr "Ви не можете використовувати застарілий рахунок"
 
 #. module: account
-#: code:addons/account/models/account_move.py:1210
+#: code:addons/account/models/account_move.py:1230
 #, python-format
 msgid ""
 "You cannot use this general account in this journal, check the tab 'Entry "
@@ -11654,7 +11650,7 @@ msgid "You reconciled"
 msgstr ""
 
 #. module: account
-#: code:addons/account/models/account_move.py:1835
+#: code:addons/account/models/account_move.py:1855
 #, python-format
 msgid ""
 "You should configure the 'Exchange Rate Journal' in the accounting settings,"
@@ -11666,7 +11662,7 @@ msgstr ""
 "різниці між курсами обміну."
 
 #. module: account
-#: code:addons/account/models/account_move.py:1837
+#: code:addons/account/models/account_move.py:1857
 #, python-format
 msgid ""
 "You should configure the 'Gain Exchange Rate Account' in the accounting "
@@ -11678,7 +11674,7 @@ msgstr ""
 "бухгалтерський облік, що стосуються різниці між курсами обміну."
 
 #. module: account
-#: code:addons/account/models/account_move.py:1839
+#: code:addons/account/models/account_move.py:1859
 #, python-format
 msgid ""
 "You should configure the 'Loss Exchange Rate Account' in the accounting "

@@ -572,6 +572,38 @@ QUnit.module('relational_fields', {
         form.destroy();
     });
 
+    QUnit.test('many2one field and list navigation', function (assert) {
+        assert.expect(3);
+
+        var list = createView({
+            View: ListView,
+            model: 'partner',
+            data: this.data,
+            arch: '<tree editable="bottom"><field name="trululu"/></tree>',
+        });
+
+        // edit first input, to trigger autocomplete
+        list.$('.o_data_row .o_data_cell').first().click();
+        list.$('.o_data_cell input').val('').trigger('input');
+
+        // press keydown, to select first choice
+        list.$('.o_data_cell input').focus().trigger($.Event('keydown', {
+            which: $.ui.keyCode.DOWN,
+            keyCode: $.ui.keyCode.DOWN,
+        }));
+
+        // we now check that the dropdown is open (and that the focus did not go
+        // to the next line)
+        var $dropdown = list.$('.o_field_many2one input').autocomplete('widget');
+        assert.ok($dropdown.is(':visible'), "dropdown should be visible");
+        assert.ok(list.$('.o_data_row:eq(0)').hasClass('o_selected_row'),
+            'first data row should still be selected');
+        assert.ok(!list.$('.o_data_row:eq(1)').hasClass('o_selected_row'),
+            'second data row should not be selected');
+
+        list.destroy();
+    });
+
     QUnit.test('standalone many2one field', function (assert) {
         assert.expect(3);
         var done = assert.async();
@@ -1365,7 +1397,7 @@ QUnit.module('relational_fields', {
     });
 
     QUnit.test('slow create on a many2one', function (assert) {
-        assert.expect(1);
+        assert.expect(7);
 
         var form = createView({
             View: FormView,
@@ -1385,12 +1417,34 @@ QUnit.module('relational_fields', {
             },
         });
 
+        // cancel the many2one creation with Cancel button
+        form.$('.o_field_many2one input').focus().val('new product').trigger('keyup').trigger('blur');
+        assert.strictEqual($('.modal').length, 1, "there should be one opened modal");
+        $('.modal .modal-footer .btn:contains(Cancel)').click();
+        assert.strictEqual(form.$('.o_field_many2one input').val(), "",
+            'the many2one should not set a value as its creation has been cancelled (with Cancel button)');
+
+        // cancel the many2one creation with Close button
+        form.$('.o_field_many2one input').focus().val('new product').trigger('keyup').trigger('blur');
+        $('.modal .modal-header button').click();
+        assert.strictEqual(form.$('.o_field_many2one input').val(), "",
+            'the many2one should not set a value as its creation has been cancelled (with Close button)');
+
+        // select a new value then cancel the creation of the new one --> restore the previous
+        form.$('.o_field_many2one input').click();
+        form.$('.o_field_many2one input').autocomplete('widget').find('a').first().click();
+        assert.strictEqual(form.$('input').val(), "xphone", "should have selected xphone");
+        form.$('.o_field_many2one input').focus().val('new product').trigger('keyup').trigger('blur');
+        assert.strictEqual($('.modal').length, 1, "there should be one opened modal");
+        $('.modal .modal-footer .btn:contains(Cancel)').click();
+        assert.strictEqual(form.$('.o_field_many2one input').val(), "xphone",
+            'should have restored the many2one with its previous selected value (xphone)');
+
+        // confirm the many2one creation
         form.$('.o_field_many2one input').focus();
-        form.$('.o_field_many2one input').val('new partner').trigger('keyup').trigger('focusout');
-
-        $('.modal .modal-footer .btn-primary').first().click();
-
-        assert.strictEqual($('.modal:visible:last .o_form_view').length, 1,
+        form.$('.o_field_many2one input').val('new partner').trigger('keyup').trigger('blur');
+        $('.modal .modal-footer .btn-primary').click();
+        assert.strictEqual($('.modal .o_form_view').length, 1,
             'a new modal should be opened and contain a form view');
 
         form.destroy();

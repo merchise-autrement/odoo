@@ -4,7 +4,7 @@ import time
 import math
 
 from odoo.osv import expression
-from odoo.tools.float_utils import float_round as round
+from odoo.tools.float_utils import float_round as round, float_is_zero as is_zero
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from odoo.exceptions import UserError, ValidationError
 from odoo import api, fields, models, _
@@ -52,7 +52,7 @@ class AccountAccount(models.Model):
     def _check_reconcile(self):
         for account in self:
             if account.internal_type in ('receivable', 'payable') and account.reconcile == False:
-                raise ValidationError(_('You cannot have a receivable/payable account that is not reconciliable. (account code: %s)') % account.code)
+                raise ValidationError(_('You cannot have a receivable/payable account that is not reconcilable. (account code: %s)') % account.code)
 
     name = fields.Char(required=True, index=True)
     currency_id = fields.Many2one('res.currency', string='Account Currency',
@@ -107,7 +107,7 @@ class AccountAccount(models.Model):
     def _set_opening_debit_credit(self, amount, field):
         """ Generic function called by both opening_debit and opening_credit's
         inverse function. 'Amount' parameter is the value to be set, and field
-        either 'debit' or 'credit', depending on wich one of these two fields
+        either 'debit' or 'credit', depending on which one of these two fields
         got assigned.
         """
         opening_move = self.company_id.account_opening_move_id
@@ -215,7 +215,7 @@ class AccountAccount(models.Model):
     def load(self, fields, data):
         """ Overridden for better performances when importing a list of account
         with opening debit/credit. In that case, the auto-balance is postpone
-        untill the whole file has been imported.
+        until the whole file has been imported.
         """
         rslt = super(AccountAccount, self).load(fields, data)
 
@@ -227,7 +227,7 @@ class AccountAccount(models.Model):
 
     @api.multi
     def write(self, vals):
-        # Dont allow changing the company_id when account_move_line already exist
+        # Do not allow changing the company_id when account_move_line already exist
         if vals.get('company_id', False):
             move_lines = self.env['account.move.line'].search([('account_id', 'in', self.ids)], limit=1)
             for account in self:
@@ -364,7 +364,7 @@ class AccountJournal(models.Model):
         domain=[('payment_type', '=', 'inbound')], string='Debit Methods', default=lambda self: self._default_inbound_payment_methods(),
         help="Manual: Get paid by cash, check or any other method outside of Odoo.\n"\
              "Electronic: Get paid automatically through a payment acquirer by requesting a transaction on a card saved by the customer when buying or subscribing online (payment token).\n"\
-             "Batch Deposit: Encash several customer checks at once by generating a batch deposit to submit to your bank. When encoding the bank statement in Odoo,you are suggested to reconcile the transaction with the batch deposit. Enable this option from the settings.")
+             "Batch Deposit: Encase several customer checks at once by generating a batch deposit to submit to your bank. When encoding the bank statement in Odoo,you are suggested to reconcile the transaction with the batch deposit. Enable this option from the settings.")
     outbound_payment_method_ids = fields.Many2many('account.payment.method', 'account_journal_outbound_payment_method_rel', 'journal_id', 'outbound_payment_method',
         domain=[('payment_type', '=', 'outbound')], string='Payment Methods', default=lambda self: self._default_outbound_payment_methods(),
         help="Manual:Pay bill by cash or any other method outside of Odoo.\n"\
@@ -558,7 +558,7 @@ class AccountJournal(models.Model):
 
         :param name: name of the bank account
         :param company: company for which the wizard is running
-        :param currency_id: ID of the currency in wich is the bank account
+        :param currency_id: ID of the currency in which is the bank account
         :param type: either 'cash' or 'bank'
         :return: mapping of field names and values
         :rtype: dict
@@ -764,23 +764,11 @@ class AccountTax(models.Model):
         'account.account',
         string='Tax Received Account',
         domain=[('deprecated', '=', False)],
-        help='Account used as counterpart for the journal entry, for taxes exigible based on payments.')
+        help='Account used as counterpart for the journal entry, for taxes eligible based on payments.')
 
     _sql_constraints = [
         ('name_company_uniq', 'unique(name, company_id, type_tax_use)', 'Tax names must be unique !'),
     ]
-
-    @api.multi
-    def unlink(self):
-        company_id = self.env.user.company_id.id
-        IrDefault = self.env['ir.default']
-        taxes = self.browse(IrDefault.get('product.template', 'taxes_id', company_id=company_id) or [])
-        if self & taxes:
-            IrDefault.sudo().set('product.template', 'taxes_id', (taxes - self).ids, company_id=company_id)
-        taxes = self.browse(IrDefault.get('product.template', 'supplier_taxes_id', company_id=company_id) or [])
-        if self & taxes:
-            IrDefault.sudo().set('product.template', 'supplier_taxes_id', (taxes - self).ids, company_id=company_id)
-        return super(AccountTax, self).unlink()
 
     @api.one
     @api.constrains('children_tax_ids', 'type_tax_use')
@@ -796,7 +784,7 @@ class AccountTax(models.Model):
 
     @api.model
     def name_search(self, name, args=None, operator='ilike', limit=80):
-        """ Returns a list of tupples containing id, name, as internally it is called {def name_get}
+        """ Returns a list of tuples containing id, name, as internally it is called {def name_get}
             result format: {[(id, name), (id, name), ...]}
         """
         args = args or []
@@ -882,7 +870,7 @@ class AccountTax(models.Model):
 
     @api.multi
     def compute_all(self, price_unit, currency=None, quantity=1.0, product=None, partner=None):
-        """ Returns all information required to apply taxes (in self + their children in case of a tax goup).
+        """ Returns all information required to apply taxes (in self + their children in case of a tax group).
             We consider the sequence of the parent for group of taxes.
                 Eg. considering letters as taxes and alphabetic order as sequence :
                 [G, B([A, D, F]), E, C] will be computed as [A, D, F, C, E, G]
@@ -985,6 +973,23 @@ class AccountTax(models.Model):
         # ||  ...  |   ..   |    ..    |
         #    ----------------------------
 
+        base = round(price_unit * quantity, prec)
+
+        # Keep track of subsequent recomputed bases in order to avoid some rounding issues.
+        # For example, 399.99 computed with a tax 20% price_include leads to
+        # base = 399.99 / 1.2 = 333.32500000000005
+        # tax_amount = base * 0.2 = 66.665
+        # round(base) + round(tax_amount) = 333.33 + 66.67 = 400.0 (!= 399.99: WRONG)
+        #
+        # To fix such issues, base_gaps will contains amount between two bases.
+        # In our example, the gap between 333.32500000000005 and 399.99 is 66.66499999999996
+        #
+        # Then, when processing the tax and because 66.665 - 66.66499999999996 is close to zero,
+        # the real gap is returned and so:
+        # tax_amount = 66.66499999999996
+        # round(base) + round(tax_amount) = 333.33 + 66.66 = 399.99 (CORRECT)
+        base_gaps = []
+
         def recompute_base(base_amount, fixed_amount, percent_amount):
             # Recompute the new base amount based on included fixed/percent amount and the current base amount.
             # Example:
@@ -998,9 +1003,9 @@ class AccountTax(models.Model):
             # (145 - 15) / (1.0 + ((10 + 20) / 100.0)) = 130 / 1.3 = 100
             if fixed_amount == 0.0 and percent_amount == 0.0:
                 return base_amount
-            return (base_amount - fixed_amount) / (1.0 + percent_amount / 100.0)
-
-        base = round(price_unit * quantity, prec)
+            new_base = (base_amount - fixed_amount) / (1.0 + percent_amount / 100.0)
+            base_gaps.append(base_amount - new_base)
+            return new_base
 
         # For the computation of move lines, we could have a negative base value.
         # In this case, compute all with positive values and negative them at the end.
@@ -1018,7 +1023,7 @@ class AccountTax(models.Model):
                 incl_fixed_amount = incl_percent_amount = 0
             if self._context.get('force_price_include', tax.price_include):
                 if tax.amount_type == 'fixed':
-                    incl_fixed_amount += tax.amount
+                    incl_fixed_amount += quantity * tax.amount
                 elif tax.amount_type == 'percent':
                     incl_percent_amount += tax.amount
         # Start the computation of accumulated amounts at the total_excluded value.
@@ -1030,10 +1035,10 @@ class AccountTax(models.Model):
         # ||  tax_1 |   OK   |   XXXX   |
         # ||  tax_2 |  XXXX  |   XXXX   |
         # ||  tax_3 |  XXXX  |   XXXX   |
-        # \/  ...  |   ..   |    ..    |
+        # \/  ...   |   ..   |    ..    |
         #     ----------------------------
-        taxes_vals = []
-        for tax in taxes:
+
+        def compute_amount(tax):
             # Compute the amount of the tax but don't deal with the price_include because it's already
             # took into account on the base amount except for 'division' tax:
             # (tax.amount_type == 'percent' && not tax.price_include)
@@ -1041,7 +1046,29 @@ class AccountTax(models.Model):
             # N.B: don't use the with_context if force_price_include already False in context
             if 'force_price_include' not in self._context or self._context['force_price_include']:
                 tax = tax.with_context(force_price_include=False)
-            tax_amount = tax._compute_amount(base, price_unit, quantity, product, partner)
+
+            # In case of price_included tax, subtract the amount to the corresponding
+            # gap between the current base and the next one.
+            amount = tax._compute_amount(base, price_unit, quantity, product, partner)
+
+            if not tax.price_include or not base_gaps:
+                return amount
+
+            # Compute the new gap after subtracting of the tax amount
+            new_gap = base_gaps[-1] - amount
+
+            # If the newly computed gap is very close of zero, return the current gap to avoid
+            # rounding issues (see comments above base_gaps).
+            if is_zero(new_gap, prec):
+                return base_gaps.pop()
+
+            # Update the current gap with the new one
+            base_gaps[-1] = new_gap
+            return amount
+
+        taxes_vals = []
+        for tax in taxes:
+            tax_amount = compute_amount(tax)
             if not round_tax:
                 tax_amount = round(tax_amount, prec)
             else:
