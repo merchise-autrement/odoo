@@ -19,7 +19,6 @@ from . import assertion_report, pycompat
 from .config import config
 from .misc import file_open, unquote, ustr, SKIPPED_ELEMENT_TYPES
 from .translate import _
-from .yaml_import import convert_yaml_import
 from odoo import SUPERUSER_ID
 from odoo.tools import pycompat
 
@@ -787,8 +786,6 @@ def convert_file(cr, module, filename, idref, mode='update', noupdate=False, kin
             convert_csv_import(cr, module, pathname, fp.read(), idref, mode, noupdate)
         elif ext == '.sql':
             convert_sql_import(cr, fp)
-        elif ext == '.yml':
-            convert_yaml_import(cr, module, fp, kind, idref, mode, noupdate, report)
         elif ext == '.xml':
             convert_xml_import(cr, module, fp, idref, mode, noupdate, report)
         elif ext == '.js':

@@ -5521,6 +5521,65 @@ QUnit.module('relational_fields', {
         form.destroy();
     });
 
+    QUnit.test('many2many list in a one2many opened by a many2one', function (assert) {
+        assert.expect(1);
+
+        this.data.turtle.records[1].turtle_trululu = 2;
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form string="Partners">' +
+                    '<field name="turtles">' +
+                        '<tree editable="bottom">' +
+                            '<field name="turtle_trululu"/>' +
+                        '</tree>' +
+                    '</field>' +
+                '</form>',
+            res_id: 1,
+            archs: {
+                "partner,false,form": '<form string="P">' +
+                        '<field name="timmy"/>' +
+                    '</form>',
+                "partner_type,false,list": '<tree editable="bottom">' +
+                        '<field name="display_name"/>' +
+                    '</tree>',
+                "partner_type,false,search": '<search>' +
+                    '</search>',
+            },
+            viewOptions: {
+                mode: 'edit',
+            },
+            mockRPC: function (route, args) {
+                if (route === '/web/dataset/call_kw/partner/get_formview_id') {
+                    return $.when(false);
+                }
+                if (args.method === 'write') {
+                    assert.deepEqual(args.args[1].timmy, [[6,  false, [12]]],
+                        'should properly write ids')
+                }
+                return this._super.apply(this, arguments);
+            },
+        });
+
+        // edit the first partner in the one2many partner form view
+        form.$('.o_data_row:first td.o_data_cell').click();
+        // open form view for many2one
+        form.$('.o_external_button').click();
+
+        // click on add, to add a new partner in the m2m
+        $('.modal .o_field_x2many_list_row_add a').click();
+
+        // select the partner_type 'gold' (this closes the 2nd modal)
+        $('.modal td:contains(gold)').click();
+
+        // confirm the changes in the modal
+        $('.modal .modal-footer .btn-primary').click();
+
+        form.$buttons.find('.o_form_button_save').click();
+        form.destroy();
+    });
+
     QUnit.test('one2many (who contains display_name) with tree view and without form view', function (assert) {
         assert.expect(1);
 
@@ -8263,7 +8322,7 @@ QUnit.module('relational_fields', {
     });
 
     QUnit.test('fieldmany2many tags with color: rendering and edition', function (assert) {
-        assert.expect(20);
+        assert.expect(28);
 
         this.data.partner.records[0].timmy = [12, 14];
         this.data.partner_type.records.push({id: 13, display_name: "red", color: 8});
@@ -8331,6 +8390,31 @@ QUnit.module('relational_fields', {
 
         // save the record (should do the write RPC with the correct commands)
         form.$buttons.find('.o_form_button_save').click();
+
+        // checkbox 'Hide in Kanban'
+        $input = form.$('.o_field_many2manytags span[data-id=13]'); // selects 'red' tag
+        $input.click(); // opens the colorpicker dropdown
+        assert.ok(form.$('.o_field_many2manytags span[data-id=13] .o_colorpicker .o_checkbox'), "should have a checkbox in the colorpicker dropdown menu");
+        
+        $input.click();
+        var $checkBox = form.$('.o_field_many2manytags span[data-id=13] .o_colorpicker .o_checkbox input');
+        assert.notOk($checkBox.is(':checked'), "should have unticked checkbox in colorpicker dropdown menu");
+
+        $checkBox.mousedown();
+        $input = form.$('.o_field_many2manytags span[data-id=13]'); // refresh
+        assert.equal($input.data('color'), "0", "should become transparent when toggling on checkbox");
+
+        $input.click();
+        $checkBox = form.$('.o_field_many2manytags span[data-id=13] .o_colorpicker .o_checkbox input'); // refresh
+        assert.ok($checkBox.is(':checked'), "should have a ticked checkbox in colorpicker dropdown menu after mousedown");
+
+        $checkBox.mousedown();
+        $input = form.$('.o_field_many2manytags span[data-id=13]'); // refresh
+        assert.equal($input.data('color'), "8", "should revert to old color when toggling off checkbox");
+
+        $input.click();
+        $checkBox = form.$('.o_field_many2manytags span[data-id=13] .o_colorpicker .o_checkbox input'); // refresh
+        assert.notOk($checkBox.is(':checked'), "should have an unticked checkbox in colorpicker dropdown menu after 2nd click");
 
         // TODO: it would be nice to test the behaviors of the autocomplete dropdown
         // (like refining the research, creating new tags...), but ui-autocomplete
