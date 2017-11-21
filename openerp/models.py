@@ -65,6 +65,7 @@ from . import api
 from . import tools
 from .api import Environment
 from .exceptions import except_orm, AccessError, MissingError, ValidationError
+from .exceptions import ExpectedSingletonError
 from .osv import fields
 from .osv.query import Query
 from .tools import frozendict, lazy_property, ormcache
@@ -5331,12 +5332,7 @@ class BaseModel(object):
         """
         if len(self) == 1:
             return self
-        _logger.error(
-            'ValueError: expected singleton: %s',
-            self,
-            extra=dict(stack=True)
-        )
-        raise except_orm("ValueError", "Expected singleton: %s" % self)
+        raise ExpectedSingletonError("Expected singleton", self)
 
     def with_env(self, env):
         """ Returns a new version of this recordset attached to the provided

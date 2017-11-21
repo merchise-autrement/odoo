@@ -35,6 +35,11 @@ class except_orm(Exception):
         self.value = value
         super(except_orm, self).__init__(name, value)
 
+
+class ExpectedSingletonError(AssertionError):
+    pass
+
+
 class Warning(Exception):
     pass
 
