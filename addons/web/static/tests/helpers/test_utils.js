@@ -18,7 +18,6 @@ var dom = require('web.dom');
 var session = require('web.session');
 var MockServer = require('web.MockServer');
 var Widget = require('web.Widget');
-var view_registry = require('web.view_registry');
 
 var DebouncedField = basic_fields.DebouncedField;
 
@@ -100,8 +99,7 @@ function createView(params) {
  * @param {any[]} [params.domain] the initial domain for the view
  * @param {Object} [params.context] the initial context for the view
  * @param {Object} [params.debug=false] if true, the widget will be appended in
- *   the DOM. Also, the logLevel will be forced to 2 and the uncaught OdooEvent
- *   will be logged
+ *   the DOM. Also, RPCs and uncaught OdooEvent will be logged
  * @param {string[]} [params.groupBy] the initial groupBy for the view
  * @param {integer} [params.fieldDebounce=0] the debounce value to use for the
  *   duration of the test.
@@ -117,15 +115,8 @@ function createView(params) {
 function createAsyncView(params) {
     var $target = $('#qunit-fixture');
     var widget = new Widget();
-
-    // handle debug parameter: render target, log stuff, ...
     if (params.debug) {
         $target = $('body');
-        params.logLevel = 2;
-        observe(widget);
-        var separator = window.location.href.indexOf('?') !== -1 ? "&" : "?";
-        var url = window.location.href + separator + 'testId=' + QUnit.config.current.testId;
-        console.log('%c[debug] debug mode activated', 'color: blue; font-weight: bold;', url);
         $target.addClass('debug');
     }
 
@@ -145,13 +136,7 @@ function createAsyncView(params) {
 
     _.extend(viewOptions, params.viewOptions);
 
-
-    if (viewInfo.arch.attrs.js_class) {
-        var jsClsssView = view_registry.get(viewInfo.arch.attrs.js_class);
-        var view = new jsClsssView(viewInfo, viewOptions);
-    } else{
-        var view = new params.View(viewInfo, viewOptions);
-    }
+    var view = new params.View(viewInfo, viewOptions);
 
     // make sure images do not trigger a GET on the server
     $target.on('DOMNodeInserted.removeSRC', function () {
@@ -225,10 +210,8 @@ function createAsyncView(params) {
  *   date. It is given to the mock server.
  * @param {Object} params.data the data given to the created mock server. It is
  *   used to generate mock answers for every kind of routes supported by odoo
- * @param {number} [params.logLevel] the log level. If it is 0, no logging is
- *   done, if 1, some light logging is done, if 2, detailed logs will be
- *   displayed for all rpcs.  Most of the time, when working on a test, it is
- *   frequent to set this parameter to 2
+ * @param {number} [params.debug] if set to true, logs RPCs and uncaught Odoo
+ *   events.
  * @param {function} [params.mockRPC] a function that will be used to override
  *   the _performRpc method from the mock server. It is really useful to add
  *   some custom rpc mocks, or to check some assertions.
@@ -255,9 +238,16 @@ function addMockEnvironment(widget, params) {
     if (params.mockRPC) {
         Server = MockServer.extend({_performRpc: params.mockRPC});
     }
+    if (params.debug) {
+        observe(widget);
+        var separator = window.location.href.indexOf('?') !== -1 ? "&" : "?";
+        var url = window.location.href + separator + 'testId=' + QUnit.config.current.testId;
+        console.log('%c[debug] debug mode activated', 'color: blue; font-weight: bold;', url);
+    }
     var mockServer = new Server(params.data, {
-        logLevel: params.logLevel,
+        archs: params.archs,
         currentDate: params.currentDate,
+        debug: params.debug,
     });
     // make sure the debounce value for input fields is set to 0
     var initialDebounce = DebouncedField.prototype.DEBOUNCE;
@@ -324,30 +314,21 @@ function addMockEnvironment(widget, params) {
     });
 
     intercept(widget, "load_views", function (event) {
-        if (params.logLevel === 2) {
-            console.log('[mock] load_views', event.data);
-        }
-        var views = {};
-        var model = event.data.modelName;
-        _.each(event.data.views, function (view_descr) {
-            var view_id = view_descr[0] || false;
-            var view_type = view_descr[1];
-            var key = [model, view_id, view_type].join(',');
-            var arch = params.archs[key];
-            var viewParams = {
-                arch: arch,
-                model: model,
-                viewOptions: {
-                    context: event.data.context.eval(),
-                },
-            };
-            if (!arch) {
-                throw new Error('No arch found for key ' + key);
-            }
-            views[view_type] = mockServer.fieldsViewGet(viewParams);
+        mockServer.performRpc('/web/dataset/call_kw/' + event.data.modelName, {
+            args: [],
+            kwargs: {
+                context: event.data.context,
+                options: event.data.options,
+                views: event.data.views,
+            },
+            method: 'load_views',
+            model: event.data.modelName,
+        }).then(function (views) {
+            views = _.mapObject(views, function (viewParams) {
+                return mockServer.fieldsViewGet(viewParams);
+            });
+            event.data.on_success(views);
         });
-
-        event.data.on_success(views);
     });
 
     intercept(widget, "get_session", function (event) {
@@ -355,7 +336,7 @@ function addMockEnvironment(widget, params) {
     });
 
     intercept(widget, "load_filters", function (event) {
-        if (params.logLevel === 2) {
+        if (params.debug) {
             console.log('[mock] load_filters', event.data);
         }
         event.data.on_success([]);

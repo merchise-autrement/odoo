@@ -12,11 +12,14 @@ var MockServer = Class.extend({
      * @constructor
      * @param {Object} data
      * @param {Object} options
-     * @param {integer} [options.logLevel=0]
+     * @param {Object} [options.archs={}] dict of archs with keys being strings like
+     *    'model,id,viewType'
+     * @param {boolean} [options.debug=false] logs RPCs if set to true
      * @param {string} [options.currentDate] formatted string, default to
      *   current day
      */
     init: function (data, options) {
+        options = options || {};
         this.data = data;
         for (var modelName in this.data) {
             var model = this.data[modelName];
@@ -40,12 +43,11 @@ var MockServer = Class.extend({
             }
         }
 
-        // 0 is for no log
-        // 1 is for short
-        // 2 is for detailed
-        this.logLevel = (options && options.logLevel) || 0;
+        this.debug = options.debug;
 
         this.currentDate = options.currentDate || moment().format("YYYY-MM-DD");
+
+        this.archs = options.archs || {};
     },
 
     //--------------------------------------------------------------------------
@@ -96,25 +98,21 @@ var MockServer = Class.extend({
      *          error object, stringified then parsed.
      */
     performRpc: function (route, args) {
-        var logLevel = this.logLevel;
+        var debug = this.debug;
         args = JSON.parse(JSON.stringify(args));
-        if (logLevel === 2) {
+        if (debug) {
             console.log('%c[rpc] request ' + route, 'color: blue; font-weight: bold;', args);
             args = JSON.parse(JSON.stringify(args));
         }
         return this._performRpc(route, args).then(function (result) {
             var resultString = JSON.stringify(result || false);
-            if (logLevel === 1) {
-                console.log('Mock: ' + route, JSON.parse(resultString));
-            } else if (logLevel === 2) {
+            if (debug) {
                 console.log('%c[rpc] response' + route, 'color: blue; font-weight: bold;', JSON.parse(resultString));
             }
             return JSON.parse(resultString);
         }).fail(function (result) {
             var errorString = JSON.stringify(result || false);
-            if (logLevel === 1) {
-                console.log('Mock: (ERROR)' + route, JSON.parse(errorString));
-            } else if (logLevel === 2) {
+            if (debug) {
                 console.log('%c[rpc] response (error) ' + route, 'color: orange; font-weight: bold;', JSON.parse(errorString));
             }
             return JSON.parse(errorString);
@@ -432,6 +430,38 @@ var MockServer = Class.extend({
             });
         }
         return modelFields;
+    },
+    /**
+     * Simulate a 'load_views' operation
+     *
+     * @param {string} model
+     * @param {Array} args
+     * @param {Object} kwargs
+     * @param {Array} kwargs.views
+     * @param {Object} kwargs.options
+     * @param {Object} kwargs.context
+     * @returns {Object}
+     */
+    _mockLoadViews: function (model, kwargs) {
+        var self = this;
+        var views = {};
+        _.each(kwargs.views, function (view_descr) {
+            var viewID = view_descr[0] || false;
+            var viewType = view_descr[1];
+            var key = [model, viewID, viewType].join(',');
+            var arch = self.archs[key];
+            if (!arch) {
+                throw new Error('No arch found for key ' + key);
+            }
+            views[viewType] = {
+                arch: arch,
+                model: model,
+                viewOptions: {
+                    context: kwargs.context,
+                },
+            };
+        });
+        return views;
     },
     /**
      * Simulate a 'name_get' operation
@@ -933,6 +963,9 @@ var MockServer = Class.extend({
 
             case 'fields_get':
                 return $.when(this._mockFieldsGet(args.model, args.args));
+
+            case 'load_views':
+                return $.when(this._mockLoadViews(args.model, args.kwargs));
 
             case 'name_get':
                 return $.when(this._mockNameGet(args.model, args.args));
