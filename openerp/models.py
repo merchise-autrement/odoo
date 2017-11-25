@@ -48,6 +48,7 @@ from . import api
 from . import tools
 from .api import Environment
 from .exceptions import AccessError, MissingError, ValidationError, UserError
+from .exceptions import ExpectedSingletonError
 from .osv import fields
 from .osv.query import Query
 from .tools import frozendict, lazy_property, ormcache, Collector
@@ -5443,7 +5444,7 @@ class BaseModel(object):
         """
         if len(self) == 1:
             return self
-        raise ValueError("Expected singleton: %s" % self)
+        raise ExpectedSingletonError("Expected singleton", self)
 
     def with_env(self, env):
         """ Returns a new version of this recordset attached to the provided
