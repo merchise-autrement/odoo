@@ -17,12 +17,6 @@ import threading
 import time
 import unittest2
 
-try:
-    from cProfile import Profile
-except ImportError:
-    from profile import Profile
-from pstats import Stats
-
 import werkzeug.serving
 
 _signals = {getattr(signal, name): name for name in dir(signal) if name.startswith('SIG')}
@@ -45,10 +39,8 @@ if os.name == 'posix':
 else:
     # Windows shim
     signal.SIGHUP = -1
-    WEXITSTATUS = lambda st: (st & 0xff00) >> 8
+    WEXITSTATUS = lambda st: (st & 0xff00) >> 8   # noqa: E731
 
-# The max amount of time a profiler can be active.
-FIVE_MINUTES = 300  # seconds
 
 # Optional process names for workers
 try:
@@ -493,7 +485,7 @@ class PreforkServer(CommonServer):
                 raise
 
     def signal_handler(self, sig, frame):
-        _logger.debug('%s sent to the server', _signals.get(sig, 'UNK'))
+        _logger.info('%s sent to the server', _signals.get(sig, 'UNK'))
         if len(self.queue) < 5 or sig == signal.SIGCHLD:
             self.queue.append(sig)
             self.pipe_ping(self.pipe)
@@ -715,9 +707,8 @@ class PreforkServer(CommonServer):
 
 class Worker(object):
     """ Workers """
-    def __init__(self, multi, profile=False):
+    def __init__(self, multi):
         self.multi = multi
-        self.profile = profile
         self.watchdog_time = time.time()
         self.watchdog_pipe = multi.pipe_new()
         # Can be set to None if no watchdog is desired.
@@ -735,9 +726,8 @@ class Worker(object):
         self.request_count = 0
 
     def setproctitle(self, title=""):
-        setproctitle('[%s%s] openerp: %s %s %s' % (
-            sys.argv[0], ('*' if self.profile else ''),
-            self.__class__.__name__, self.pid, title
+        setproctitle('[%s] openerp: %s %s %s' % (
+            sys.argv[0], self.__class__.__name__, self.pid, title
         ))
 
     def close(self):
@@ -747,12 +737,7 @@ class Worker(object):
     def signal_handler(self, sig, frame):
         _logger.debug('%s sent to the worker', _signals.get(sig, 'UNK'))
         # Handles SIGINT (Ctrl-C).  This will make the worker quit nicely.
-        self.alive = (sig != signal.SIGINT)
-        if sig == signal.SIGUSR2:
-            _logger.info('Profile %s -> %s', self.profile, not self.profile)
-            self.profile = not self.profile
-            if self.profile:
-                self.age = time.time()
+        self.alive = False
 
     def sleep(self):
         try:
@@ -798,7 +783,6 @@ class Worker(object):
         pass
 
     def start(self):
-        self.profiler = Profile(builtins=False)
         self.pid = os.getpid()
         self.setproctitle()
         _logger.info("Worker %s (%s) alive", self.__class__.__name__, self.pid)
@@ -815,41 +799,16 @@ class Worker(object):
         signal.signal(signal.SIGINT, self.signal_handler)
         signal.signal(signal.SIGTERM, signal.SIG_DFL)
         signal.signal(signal.SIGCHLD, signal.SIG_DFL)
-        signal.signal(signal.SIGUSR2, self.signal_handler)
 
     def stop(self):
         pass
 
     def run(self):
-        profile = self.profile
-        self.age = time.time()
         try:
             self.start()
             while self.alive:
                 self.process_limit()
                 self.multi.pipe_ping(self.watchdog_pipe)
-                if self.profile and (time.time() - self.age) > FIVE_MINUTES:
-                    _logger.warn('Forcing profile dump cause it was active'
-                                 'more than 5 minutes')
-                    self.profile = False
-                if self.profile and not profile:
-                    # NOT TRACING ---> TRACING
-                    _logger.info('Activating profiling...')
-                    self.setproctitle()
-                    profile = self.profile
-                    self.profiler.enable()
-                    self.age = time.time()
-
-                if not self.profile and profile:
-                    _logger.info('Dumping profiling information...')
-                    # TRACING ---> NOT TRACING
-                    self.profiler.create_stats()
-                    with open('/tmp/odoo.stats-%d.txt' % self.pid, 'w') as st:
-                        st = Stats(self.profiler, stream=st).sort_stats('cumulative')
-                        st.print_stats()
-                    self.setproctitle()
-                    profile = self.profile
-
                 self.sleep()
                 self.process_work()
             _logger.info(
