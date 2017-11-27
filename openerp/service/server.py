@@ -578,10 +578,14 @@ class PreforkServer(CommonServer):
     def process_timeout(self):
         now = time.time()
         for (pid, worker) in self.workers.items():
-            if worker.watchdog_timeout is not None and \
-                    (now - worker.watchdog_time) >= worker.watchdog_timeout:
-                _logger.error("Worker (%s) timeout", pid)
-                self.worker_kill(pid, signal.SIGKILL)
+            if worker.watchdog_timeout is not None:
+                elapsed = now - worker.watchdog_time
+                if elapsed >= worker.watchdog_timeout_hard:
+                    _logger.error("Worker (%s) timeout", pid)
+                    self.worker_kill(pid, signal.SIGKILL)
+                elif elapsed >= worker.watchdog_timeout:
+                    # TODO: Should we use another signal.
+                    self.worker_kill(pid, signal.SIGXCPU)
 
     def process_spawn(self):
         if config['xmlrpc']:
@@ -724,6 +728,14 @@ class Worker(object):
         # should we rename into lifetime ?
         self.request_max = multi.limit_request
         self.request_count = 0
+
+    @property
+    def watchdog_timeout_hard(self):
+        niceness = config.get('limit_time_real_niceness', 0.0)
+        if self.watchdog_timeout is not None:
+            return self.watchdog_timeout + niceness
+        else:
+            return None
 
     def setproctitle(self, title=""):
         setproctitle('[%s] openerp: %s %s %s' % (

@@ -327,6 +327,9 @@ class configmanager(object):
             group.add_option("--limit-time-real", dest="limit_time_real", my_default=120,
                              help="Maximum allowed Real time per request (default 120).",
                              type="int")
+            group.add_option("--limit-time-real-niceness", dest="limit_time_real_niceness", my_default=0.5,
+                             help="Amount of time in seconds to wait after --limit-time-real before forcibly killing the worker (default 0.5s).",
+                             type="float")
             group.add_option("--limit-request", dest="limit_request", my_default=8192,
                              help="Maximum number of request to be processed per worker (default 8192).",
                              type="int")
