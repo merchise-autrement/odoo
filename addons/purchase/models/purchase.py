@@ -9,7 +9,7 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from odoo.tools.float_utils import float_is_zero, float_compare
 from odoo.exceptions import UserError, AccessError
 from odoo.tools.misc import formatLang
-from odoo.addons.base.res.res_partner import WARNING_MESSAGE, WARNING_HELP
+from odoo.addons.base.models.res_partner import WARNING_MESSAGE, WARNING_HELP
 from odoo.addons import decimal_precision as dp
 
 
@@ -372,6 +372,15 @@ class PurchaseOrder(models.Model):
                 if inv and inv.state not in ('cancel', 'draft'):
                     raise UserError(_("Unable to cancel this purchase order. You must first cancel related vendor bills."))
 
+            # If the product is MTO, change the procure_method of the the closest move to purchase to MTS.
+            # The purpose is to link the po that the user will manually generate to the existing moves's chain.
+            if order.state in ('draft', 'sent', 'to approve'):
+                for order_line in order.order_line:
+                    if order_line.move_dest_ids:
+                        siblings_states = (order_line.move_dest_ids.mapped('move_orig_ids')).mapped('state')
+                        if all(state in ('done', 'cancel') for state in siblings_states):
+                            order_line.move_dest_ids.write({'procure_method': 'make_to_stock'})
+
             for pick in order.picking_ids.filtered(lambda r: r.state != 'cancel'):
                 pick.action_cancel()
 
@@ -640,8 +649,8 @@ class PurchaseOrderLine(models.Model):
             if line.product_id.type in ('product', 'consu'):
                 # Prevent decreasing below received quantity
                 if float_compare(line.product_qty, line.qty_received, line.product_uom.rounding) < 0:
-                    raise UserError('You cannot decrease the ordered quantity below the received quantity.\n'
-                                    'Create a return first.')
+                    raise UserError(_('You cannot decrease the ordered quantity below the received quantity.\n'
+                                      'Create a return first.'))
 
                 if float_compare(line.product_qty, line.qty_invoiced, line.product_uom.rounding) == -1:
                     # If the quantity is now below the invoiced quantity, create an activity on the vendor bill

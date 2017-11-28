@@ -162,8 +162,9 @@ class FSWatcher(object):
                     except SyntaxError:
                         _logger.error('autoreload: python code change detected, SyntaxError in %s', path)
                     else:
-                        _logger.info('autoreload: python code updated, autoreload activated')
-                        restart()
+                        if not getattr(odoo, 'phoenix', False):
+                            _logger.info('autoreload: python code updated, autoreload activated')
+                            restart()
 
     def start(self):
         self.observer.start()
@@ -236,7 +237,7 @@ class ThreadedServer(CommonServer):
             raise KeyboardInterrupt()
 
     def cron_thread(self, number):
-        from odoo.addons.base.ir.ir_cron import ir_cron
+        from odoo.addons.base.models.ir_cron import ir_cron
         while True:
             time.sleep(SLEEP_INTERVAL + number)     # Steve Reich timing style
             registries = odoo.modules.registry.Registry.registries
@@ -914,7 +915,7 @@ class WorkerCron(Worker):
                 start_rss, start_vms = memory_info(psutil.Process(os.getpid()))
 
             from odoo.addons import base
-            base.ir.ir_cron.ir_cron._acquire_job(db_name)
+            base.models.ir_cron.ir_cron._acquire_job(db_name)
             odoo.modules.registry.Registry.delete(db_name)
 
             # dont keep cursors in multi database mode
