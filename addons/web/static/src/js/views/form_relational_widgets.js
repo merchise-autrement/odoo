@@ -12,6 +12,63 @@ var Model = require('web.DataModel');
 var session = require('web.session');
 var utils = require('web.utils');
 var ViewManager = require('web.ViewManager');
+var Registry = require('web.Registry');
+
+core.x2many_views_registry = new Registry();
+
+var list_view_get = function(x2many){
+    var view = {
+        view_type: 'list',
+        view_id: false,
+        options: _.extend({
+            action_buttons: false, // to avoid 'Save' and 'Discard' buttons to appear in X2M fields
+            addable: null,
+            selectable: x2many.multi_selection,
+            sortable: true,
+            import_enabled: false,
+            deletable: true
+        }, x2many.options),
+    };
+    if (x2many.get("effective_readonly")) {
+        _.extend(view.options, {
+            deletable: null,
+            reorderable: false,
+        });
+    }
+    return view;
+};
+
+core.x2many_views_registry.add('list', list_view_get);
+
+core.x2many_views_registry.add('tree', list_view_get);
+
+core.x2many_views_registry.add('graph', function(x2many){
+    return {
+        view_type: 'graph',
+        view_id: false,
+        options: _.extend({}, x2many.options),
+    };
+});
+
+core.x2many_views_registry.add('kanban', function(x2many){
+    var view = {
+        view_type: 'kanban',
+        view_id: false,
+        options: _.extend({
+            action_buttons: true,
+            confirm_on_delete: false,
+        }, x2many.options),
+    };
+    if (x2many.get("effective_readonly")) {
+        _.extend(view.options, {
+            action_buttons: false,
+            quick_creatable: false,
+            creatable: false,
+            read_only_mode: true,
+        });
+    }
+    return view;
+});
 
 var _t = core._t;
 var QWeb = core.qweb;
@@ -743,44 +800,12 @@ var FieldX2Many = AbstractManyField.extend({
         view_types = !!view_types ? view_types.split(",") : [this.default_view];
         var views = [];
         _.each(view_types, function(view_type) {
-            if (! _.include(["list", "tree", "graph", "kanban"], view_type)) {
+            var view = core.x2many_views_registry.get(view_type);
+            if (! view) {
                 throw new Error(_.str.sprintf(_t("View type '%s' is not supported in X2Many."), view_type));
             }
-            var view = {
-                view_id: false,
-                view_type: view_type === "tree" ? "list" : view_type,
-                fields_view: self.field.views && self.field.views[view_type],
-                options: {},
-            };
-            if(view.view_type === "list") {
-                _.extend(view.options, {
-                    action_buttons: false, // to avoid 'Save' and 'Discard' buttons to appear in X2M fields
-                    addable: null,
-                    selectable: self.multi_selection,
-                    sortable: true,
-                    import_enabled: false,
-                    deletable: true
-                });
-                if (self.get("effective_readonly")) {
-                    _.extend(view.options, {
-                        deletable: null,
-                        reorderable: false,
-                    });
-                }
-            } else if (view.view_type === "kanban") {
-                _.extend(view.options, {
-                    action_buttons: true,
-                    confirm_on_delete: false,
-                });
-                if (self.get("effective_readonly")) {
-                    _.extend(view.options, {
-                        action_buttons: false,
-                        quick_creatable: false,
-                        creatable: false,
-                        read_only_mode: true,
-                    });
-                }
-            }
+            view = view(self);
+            view.fields_view = self.field.views && self.field.views[view_type];
             views.push(view);
         });
         this.views = views;
