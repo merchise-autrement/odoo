@@ -272,9 +272,12 @@ class configmanager(object):
             group.add_option("--limit-time-cpu", dest="limit_time_cpu", my_default=60,
                              help="Maximum allowed CPU time per request (default 60).",
                              type="int")
-            group.add_option("--limit-time-real", dest="limit_time_real", my_default=120,
-                             help="Maximum allowed Real time per request (default 120).",
+            group.add_option("--limit-time-real", dest="limit_time_real", my_default=115,
+                             help="Maximum allowed Real time per request (default 110).",
                              type="int")
+            group.add_option("--limit-time-real-niceness", dest="limit_time_real_niceness", my_default=5,
+                             help="Amount of time in seconds to wait after --limit-time-real before forcibly killing the worker (default 5s).",
+                             type="float")
             group.add_option("--limit-request", dest="limit_request", my_default=8192,
                              help="Maximum number of request to be processed per worker (default 8192).",
                              type="int")
@@ -401,7 +404,7 @@ class configmanager(object):
         posix_keys = [
             'workers',
             'limit_memory_hard', 'limit_memory_soft',
-            'limit_time_cpu', 'limit_time_real', 'limit_request',
+            'limit_time_cpu', 'limit_time_real', 'limit_request', 'limit_time_real_niceness'
         ]
 
         if os.name == 'posix':
