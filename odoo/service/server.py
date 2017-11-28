@@ -17,12 +17,6 @@ import threading
 import time
 import unittest
 
-try:
-    from cProfile import Profile
-except ImportError:
-    from profile import Profile
-from pstats import Stats
-
 import werkzeug.serving
 from werkzeug.debug import DebuggedApplication
 
@@ -37,6 +31,10 @@ class WorkerLimitException(WorkerRuntimeError):
     _sentry_fingerprint = ['worker limit', ]
 
 
+class WorkerTimeLimitException(WorkerRuntimeError):
+    _sentry_fingerprint = ['worker request limit', ]
+
+
 if os.name == 'posix':
     # Unix only for workers
     import fcntl
@@ -46,10 +44,8 @@ if os.name == 'posix':
 else:
     # Windows shim
     signal.SIGHUP = -1
-    WEXITSTATUS = lambda st: (st & 0xff00) >> 8
+    WEXITSTATUS = lambda st: (st & 0xff00) >> 8   # noqa: E731
 
-# The max amount of time a profiler can be active.
-FIVE_MINUTES = 300  # seconds
 
 # Optional process names for workers
 try:
@@ -384,7 +380,6 @@ class GeventServer(CommonServer):
         import gevent
         from gevent.wsgi import WSGIServer
 
-
         if os.name == 'posix':
             # Set process memory limit as an extra safeguard
             _, hard = resource.getrlimit(resource.RLIMIT_AS)
@@ -392,7 +387,7 @@ class GeventServer(CommonServer):
             signal.signal(signal.SIGQUIT, dumpstacks)
             signal.signal(signal.SIGUSR1, log_ormcache_stats)
             gevent.spawn(self.watchdog)
-        
+
         self.httpd = WSGIServer((self.interface, self.port), self.app)
         _logger.info('Evented Service (longpolling) running on %s:%s', self.interface, self.port)
         try:
@@ -548,13 +543,24 @@ class PreforkServer(CommonServer):
     def process_timeout(self):
         now = time.time()
         for (pid, worker) in self.workers.items():
-            if worker.watchdog_timeout is not None and \
-                    (now - worker.watchdog_time) >= worker.watchdog_timeout:
-                _logger.error("%s (%s) timeout after %ss",
-                              worker.__class__.__name__,
-                              pid,
-                              worker.watchdog_timeout)
-                self.worker_kill(pid, signal.SIGKILL)
+            if worker.watchdog_timeout is not None:
+                elapsed = now - worker.watchdog_time
+                if elapsed >= worker.watchdog_timeout_hard:
+                    _logger.error("%s (%s) timeout. After %f > %f, and %f",
+                                  worker.__class__.__name__,
+                                  pid,
+                                  elapsed,
+                                  worker.watchdog_timeout_hard,
+                                  worker.watchdog_timeout)
+                    self.worker_kill(pid, signal.SIGKILL)
+                elif elapsed >= worker.watchdog_timeout:
+                    _logger.debug("%s (%s) soft timeout. After %f > %f, and %f",
+                                  worker.__class__.__name__,
+                                  pid,
+                                  elapsed,
+                                  worker.watchdog_timeout_hard,
+                                  worker.watchdog_timeout)
+                    self.worker_kill(pid, signal.SIGUSR2)
 
     def process_spawn(self):
         if config['xmlrpc']:
@@ -680,9 +686,8 @@ class PreforkServer(CommonServer):
 
 class Worker(object):
     """ Workers """
-    def __init__(self, multi, profile=False):
+    def __init__(self, multi):
         self.multi = multi
-        self.profile = profile
         self.watchdog_time = time.time()
         self.watchdog_pipe = multi.pipe_new()
         # Can be set to None if no watchdog is desired.
@@ -699,10 +704,17 @@ class Worker(object):
         self.request_max = multi.limit_request
         self.request_count = 0
 
+    @property
+    def watchdog_timeout_hard(self):
+        niceness = config.get('limit_time_real_niceness', 0.0)
+        if self.watchdog_timeout is not None:
+            return self.watchdog_timeout + niceness
+        else:
+            return None
+
     def setproctitle(self, title=""):
-        setproctitle('[%s%s] odoo: %s %s %s' % (
-            sys.argv[0], ('*' if self.profile else ''),
-            self.__class__.__name__, self.pid, title
+        setproctitle('[%s] openerp: %s %s %s' % (
+            sys.argv[0], self.__class__.__name__, self.pid, title
         ))
 
     def close(self):
@@ -712,12 +724,7 @@ class Worker(object):
     def signal_handler(self, sig, frame):
         _logger.debug('%s sent to the worker', _signals.get(sig, 'UNK'))
         # Handles SIGINT (Ctrl-C).  This will make the worker quit nicely.
-        self.alive = (sig != signal.SIGINT)
-        if sig == signal.SIGUSR2:
-            _logger.info('Profile %s -> %s', self.profile, not self.profile)
-            self.profile = not self.profile
-            if self.profile:
-                self.age = time.time()
+        self.alive = False
 
     def sleep(self):
         try:
@@ -759,11 +766,13 @@ class Worker(object):
         soft, hard = resource.getrlimit(resource.RLIMIT_CPU)
         resource.setrlimit(resource.RLIMIT_CPU, (cpu_time + config['limit_time_cpu'], hard))
 
+    def raise_timeout(self, *args):
+        raise WorkerTimeLimitException('Request exceeded allowed time')
+
     def process_work(self):
         pass
 
     def start(self):
-        self.profiler = Profile(builtins=False)
         self.pid = os.getpid()
         self.setproctitle()
         _logger.info("Worker %s (%s) alive", self.__class__.__name__, self.pid)
@@ -780,41 +789,17 @@ class Worker(object):
         signal.signal(signal.SIGINT, self.signal_handler)
         signal.signal(signal.SIGTERM, signal.SIG_DFL)
         signal.signal(signal.SIGCHLD, signal.SIG_DFL)
-        signal.signal(signal.SIGUSR2, self.signal_handler)
+        signal.signal(signal.SIGUSR2, self.raise_timeout)
 
     def stop(self):
         pass
 
     def run(self):
-        profile = self.profile
-        self.age = time.time()
         try:
             self.start()
             while self.alive:
                 self.process_limit()
                 self.multi.pipe_ping(self.watchdog_pipe)
-                if self.profile and (time.time() - self.age) > FIVE_MINUTES:
-                    _logger.warn('Forcing profile dump cause it was active'
-                                 'more than 5 minutes')
-                    self.profile = False
-                if self.profile and not profile:
-                    # NOT TRACING ---> TRACING
-                    _logger.info('Activating profiling...')
-                    self.setproctitle()
-                    profile = self.profile
-                    self.profiler.enable()
-                    self.age = time.time()
-
-                if not self.profile and profile:
-                    _logger.info('Dumping profiling information...')
-                    # TRACING ---> NOT TRACING
-                    self.profiler.create_stats()
-                    with open('/tmp/odoo.stats-%d.txt' % self.pid, 'w') as st:
-                        st = Stats(self.profiler, stream=st).sort_stats('cumulative')
-                        st.print_stats()
-                    self.setproctitle()
-                    profile = self.profile
-
                 self.sleep()
                 self.process_work()
             _logger.info(
