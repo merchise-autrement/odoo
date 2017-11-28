@@ -30,6 +30,10 @@ class WorkerLimitException(WorkerRuntimeError):
     _sentry_fingerprint = ['worker limit', ]
 
 
+class WorkerTimeLimitException(WorkerRuntimeError):
+    _sentry_fingerprint = ['worker request limit', ]
+
+
 if os.name == 'posix':
     # Unix only for workers
     import fcntl
@@ -581,11 +585,19 @@ class PreforkServer(CommonServer):
             if worker.watchdog_timeout is not None:
                 elapsed = now - worker.watchdog_time
                 if elapsed >= worker.watchdog_timeout_hard:
-                    _logger.error("Worker (%s) timeout", pid)
+                    _logger.error("Worker (%s) timeout. After %f > %f, and %f",
+                                  pid,
+                                  elapsed,
+                                  worker.watchdog_timeout_hard,
+                                  worker.watchdog_timeout)
                     self.worker_kill(pid, signal.SIGKILL)
                 elif elapsed >= worker.watchdog_timeout:
-                    # TODO: Should we use another signal.
-                    self.worker_kill(pid, signal.SIGXCPU)
+                    _logger.debug("Worker (%s) soft timeout. After %f > %f, and %f",
+                                  pid,
+                                  elapsed,
+                                  worker.watchdog_timeout_hard,
+                                  worker.watchdog_timeout)
+                    self.worker_kill(pid, signal.SIGUSR2)
 
     def process_spawn(self):
         if config['xmlrpc']:
@@ -791,6 +803,9 @@ class Worker(object):
         soft, hard = resource.getrlimit(resource.RLIMIT_CPU)
         resource.setrlimit(resource.RLIMIT_CPU, (cpu_time + config['limit_time_cpu'], hard))
 
+    def raise_timeout(self, *args):
+        raise WorkerTimeLimitException('Request exceeded allowed time')
+
     def process_work(self):
         pass
 
@@ -811,6 +826,7 @@ class Worker(object):
         signal.signal(signal.SIGINT, self.signal_handler)
         signal.signal(signal.SIGTERM, signal.SIG_DFL)
         signal.signal(signal.SIGCHLD, signal.SIG_DFL)
+        signal.signal(signal.SIGUSR2, self.raise_timeout)
 
     def stop(self):
         pass
