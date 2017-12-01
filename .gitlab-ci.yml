@@ -1,0 +1,28 @@
+---
+stages:
+  - check
+  - test
+  - publish
+
+
+check signature:
+  stage: check
+  script:
+    - git verify-commit HEAD
+  tags:
+    - git
+    - gpg
+  only:
+    - /^merchise-.*/
+
+
+update github fork:
+  stage: publish
+  script:
+    - git push git@github.com:merchise-autrement/odoo.git HEAD:$CI_COMMIT_REF_NAME
+  tags:
+    - git
+    - github account
+  only:
+    - branches
+  allow_failure: true
