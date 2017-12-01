@@ -3,7 +3,7 @@
 #
 from datetime import date, datetime
 
-from openerp.exceptions import AccessError, except_orm
+from openerp.exceptions import AccessError, except_orm, ExpectedSingletonError
 from openerp.tests import common
 from openerp.tools import mute_logger
 
@@ -34,7 +34,7 @@ class TestNewFields(common.TransactionCase):
         # field access fails on multiple records
         records = self.env['test_new_api.message'].search([])
         assert len(records) > 1
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ExpectedSingletonError):
             faulty = records.body
 
     def test_01_basic_set_assertion(self):
@@ -47,7 +47,7 @@ class TestNewFields(common.TransactionCase):
         # field assignment fails on multiple records
         records = self.env['test_new_api.message'].search([])
         assert len(records) > 1
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ExpectedSingletonError):
             records.body = 'Faulty'
 
     def test_10_computed(self):

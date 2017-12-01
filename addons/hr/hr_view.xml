@@ -38,7 +38,7 @@
                         <notebook>
                             <page name="public" string="Public Information">
                                 <group>
-                                    <group string="Contact Information">
+                                    <group name="contact" string="Contact Information">
                                         <field name="address_id" on_change="onchange_address_id(address_id)"
                                             context="{'show_address': 1}"
                                             options='{"always_reload": True, "highlight_first_line": True}'/>
@@ -47,7 +47,7 @@
                                         <field name="work_email" widget="email"/>
                                         <field name="work_phone"/>
                                     </group>
-                                    <group string="Position">
+                                    <group name="position" string="Position">
                                         <field name="department_id" on_change="onchange_department_id(department_id)"/>
                                         <field name="job_id"/>
                                         <field name="parent_id"/>
