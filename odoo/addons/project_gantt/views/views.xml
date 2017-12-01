@@ -1,0 +1,47 @@
+<odoo>
+  <record id="project.view_task_gantt" model="ir.ui.view">
+    <field name="name">project.task.gantt</field>
+    <field name="model">project.task</field>
+    <field name="arch" type="xml">
+      <gantt date_start="date_start" date_stop="date_end"
+             progress="progress" string="Tasks"
+             default_group_by="project_id">
+      </gantt>
+    </field>
+  </record>
+
+  <record id="project.view_project_project_gantt" model="ir.ui.view">
+    <field name="name">project.project.gantt</field>
+    <field name="model">project.project</field>
+    <field name="arch" type="xml">
+      <gantt date_start="date_start" date_stop="date" progress="progress_rate"
+             string="Projects">
+      </gantt>
+    </field>
+  </record>
+
+  <record id="project.action_view_task" model="ir.actions.act_window">
+    <field name="view_mode">kanban,tree,form,calendar,gantt,pivot,graph</field>
+  </record>
+
+  <record id="project.open_view_project_all" model="ir.actions.act_window">
+    <field name="view_mode">kanban,tree,form,gantt</field>
+  </record>
+
+  <!-- Opening task when double clicking on project -->
+  <record id="project.dblc_proj" model="ir.actions.act_window">
+    <field name="view_mode">tree,form,calendar,graph,gantt,kanban</field>
+  </record>
+
+  <record id="project.act_project_project_2_project_task_all"
+          model="ir.actions.act_window">
+    <field name="view_mode">kanban,tree,form,calendar,gantt,pivot,graph</field>
+  </record>
+
+  <!-- User Form -->
+  <record id="project.act_res_users_2_project_task_opened"
+          model="ir.actions.act_window">
+    <field name="view_mode">tree,form,gant,calendar,graph</field>
+  </record>
+
+</odoo>

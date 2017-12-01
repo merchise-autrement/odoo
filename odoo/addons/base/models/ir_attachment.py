@@ -237,7 +237,7 @@ class IrAttachment(models.Model):
             try:
                 request = urlopen(values.get('url'))
                 mimetype = request.info().gettype()
-            except IOError:
+            except (ValueError, IOError):
                 mimetype = mimetypes.guess_type(values['url'])[0]
         if values.get('datas') and (not mimetype or mimetype == 'application/octet-stream'):
             mimetype = guess_mimetype(base64.b64decode(values['datas']))
