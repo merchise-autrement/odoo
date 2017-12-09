@@ -39,6 +39,7 @@
             <field name="image" type="base64" file="hr_expense/static/img/hotel_rent-image.jpg"/>
         </record>
         <record id="expenses0" model="hr.expense.expense">
+            <field name="employee_id" ref="hr.employee_fp"/>
             <field name="name">Expenses</field>
             <field name="date" eval="time.strftime('%Y-08-25')"/>
         </record>
