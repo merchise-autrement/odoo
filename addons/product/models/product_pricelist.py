@@ -67,7 +67,7 @@ class Pricelist(models.Model):
                        FROM ((
                                 SELECT pr.id, pr.name
                                 FROM product_pricelist pr JOIN
-                                     res_currency cur ON 
+                                     res_currency cur ON
                                          (pr.currency_id = cur.id)
                                 WHERE pr.name || ' (' || cur.name || ')' = %(name)s
                             )
@@ -80,7 +80,7 @@ class Pricelist(models.Model):
                                         tr.name = 'product.pricelist,name' AND
                                         tr.lang = %(lang)s
                                      ) JOIN
-                                     res_currency cur ON 
+                                     res_currency cur ON
                                          (pr.currency_id = cur.id)
                                 WHERE tr.value || ' (' || cur.name || ')' = %(name)s
                             )
@@ -114,7 +114,7 @@ class Pricelist(models.Model):
     @api.multi
     def _get_rule(self, product, qty_in_product_uom, date):
         if not date:
-            date = self._context.get('date') or fields.Date.today()
+            date = self._context.get('date') or fields.Date.context_today(self)
         categ_ids = _get_categories(product)
         prod_tmpl_id, prod_ids = _get_product_ids(product)
         self._cr.execute(
@@ -459,4 +459,3 @@ class PricelistItem(models.Model):
                 'price_min_margin': 0.0,
                 'price_max_margin': 0.0,
             })
-
