@@ -170,12 +170,12 @@ class MailThreadIndex(AbstractModel):
                 imd = self.pool['ir.model.data']
                 reference = generate_reference(
                     lambda r: self._thread_by_index(
-                        cr, uid, r, context=context
+                        cr, SUPERUSER_ID, r, context=context
                     )
                 )
                 if reference:
                     imd.create(
-                        cr, uid,
+                        cr, SUPERUSER_ID,
                         dict(name=reference,
                              model=self._name,
                              res_id=thread.id,
