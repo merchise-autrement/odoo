@@ -1547,10 +1547,7 @@ class Root(object):
     @staticmethod
     def _get_matching_domain(request, allowed_domains):
         from xoutil.eight import string_types
-        try:
-            from xoutil.future.string import cut_prefix
-        except ImportError:
-            from xoutil.string import cut_prefix
+        from xoutil.string import cut_prefix
         if isinstance(allowed_domains, string_types):
             allowed_domains = allowed_domains.split(' ')
         host = request.host

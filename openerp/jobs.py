@@ -685,10 +685,7 @@ def _extract_signature(args, kwargs):
     '''Detect the proper signature.
 
     '''
-    try:
-        from xoutil.symbols import Unset
-    except ImportError:
-        from xoutil import Unset
+    from xoutil.symbols import Unset
     from openerp.models import BaseModel
     from openerp.sql_db import Cursor
     from openerp.tools import frozendict

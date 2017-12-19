@@ -47,12 +47,9 @@ from xoutil.objects import setdefaultattr
 
 from openerp import models
 
-try:
-    from xoutil.symbols import Unset
-    from xoutil.symbols import boolean as Logical
-except ImportError:
-    from xoutil import Unset
-    from xoutil.logical import Logical
+from xoutil.symbols import Unset
+from xoutil.symbols import boolean as Logical
+
 Bail = Logical('Bail', False)
 del Logical
 
@@ -327,14 +324,12 @@ class OdooRecordSerializer(Serializer):
 
 
 def safe_getattr(which, attr):
-    try:
-        from xoutil.symbols import Undefined
-    except ImportError:
-        from xoutil import Undefined
+    from xoutil.symbols import Undefined
     try:
         return repr(getattr(which, attr, None))
     except:
         return Undefined
+
 
 # _manager.register(OdooRecordSerializer)
 del Serializer, _manager,
