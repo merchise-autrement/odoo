@@ -2,7 +2,7 @@
   In order to test the basic EDI system, I will export a partner,
   modify the exported EDI document to add an attachment and change
   the data, and then re-import it and re-export it.
-  
+
   with an attached file, check the result, the alter the data
   and reimport it.
 -
@@ -37,6 +37,6 @@
       # export the same partner we just created, and see if the output matches the input
       doc_output = self.generate_edi(cr, uid, [res_partner.browse(cr, uid, result[1])])
       edi_doc_output, = json.loads(doc_output)
-      for attribute in ('__model', '__module', '__id', 'name', '__attachments'):
+      for attribute in ('__model', '__module', 'name', '__attachments'):
         assert edi_doc_output.get(attribute) == edi_doc.get(attribute), \
             'Incorrect value for %s, expected %r, got %r' % (attribute, edi_doc.get(attribute), edi_doc_output.get(attribute))
