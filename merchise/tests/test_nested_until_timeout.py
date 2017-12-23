@@ -21,7 +21,7 @@ from __future__ import (division as _py3_division,
 import pytest
 import contextlib
 from xoutil.objects import extract_attrs
-from xoutil.collections import opendict
+from xoutil.future.collections import opendict
 
 try:
     from odoo.jobs import (
