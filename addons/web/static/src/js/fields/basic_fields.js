@@ -438,7 +438,7 @@ var FieldDate = InputField.extend({
             def = this.datewidget.appendTo('<div>').done(function () {
                 self.datewidget.$el.addClass(self.$el.attr('class'));
                 self._prepareInput(self.datewidget.$input);
-                self.replaceElement(self.datewidget.$el);
+                self._replaceElement(self.datewidget.$el);
             });
         }
         return $.when(def, this._super.apply(this, arguments));
@@ -1233,7 +1233,7 @@ var FieldBinaryFile = AbstractFieldBinary.extend({
     template: 'FieldBinaryFile',
     events: _.extend({}, AbstractFieldBinary.prototype.events, {
         'click': function (event) {
-            if (this.mode === 'readonly' && this.value) {
+            if (this.mode === 'readonly' && this.value && this.recordData.id) {
                 this.on_save_as(event);
             }
         },
@@ -1250,9 +1250,19 @@ var FieldBinaryFile = AbstractFieldBinary.extend({
         this.do_toggle(!!this.value);
         if (this.value) {
             this.$el.empty().append($("<span/>").addClass('fa fa-download'));
+            if (this.recordData.id) {
+                this.$el.css('cursor', 'pointer');
+            } else {
+                this.$el.css('cursor', 'not-allowed');
+            }
             if (this.filename_value) {
                 this.$el.append(" " + this.filename_value);
             }
+        }
+        if (!this.res_id) {
+            this.$el.css('cursor', 'not-allowed');
+        } else {
+            this.$el.css('cursor', 'pointer');
         }
     },
     _renderEdit: function () {
@@ -1278,7 +1288,7 @@ var FieldBinaryFile = AbstractFieldBinary.extend({
         if (!this.value) {
             this.do_warn(_t("Save As..."), _t("The field is empty, there's nothing to save !"));
             ev.stopPropagation();
-        } else {
+        } else if (this.res_id) {
             framework.blockUI();
             var c = crash_manager;
             var filename_fieldname = this.attrs.filename;

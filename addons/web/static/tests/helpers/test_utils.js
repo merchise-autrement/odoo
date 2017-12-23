@@ -228,6 +228,11 @@ function createAsyncView(params) {
  *   up in the init process of the view, because there are no other way to do it
  *   after this method returns. Some events ('call_service', "load_views",
  *   "get_session", "load_filters") have a special treatment beforehand.
+ * @param {boolean} [debounce=true] set to false to completely remove the
+ *   debouncing, forcing the handler to be called directly (not on the next
+ *   execution stack, like it does with delay=0).
+ * @param {boolean} [throttle=false] set to true to keep the throttling, which
+ *   is completely removed by default.
  *
  * @returns {MockServer} the instance of the mock server, created by this
  *   function. It is necessary for createAsyncView so that method can call some
@@ -250,9 +255,9 @@ function addMockEnvironment(widget, params) {
         debug: params.debug,
     });
     // make sure the debounce value for input fields is set to 0
-    var initialDebounce = DebouncedField.prototype.DEBOUNCE;
+    var initialDebounceValue = DebouncedField.prototype.DEBOUNCE;
     DebouncedField.prototype.DEBOUNCE = params.fieldDebounce || 0;
-    var initialSession, initialConfig, initialParameters;
+    var initialSession, initialConfig, initialParameters, initialDebounce, initialThrottle;
     initialSession = _.extend({}, session);
     session.getTZOffset = function () {
         return 0; // by default, but may be overriden in specific tests
@@ -274,6 +279,18 @@ function addMockEnvironment(widget, params) {
         initialParameters = _.extend({}, core._t.database.parameters);
         _.extend(core._t.database.parameters, params.translateParameters);
     }
+    if (params.debounce === false) {
+        initialDebounce = _.debounce;
+        _.debounce = function (func) {
+            return func;
+        };
+    }
+    if (!('throttle' in params) || !params.throttle) {
+        initialThrottle = _.throttle;
+        _.throttle = function (func) {
+            return func;
+        };
+    }
 
     var widgetDestroy = widget.destroy;
     widget.destroy = function () {
@@ -281,7 +298,13 @@ function addMockEnvironment(widget, params) {
         // widget is destroyed, at the end of each test to avoid collisions
         core.bus.trigger('clear_cache');
 
-        DebouncedField.prototype.DEBOUNCE = initialDebounce;
+        DebouncedField.prototype.DEBOUNCE = initialDebounceValue;
+        if (params.debounce === false) {
+            _.debounce = initialDebounce;
+        }
+        if (!('throttle' in params) || !params.throttle) {
+            _.throttle = initialThrottle;
+        }
 
         var key;
         if ('session' in params) {
@@ -528,6 +551,51 @@ function removeSrcAttribute($el, widget) {
     });
 }
 
+var patches = {};
+/**
+ * Patches a given Class with the given properties.
+ *
+ * @param {Class} Klass
+ * @param {Object} props
+ */
+function patch (Klass, props) {
+    var patchID = _.uniqueId('patch_');
+    Klass.__patchID = patchID;
+    patches[patchID] = {
+        Klass: Klass,
+        otherPatchedProps: [],
+        ownPatchedProps: [],
+    };
+    _.each(props, function (value, key) {
+        if (Klass.prototype.hasOwnProperty(key)) {
+            patches[patchID].ownPatchedProps.push({
+                key: key,
+                initialValue: Klass.prototype[key],
+            });
+        } else {
+            patches[patchID].otherPatchedProps.push(key);
+        }
+    });
+    Klass.include(props);
+}
+/**
+ * Unpatches a given Class.
+ *
+ * @param {Class} Klass
+ */
+function unpatch(Klass) {
+    var patchID = Klass.__patchID;
+    var patch = patches[patchID];
+    _.each(patch.ownPatchedProps, function (p) {
+        Klass[p.key] = p.initialValue;
+    });
+    _.each(patch.otherPatchedProps, function (key) {
+        delete Klass.prototype[key];
+    });
+    delete patches[patchID];
+    delete Klass.__patchID;
+}
+
 // Loading static files cannot be properly simulated when their real content is
 // really needed. This is the case for static XML files so we load them here,
 // before starting the qunit test suite.
@@ -543,18 +611,20 @@ return $.when(
         QUnit.start();
     }, 0);
     return {
-        intercept: intercept,
-        observe: observe,
-        createView: createView,
+        addMockEnvironment: addMockEnvironment,
         createAsyncView: createAsyncView,
         createModel: createModel,
         createParent: createParent,
-        addMockEnvironment: addMockEnvironment,
+        createView: createView,
         dragAndDrop: dragAndDrop,
+        intercept: intercept,
+        observe: observe,
+        patch: patch,
+        removeSrcAttribute: removeSrcAttribute,
+        triggerKeypressEvent: triggerKeypressEvent,
         triggerMouseEvent: triggerMouseEvent,
         triggerPositionalMouseEvent: triggerPositionalMouseEvent,
-        triggerKeypressEvent: triggerKeypressEvent,
-        removeSrcAttribute: removeSrcAttribute,
+        unpatch: unpatch,
     };
 });
 

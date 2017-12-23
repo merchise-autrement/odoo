@@ -537,8 +537,10 @@
                     <field name="name" string="Expenses"/>
                     <field name="accounting_date"/>
                     <field name="state"/>
+                    <separator />
                     <field name="employee_id"/>
                     <field name="department_id" string="Department"/>
+                    <field name="journal_id"/>
                     <separator />
                     <filter domain="[('state', '=', 'submit')]" string="To Approve" name="submitted" help="Confirmed Expenses"/>
                     <filter domain="[('state', '=', 'approve')]" string="To Post" name="to_post" help="Approved Expenses"/>
@@ -658,7 +660,7 @@
             <field name="res_model">hr.expense.sheet</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,kanban,form,pivot,graph</field>
-            <field name="context">{'search_default_submitted': 1, 'needaction_menu_ref': 'hr_expense.menu_hr_expense_all'}</field>
+            <field name="context">{'search_default_submitted': 1}</field>
             <field name="search_view_id" ref="view_hr_expense_sheet_filter"/>
             <field name="view_id" ref="view_hr_expense_sheet_tree"/>
             <field name="help" type="html">
@@ -675,7 +677,7 @@
             <field name="res_model">hr.expense.sheet</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,kanban,form,pivot,graph</field>
-            <field name="context">{'search_default_to_post': 1, 'needaction_menu_ref': 'hr_expense.menu_hr_expense_all'}</field>
+            <field name="context">{'search_default_to_post': 1}</field>
             <field name="search_view_id" ref="view_hr_expense_sheet_filter"/>
             <field name="view_id" ref="view_hr_expense_sheet_tree"/>
             <field name="help" type="html">
@@ -692,7 +694,7 @@
             <field name="res_model">hr.expense.sheet</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,kanban,form,pivot,graph</field>
-            <field name="context">{'search_default_approved': 1, 'needaction_menu_ref': 'hr_expense.menu_hr_expense_all'}</field>
+            <field name="context">{'search_default_approved': 1}</field>
             <field name="search_view_id" ref="view_hr_expense_sheet_filter"/>
             <field name="view_id" ref="view_hr_expense_sheet_tree"/>
             <field name="help" type="html">

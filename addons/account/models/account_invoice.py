@@ -84,7 +84,11 @@ class AccountInvoice(models.Model):
             ('type', 'in', [TYPE2JOURNAL[ty] for ty in inv_types if ty in TYPE2JOURNAL]),
             ('company_id', '=', company_id),
         ]
-        return self.env['account.journal'].search(domain, limit=1)
+        journal_with_currency = False
+        if self._context.get('default_currency_id'):
+            currency_clause = [('currency_id', '=', self._context.get('default_currency_id'))]
+            journal_with_currency = self.env['account.journal'].search(domain + currency_clause, limit=1)
+        return journal_with_currency or self.env['account.journal'].search(domain, limit=1)
 
     @api.model
     def _default_currency(self):
@@ -664,7 +668,7 @@ class AccountInvoice(models.Model):
             # If partner has no warning, check its company
             if p.invoice_warn == 'no-message' and p.parent_id:
                 p = p.parent_id
-            if p.invoice_warn != 'no-message':
+            if p.invoice_warn and p.invoice_warn != 'no-message':
                 # Block if partner only has warning but parent company is blocked
                 if p.invoice_warn != 'block' and p.parent_id and p.parent_id.invoice_warn == 'block':
                     p = p.parent_id
@@ -700,7 +704,7 @@ class AccountInvoice(models.Model):
 
     @api.onchange('journal_id')
     def _onchange_journal_id(self):
-        if self.journal_id:
+        if self.journal_id and not self._context.get('default_currency_id'):
             self.currency_id = self.journal_id.currency_id.id or self.journal_id.company_id.currency_id.id
 
     @api.onchange('payment_term_id', 'date_invoice')
@@ -807,9 +811,7 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def action_invoice_cancel(self):
-        if self.filtered(lambda inv: inv.state not in ['draft', 'open']):
-            raise UserError(_("Invoice must be in draft or open state in order to be cancelled."))
-        return self.action_cancel()
+        return self.filtered(lambda inv: inv.state != 'cancel').action_cancel()
 
     @api.multi
     def _notification_recipients(self, message, groups):

@@ -769,7 +769,7 @@ class WizardMultiChartsAccounts(models.TransientModel):
             if company_id:
                 company = self.env['res.company'].browse(company_id)
                 currency_id = company.on_change_country(company.country_id.id)['value']['currency_id']
-                res.update({'currency_id': currency_id})
+                res.update({'currency_id': currency_id.id})
 
         chart_templates = account_chart_template.search([('visible', '=', True)])
         if chart_templates:
@@ -885,7 +885,6 @@ class WizardMultiChartsAccounts(models.TransientModel):
 
         company = self.company_id
         self.company_id.write({'currency_id': self.currency_id.id,
-                               'accounts_code_digits': self.code_digits,
                                'anglo_saxon_accounting': self.use_anglo_saxon,
                                'bank_account_code_prefix': self.bank_account_code_prefix,
                                'cash_account_code_prefix': self.cash_account_code_prefix,
