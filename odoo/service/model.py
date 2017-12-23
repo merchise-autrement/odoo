@@ -15,10 +15,7 @@ from odoo.tools.translate import _
 
 import security
 
-try:
-    from xoutil.future.string import safe_encode
-except ImportError:
-    from xoutil.string import safe_encode
+from xoutil.future.codecs import safe_encode
 
 
 _logger = logging.getLogger(__name__)

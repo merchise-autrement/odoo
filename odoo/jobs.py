@@ -684,10 +684,7 @@ def _extract_signature(args, kwargs):
     '''Detect the proper signature.
 
     '''
-    try:
-        from xoutil.symbols import Unset
-    except ImportError:
-        from xoutil import Unset
+    from xoutil.symbols import Unset
     from odoo.models import BaseModel
     from odoo.sql_db import Cursor
     from odoo.tools import frozendict
