@@ -74,6 +74,9 @@ class HookDefinition(object):
         self.action = action
         self.__doc__ = doc
 
+    def __repr__(self):
+        return '<Signal(%r)>' % self.action
+
     def connect(self, hook, sender=None, require_registry=True,
                 framework=False):
         """Connect hook.
@@ -90,7 +93,7 @@ class HookDefinition(object):
                the actual `sender` of the signal has a ready DB registry.
 
         :keyword framework: Set to True to make this a `framework-level hook
-                            <FrameworkHookData>`:class:.
+                            <FrameworkHook>`:class:.
 
         :return: receiver
 
@@ -99,7 +102,7 @@ class HookDefinition(object):
             sender = [sender]
         HookClass = Hook if not framework else FrameworkHook
         for s in sender:
-            lookup_key = (_make_id(receiver), _make_model_id(s))
+            lookup_key = (_make_id(hook), _make_model_id(s))
             if not any(lookup_key == r_key for r_key, _ in self.hooks):
                 self.hooks.append(
                     (lookup_key,
@@ -229,7 +232,7 @@ class Wrapping(HookDefinition):
         wrappers = []
         for wrapper in livewrappers:
             try:
-                w = wrapper(sender, *args, **kwargs)
+                w = wrapper(sender, self, *args, **kwargs)
                 try:
                     next(w)
                 except StopIteration:
@@ -375,31 +378,6 @@ def wrapper(wrapping, **kwargs):
     return receiver(wrapping, **kwargs)
 
 
-def filtered(*predicates):
-    '''Allow to decorate receivers with simple predicates.
-
-    This is useful if the simple filter by model name is not enough, and also
-    if the filter needs to connect to use the DB.
-
-    Usage::
-
-        >>> @receiver(signal)
-        ... @filtered(lambda self, **kwargs: True)
-        ... def handler(self, **kwargs):
-        ...     pass
-
-    '''
-    def decorator(func):
-        from functools import wraps
-
-        @wraps(func)
-        def inner(self, **kwargs):
-            if all(pred(self, **kwargs) for pred in predicates):
-                return func(self, **kwargs)
-        return inner
-    return decorator
-
-
 def mock_replace(hook, func, **replacement_attrs):
     '''Mock a hook.
 
@@ -492,10 +470,10 @@ def _make_model_id(sender):
 
 
 # **************SIGNALS DECLARATION****************
-pre_fields_view_get = Signal('fields_view_get')
-post_fields_view_get = Signal('fields_view_get')
+pre_fields_view_get = Signal('pre_fields_view_get')
+post_fields_view_get = Signal('post_fields_view_get')
 
-pre_create = Signal('create', '''
+pre_create = Signal('pre_create', '''
 Signal sent when the 'create' method is to be invoked.
 
 If a receiver raises an error the create is aborted, and post_create won't be
@@ -509,7 +487,7 @@ Arguments:
 
 ''')
 
-post_create = Signal('create', '''
+post_create = Signal('post_create', '''
 Signal sent when the 'create' method has finished but before data is committed
 to the DB.
 
@@ -530,7 +508,7 @@ Arguments:
 :keyword values: The values passed to 'create'.
 ''')
 
-pre_write = Signal('write', '''
+pre_write = Signal('pre_write', '''
 Signal sent when the 'write' method of model is to be invoked.
 
 If a receiver raises an error the write is aborted and 'post_write' is not
@@ -543,7 +521,7 @@ Arguments:
 :keyword values: The values passed to the write method.
 
 ''')
-post_write = Signal('write', '''
+post_write = Signal('post_write', '''
 Signal sent after the 'write' method of model was executed.
 
 If 'write' raises an error no receiver is invoked.  If a receiver raises an
@@ -561,7 +539,7 @@ Arguments:
 
 ''')
 
-pre_unlink = Signal('unlink', '''
+pre_unlink = Signal('pre_unlink', '''
 Signal sent when the 'unlink' method of model is to be invoked.
 
 If a receiver raises an error unlink is aborted and 'post_unlink' is not
@@ -573,7 +551,7 @@ Arguments:
 
 ''')
 
-post_unlink = Signal('unlink', '''
+post_unlink = Signal('post_unlink', '''
 Signal sent when the 'unlink' method of a model was executed.
 
 If the 'unlink' raises an error no receiver is invoked.  If a receiver
@@ -642,7 +620,7 @@ def _unlink_for_signals(self):
     return res
 
 
-write_wrapper = Wrapping('write', '''\
+write_wrapper = Wrapping('write_wrapper', '''\
 Wraps the `write` method.
 
 ''')
