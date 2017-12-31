@@ -231,7 +231,7 @@ class res_currency(osv.osv):
         # apply rounding
         return to_currency.round(to_amount) if round else to_amount
 
-    @api.v7
+    @api.cr_uid_context
     def get_format_currencies_js_function(self, cr, uid, context=None):
         """ Returns a string that can be used to instanciate a javascript function that formats numbers as currencies.
             That function expects the number as first parameter and the currency id as second parameter.
