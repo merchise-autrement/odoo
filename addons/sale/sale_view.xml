@@ -366,9 +366,9 @@
                     <separator/>
                     <filter string="Unread Messages" name="message_needaction" domain="[('message_needaction','=',True)]"/>
                     <group expand="0" string="Group By">
-                        <filter string="Salesperson" name="salesperson" domain="[]" context="{'group_by':'user_id'}"/>
+                        <filter name="salesperson" string="Salesperson" domain="[]" context="{'group_by':'user_id'}"/>
                         <filter name="customer" string="Customer" domain="[]" context="{'group_by':'partner_id'}"/>
-                        <filter string="Order Month" name="group_by_date_order" domain="[]" context="{'group_by':'date_order'}"/>
+                        <filter name="group_by_date_order" string="Order Month" domain="[]" context="{'group_by':'date_order'}"/>
                     </group>
                </search>
             </field>
@@ -442,10 +442,10 @@
               <p class="oe_view_nocontent_create">
                 Create a Quotation, the first step of a new sale.
               </p><p>
-                Your next actions should flow efficiently: confirm the Quotation 
+                Your next actions should flow efficiently: confirm the Quotation
                 to a Sale Order, then create the Invoice and collect the Payment.
               </p><p>
-                Note that once a Quotation becomes a Sale Order, it will be moved 
+                Note that once a Quotation becomes a Sale Order, it will be moved
                 from the Quotations list to the Sales Order list.
               </p>
             </field>
@@ -650,10 +650,10 @@
               <p class="oe_view_nocontent_create">
                 Create a Quotation, the first step of a new sale.
               </p><p>
-                Your next actions should flow efficiently: confirm the Quotation 
+                Your next actions should flow efficiently: confirm the Quotation
                 to a Sale Order, then create the Invoice and collect the Payment.
               </p><p>
-                Note that once a Quotation becomes a Sale Order, it will be moved 
+                Note that once a Quotation becomes a Sale Order, it will be moved
                 from the Quotations list to the Sales Order list.
               </p>
             </field>
