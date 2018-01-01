@@ -392,9 +392,9 @@
                     <separator/>
                     <filter string="Unread Messages" name="message_needaction" domain="[('message_needaction','=',True)]"/>
                     <group expand="0" string="Group By">
-                        <filter string="Salesperson" name="salesperson" domain="[]" context="{'group_by':'user_id'}"/>
+                        <filter name="salesperson" string="Salesperson" domain="[]" context="{'group_by':'user_id'}"/>
                         <filter name="customer" string="Customer" domain="[]" context="{'group_by':'partner_id'}"/>
-                        <filter string="Order Month" name="group_by_date_order" domain="[]" context="{'group_by':'date_order'}"/>
+                        <filter name="group_by_date_order" string="Order Month" domain="[]" context="{'group_by':'date_order'}"/>
                     </group>
                </search>
             </field>
