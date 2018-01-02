@@ -116,7 +116,7 @@ class Pricelist(models.Model):
     @api.multi
     def _get_rule(self, product, qty_in_product_uom, date):
         if not date:
-            date = self._context.get('date') or fields.Date.today()
+            date = self._context.get('date') or fields.Date.context_today(self)
         categ_ids = _get_categories(product)
         prod_tmpl_id, prod_ids = _get_product_ids(product)
         self._cr.execute(
