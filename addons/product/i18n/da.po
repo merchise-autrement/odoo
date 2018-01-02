@@ -1788,7 +1788,7 @@ msgstr "Pris i procent"
 #. module: product
 #: model:product.category,name:product.product_category_5
 msgid "Physical"
-msgstr ""
+msgstr "Fysisk"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_11
@@ -2622,7 +2622,7 @@ msgstr ""
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo_price
 msgid "The price to purchase a product"
-msgstr ""
+msgstr "Prisen for at købe et produkt"
 
 #. module: product
 #: model:ir.actions.act_window,help:product.product_normal_action
@@ -2801,7 +2801,7 @@ msgstr ""
 #: model:product.product,website_description:product.product_product_7
 #: model:product.template,website_description:product.product_product_7_product_template
 msgid "Two is better than one."
-msgstr ""
+msgstr "To er bedre end en."
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_uom_uom_type
@@ -3293,12 +3293,12 @@ msgstr ""
 #. module: product
 #: model:ir.model,name:product.model_product_attribute_line
 msgid "product.attribute.line"
-msgstr ""
+msgstr "product.attribute.line"
 
 #. module: product
 #: model:ir.model,name:product.model_product_attribute_price
 msgid "product.attribute.price"
-msgstr ""
+msgstr "product.attribute.price"
 
 #. module: product
 #: model:ir.model,name:product.model_product_attribute_value
@@ -3308,7 +3308,7 @@ msgstr "product.attribute.value"
 #. module: product
 #: model:ir.model,name:product.model_product_price_history
 msgid "product.price.history"
-msgstr ""
+msgstr "product.price.history"
 
 #. module: product
 #: model:product.uom,name:product.product_uom_qt
@@ -3344,7 +3344,7 @@ msgstr "overordnet firma"
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_variant_easy_edit_view
 msgid "the product template"
-msgstr ""
+msgstr "produktskabelonen"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_supplierinfo_form_view

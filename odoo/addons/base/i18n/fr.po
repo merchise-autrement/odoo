@@ -11964,7 +11964,7 @@ msgstr "Information Générale"
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_window_action_form
 msgid "General Settings"
-msgstr "Paramètres Généraux"
+msgstr "Paramètres généraux"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.ir_property_view_search
@@ -18458,6 +18458,12 @@ msgstr "Comptabilité - Thailande"
 #: model:ir.module.module,shortdesc:base.module_l10n_th_reports
 msgid "Thailand - Accounting Reports"
 msgstr "Thaïlande - Rapports comptables"
+
+#. module: base
+#: code:addons/base/res/res_users.py:288
+#, python-format
+msgid "The \"App Switcher\" action cannot be selected as home action."
+msgstr ""
 
 #. module: base
 #: model:ir.model.fields,help:base.field_res_country_code
