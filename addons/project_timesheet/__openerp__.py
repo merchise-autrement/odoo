@@ -42,8 +42,8 @@ with the effect of creating, editing and deleting either ways.
     ],
     'demo': ['project_timesheet_demo.xml'],
     'test': [
-        'test/worktask_entry_to_timesheetline_entry.yml',
-        'test/work_timesheet.yml',
+        # 'test/worktask_entry_to_timesheetline_entry.yml',
+        # 'test/work_timesheet.yml',
     ],
     'installable': True,
     'auto_install': True,
