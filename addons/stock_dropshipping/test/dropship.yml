@@ -3,7 +3,18 @@
 -
   !record {model: res.partner, id: supplier_dropship}:
     name: Supplier of Dropshipping test
-- 
+
+-
+  Next I create a new product supplier info
+-
+  !record {model: product.supplierinfo, id: product_supplierinfo}:
+    delay: 1
+    name: supplier_dropship
+    min_qty: 2.0
+    qty: 10.0
+    product_tmpl_id: product.product_product_18_product_template
+
+-
     Create new product without any routes
 - 
     !record {model: product.product, id: drop_shop_product}:
@@ -13,14 +24,16 @@
         list_price: 100.0
         standard_price: 0.0
         type: product
-        seller_ids:
-          - delay: 1
-            name: supplier_dropship
-            min_qty: 2.0
-            qty: 5.0
         uom_id: product.product_uom_unit
         uom_po_id: product.product_uom_unit
-- 
+
+-
+  Set supplierinfo on product
+-
+  !python {model: product.product}: |
+    self.write(cr, uid, ref('drop_shop_product'), { 'seller_ids': [(6, 0, [ref('product_supplierinfo')])]}, context=context )
+
+-
     Create a sales order with a line of 200 PCE incoming shipment, with route_id drop shipping.
 - 
     !record {model: sale.order, id: sale_order_drp_shpng}:
