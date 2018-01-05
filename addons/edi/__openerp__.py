@@ -39,7 +39,7 @@ documentation at http://doc.openerp.com.
         'views/edi.xml',
     ],
     'icon': '/edi/static/src/img/knowledge.png',
-    'test': ['test/edi_partner_test.yml'],
+    'test': [],
     'qweb': ['static/src/xml/*.xml'],
     'auto_install': False,
 }
