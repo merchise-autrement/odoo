@@ -161,7 +161,8 @@ class IrTranslationImport(object):
         cr.execute(""" INSERT INTO %s(name, lang, res_id, src, type, value, module, state, comments)
                        SELECT name, lang, res_id, src, type, value, module, state, comments
                        FROM %s AS ti
-                       WHERE NOT EXISTS(SELECT 1 FROM ONLY %s AS irt WHERE %s);
+                       WHERE NOT EXISTS(SELECT 1 FROM ONLY %s AS irt WHERE %s)
+                       ON CONFLICT DO NOTHING;
                    """ % (self._model_table, self._table, self._model_table, find_expr),
                    (tuple(src_relevant_fields), tuple(src_relevant_fields)))
 
@@ -261,7 +262,8 @@ class IrTranslation(models.Model):
         res = super(IrTranslation, self)._auto_init()
         # Add separate md5 index on src (no size limit on values, and good performance).
         tools.create_index(self._cr, 'ir_translation_src_md5', self._table, ['md5(src)'])
-        tools.create_index(self._cr, 'ir_translation_ltn', self._table, ['name', 'lang', 'type'])
+        tools.create_unique_index(self._cr, 'ir_translation_unique', self._table,
+                                  ['type', 'name', 'lang', 'res_id', 'md5(src)'])
         return res
 
     @api.model

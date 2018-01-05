@@ -23,11 +23,11 @@ ListRenderer.include({
         navigation_move: '_onNavigationMove',
     }),
     events: _.extend({}, ListRenderer.prototype.events, {
+        'click .o_field_x2many_list_row_add a': '_onAddRecord',
         'click tbody td.o_data_cell': '_onCellClick',
         'click tbody tr:not(.o_data_row)': '_onEmptyRowClick',
         'click tfoot': '_onFooterClick',
-        'click tr .o_list_record_delete': '_onTrashIconClick',
-        'click .o_field_x2many_list_row_add a': '_onAddRecord',
+        'click tr .o_list_record_remove': '_onRemoveIconClick',
     }),
     /**
      * @override
@@ -46,6 +46,10 @@ ListRenderer.include({
         // of each line, so the user can delete a record.
         this.addTrashIcon = params.addTrashIcon;
 
+        // replace the trash icon by X in case of many2many relations
+        // so that it means 'unlink' instead of 'remove'
+        this.isMany2Many = params.isMany2Many;
+
         this.currentRow = null;
         this.currentFieldIndex = null;
     },
@@ -54,7 +58,7 @@ ListRenderer.include({
      * @returns {Deferred}
      */
     start: function () {
-        if (this.mode === 'edit') {
+        if (this._isEditable()) {
             this.$el.css({height: '100%'});
             core.bus.on('click', this, this._onWindowClicked.bind(this));
         }
@@ -295,12 +299,7 @@ ListRenderer.include({
             renderInvisible: editMode,
             renderWidgets: editMode,
         };
-        if (!editMode) {
-            // Force 'readonly' mode for widgets in readonly rows as
-            // otherwise they default to the view mode which is 'edit' for
-            // an editable list view
-            options.mode = 'readonly';
-        }
+        options.mode = editMode ? 'edit' : 'readonly';
 
         // Switch each cell to the new mode; note: the '_renderBodyCell'
         // function might fill the 'this.defs' variables with multiple deferred
@@ -417,7 +416,7 @@ ListRenderer.include({
      * @returns {boolean}
      */
     _isEditable: function () {
-        return this.mode === 'edit' && !this.state.groupedBy.length && this.arch.attrs.editable;
+        return !this.state.groupedBy.length && this.editable;
     },
     /**
      * Move the cursor on the end of the previous line, if possible.
@@ -489,6 +488,7 @@ ListRenderer.include({
     /**
      * Editable rows are possibly extended with a trash icon on their right, to
      * allow deleting the corresponding record.
+     * For many2many editable lists, the trash bin is replaced by X.
      *
      * @override
      * @param {any} record
@@ -498,8 +498,10 @@ ListRenderer.include({
     _renderRow: function (record, index) {
         var $row = this._super.apply(this, arguments);
         if (this.addTrashIcon) {
-            var $icon = $('<span>', {class: 'fa fa-trash-o', name: 'delete'});
-            var $td = $('<td>', {class: 'o_list_record_delete'}).append($icon);
+            var $icon = this.isMany2Many ?
+                            $('<i>', {class: 'fa fa-times', name: 'unlink'}) :
+                            $('<i>', {class: 'fa fa-trash-o', name: 'delete'});
+            var $td = $('<td>', {class: 'o_list_record_remove'}).append($icon);
             $row.append($td);
         }
         return $row;
@@ -547,21 +549,49 @@ ListRenderer.include({
         var row = _.findWhere(rows, {id: movedRecordID});
         var index0 = rows.indexOf(row);
         var index1 = ui.item.index();
-        rows = rows.slice(Math.min(index0, index1), Math.max(index0, index1) + 1);
-        rows = _.without(rows, row);
-        if (index0 > index1) {
-            rows.unshift(row);
+        var lower = Math.min(index0, index1);
+        var upper = Math.max(index0, index1) + 1;
+
+        var order = _.findWhere(self.state.orderedBy, {name: self.handleField});
+        var asc = !order || order.asc;
+        var reorderAll = false;
+        var sequence = (asc ? -1 : 1) * Infinity;
+
+        // determine if we need to reorder all lines
+        _.each(rows, function (row, index) {
+            if ((index < lower || index >= upper) &&
+                ((asc && sequence >= row.data[self.handleField]) ||
+                 (!asc && sequence <= row.data[self.handleField]))) {
+                reorderAll = true;
+            }
+            sequence = row.data[self.handleField];
+        });
+
+        if (reorderAll) {
+            rows = _.without(rows, row);
+            rows.splice(index1, 0, row);
         } else {
-            rows.push(row);
+            rows = rows.slice(lower, upper);
+            rows = _.without(rows, row);
+            if (index0 > index1) {
+                rows.unshift(row);
+            } else {
+                rows.push(row);
+            }
         }
 
         var sequences = _.pluck(_.pluck(rows, 'data'), self.handleField);
         var rowIDs = _.pluck(rows, 'id');
 
-        this.trigger_up('resequence', {
-            rowIDs: rowIDs,
-            offset: _.min(sequences),
-            handleField: this.handleField,
+        if (!asc) {
+            rowIDs.reverse();
+        }
+        this.unselectRow().then(function () {
+            self.trigger_up('resequence', {
+                rowIDs: rowIDs,
+                offset: _.min(sequences),
+                handleField: self.handleField,
+            });
         });
     },
     /**
@@ -777,6 +807,17 @@ ListRenderer.include({
         }
     },
     /**
+     * Triggers a remove event. I don't know why we stop the propagation of the
+     * event.
+     *
+     * @param {MouseEvent} event
+     */
+    _onRemoveIconClick: function (event) {
+        event.stopPropagation();
+        var id = $(event.target).closest('tr').data('id');
+        this.trigger_up('list_record_remove', {id: id});
+    },
+    /**
      * If the list view editable, just let the event bubble. We don't want to
      * open the record in this case anyway.
      *
@@ -798,17 +839,6 @@ ListRenderer.include({
         if (this.currentRow === null) {
             this._super.apply(this, arguments);
         }
-    },
-    /**
-     * Triggers a delete event. I don't know why we stop the propagation of the
-     * event.
-     *
-     * @param {MouseEvent} event
-     */
-    _onTrashIconClick: function (event) {
-        event.stopPropagation();
-        var id = $(event.target).closest('tr').data('id');
-        this.trigger_up('list_record_delete', {id: id});
     },
     /**
      * When a click happens outside the list view, or outside a currently

@@ -253,7 +253,7 @@ class SaleOrder(models.Model):
         if partner.sale_warn == 'no-message' and partner.parent_id:
             partner = partner.parent_id
 
-        if partner.sale_warn != 'no-message':
+        if partner.sale_warn and partner.sale_warn != 'no-message':
             # Block if partner only has warning but parent company is blocked
             if partner.sale_warn != 'block' and partner.parent_id and partner.parent_id.sale_warn == 'block':
                 partner = partner.parent_id
@@ -652,6 +652,8 @@ class SaleOrder(models.Model):
         self.ensure_one()
         if self.state not in ('draft', 'cancel'):
             for group_name, group_method, group_data in groups:
+                if group_name == 'customer':
+                    continue
                 group_data['has_button_access'] = True
 
         return groups
