@@ -66,7 +66,7 @@ conf = {
     'release': Unset,
 
     # A tag that will be appended to the release.  Only if 'release' is Unset.
-    'sentrylog.release-tag': '',
+    'release-tag': '',
 
     # The Raven transport to use to connect to Sentry. One of 'sync',
     # 'gevent', or 'threaded'.  If set to None, default to 'threaded'.  In
@@ -92,9 +92,12 @@ _sentry_client = None
 
 
 def get_client():
+    from openerp.tools import config
     global _sentry_client
+    overrides = config.misc.get('sentry', {})
+    conf.update(overrides)
     if not _sentry_client and conf.get('dsn', Bail):
-        releasetag = conf.pop('sentrylog.release-tag', '')
+        releasetag = conf.pop('release-tag', '')
         if not conf.get('release'):
             from .release import version
             conf['release'] = '%s/%s' % (version, releasetag)
@@ -274,7 +277,7 @@ def patch_logging(override=True, force=False):
 
     loglevel = conf.get('report_level', 'ERROR')
     level = getattr(logging, loglevel.upper(), logging.ERROR)
-    override = conf.get('sentrylog.override', override)
+    override = conf.get('override', override)
 
     def sethandler(logger, override=override, level=level):
         handler = SentryHandler(client=client)
