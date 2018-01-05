@@ -36,7 +36,7 @@ up a management by affair.
     'test': [
         '../account/test/account_minimal_test.xml',
         'test/hr_timesheet_users.yml',
-        'test/worktask_entry_to_timesheetline_entry.yml',
+        # 'test/worktask_entry_to_timesheetline_entry.yml',
     ],
     'installable': True,
     'application': True,
