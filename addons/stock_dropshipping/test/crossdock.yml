@@ -9,16 +9,6 @@
     !python {model: stock.warehouse, id: wh_pps}: |
         assert self.crossdock_route_id.active, 'Crossdock route is not active'
 -
-  Next I create a new product supplier info
--
-  !record {model: product.supplierinfo, id: product_supplierinfo}:
-    delay: 1
-    name: supplier_crossdock
-    min_qty: 2.0
-    qty: 10.0
-    product_tmpl_id: product.product_product_18_product_template
-
--
     Create new product without any routes.
 -
     !record {model: product.product, id: cross_shop_product}:
@@ -27,15 +17,14 @@
         categ_id: product.product_category_1
         list_price: 100.0
         standard_price: 70.0
+        seller_ids:
+            - delay: 1
+              name: supplier_crossdock
+              min_qty: 2.0
+              qty: 5.0
         type: product
         uom_id: product.product_uom_unit
         uom_po_id: product.product_uom_unit
--
-  Set supplierinfo on product
--
-  !python {model: product.product}: |
-    self.write(cr, uid, ref('cross_shop_product'), { 'seller_ids': [(6, 0, [ref('product_supplierinfo')])]}, context=context )
-
 -
     Create a sales order with a line of 100 PCE incoming shipment, with route_id crossdock shipping.
 -

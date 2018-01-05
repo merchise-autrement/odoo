@@ -31,23 +31,14 @@
     sale_id = self.pool.get('sale.order').browse(cr, uid, ref("sale_order_route_dropship01"))
     proc_id = self.search(cr, uid, [('group_id.name', '=', sale_id.name), ('state', '=', 'exception')])
     assert proc_id, 'No Procurement!'
-
 -
-  Next I create a new product supplier info
+  I set the at least one supplier on the product.
 -
-  !record {model: product.supplierinfo, id: product_supplierinfo}:
-    delay: 1
-    name: base.res_partner_2
-    min_qty: 2.0
-    qty: 10.0
-    product_tmpl_id: product.product_product_18_product_template
-
--
-  Set supplierinfo on product
--
-  !python {model: product.product}: |
-    self.write(cr, uid, ref('product_with_no_seller'), { 'seller_ids': [(6, 0, [ref('product_supplierinfo')])]}, context=context )
-
+  !record {model: product.product, id: product_with_no_seller}:
+    seller_ids:
+      - delay: 1
+        name: base.res_partner_2
+        min_qty: 2.0
 -
   I run the Procurement.
 -
