@@ -177,12 +177,12 @@
                     <group>
                         <group string="Sale" name="acc_sale">
                             <field name="property_payment_term_id" widget="selection"/>
-                            <field name="credit" groups="base.group_no_one"/>
+                            <field name="credit" groups="account.group_account_user"/>
                             <field name="trust"/>
                         </group>
                         <group string="Purchase" name="acc_purchase">
                             <field name="property_supplier_payment_term_id" widget="selection"/>
-                            <field name="debit" groups="base.group_no_one"/>
+                            <field name="debit" groups="account.group_account_user"/>
                             <field name="currency_id" invisible="1"/>
                         </group>
                         <group string="Fiscal Information" name="fiscal_information">
