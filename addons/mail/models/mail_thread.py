@@ -66,8 +66,6 @@ class MailThread(models.AbstractModel):
        creating messages
      - ``tracking_disable``: at create and write, perform no MailThread features
        (auto subscription, tracking, post, ...)
-     - ``mail_save_message_last_post``: at message_post, update message_last_post
-       datetime field
      - ``mail_auto_delete``: auto delete mail notifications; True by default
        (technical hack for templates)
      - ``mail_notify_force_send``: if less than 50 email notifications to send,
@@ -95,7 +93,6 @@ class MailThread(models.AbstractModel):
     message_ids = fields.One2many(
         'mail.message', 'res_id', string='Messages',
         domain=lambda self: [('model', '=', self._name)], auto_join=True)
-    message_last_post = fields.Datetime('Last Message Date', help='Date of the last message posted on the record.')
     message_unread = fields.Boolean(
         'Unread Messages', compute='_get_message_unread',
         help="If checked new messages require your attention.")
@@ -570,13 +567,6 @@ class MailThread(models.AbstractModel):
         DocModel.browse(res_ids).check_access_rule(check_operation)
 
     @api.model
-    def _get_inbox_action_xml_id(self):
-        """ When redirecting towards the Inbox, choose which action xml_id has
-            to be fetched. This method is meant to be inherited, at least in portal
-            because portal users have a different Inbox action than classic users. """
-        return 'mail.mail_channel_action_client_chat'
-
-    @api.model
     def _generate_notification_token(self, base_link, params):
         secret = self.env['ir.config_parameter'].sudo().get_param('database.secret')
         token = '%s?%s' % (base_link, ' '.join('%s=%s' % (key, params[key]) for key in sorted(params)))
@@ -825,15 +815,6 @@ class MailThread(models.AbstractModel):
     # ------------------------------------------------------
     # Mail gateway
     # ------------------------------------------------------
-
-    @api.model
-    def message_capable_models(self):
-        """ Used by the plugin addon, based for plugin_outlook and others. """
-        ret_dict = {}
-        for model_name, model in self.env.items():
-            if hasattr(model, "message_process") and hasattr(model, "message_post"):
-                ret_dict[model_name] = model._description
-        return ret_dict
 
     def _message_find_partners(self, message, header_fields=['From']):
         """ Find partners related to some header fields of the message.
@@ -1741,18 +1722,15 @@ class MailThread(models.AbstractModel):
                 ]).write({'author_id': partner_info['partner_id']})
         return result
 
-    def _message_preprocess_attachments(self, attachments, attachment_ids, attach_model, attach_res_id):
+    def _message_post_process_attachments(self, attachments, attachment_ids, message_data):
         """ Preprocess attachments for mail_thread.message_post() or mail_mail.create().
 
         :param list attachments: list of attachment tuples in the form ``(name,content)``,
                                  where content is NOT base64 encoded
         :param list attachment_ids: a list of attachment ids, not in tomany command form
-        :param str attach_model: the model of the attachments parent record
-        :param integer attach_res_id: the id of the attachments parent record
+        :param dict message_data: model: the model of the attachments parent record,
+          res_id: the id of the attachments parent record
         """
-        return self._message_post_process_attachments(attachments, attachment_ids, {'model': attach_model, 'res_id': attach_res_id})
-
-    def _message_post_process_attachments(self, attachments, attachment_ids, message_data):
         IrAttachment = self.env['ir.attachment']
         m2m_attachment_ids = []
         cid_mapping = {}
@@ -1940,15 +1918,7 @@ class MailThread(models.AbstractModel):
         # Post the message
         new_message = MailMessage.create(values)
 
-        # Post-process: subscribe author, update message_last_post
-        # Note: the message_last_post mechanism is no longer used.  This
-        # will be removed in a later version.
-        if (self._context.get('mail_save_message_last_post') and
-                model and model != 'mail.thread' and self.ids and subtype_id):
-            subtype_rec = self.env['mail.message.subtype'].sudo().browse(subtype_id)
-            if not subtype_rec.internal:
-                # done with SUPERUSER_ID, because on some models users can post only with read access, not necessarily write access
-                self.sudo().write({'message_last_post': fields.Datetime.now()})
+        # Post-process: subscribe author
         if author_id and model and self.ids and message_type != 'notification' and not self._context.get('mail_create_nosubscribe'):
             self.message_subscribe([author_id], force=False)
 
