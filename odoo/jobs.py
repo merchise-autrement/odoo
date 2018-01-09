@@ -684,10 +684,7 @@ def _extract_signature(args, kwargs):
     '''Detect the proper signature.
 
     '''
-    try:
-        from xoutil.symbols import Unset
-    except ImportError:
-        from xoutil import Unset
+    from xoutil.symbols import Unset
     from odoo.models import BaseModel
     from odoo.sql_db import Cursor
     from odoo.tools import frozendict
@@ -809,15 +806,15 @@ def MaybeRecords(dbname, uid, model, ids=None, cr=None, context=None):
 
 @contextlib.contextmanager
 def OdooEnvironment(dbname, uid, cr=None, context=None):
+    from xoutil.objects import temp_attributes
     __traceback_hide__ = True  # noqa: hide from Celery Tracebacks
     with Environment.manage():
         Registry(dbname).check_signaling()
         registry = Registry(dbname)
         # Several pieces of OpenERP code expect this attributes to be set in the
         # current thread.
-        threading.current_thread().uid = uid
-        threading.current_thread().dbname = dbname
-        try:
+        thread = threading.currentThread()
+        with temp_attributes(thread, dict(uid=uid, dbname=dbname)):
             if cr is None:
                 cr = registry.cursor()
                 closing = lambda c: c  # noqa
@@ -826,11 +823,6 @@ def OdooEnvironment(dbname, uid, cr=None, context=None):
             with closing(cr) as cr2:
                 env = Environment(cr2, uid, context or {})
                 yield env
-        finally:
-            if hasattr(threading.current_thread(), 'uid'):
-                del threading.current_thread().uid
-            if hasattr(threading.current_thread(), 'dbname'):
-                del threading.current_thread().dbname
 
 
 @contextlib.contextmanager
@@ -917,7 +909,8 @@ def _send(channel, message, env=None):
         _context = ExecutionContext[CELERY_JOB]
         env = _context['env']
     cr, uid, context = env.args
-    with OdooEnvironment(cr.dbname, uid, context=context) as newenv:
+    with RegistryManager.get(cr.dbname).cursor() as newcr:
+        newenv = Environment(newcr, uid, context=context)
         # The bus waits until the COMMIT to actually NOTIFY listening clients,
         # this means that all progress reports, would not be visible to clients
         # until the whole transaction commits:

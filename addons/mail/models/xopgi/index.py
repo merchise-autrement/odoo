@@ -172,10 +172,10 @@ class MailThreadIndex(AbstractModel):
         for thread in self:
             if not thread.thread_index:
                 imd = self.env['ir.model.data']
-                search = lambda r: self._thread_by_index(r)  # noqa: E731
+                search = lambda r: self.sudo()._thread_by_index(r)  # noqa: E731
                 reference = generate_reference(search)
                 if reference:
-                    imd.create(
+                    imd.sudo().create(
                         dict(name=reference,
                              model=self._name,
                              res_id=thread.id,
