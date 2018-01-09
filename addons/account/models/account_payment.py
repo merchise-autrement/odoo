@@ -500,7 +500,7 @@ class account_payment(models.Model):
     @api.multi
     def action_draft(self):
         return self.write({'state': 'draft'})
-        
+
     def action_validate_invoice_payment(self):
         """ Posts a payment used to pay an invoice. This function only posts the
         payment by default but can be overridden to apply specific post or pre-processing.
@@ -664,7 +664,7 @@ class account_payment(models.Model):
                 for inv in invoice:
                     if inv.move_id:
                         name += inv.number + ', '
-                name = name[:len(name)-2] 
+                name = name[:len(name)-2]
         return {
             'name': name,
             'account_id': self.destination_account_id.id,
