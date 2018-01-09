@@ -258,10 +258,7 @@ def patch_logging(override=True, force=False):
                 ignored += (RedirectWarning, )
             except ImportError:
                 pass
-            try:
-                from openerp.exceptions import except_orm
-            except ImportError:
-                from openerp.osv.orm import except_orm
+            from openerp.exceptions import except_orm, MissingError
             ignored += (except_orm, )
             try:
                 from openerp.osv.osv import except_osv
@@ -269,7 +266,7 @@ def patch_logging(override=True, force=False):
             except ImportError:
                 pass
             _type, value, _tb = exc_info
-            return not isinstance(value, ignored)
+            return not isinstance(value, ignored) or isinstance(value, MissingError)
 
         def set_record_tags(self, record):
             methods = (
