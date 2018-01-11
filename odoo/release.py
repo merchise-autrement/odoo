@@ -22,7 +22,7 @@ try:
     COMMITER_DATE = _c(['git', 'log', '-1', '--pretty=%cd', '--date=iso']).strip()
     STAMP = _c(['date', '--date=%s' % COMMITER_DATE, '+.%Y%m%d.%H%M%S']).strip()
     STAMP += '+' + RELEASE
-except:
+except:  # noqa
     STAMP = 0
 finally:
     os.chdir(_cwd)

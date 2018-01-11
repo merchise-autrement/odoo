@@ -36,6 +36,7 @@
     <template id="header" inherit_id="website.layout" name="Header Shop My Cart Link">
         <xpath expr="//header//ul[@id='top_menu']/li" position="before">
             <t t-set="website_sale_order" t-value="website.sale_get_order()" />
+            <li class="divider hidden"/> <!-- Make sure the cart and related menus are not folded (see autohideMenu) -->
             <li id="my_cart" t-att-class="'' if website_sale_order and website_sale_order.cart_quantity else 'hidden'">
                 <a href="/shop/cart">
                     <i class="fa fa-shopping-cart"></i>
@@ -1316,7 +1317,7 @@
                                 <h3 class="mb24">Pay with </h3>
                                 <t t-call="payment.payment_tokens_list">
                                     <t t-set="mode" t-value="'payment'"/>
-                                    <t t-set="submit_txt" t-value="'Pay Now'"/>
+                                    <t t-set="submit_txt">Pay Now</t>
                                     <t t-set="icon_class" t-value="'fa-lock'"/>
                                     <t t-set="pms" t-value="tokens"/>
                                     <t t-set="form_action" t-value="'/shop/payment/token'"/>
@@ -1566,14 +1567,14 @@
         <div class="panel panel-info break-word">
           <div class="panel-heading">Bill To:</div>
           <div class="panel-body">
-            <div class='o_div_text_overflow' t-field="order.partner_invoice_id" t-options="{'widget': 'contact','fields': ['address', 'name', 'phone', 'email']}" />
+            <div t-field="order.partner_invoice_id" t-options="{'widget': 'contact','fields': ['address', 'name', 'phone', 'email']}" />
           </div>
         </div>
         <t t-if="not order.only_services" groups="sale.group_delivery_invoice_address">
             <div class="panel panel-info break-word">
               <div class="panel-heading">Ship To:</div>
               <div class="panel-body">
-                <div class='o_div_text_overflow' t-field="order.partner_shipping_id" t-options="{'widget': 'contact','fields': ['address', 'name', 'phone']}" />
+                <div t-field="order.partner_shipping_id" t-options="{'widget': 'contact','fields': ['address', 'name', 'phone']}" />
               </div>
             </div>
         </t>
