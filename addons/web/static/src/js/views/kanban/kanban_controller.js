@@ -26,7 +26,6 @@ var KanbanController = BasicController.extend({
         kanban_column_delete: '_onDeleteColumn',
         kanban_column_add_record: '_onAddRecordToColumn',
         kanban_column_resequence: '_onColumnResequence',
-        kanban_column_archive_records: '_onArchiveRecords',
         kanban_load_more: '_onLoadMore',
         kanban_load_records: '_onLoadColumnRecords',
         column_toggle_fold: '_onToggleColumn',
@@ -181,28 +180,6 @@ var KanbanController = BasicController.extend({
             }).fail(this.reload.bind(this));
     },
     /**
-     * The interface allows in some case the user to archive a column. This is
-     * what this handler is for.
-     *
-     * @private
-     * @param {OdooEvent} event
-     */
-    _onArchiveRecords: function (event) {
-        var self = this;
-        var active_value = !event.data.archive;
-        var column = event.target;
-        var record_ids = _.pluck(column.records, 'db_id');
-        if (record_ids.length) {
-            this.model
-                .toggleActive(record_ids, active_value, column.db_id)
-                .then(function (db_id) {
-                    var data = self.model.get(db_id);
-                    self.renderer.updateColumn(db_id, data);
-                    self._updateEnv();
-                });
-        }
-    },
-    /**
      * @private
      * @param {OdooEvent} event
      */
@@ -239,15 +216,16 @@ var KanbanController = BasicController.extend({
      * @private
      */
     _onButtonNew: function () {
-        var data = this.model.get(this.handle, {raw: true});
-        if (data.groupedBy.length > 0 && data.count > 0 && this.on_create === 'quick_create') {
+        var state = this.model.get(this.handle, {raw: true});
+        var hasColumns = state.groupedBy.length > 0 && state.data.length > 0;
+        if (hasColumns && this.on_create === 'quick_create') {
             // Activate the quick create in the first column
             this.renderer.addQuickCreate();
         } else if (this.on_create && this.on_create !== 'quick_create') {
             // Execute the given action
             this.do_action(this.on_create, {
                 on_close: this.reload.bind(this),
-                additional_context: data.context,
+                additional_context: state.context,
             });
         } else {
             // Open the form view
@@ -355,11 +333,13 @@ var KanbanController = BasicController.extend({
                     self._updateEnv();
 
                     var columnState = self.model.getColumn(db_id);
-                    return self.renderer.updateColumn(columnState.id, columnState).then(function () {
-                        if (event.data.openRecord) {
-                            self.trigger_up('open_record', {id: db_id, mode: 'edit'});
-                        }
-                    });
+                    return self.renderer
+                        .updateColumn(columnState.id, columnState, {openQuickCreate: true})
+                        .then(function () {
+                            if (event.data.openRecord) {
+                                self.trigger_up('open_record', {id: db_id, mode: 'edit'});
+                            }
+                        });
                 });
         }
     },

@@ -96,7 +96,7 @@ QUnit.module('Views', {
     });
 
     QUnit.test('basic grouped rendering', function (assert) {
-        assert.expect(13);
+        assert.expect(11);
 
         var kanban = createView({
             View: KanbanView,
@@ -130,10 +130,6 @@ QUnit.module('Views', {
         // check available actions in kanban header's config dropdown
         assert.ok(kanban.$('.o_kanban_header:first .o_kanban_config .o_kanban_toggle_fold').length,
                         "should be able to fold the column");
-        assert.ok(!kanban.$('.o_kanban_header:first .o_kanban_config .o_column_archive').length,
-                        "should be not able to archive the records");
-        assert.ok(!kanban.$('.o_kanban_header:first .o_kanban_config .o_column_unarchive').length,
-                        "should be not able to restore the records");
         assert.ok(!kanban.$('.o_kanban_header:first .o_kanban_config .o_column_edit').length,
                         "should not be able to edit the column");
         assert.ok(!kanban.$('.o_kanban_header:first .o_kanban_config .o_column_delete').length,
@@ -149,7 +145,7 @@ QUnit.module('Views', {
     });
 
     QUnit.test('basic grouped rendering with active field', function (assert) {
-        assert.expect(6);
+        assert.expect(2);
 
         // add active field on partner model and make all records active
         this.data.partner.fields.active = {string: 'Active', type: 'char', default: true};
@@ -174,19 +170,10 @@ QUnit.module('Views', {
             },
         });
 
-        // check available actions in kanban header's config dropdown
-        assert.ok(kanban.$('.o_kanban_header:first .o_kanban_config .o_column_archive').length,
-                        "should be able to archive the records");
-        assert.ok(kanban.$('.o_kanban_header:first .o_kanban_config .o_column_unarchive').length,
-                        "should be able to restore the records");
-
         // archive the records of the first column
         assert.strictEqual(kanban.$('.o_kanban_group:last .o_kanban_record').length, 3,
             "last column should contain 3 records");
         envIDs = [4];
-        kanban.$('.o_kanban_group:last .o_column_archive').click(); // click on 'Archive'
-        assert.strictEqual(kanban.$('.o_kanban_group:last .o_kanban_record').length, 0,
-            "last column should contain no record");
         kanban.destroy();
     });
 
@@ -493,6 +480,58 @@ QUnit.module('Views', {
         kanban.destroy();
     });
 
+    QUnit.test('quick create several records in a row', function (assert) {
+        assert.expect(6);
+
+        var kanban = createView({
+            View: KanbanView,
+            model: 'partner',
+            data: this.data,
+            arch: '<kanban class="o_kanban_test" on_create="quick_create">' +
+                        '<field name="bar"/>' +
+                        '<templates><t t-name="kanban-box">' +
+                        '<div><field name="foo"/></div>' +
+                    '</t></templates></kanban>',
+            groupBy: ['bar'],
+        });
+
+        assert.strictEqual(kanban.$('.o_kanban_group:first .o_kanban_record').length, 1,
+            "first column should contain one record");
+
+        // click to add an element, fill the input and press ENTER
+        kanban.$('.o_kanban_header .o_kanban_quick_add i').first().click();
+
+        assert.strictEqual(kanban.$('.o_kanban_quick_create').length, 1,
+            "the quick create should be open");
+
+        kanban.$('.o_kanban_quick_create input')
+            .val('new partner 1')
+            .trigger($.Event('keypress', {
+                which: $.ui.keyCode.ENTER,
+                keyCode: $.ui.keyCode.ENTER,
+            }));
+
+        assert.strictEqual(kanban.$('.o_kanban_group:first .o_kanban_record').length, 2,
+            "first column should now contain two records");
+        assert.strictEqual(kanban.$('.o_kanban_quick_create').length, 1,
+            "the quick create should still be open");
+
+        // create a second element in a row
+        kanban.$('.o_kanban_quick_create input')
+            .val('new partner 2')
+            .trigger($.Event('keypress', {
+                which: $.ui.keyCode.ENTER,
+                keyCode: $.ui.keyCode.ENTER,
+            }));
+
+        assert.strictEqual(kanban.$('.o_kanban_group:first .o_kanban_record').length, 3,
+            "first column should now contain three records");
+        assert.strictEqual(kanban.$('.o_kanban_quick_create').length, 1,
+            "the quick create should still be open");
+
+        kanban.destroy();
+    });
+
     QUnit.test('quick create fail in grouped', function (assert) {
         assert.expect(7);
 
@@ -524,7 +563,6 @@ QUnit.module('Views', {
                 return this._super.apply(this, arguments);
             },
         });
-        kanban.renderButtons();
 
         assert.strictEqual(kanban.$('.o_kanban_group:first .o_kanban_record').length, 2,
             "there should be 2 records in first column");
@@ -552,6 +590,48 @@ QUnit.module('Views', {
         var $firstRecord = kanban.$('.o_kanban_group:first .o_kanban_record:first');
         assert.strictEqual($firstRecord.text(), 'test',
             "the first record of the first column should be the new one");
+
+        kanban.destroy();
+    });
+
+    QUnit.test('quick create record in empty grouped kanban', function (assert) {
+        assert.expect(3);
+
+        var kanban = createView({
+            View: KanbanView,
+            model: 'partner',
+            data: this.data,
+            arch: '<kanban on_create="quick_create">' +
+                    '<field name="product_id"/>' +
+                    '<templates><t t-name="kanban-box">' +
+                        '<div><field name="foo"/></div>' +
+                    '</t></templates>' +
+                '</kanban>',
+            groupBy: ['product_id'],
+            mockRPC: function (route, args) {
+                if (args.method === 'read_group') {
+                    // override read_group to return empty groups, as this is
+                    // the case for several models (e.g. project.task grouped
+                    // by stage_id)
+                    var result = [
+                        {__domain: [['product_id', '=', 3]], product_id_count: 0},
+                        {__domain: [['product_id', '=', 5]], product_id_count: 0},
+                    ];
+                    return $.when(result);
+                }
+                return this._super.apply(this, arguments);
+            },
+        });
+
+        assert.strictEqual(kanban.$('.o_kanban_group').length, 2,
+            "there should be 2 columns");
+        assert.strictEqual(kanban.$('.o_kanban_record').length, 0,
+            "both columns should be empty");
+
+        kanban.$buttons.find('.o-kanban-button-new').click();
+
+        assert.strictEqual(kanban.$('.o_kanban_group:first .o_kanban_quick_create').length, 1,
+            "should have opened the quick create in the first column");
 
         kanban.destroy();
     });
@@ -1016,7 +1096,7 @@ QUnit.module('Views', {
     });
 
     QUnit.test('delete a column in grouped on m2o', function (assert) {
-        assert.expect(32);
+        assert.expect(28);
 
         testUtils.patch(KanbanRenderer, {
             _renderGrouped: function () {
@@ -1073,10 +1153,6 @@ QUnit.module('Views', {
                         "should be able to edit the column");
         assert.ok(kanban.$('.o_kanban_group:first .o_column_delete').length,
                         "should be able to delete the column");
-        assert.ok(!kanban.$('.o_kanban_header:first .o_kanban_config .o_column_archive').length,
-                        "should not be able to archive the records");
-        assert.ok(!kanban.$('.o_kanban_header:first .o_kanban_config .o_column_unarchive').length,
-                        "should not be able to restore the records");
 
         // delete second column (first cancel the confirm request, then confirm)
         kanban.$('.o_kanban_group:last .o_column_delete').click(); // click on delete
@@ -1099,10 +1175,6 @@ QUnit.module('Views', {
             'Undefined column could not be deleted');
         assert.ok(!kanban.$('.o_kanban_group:first .o_column_edit').length,
             'Undefined column could not be edited');
-        assert.ok(!kanban.$('.o_kanban_header:first .o_kanban_config .o_column_archive').length,
-                        "should not be able to archive the records");
-        assert.ok(!kanban.$('.o_kanban_header:first .o_kanban_config .o_column_unarchive').length,
-                        "should not be able to restore the records");
         assert.verifySteps(['read_group', 'unlink', 'read_group']);
         assert.strictEqual(kanban.renderer.widgets.length, 2,
             "the old widgets should have been correctly deleted");
@@ -1699,7 +1771,7 @@ QUnit.module('Views', {
     });
 
     QUnit.test('archive kanban column, when active field is not in the view', function (assert) {
-        assert.expect(3);
+        assert.expect(0);
 
         this.data.partner.fields.active = {string: 'Active', type: 'char', default: true};
 
@@ -1722,14 +1794,6 @@ QUnit.module('Views', {
                 return this._super.apply(this, arguments);
             },
         });
-
-        var $first_column = kanban.$('.o_kanban_group:first()');
-        assert.strictEqual($first_column.find('.o_kanban_record').length, 2,
-            "there should be 2 partners in first column");
-        $first_column.find('.o_column_archive').click();
-        assert.ok(writeOnActive, "should write on the active field");
-        assert.strictEqual($first_column.find('.o_kanban_record').length, 0,
-            "there should not be partners anymore");
 
         kanban.destroy();
     });
@@ -2204,6 +2268,36 @@ QUnit.module('Views', {
         var lastCount = parseInt(kanban.$('.o_kanban_counter_side').eq(1).text());
         assert.strictEqual(lastCount, initialCount + 1,
             "kanban counters should have updated on quick create");
+
+        kanban.destroy();
+    });
+
+    QUnit.test('progress bar subgroup count recompute', function(assert) {
+        assert.expect(2);
+
+        var kanban = createView({
+            View: KanbanView,
+            model: 'partner',
+            data: this.data,
+            arch:
+                '<kanban>' +
+                    '<progressbar field="foo" colors=\'{"yop": "success", "gnap": "warning", "blip": "danger"}\'/>' +
+                    '<templates><t t-name="kanban-box">' +
+                        '<div>' +
+                            '<field name="foo"/>' +
+                        '</div>' +
+                    '</t></templates>' +
+                '</kanban>',
+            groupBy: ['bar'],
+        });
+
+        var initialCount = parseInt(kanban.$('.o_kanban_counter_side').eq(1).text());
+        assert.strictEqual(initialCount, 3,
+            "Initial count should be Three");
+        kanban.$('.bg-success-full').click();
+        var lastCount = parseInt(kanban.$('.o_kanban_counter_side').eq(1).text());
+        assert.strictEqual(lastCount, 0,
+            "kanban counters should vary according to what subgroup is selected");
 
         kanban.destroy();
     });

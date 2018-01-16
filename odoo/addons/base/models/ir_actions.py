@@ -196,7 +196,12 @@ class IrActionsActWindow(models.Model):
             for values in result:
                 model = values.get('res_model')
                 if model in self.env:
-                    values['help'] = self.env[model].get_empty_list_help(values.get('help', ""))
+                    eval_ctx = dict(self.env.context)
+                    try:
+                        ctx = safe_eval(values.get('context', '{}'), eval_ctx)
+                    except:
+                        ctx = {}
+                    values['help'] = self.with_context(**ctx).env[model].get_empty_list_help(values.get('help', ''))
         return result
 
     @api.model
@@ -442,7 +447,12 @@ class IrActionsServer(models.Model):
         for exp in action.fields_lines:
             res[exp.col1.name] = exp.eval_value(eval_context=eval_context)[exp.id]
 
-        self.env[action.model_id.model].browse(self._context.get('active_id')).write(res)
+        if self._context.get('onchange_self'):
+            record_cached = self._context['onchange_self']
+            for field, new_value in res.items():
+                record_cached[field] = new_value
+        else:
+            self.env[action.model_id.model].browse(self._context.get('active_id')).write(res)
 
     @api.model
     def run_action_object_create(self, action, eval_context=None):
@@ -537,6 +547,8 @@ class IrActionsServer(models.Model):
 
             elif hasattr(self, 'run_action_%s' % action.state):
                 active_id = self._context.get('active_id')
+                if not active_id and self._context.get('onchange_self'):
+                    active_id = self._context['onchange_self']._origin.id
                 active_ids = self._context.get('active_ids', [active_id] if active_id else [])
                 for active_id in active_ids:
                     # run context dedicated to a particular active_id
