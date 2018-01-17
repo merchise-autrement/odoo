@@ -297,6 +297,15 @@ class IrAttachment(models.Model):
     mimetype = fields.Char('Mime Type', readonly=True)
     index_content = fields.Text('Indexed Content', readonly=True, prefetch=False)
 
+    # merchise: This allows to serve .less.css files (when using SPDY or
+    # HTTP/2) with a Cache-Control header properly set.
+    cache_control_header = fields.Char(
+        'Cache Control Header (as is)',
+        size=200,
+        index=False,
+        readonly=True
+    )
+
     @api.model_cr_context
     def _auto_init(self):
         res = super(IrAttachment, self)._auto_init()
