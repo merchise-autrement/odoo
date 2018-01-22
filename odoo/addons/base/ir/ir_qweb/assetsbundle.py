@@ -277,6 +277,7 @@ class AssetsBundle(object):
             Checks if the bundle contains any sass/less content, then compiles it to css.
             Returns the bundle's flat css.
         """
+        from odoo.http import STATIC_CACHE
         for atype in (SassStylesheetAsset, LessStylesheetAsset):
             assets = [asset for asset in self.stylesheets if isinstance(asset, atype)]
             if assets:
@@ -295,12 +296,16 @@ class AssetsBundle(object):
                     asset._content = fragments.pop(0)
 
                     if debug or spdy:
+                        if debug:
+                            asset_content = asset.content
+                        else:
+                            asset_content = asset.minify()
                         try:
                             fname = os.path.basename(asset.url)
                             url = asset.html_url
                             with self.env.cr.savepoint():
                                 self.env['ir.attachment'].sudo().create(dict(
-                                    datas=asset.content.encode('utf8').encode('base64'),
+                                    datas=asset_content.encode('utf8').encode('base64'),
                                     mimetype='text/css',
                                     type='binary',
                                     name=url,
@@ -308,6 +313,7 @@ class AssetsBundle(object):
                                     datas_fname=fname,
                                     res_model=False,
                                     res_id=False,
+                                    cache_control_header='max-age=%d, public' % STATIC_CACHE
                                 ))
 
                             if self.env.context.get('commit_assetsbundle') is True:
