@@ -662,7 +662,6 @@ class Proxy(http.Controller):
             return client.post('/' + path, base_url=base_url, query_string=query_string,
                                headers=headers, data=data)
 
-
 if not odoo.tools.config.get('disable_database_manager', False):
     class Database(http.Controller):
 
