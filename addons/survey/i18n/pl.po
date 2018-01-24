@@ -924,7 +924,7 @@ msgstr ""
 #. module: survey
 #: model:ir.ui.view,arch_db:survey.survey_survey_view_search
 msgid "Late Activities"
-msgstr "Spóźnione czynności"
+msgstr ""
 
 #. module: survey
 #: selection:survey.user_input,type:0

@@ -3,12 +3,11 @@
 # * google_drive
 # 
 # Translators:
-# grazziano <gra.negocia@gmail.com>, 2017
-# Martin Trigaux <mat@odoo.com>, 2017
-# Mateus Lopes <mateus1@gmail.com>, 2017
-# danimaribeiro <danimaribeiro@gmail.com>, 2017
-# Rodrigo de Almeida Sottomaior Macedo <rmsolucoeseminformatic4@gmail.com>, 2017
-# André Augusto Firmino Cordeiro <a.cordeito@gmail.com>, 2017
+# grazziano <gra.negocia@gmail.com>, 2016
+# Martin Trigaux <mat@odoo.com>, 2016
+# Mateus Lopes <mateus1@gmail.com>, 2016
+# danimaribeiro <danimaribeiro@gmail.com>, 2016
+# Rodrigo de Almeida Sottomaior Macedo <rmsolucoeseminformatic4@gmail.com>, 2016
 # SILMAR PINHEIRO VIANA <pinheirosilmar@gmail.com>, 2017
 msgid ""
 msgstr ""
@@ -112,7 +111,7 @@ msgstr "Cliente"
 #. module: google_drive
 #: model:ir.model.fields,field_description:google_drive.field_google_drive_config_display_name
 msgid "Display Name"
-msgstr "Nome exibido"
+msgstr "Nome para Exibição"
 
 #. module: google_drive
 #: model:ir.model.fields,field_description:google_drive.field_google_drive_config_filter_id
@@ -168,7 +167,7 @@ msgstr "ID"
 #. module: google_drive
 #: model:ir.model.fields,field_description:google_drive.field_google_drive_config___last_update
 msgid "Last Modified on"
-msgstr "Última modificação em"
+msgstr "Última Modificação em"
 
 #. module: google_drive
 #: model:ir.model.fields,field_description:google_drive.field_google_drive_config_write_uid

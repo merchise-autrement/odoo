@@ -3,34 +3,35 @@
 # * hr
 # 
 # Translators:
-# Martin Trigaux <mat@odoo.com>, 2017
-# Gustavo Valverde <g.valverde02@gmail.com>, 2017
-# Antonio Trueba <atgayol@gmail.com>, 2017
-# RGB Consulting <odoo@rgbconsulting.com>, 2017
-# Luis M. Ontalba <luis.martinez@tecnativa.com>, 2017
-# Luis M. Triana <luis.triana@jarsa.com.mx>, 2017
-# Alejandro Die Sanchis <marketing@domatix.com>, 2017
-# Sergio Flores <vitavitae1@gmail.com>, 2017
+# Carles Antoli <carlesantoli@hotmail.com>, 2016
+# Antonio Trueba <atgayol@gmail.com>, 2016
+# oihane <oihanecruce@gmail.com>, 2016
+# Martin Trigaux <mat@odoo.com>, 2016
+# Alejandro Die Sanchis <marketing@domatix.com>, 2016
+# Sergio Flores <vitavitae1@gmail.com>, 2016
+# Carlos Eduardo Rodriguez Rossi <crodriguez@samemotion.com>, 2016
+# Pedro M. Baeza <pedro.baeza@gmail.com>, 2016
+# Luis M. Triana <luis.triana@jarsa.com.mx>, 2016
+# Sergio Hevia <sah@talleresbernesga.com>, 2016
+# José Vicente <txusev@gmail.com>, 2016
+# Ivan Nieto <ivan.n.s@tuta.io>, 2016
+# David Perez <david@closemarketing.es>, 2016
+# Mateo Tibaquirá Palacios <nestormateo@gmail.com>, 2016
+# Leonardo Chianea <noamixcontenidos@gmail.com>, 2016
+# Ana Juaristi <ajuaristio@gmail.com>, 2016
+# Luis M. Ontalba <luis.martinez@tecnativa.com>, 2016
 # José Antonio Cuello <inactive+Yopli2k@transifex.com>, 2017
-# Carlos Eduardo Rodriguez Rossi <crodriguez@samemotion.com>, 2017
 # Alejandro Santana <alejandrosantana@anubia.es>, 2017
-# Pedro M. Baeza <pedro.baeza@gmail.com>, 2017
-# José Vicente <txusev@gmail.com>, 2017
-# Ivan Nieto <ivan.n.s@tuta.io>, 2017
-# Juan José Scarafía <scarafia.juanjose@gmail.com>, 2017
-# Carles Antoli <carlesantoli@hotmail.com>, 2017
-# Mateo Tibaquirá Palacios <nestormateo@gmail.com>, 2017
-# oihane <oihanecruce@gmail.com>, 2017
 # Christopher Ormaza <chris.ormaza@gmail.com>, 2017
 # Fernando San Martín Woerner <fsnmartin@gmail.com>, 2017
-# Ana Juaristi <ajuaristio@gmail.com>, 2017
+# RGB Consulting <odoo@rgbconsulting.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-11-16 08:08+0000\n"
 "PO-Revision-Date: 2017-11-16 08:08+0000\n"
-"Last-Translator: Ana Juaristi <ajuaristio@gmail.com>, 2017\n"
+"Last-Translator: RGB Consulting <odoo@rgbconsulting.com>, 2017\n"
 "Language-Team: Spanish (https://www.transifex.com/odoo/teams/41243/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -235,7 +236,7 @@ msgstr "Departamentos"
 #: model:ir.model.fields,field_description:hr.field_hr_employee_display_name
 #: model:ir.model.fields,field_description:hr.field_hr_job_display_name
 msgid "Display Name"
-msgstr "Nombre a Mostrar"
+msgstr "Nombre a mostrar"
 
 #. module: hr
 #: selection:hr.employee,marital:0
@@ -369,7 +370,7 @@ msgstr "Sexo"
 #: model:ir.ui.view,arch_db:hr.view_employee_filter
 #: model:ir.ui.view,arch_db:hr.view_job_filter
 msgid "Group By"
-msgstr "Agrupar Por"
+msgstr "Agrupar por"
 
 #. module: hr
 #: model:ir.model,name:hr.model_hr_department
@@ -477,7 +478,7 @@ msgstr "Empleos"
 #: model:ir.model.fields,field_description:hr.field_hr_employee_category___last_update
 #: model:ir.model.fields,field_description:hr.field_hr_job___last_update
 msgid "Last Modified on"
-msgstr "Última Modificación en"
+msgstr "Última modificación en"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_department_write_uid
@@ -485,7 +486,7 @@ msgstr "Última Modificación en"
 #: model:ir.model.fields,field_description:hr.field_hr_employee_write_uid
 #: model:ir.model.fields,field_description:hr.field_hr_job_write_uid
 msgid "Last Updated by"
-msgstr "Última Actualización por"
+msgstr "Última actualización por"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_department_write_date
@@ -493,7 +494,7 @@ msgstr "Última Actualización por"
 #: model:ir.model.fields,field_description:hr.field_hr_employee_write_date
 #: model:ir.model.fields,field_description:hr.field_hr_job_write_date
 msgid "Last Updated on"
-msgstr "Última Actualización el"
+msgstr "Última actualización el"
 
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.view_hr_job_form
@@ -547,7 +548,7 @@ msgstr ""
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_department_member_ids
 msgid "Members"
-msgstr "Miembros"
+msgstr "Socios"
 
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.hr_kanban_view_employees
@@ -611,7 +612,7 @@ msgstr ""
 #. module: hr
 #: model:res.groups,name:hr.group_hr_user
 msgid "Officer"
-msgstr "Empleado RRHH"
+msgstr "Oficial"
 
 #. module: hr
 #: selection:hr.employee,gender:0
@@ -720,17 +721,17 @@ msgstr ""
 #: model:ir.ui.menu,name:hr.hr_menu_configuration
 #: model:ir.ui.view,arch_db:hr.hr_department_view_kanban
 msgid "Settings"
-msgstr "Ajustes"
+msgstr "Configuración"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_res_config_settings_module_hr_org_chart
 msgid "Show Organizational Chart"
-msgstr "Mostrar organigrama"
+msgstr "Mostrar Estructura Organizacional"
 
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.res_config_settings_view_form
 msgid "Show organizational chart on employee form"
-msgstr "Mostrar la estructura de la organización en la ficha del empleado."
+msgstr "Mostrar la estructura de la organización en la ficha del empleado"
 
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.res_config_settings_view_form
@@ -837,7 +838,7 @@ msgstr "Aprendiz"
 #: model:ir.ui.view,arch_db:hr.view_employee_filter
 #: model:ir.ui.view,arch_db:hr.view_job_filter
 msgid "Unread Messages"
-msgstr "Mensajes sin leer"
+msgstr "Mensajes por leer"
 
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.view_employee_form
@@ -906,7 +907,7 @@ msgstr "Correo-e del trabajo"
 #. module: hr
 #: model:ir.ui.view,arch_db:hr.view_employee_form
 msgid "Work Information"
-msgstr "información de trabajo"
+msgstr "información del trabajo"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee_work_location

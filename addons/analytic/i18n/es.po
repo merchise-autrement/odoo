@@ -3,14 +3,21 @@
 # * analytic
 # 
 # Translators:
-# Pedro M. Baeza <pedro.baeza@gmail.com>, 2017
-# Luis M. Ontalba <luis.martinez@tecnativa.com>, 2017
-# José Vicente <txusev@gmail.com>, 2017
-# Martin Trigaux <mat@odoo.com>, 2017
-# Alejandro Die Sanchis <marketing@domatix.com>, 2017
-# Gustavo Valverde <g.valverde02@gmail.com>, 2017
-# Roberto Lizana <robertolizana@trey.es>, 2017
-# Martin Mendoza del Solar <martin@mendozadelsolar.com>, 2017
+# Ivan Nieto <ivan.n.s@tuta.io>, 2016
+# Sergio Hevia <sah@talleresbernesga.com>, 2016
+# José Vicente <txusev@gmail.com>, 2016
+# Martin Trigaux <mat@odoo.com>, 2016
+# Leonardo Chianea <noamixcontenidos@gmail.com>, 2016
+# Pedro M. Baeza <pedro.baeza@gmail.com>, 2016
+# Alejandro Die Sanchis <marketing@domatix.com>, 2016
+# Luis M. Ontalba <luis.martinez@tecnativa.com>, 2016
+# Mateo Tibaquirá Palacios <nestormateo@gmail.com>, 2016
+# Ana Juaristi <ajuaristio@gmail.com>, 2016
+# oihane <oihanecruce@gmail.com>, 2016
+# Carles Antoli <carlesantoli@hotmail.com>, 2016
+# Roberto Lizana <robertolizana@trey.es>, 2016
+# Luis M. Triana <luis.triana@jarsa.com.mx>, 2016
+# Martin Mendoza del Solar <martin@mendozadelsolar.com>, 2016
 # Christopher Ormaza <chris.ormaza@gmail.com>, 2017
 msgid ""
 msgstr ""
@@ -29,7 +36,7 @@ msgstr ""
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line_currency_id
 msgid "Account Currency"
-msgstr "Moneda de la Cuenta"
+msgstr "Cuenta de la moneda"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account_active
@@ -102,7 +109,7 @@ msgstr "Etiqueta analítica"
 #. module: analytic
 #: model:ir.model,name:analytic.model_account_analytic_tag
 msgid "Analytic Tags"
-msgstr "Etiquetas Analíticas"
+msgstr "Etiquetas analíticas"
 
 #. module: analytic
 #: model:ir.ui.view,arch_db:analytic.view_account_analytic_account_search
@@ -117,7 +124,7 @@ msgstr "Empresa asociada"
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account_balance
 msgid "Balance"
-msgstr "Balance"
+msgstr "Saldo pendiente"
 
 #. module: analytic
 #: model:ir.ui.view,arch_db:analytic.view_account_analytic_account_kanban
@@ -142,7 +149,7 @@ msgstr "Pulse para añadir una cuenta analítica."
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_tag_color
 msgid "Color Index"
-msgstr "Índice de color"
+msgstr "Índice de Colores"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account_company_id
@@ -182,7 +189,7 @@ msgstr "Creado por"
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line_create_date
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_tag_create_date
 msgid "Created on"
-msgstr "Creado en"
+msgstr "Creado el"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account_credit
@@ -219,7 +226,7 @@ msgstr "Descripción"
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line_display_name
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_tag_display_name
 msgid "Display Name"
-msgstr "Nombre mostrado"
+msgstr "Nombre a mostrar"
 
 #. module: analytic
 #: model:ir.ui.view,arch_db:analytic.view_account_analytic_account_search
@@ -232,7 +239,7 @@ msgstr "Agrupar por..."
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line_id
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_tag_id
 msgid "ID"
-msgstr "ID (identificación)"
+msgstr "ID"
 
 #. module: analytic
 #: model:ir.model.fields,help:analytic.field_account_analytic_account_active
@@ -266,14 +273,14 @@ msgstr "Última modificación en"
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line_write_uid
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_tag_write_uid
 msgid "Last Updated by"
-msgstr "Última actualización de"
+msgstr "Última actualización por"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account_write_date
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line_write_date
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_tag_write_date
 msgid "Last Updated on"
-msgstr "Última actualización en"
+msgstr "Última actualización el"
 
 #. module: analytic
 #: model:ir.actions.act_window,help:analytic.account_analytic_line_action

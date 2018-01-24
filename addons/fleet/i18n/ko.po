@@ -4,16 +4,13 @@
 # 
 # Translators:
 # Martin Trigaux <mat@odoo.com>, 2017
-# 최재호 <hwangtog@gmail.com>, 2018
-# Link-Up <linkup.way@gmail.com>, 2018
-# link up <link-up@naver.com>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.saas~18\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-20 09:54+0000\n"
 "PO-Revision-Date: 2017-09-20 09:54+0000\n"
-"Last-Translator: link up <link-up@naver.com>, 2018\n"
+"Last-Translator: Martin Trigaux <mat@odoo.com>, 2017\n"
 "Language-Team: Korean (https://www.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -78,7 +75,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_active
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_contract_active
 msgid "Active"
-msgstr "활성화"
+msgstr ""
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_fuel_view_form
@@ -111,13 +108,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_fuel_cost_amount
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_services_cost_amount
 msgid "Amount"
-msgstr "금액"
+msgstr ""
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_search
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_view_search
 msgid "Archived"
-msgstr "보관완료"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_service_9
@@ -210,7 +207,7 @@ msgstr ""
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_service_type_category
 msgid "Category"
-msgstr "분류"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_cost_cost_type
@@ -244,22 +241,22 @@ msgstr ""
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_vehicle_tag_action
 msgid "Click to add a new tag."
-msgstr "클릭해서 새로운 태그를 추가합니다."
+msgstr ""
 
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_vehicle_log_contract_action
 msgid "Click to create a new contract."
-msgstr "클릭해서 새로운 연락처를 생성합니다."
+msgstr ""
 
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_vehicle_costs_action
 msgid "Click to create a new cost."
-msgstr "클릭해서 새로운 비용을 추가합니다."
+msgstr ""
 
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_vehicle_log_fuel_action
 msgid "Click to create a new fuel log."
-msgstr "클릭해서 새로운 주유내역을 추가합니다."
+msgstr ""
 
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_vehicle_model_brand_action
@@ -269,7 +266,7 @@ msgstr ""
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_vehicle_model_action
 msgid "Click to create a new model."
-msgstr "클릭해서 새로운 모델을 추가합니다."
+msgstr ""
 
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_vehicle_odometer_action
@@ -314,7 +311,7 @@ msgstr ""
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_color
 msgid "Color"
-msgstr "색상"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_tag_color
@@ -339,7 +336,7 @@ msgstr "회사"
 #. module: fleet
 #: model:ir.ui.menu,name:fleet.fleet_configuration
 msgid "Configuration"
-msgstr "환경 설정"
+msgstr ""
 
 #. module: fleet
 #: selection:fleet.service.type,category:0
@@ -491,9 +488,9 @@ msgstr ""
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_log_contract_cost_generated
 msgid ""
-"Costs paid at regular intervals, depending on the cost frequency. If the "
-"cost frequency is set to unique, the cost will be logged at the start date"
-msgstr "비용은 설정된 주기에 따라 정기적으로 지불합니다. 선정된 주기가 고유한 경우 비용은 시작 날짜에 기록됩니다."
+"Costs paid at regular intervals, depending on the cost frequency.If the cost"
+" frequency is set to unique, the cost will be logged at the start date"
+msgstr ""
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_form
@@ -549,7 +546,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_services_date
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_odometer_date
 msgid "Date"
-msgstr "날짜"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_cost_date
@@ -701,7 +698,7 @@ msgstr ""
 #: selection:fleet.vehicle.log.contract,state:0
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_search
 msgid "Expired"
-msgstr "만료 됨"
+msgstr ""
 
 #. module: fleet
 #: selection:fleet.vehicle.log.contract,state:0
@@ -909,7 +906,7 @@ msgstr ""
 #: selection:fleet.vehicle.log.contract,state:0
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_search
 msgid "In Progress"
-msgstr "진행중"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_cost_cost_ids
@@ -924,7 +921,7 @@ msgstr ""
 #. module: fleet
 #: selection:fleet.vehicle.log.contract,state:0
 msgid "Incoming"
-msgstr "수신"
+msgstr ""
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_form
@@ -1065,7 +1062,7 @@ msgstr ""
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_location
 msgid "Location"
-msgstr "위치"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_location
@@ -1119,7 +1116,7 @@ msgstr ""
 #. module: fleet
 #: model:res.groups,name:fleet.fleet_group_manager
 msgid "Manager"
-msgstr "관리자"
+msgstr ""
 
 #. module: fleet
 #: selection:fleet.vehicle,transmission:0
@@ -1199,7 +1196,7 @@ msgstr ""
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_costs_view_search
 msgid "Month"
-msgstr "월"
+msgstr ""
 
 #. module: fleet
 #: selection:fleet.vehicle.log.contract,cost_frequency:0
@@ -1217,7 +1214,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_state_name
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_tag_name
 msgid "Name"
-msgstr "이름"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_contract_renewal_name
@@ -1227,7 +1224,7 @@ msgstr ""
 #. module: fleet
 #: selection:fleet.vehicle.log.contract,cost_frequency:0
 msgid "No"
-msgstr "아니오"
+msgstr ""
 
 #. module: fleet
 #: code:addons/fleet/models/fleet_vehicle.py:211
@@ -1596,7 +1593,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_service_count
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_view_form
 msgid "Services"
-msgstr "서비스"
+msgstr ""
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_services_view_graph
@@ -1688,7 +1685,7 @@ msgstr ""
 #. module: fleet
 #: sql_constraint:fleet.vehicle.tag:0
 msgid "Tag name already exists !"
-msgstr "태그명이 이미 존재합니다."
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_tag_ids
@@ -1841,7 +1838,7 @@ msgstr ""
 #. module: fleet
 #: model:res.groups,name:fleet.fleet_group_user
 msgid "User"
-msgstr "사용자"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_car_value
@@ -1966,7 +1963,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_fuel_vendor_id
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_services_vendor_id
 msgid "Vendor"
-msgstr "공급업체"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_model_vendors

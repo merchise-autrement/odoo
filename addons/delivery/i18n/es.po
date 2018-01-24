@@ -3,33 +3,32 @@
 # * delivery
 # 
 # Translators:
-# Vicent Cubells <vicent.cubells@tecnativa.com>, 2017
+# Martin Trigaux <mat@odoo.com>, 2016
+# Antonio Trueba <atgayol@gmail.com>, 2016
+# Pedro M. Baeza <pedro.baeza@gmail.com>, 2016
+# Alejandro Die Sanchis <marketing@domatix.com>, 2016
+# Ana Juaristi <ajuaristio@gmail.com>, 2016
+# Amaia Bastida <amaiatrainer@gmail.com>, 2016
+# José Vicente <txusev@gmail.com>, 2016
+# oihane <oihanecruce@gmail.com>, 2016
+# Mateo Tibaquirá Palacios <nestormateo@gmail.com>, 2016
+# Rafael Blasco <rafabn@antiun.com>, 2016
+# Carles Antoli <carlesantoli@hotmail.com>, 2016
+# Luis M. Triana <luis.triana@jarsa.com.mx>, 2016
+# Leonardo Chianea <noamixcontenidos@gmail.com>, 2016
+# Jesús Alan Ramos Rodríguez <alan.ramos@jarsa.com.mx>, 2016
+# Ivan Nieto <ivan.n.s@tuta.io>, 2016
+# Miguel Orueta <mo@landoo.es>, 2016
 # Luis M. Ontalba <luis.martinez@tecnativa.com>, 2017
-# Miguel Orueta <mo@landoo.es>, 2017
-# Gustavo Valverde <g.valverde02@gmail.com>, 2017
-# Rafael Blasco <rafabn@antiun.com>, 2017
-# José Vicente <txusev@gmail.com>, 2017
-# Martin Trigaux <mat@odoo.com>, 2017
-# Daniel Blanco <daniel@blancomartin.com.ar>, 2017
-# Antonio Trueba <atgayol@gmail.com>, 2017
-# Ana Juaristi <ajuaristio@gmail.com>, 2017
-# Alejandro Die Sanchis <marketing@domatix.com>, 2017
-# Luis M. Triana <luis.triana@jarsa.com.mx>, 2017
-# Pedro M. Baeza <pedro.baeza@gmail.com>, 2017
 # Alejandro Santana <alejandrosantana@anubia.es>, 2017
-# RGB Consulting <odoo@rgbconsulting.com>, 2017
-# Amaia Bastida <amaiatrainer@gmail.com>, 2017
-# Ivan Nieto <ivan.n.s@tuta.io>, 2017
-# Mateo Tibaquirá Palacios <nestormateo@gmail.com>, 2017
-# Eduardo Magdalena <emagdalena@close2circle.com>, 2017
 # Nicole Kist <nki@odoo.com>, 2017
 # Christopher Ormaza <chris.ormaza@gmail.com>, 2017
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 11.0\n"
+"Project-Id-Version: Odoo Server saas~11.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-30 13:12+0000\n"
-"PO-Revision-Date: 2017-11-30 13:12+0000\n"
+"POT-Creation-Date: 2017-12-13 14:36+0000\n"
+"PO-Revision-Date: 2017-12-13 14:36+0000\n"
 "Last-Translator: Christopher Ormaza <chris.ormaza@gmail.com>, 2017\n"
 "Language-Team: Spanish (https://www.transifex.com/odoo/teams/41243/es/)\n"
 "MIME-Version: 1.0\n"
@@ -80,7 +79,7 @@ msgstr ""
 "<p>Nos complace informarle de que su pedido ha sido enviado.</p>\n"
 "<p>\n"
 "%if object.carrier_tracking_ref:\n"
-"  Su identificador:\n"
+"  Su código de referencia:\n"
 "  %if object.carrier_tracking_url:\n"
 "    <a href=\"${object.carrier_tracking_url}\" target=\"_blank\">${object.carrier_tracking_ref}</a>.\n"
 "  %else:\n"
@@ -275,14 +274,6 @@ msgid "Bulk Weight"
 msgstr "Peso a granel"
 
 #. module: delivery
-#: model:ir.model.fields,help:delivery.field_stock_quant_package_shipping_weight
-msgid ""
-"Can be changed during the 'put in pack' to adjust the weight of the "
-"shipping."
-msgstr ""
-"Se puede cambiar durante el 'empaquetado' para ajustar el peso del envío."
-
-#. module: delivery
 #: model:ir.ui.view,arch_db:delivery.view_picking_withcarrier_out_form
 msgid "Cancel"
 msgstr "Cancelar"
@@ -296,7 +287,7 @@ msgstr "Cancelar"
 #: model:ir.ui.view,arch_db:delivery.view_delivery_carrier_search
 #: model:ir.ui.view,arch_db:delivery.view_delivery_carrier_tree
 msgid "Carrier"
-msgstr "Forma de envío"
+msgstr "Transportista"
 
 #. module: delivery
 #: model:ir.ui.view,arch_db:delivery.view_order_form_with_carrier
@@ -377,7 +368,7 @@ msgstr "Mensaje de entrega"
 #: model:ir.model.fields,field_description:delivery.field_res_users_property_delivery_carrier_id
 #: model:ir.model.fields,field_description:delivery.field_sale_order_carrier_id
 msgid "Delivery Method"
-msgstr "Forma de envío"
+msgstr "Método entrega"
 
 #. module: delivery
 #: model:ir.actions.act_window,name:delivery.action_delivery_carrier_form
@@ -440,7 +431,7 @@ msgstr "Descartar"
 #: model:ir.model.fields,field_description:delivery.field_delivery_carrier_display_name
 #: model:ir.model.fields,field_description:delivery.field_delivery_price_rule_display_name
 msgid "Display Name"
-msgstr "Nombre a Mostrar"
+msgstr "Nombre a mostrar"
 
 #. module: delivery
 #: model:ir.actions.act_window,help:delivery.action_delivery_carrier_form
@@ -515,13 +506,13 @@ msgstr "Obtener tarifas y crear envíos"
 #. module: delivery
 #: model:ir.ui.view,arch_db:delivery.view_delivery_carrier_search
 msgid "Group By"
-msgstr "Agrupar Por"
+msgstr "Agrupar por"
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_product_product_hs_code
 #: model:ir.model.fields,field_description:delivery.field_product_template_hs_code
 msgid "HS Code"
-msgstr "Código HS"
+msgstr "HS Code"
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_product_packaging_height
@@ -586,21 +577,21 @@ msgstr "Es un envío"
 #: model:ir.model.fields,field_description:delivery.field_delivery_carrier___last_update
 #: model:ir.model.fields,field_description:delivery.field_delivery_price_rule___last_update
 msgid "Last Modified on"
-msgstr "Última Modificación en"
+msgstr "Última modificación en"
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_choose_delivery_package_write_uid
 #: model:ir.model.fields,field_description:delivery.field_delivery_carrier_write_uid
 #: model:ir.model.fields,field_description:delivery.field_delivery_price_rule_write_uid
 msgid "Last Updated by"
-msgstr "Última Actualización por"
+msgstr "Última actualización por"
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_choose_delivery_package_write_date
 #: model:ir.model.fields,field_description:delivery.field_delivery_carrier_write_date
 #: model:ir.model.fields,field_description:delivery.field_delivery_price_rule_write_date
 msgid "Last Updated on"
-msgstr "Última Actualización el"
+msgstr "Última actualización el"
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_product_packaging_length
@@ -682,12 +673,6 @@ msgid "No price rule matching this order; delivery cost cannot be computed."
 msgstr ""
 "Ninguna regla concordante con este pedido; los costes de envío no pueden ser"
 " calculados."
-
-#. module: delivery
-#: model:product.product,name:delivery.product_product_delivery_normal
-#: model:product.template,name:delivery.product_product_delivery_normal_product_template
-msgid "Normal Delivery Charges"
-msgstr "Gastos de entrega normales."
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_stock_picking_number_of_packages
@@ -800,7 +785,7 @@ msgstr "Presupuesto"
 #. module: delivery
 #: model:ir.model,name:delivery.model_stock_return_picking
 msgid "Return Picking"
-msgstr "Albarán de devolución"
+msgstr "Devolver albarán"
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_price_rule_list_base_price
@@ -889,12 +874,6 @@ msgid "Stock Move"
 msgstr "Movimiento de existencias"
 
 #. module: delivery
-#: model:product.product,name:delivery.product_product_delivery_poste
-#: model:product.template,name:delivery.product_product_delivery_poste_product_template
-msgid "The Poste"
-msgstr "The Poste"
-
-#. module: delivery
 #: model:ir.actions.act_window,help:delivery.action_delivery_carrier_form
 msgid ""
 "These methods allow to automatically compute the delivery price\n"
@@ -903,7 +882,7 @@ msgid ""
 msgstr ""
 "Estos métodos permiten calcular automáticamente el precio de la entrega\n"
 "                de acuerdo a su configuración; en el pedido de venta (basada en el\n"
-"                presupuesto) o en la factura (basada en los albaranes)."
+"                presupuesto) o la factura (basada en las órdenes de entrega)."
 
 #. module: delivery
 #: model:ir.model.fields,help:delivery.field_res_partner_property_delivery_carrier_id
@@ -993,9 +972,19 @@ msgid "Weight Unit of Measure"
 msgstr "UdM del peso"
 
 #. module: delivery
+#: model:ir.model.fields,help:delivery.field_stock_quant_package_weight
+msgid "Weight computed based on the sum of the weights of the products."
+msgstr ""
+
+#. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_stock_picking_shipping_weight
 msgid "Weight for Shipping"
 msgstr "Peso para envío"
+
+#. module: delivery
+#: model:ir.model.fields,help:delivery.field_stock_quant_package_shipping_weight
+msgid "Weight used to compute the price of the delivery (if applicable)."
+msgstr ""
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_product_packaging_width
@@ -1036,12 +1025,12 @@ msgstr ""
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_carrier_zip_from
 msgid "Zip From"
-msgstr "C.P. desde"
+msgstr "Zip desde"
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_carrier_zip_to
 msgid "Zip To"
-msgstr "C.P. hasta"
+msgstr "Zip hasta"
 
 #. module: delivery
 #: model:ir.ui.view,arch_db:delivery.view_delivery_carrier_form

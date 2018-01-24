@@ -7,7 +7,6 @@
 # Martin Trigaux <mat@odoo.com>, 2017
 # Rivo Zängov <eraser@eraser.ee>, 2017
 # Wanradt Koell <wanradt@gmail.com>, 2017
-# Eneli Õigus <enelioigus@gmail.com>, 2017
 # Egon Raamat <egon@avalah.ee>, 2017
 msgid ""
 msgstr ""
@@ -162,7 +161,7 @@ msgstr ""
 #. module: website_forum_doc
 #: model:forum.documentation.toc,name:website_forum_doc.toc_hrm_contract
 msgid "Employee Contract"
-msgstr "Tööleping"
+msgstr ""
 
 #. module: website_forum_doc
 #: code:addons/website_forum_doc/models/forum_documentation_toc.py:38
@@ -437,7 +436,7 @@ msgstr ""
 #. module: website_forum_doc
 #: model:forum.documentation.toc,name:website_forum_doc.toc_website
 msgid "Website"
-msgstr "Internetileht"
+msgstr "Veebisait"
 
 #. module: website_forum_doc
 #: model:ir.ui.view,arch_db:website_forum_doc.promote_question

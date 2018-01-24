@@ -3,35 +3,35 @@
 # * point_of_sale
 # 
 # Translators:
-# Collex100 <manyatovskiy@gmail.com>, 2017
-# Максим Дронь <dronmax@gmail.com>, 2017
 # Martin Trigaux <mat@odoo.com>, 2017
 # Sergey Vilizhanin <sv@grimmette.ru>, 2017
-# Max Belyanin <maxbelyanin@gmail.com>, 2017
-# Evgeny <transingularity@gmail.com>, 2017
-# Gennady Marchenko <gennadym@gmail.com>, 2017
-# Dmitry sky <d.v.selitsky@gmail.com>, 2017
 # Viktor Pogrebniak <vp@aifil.ru>, 2017
-# Alex Puchkov <ap@alteco.co>, 2017
+# Dmitry sky <d.v.selitsky@gmail.com>, 2017
+# Максим Дронь <dronmax@gmail.com>, 2017
+# Gennady Marchenko <gennadym@gmail.com>, 2017
 # Amaro Vita <vita.amaro@gmail.com>, 2017
-# Andrey Skabelin <inactive+a.skabelin@transifex.com>, 2017
-# Masha Koc <mariya.kos.ua@gmail.com>, 2017
+# Max Belyanin <maxbelyanin@gmail.com>, 2017
 # Denis Trepalin <zekarious@gmail.com>, 2017
-# Denis Baranov <baranov@itlibertas.com>, 2017
+# Эдуард Манятовский <manyatovskiy@gmail.com>, 2017
+# Andrey Skabelin <inactive+a.skabelin@transifex.com>, 2017
+# Evgeny <transingularity@gmail.com>, 2017
 # dzord dzord <ekenpad@gmail.com>, 2017
+# Masha Koc <mariya.kos.ua@gmail.com>, 2017
 # Русский «kolobok2048» Ивашка <kolobok2048@gmail.com>, 2017
-# Алексей Билькевич (belskiy) <mmmbrsk@gmail.com>, 2017
-# Mikhail - <expromt.core@gmail.com>, 2017
+# Denis Baranov <baranov@itlibertas.com>, 2017
+# Alex Puchkov <ap@alteco.co>, 2017
 # Alex <programmator@mail.ru>, 2017
-# Anishchuk Sergei <anishukserg@l-profit.ru>, 2017
+# Алексей Билькевич (belskiy) <mmmbrsk@gmail.com>, 2017
 # Andrey Samorukov <andrey.samorukov@me.com>, 2017
+# Mikhail - <expromt.core@gmail.com>, 2017
+# Anishchuk Sergei <anishukserg@l-profit.ru>, 2017
 # Yuriy Ney <k_wizard@mail.ru>, 2017
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 11.0\n"
+"Project-Id-Version: Odoo Server saas~11.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-08 10:30+0000\n"
-"PO-Revision-Date: 2018-01-08 10:30+0000\n"
+"POT-Creation-Date: 2017-12-13 14:36+0000\n"
+"PO-Revision-Date: 2017-12-13 14:36+0000\n"
 "Last-Translator: Yuriy Ney <k_wizard@mail.ru>, 2017\n"
 "Language-Team: Russian (https://www.transifex.com/odoo/teams/41243/ru/)\n"
 "MIME-Version: 1.0\n"
@@ -81,7 +81,7 @@ msgstr ""
 #: code:addons/point_of_sale/static/src/xml/pos.xml:1474
 #, python-format
 msgid "% discount"
-msgstr "% скидка"
+msgstr "% скидки"
 
 #. module: point_of_sale
 #. openerp-web
@@ -271,14 +271,14 @@ msgstr "= Теоретическое закрыие баланса"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:1975
+#: code:addons/point_of_sale/static/src/js/screens.js:1992
 #, python-format
 msgid "? Clicking \"Confirm\" will validate the payment."
 msgstr "? Нажмите \"Подтвердить\", чтобы подтвердить платеж."
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:1242
+#: code:addons/point_of_sale/static/src/js/screens.js:1252
 #, python-format
 msgid "A Customer Name Is Required"
 msgstr "Требуется имя клиента"
@@ -323,7 +323,7 @@ msgstr ""
 "Сеанс - это период времени, обычно один день, в течение которого\n"
 "                 вы продаете через точку продажи. Пользователь должен проверить\n"
 "                 валюты в ваших кассовых аппаратах в начале и в конце\n"
-"                 каждого сеанса."
+"                 каждой сессии."
 
 #. module: point_of_sale
 #: model:ir.model.fields,help:point_of_sale.field_pos_order_sequence_number
@@ -383,19 +383,13 @@ msgid "Accounting journal used to post sales entries."
 msgstr "Журнал учета, используемый для проводки записей о продажах."
 
 #. module: point_of_sale
-#: model:product.product,name:point_of_sale.partner_product_5
-#: model:product.template,name:point_of_sale.partner_product_5_product_template
-msgid "Acsone.eu"
-msgstr "Acsone.eu"
-
-#. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_config_active
 msgid "Active"
-msgstr "Актив"
+msgstr "Активно"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:1821
+#: code:addons/point_of_sale/static/src/js/screens.js:1831
 #, python-format
 msgid "Add Tip"
 msgstr "Добавить подсказку"
@@ -419,7 +413,7 @@ msgid "Address"
 msgstr "Адрес"
 
 #. module: point_of_sale
-#: code:addons/point_of_sale/models/pos_config.py:237
+#: code:addons/point_of_sale/models/pos_config.py:249
 #, python-format
 msgid ""
 "All available pricelists must be in the same currency as the company or as "
@@ -428,7 +422,7 @@ msgid ""
 msgstr ""
 
 #. module: point_of_sale
-#: code:addons/point_of_sale/models/pos_config.py:243
+#: code:addons/point_of_sale/models/pos_config.py:255
 #, python-format
 msgid ""
 "All payment methods must be in the same currency as the Sales Journal or the"
@@ -494,7 +488,7 @@ msgstr "Применить скидку"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:1967
+#: code:addons/point_of_sale/static/src/js/screens.js:1984
 #, python-format
 msgid "Are you sure that the customer wants to  pay"
 msgstr "Вы уверены, что клиент хочет заплатить"
@@ -610,20 +604,8 @@ msgid "Bills &amp; Receipts"
 msgstr ""
 
 #. module: point_of_sale
-#: model:product.product,name:point_of_sale.raisins_noir
-#: model:product.template,name:point_of_sale.raisins_noir_product_template
-msgid "Black Grapes"
-msgstr "Черный виноград"
-
-#. module: point_of_sale
-#: model:product.product,name:point_of_sale.boni_orange
-#: model:product.template,name:point_of_sale.boni_orange_product_template
-msgid "Boni Oranges"
-msgstr "Бони апельсины"
-
-#. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:938
+#: code:addons/point_of_sale/static/src/js/screens.js:947
 #, python-format
 msgid "Button"
 msgstr "Кнопка"
@@ -664,16 +646,10 @@ msgstr "Отменено"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:1956
+#: code:addons/point_of_sale/static/src/js/screens.js:1973
 #, python-format
 msgid "Cannot return change without a cash payment method"
 msgstr "Невозможно вернуть изменение без метода оплаты наличными"
-
-#. module: point_of_sale
-#: model:product.product,name:point_of_sale.carotte
-#: model:product.template,name:point_of_sale.carotte_product_template
-msgid "Carrots"
-msgstr "Морковь"
 
 #. module: point_of_sale
 #: code:addons/point_of_sale/models/pos_session.py:317
@@ -753,21 +729,21 @@ msgstr "Сдача"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/chrome.js:103
+#: code:addons/point_of_sale/static/src/js/chrome.js:104
 #, python-format
 msgid "Change Cashier"
 msgstr "Изменить кассира"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:1187
+#: code:addons/point_of_sale/static/src/js/screens.js:1197
 #, python-format
 msgid "Change Customer"
 msgstr "Изменение клиента"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:1821
+#: code:addons/point_of_sale/static/src/js/screens.js:1831
 #, python-format
 msgid "Change Tip"
 msgstr "Изменить подсказку"
@@ -779,7 +755,7 @@ msgstr "Изменить подсказку"
 #: code:addons/point_of_sale/static/src/xml/pos.xml:1693
 #, python-format
 msgid "Change:"
-msgstr "Сдача:"
+msgstr "Изменить:"
 
 #. module: point_of_sale
 #: model:ir.model.fields,help:point_of_sale.field_product_product_to_weight
@@ -824,7 +800,7 @@ msgstr ""
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:2014
+#: code:addons/point_of_sale/static/src/js/screens.js:2031
 #, python-format
 msgid "Check your internet connection and try again."
 msgstr "Проверьте подключение к Интернету и повторите попытку."
@@ -897,15 +873,15 @@ msgstr "Клиент"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/chrome.js:461
+#: code:addons/point_of_sale/static/src/js/chrome.js:462
 #, python-format
 msgid "Client Screen Unsupported. Please upgrade the PosBox"
 msgstr ""
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/chrome.js:825
-#: code:addons/point_of_sale/static/src/js/chrome.js:833
+#: code:addons/point_of_sale/static/src/js/chrome.js:824
+#: code:addons/point_of_sale/static/src/js/chrome.js:832
 #: model:ir.ui.view,arch_db:point_of_sale.view_pos_config_kanban
 #, python-format
 msgid "Close"
@@ -943,12 +919,6 @@ msgid "Company"
 msgstr "Компания"
 
 #. module: point_of_sale
-#: model:product.product,name:point_of_sale.poire_conference
-#: model:product.template,name:point_of_sale.poire_conference_product_template
-msgid "Conference pears"
-msgstr "Груши конференции"
-
-#. module: point_of_sale
 #: model:ir.ui.menu,name:point_of_sale.menu_point_config_product
 msgid "Configuration"
 msgstr "Настройка"
@@ -969,7 +939,7 @@ msgstr ""
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/chrome.js:830
+#: code:addons/point_of_sale/static/src/js/chrome.js:829
 #: code:addons/point_of_sale/static/src/xml/pos.xml:1059
 #, python-format
 msgid "Confirm"
@@ -977,14 +947,14 @@ msgstr "Подтвердить"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/chrome.js:454
+#: code:addons/point_of_sale/static/src/js/chrome.js:455
 #, python-format
 msgid "Connected, Not Owned"
 msgstr ""
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/models.js:120
+#: code:addons/point_of_sale/static/src/js/models.js:121
 #, python-format
 msgid "Connecting to the PosBox"
 msgstr "Подключение к PosBox"
@@ -1006,7 +976,7 @@ msgstr "Управление кассой при открытии и закры�
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:1339
+#: code:addons/point_of_sale/static/src/js/screens.js:1349
 #, python-format
 msgid "Could Not Read Image"
 msgstr "Не удалось прочитать изображение"
@@ -1068,7 +1038,7 @@ msgstr "Состояние текущего сеанса"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:1832
+#: code:addons/point_of_sale/static/src/js/screens.js:1842
 #: code:addons/point_of_sale/static/src/xml/pos.xml:145
 #: code:addons/point_of_sale/static/src/xml/pos.xml:676
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_order_partner_id
@@ -1104,12 +1074,6 @@ msgstr ""
 #: model:ir.ui.menu,name:point_of_sale.menu_pos_dashboard
 msgid "Dashboard"
 msgstr "Панель управления"
-
-#. module: point_of_sale
-#: model:product.product,name:point_of_sale.partner_product_7
-#: model:product.template,name:point_of_sale.partner_product_7_product_template
-msgid "Datalp.com"
-msgstr "Datalp.com"
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_report_pos_order_date
@@ -1175,7 +1139,7 @@ msgstr "Удалить оплаченные заказы"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/chrome.js:262
+#: code:addons/point_of_sale/static/src/js/chrome.js:263
 #, python-format
 msgid "Delete Paid Orders ?"
 msgstr "Удалить оплаченные заказы ?"
@@ -1189,21 +1153,21 @@ msgstr "Удалить неоплаченные заказы"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/chrome.js:272
+#: code:addons/point_of_sale/static/src/js/chrome.js:273
 #, python-format
 msgid "Delete Unpaid Orders ?"
 msgstr "Удалить неоплаченные заказы ?"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:1190
+#: code:addons/point_of_sale/static/src/js/screens.js:1200
 #, python-format
 msgid "Deselect Customer"
 msgstr "Отменить выбор клиента"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/chrome.js:54
+#: code:addons/point_of_sale/static/src/js/chrome.js:55
 #, python-format
 msgid "Destroy Current Order ?"
 msgstr "Уничтожить текущий заказ?"
@@ -1235,7 +1199,7 @@ msgstr "Диск:"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/chrome.js:459
+#: code:addons/point_of_sale/static/src/js/chrome.js:460
 #, python-format
 msgid "Disconnected"
 msgstr ""
@@ -1319,13 +1283,6 @@ msgid "Do you want to open cash registers?"
 msgstr "Вы хотите открыть кассовые аппараты?"
 
 #. module: point_of_sale
-#: model:ir.ui.view,arch_db:point_of_sale.pos_config_view_form
-msgid ""
-"Don't turn this option on if you take orders on smartphones or tablets. Such"
-" devices already benefit from a native keyboard."
-msgstr ""
-
-#. module: point_of_sale
 #: model:ir.ui.view,arch_db:point_of_sale.view_pos_order_filter
 msgid "Done"
 msgstr "Сделано"
@@ -1335,6 +1292,13 @@ msgstr "Сделано"
 msgid ""
 "Don’t turn this option on if you take orders on smartphones or tablets. \n"
 " Such devices already benefit from a native keyboard."
+msgstr ""
+
+#. module: point_of_sale
+#: model:ir.ui.view,arch_db:point_of_sale.pos_config_view_form
+msgid ""
+"Don’t turn this option on if you take orders on smartphones or tablets. Such"
+" devices already benefit from a native keyboard."
 msgstr ""
 
 #. module: point_of_sale
@@ -1359,24 +1323,6 @@ msgid "Due"
 msgstr "Надо"
 
 #. module: point_of_sale
-#: model:product.product,name:point_of_sale.partner_product_9
-#: model:product.template,name:point_of_sale.partner_product_9_product_template
-msgid "EGGS-solutions.fr"
-msgstr "EGGS-solutions.fr"
-
-#. module: point_of_sale
-#: model:product.product,name:point_of_sale.partner_product_3
-#: model:product.template,name:point_of_sale.partner_product_3_product_template
-msgid "Eezee-It"
-msgstr "Eezee-It"
-
-#. module: point_of_sale
-#: model:product.product,name:point_of_sale.partner_product_4
-#: model:product.template,name:point_of_sale.partner_product_4_product_template
-msgid "Ekomurz.nl"
-msgstr "Ekomurz.nl"
-
-#. module: point_of_sale
 #. openerp-web
 #: code:addons/point_of_sale/static/src/xml/pos.xml:1335
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_config_iface_electronic_scale
@@ -1395,14 +1341,14 @@ msgstr "Email"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:1927
+#: code:addons/point_of_sale/static/src/js/screens.js:1944
 #, python-format
 msgid "Empty Order"
 msgstr "Пустой заказ"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:440
+#: code:addons/point_of_sale/static/src/js/screens.js:449
 #, python-format
 msgid "Empty Serial/Lot Number"
 msgstr "Пустой Серийный /Лот номер"
@@ -1450,14 +1396,14 @@ msgstr "Ошибка! Нельзя создавать рекурсивные к�
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:1268
+#: code:addons/point_of_sale/static/src/js/screens.js:1278
 #, python-format
 msgid "Error: Could not Save Changes"
 msgstr "Ошибка: не удалось сохранить изменения"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/models.js:243
+#: code:addons/point_of_sale/static/src/js/models.js:244
 #, python-format
 msgid ""
 "Error: The Point of Sale User must belong to the same company as the Point "
@@ -1483,12 +1429,6 @@ msgstr "Экспорт платных заказов"
 #, python-format
 msgid "Export Unpaid Orders"
 msgstr "Экспорт неоплаченных заказов"
-
-#. module: point_of_sale
-#: model:product.product,name:point_of_sale.chicon_flandria_extra
-#: model:product.template,name:point_of_sale.chicon_flandria_extra_product_template
-msgid "Extra Flandria chicory"
-msgstr "Экстра Фландрия цикорий"
 
 #. module: point_of_sale
 #: model:ir.ui.view,arch_db:point_of_sale.view_pos_pos_form
@@ -1536,11 +1476,6 @@ msgid "For imprecise industrial touchscreens."
 msgstr ""
 
 #. module: point_of_sale
-#: model:pos.category,name:point_of_sale.fruits_vegetables
-msgid "Fruits and Vegetables"
-msgstr "Фрукты и овощи"
-
-#. module: point_of_sale
 #: model:ir.ui.view,arch_db:point_of_sale.view_pos_pos_form
 msgid "General Information"
 msgstr "Общая информация"
@@ -1577,35 +1512,17 @@ msgid "Global Discounts"
 msgstr "Общие скидки"
 
 #. module: point_of_sale
-#: model:product.product,name:point_of_sale.pomme_golden_perlim
-#: model:product.template,name:point_of_sale.pomme_golden_perlim_product_template
-msgid "Golden Apples Perlim"
-msgstr "Золотые яблоки Перлим"
-
-#. module: point_of_sale
 #: model:ir.ui.view,arch_db:point_of_sale.customer_facing_display_html
 #: model:pos.config,customer_facing_display_html:point_of_sale.pos_config_main
 msgid "Gordon"
 msgstr "Gordon"
 
 #. module: point_of_sale
-#: model:product.product,name:point_of_sale.pomme_granny_smith
-#: model:product.template,name:point_of_sale.pomme_granny_smith_product_template
-msgid "Granny Smith apples"
-msgstr "Яблоко Гренни Смит"
-
-#. module: point_of_sale
-#: model:product.product,name:point_of_sale.poivron_verts
-#: model:product.template,name:point_of_sale.poivron_verts_product_template
-msgid "Green Peppers"
-msgstr "Зеленые перцы"
-
-#. module: point_of_sale
 #: model:ir.ui.view,arch_db:point_of_sale.view_pos_order_filter
 #: model:ir.ui.view,arch_db:point_of_sale.view_pos_session_search
 #: model:ir.ui.view,arch_db:point_of_sale.view_report_pos_order_search
 msgid "Group By"
-msgstr "Группировать по"
+msgstr "Группировать"
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_config_group_by
@@ -1715,12 +1632,6 @@ msgid "Improve navigation for imprecise industrial touchscreens"
 msgstr ""
 
 #. module: point_of_sale
-#: model:product.product,name:point_of_sale.tomate_en_grappe
-#: model:product.template,name:point_of_sale.tomate_en_grappe_product_template
-msgid "In Cluster Tomatoes"
-msgstr "В томатном кластере"
-
-#. module: point_of_sale
 #: model:ir.ui.view,arch_db:point_of_sale.view_pos_config_kanban
 #: selection:pos.session,state:0
 msgid "In Progress"
@@ -1819,12 +1730,6 @@ msgid "It acts as a default account for debit amount"
 msgstr "Выступает в качестве счета по умолчанию для сумм по дебету"
 
 #. module: point_of_sale
-#: model:product.product,name:point_of_sale.pomme_jonagold
-#: model:product.template,name:point_of_sale.pomme_jonagold_product_template
-msgid "Jonagold apples"
-msgstr "Яблоки Джонагольд"
-
-#. module: point_of_sale
 #: model:ir.model,name:point_of_sale.model_account_journal
 #: model:ir.model.fields,field_description:point_of_sale.field_report_pos_order_journal_id
 msgid "Journal"
@@ -1901,18 +1806,6 @@ msgid "Last Updated on"
 msgstr "Последнее обновление"
 
 #. module: point_of_sale
-#: model:product.product,name:point_of_sale.poireaux_poireaux
-#: model:product.template,name:point_of_sale.poireaux_poireaux_product_template
-msgid "Leeks"
-msgstr "Лук-порей"
-
-#. module: point_of_sale
-#: model:product.product,name:point_of_sale.citron
-#: model:product.template,name:point_of_sale.citron_product_template
-msgid "Lemon"
-msgstr "Лемон"
-
-#. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_order_line_name
 msgid "Line No"
 msgstr "No линии"
@@ -1930,7 +1823,7 @@ msgstr "Список кассовых аппаратов"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/models.js:518
+#: code:addons/point_of_sale/static/src/js/models.js:520
 #: code:addons/point_of_sale/static/src/xml/pos.xml:38
 #, python-format
 msgid "Loading"
@@ -1961,7 +1854,7 @@ msgstr "Наименование Партии"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/models.js:2339
+#: code:addons/point_of_sale/static/src/js/models.js:2343
 #, python-format
 msgid "Lot/Serial Number(s) Required"
 msgstr "Требуемый Лот/Серийный номер(а)"
@@ -2070,7 +1963,7 @@ msgstr "Название"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:1937
+#: code:addons/point_of_sale/static/src/js/screens.js:1954
 #, python-format
 msgid "Negative Bank Payment"
 msgstr "Отрицательный банковский платеж"
@@ -2116,7 +2009,7 @@ msgstr "Последовательность не определена в жур
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:2067
+#: code:addons/point_of_sale/static/src/js/screens.js:2084
 #: code:addons/point_of_sale/static/src/xml/pos.xml:361
 #, python-format
 msgid "None"
@@ -2154,7 +2047,7 @@ msgstr "Логотип Odoo"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/chrome.js:401
+#: code:addons/point_of_sale/static/src/js/chrome.js:402
 #, python-format
 msgid "Offline"
 msgstr "Офлайн"
@@ -2183,17 +2076,11 @@ msgstr "Ok"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:441
+#: code:addons/point_of_sale/static/src/js/screens.js:450
 #, python-format
 msgid "One or more product(s) required serial/lot number."
 msgstr ""
 "Для одного или нескольких продуктов требуется серийный номер/номер лота."
-
-#. module: point_of_sale
-#: model:product.product,name:point_of_sale.Onions
-#: model:product.template,name:point_of_sale.Onions_product_template
-msgid "Onions"
-msgstr "Лук"
 
 #. module: point_of_sale
 #: model:ir.model.fields,help:point_of_sale.field_pos_config_restrict_price_control
@@ -2207,7 +2094,7 @@ msgstr ""
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:1325
+#: code:addons/point_of_sale/static/src/js/screens.js:1335
 #, python-format
 msgid "Only web-compatible Image formats such as .png or .jpeg are supported"
 msgstr ""
@@ -2300,12 +2187,6 @@ msgid "Operation types show up in the Inventory dashboard."
 msgstr ""
 
 #. module: point_of_sale
-#: model:product.product,name:point_of_sale.papillon_orange
-#: model:product.template,name:point_of_sale.papillon_orange_product_template
-msgid "Orange Butterfly"
-msgstr "Оранжевая бабочка"
-
-#. module: point_of_sale
 #. openerp-web
 #: code:addons/point_of_sale/static/src/xml/pos.xml:311
 #: model:ir.model.fields,field_description:point_of_sale.field_report_pos_order_order_id
@@ -2315,8 +2196,8 @@ msgstr "Заказ"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/models.js:1922
-#: code:addons/point_of_sale/static/src/js/models.js:1962
+#: code:addons/point_of_sale/static/src/js/models.js:1925
+#: code:addons/point_of_sale/static/src/js/models.js:1965
 #, python-format
 msgid "Order "
 msgstr "Заказ "
@@ -2407,7 +2288,7 @@ msgid "POS Journals"
 msgstr "Журналы ТП"
 
 #. module: point_of_sale
-#: code:addons/point_of_sale/models/pos_config.py:335
+#: code:addons/point_of_sale/models/pos_config.py:347
 #, python-format
 msgid "POS Order %s"
 msgstr "Заказ ТП %s"
@@ -2438,7 +2319,7 @@ msgid "POS Sales"
 msgstr "Продажи ТП"
 
 #. module: point_of_sale
-#: code:addons/point_of_sale/models/pos_config.py:344
+#: code:addons/point_of_sale/models/pos_config.py:356
 #, python-format
 msgid "POS order line %s"
 msgstr "Линия заказа ТП %s"
@@ -2468,11 +2349,6 @@ msgstr "Категория предка"
 #: model:ir.ui.view,arch_db:point_of_sale.report_statement
 msgid "Partner"
 msgstr "Партнёр"
-
-#. module: point_of_sale
-#: model:pos.category,name:point_of_sale.partner_services
-msgid "Partner Services"
-msgstr "Партнерские услуги"
 
 #. module: point_of_sale
 #. openerp-web
@@ -2558,12 +2434,6 @@ msgid "Payments:"
 msgstr "Платежи:"
 
 #. module: point_of_sale
-#: model:product.product,name:point_of_sale.peche
-#: model:product.template,name:point_of_sale.peche_product_template
-msgid "Peaches"
-msgstr "Персики"
-
-#. module: point_of_sale
 #: model:ir.filters,name:point_of_sale.filter_orders_per_session
 msgid "Per session"
 msgstr "За сессию"
@@ -2610,7 +2480,7 @@ msgstr "Выбор ошибок"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:1966
+#: code:addons/point_of_sale/static/src/js/screens.js:1983
 #, python-format
 msgid "Please Confirm Large Amount"
 msgstr "Подтвердите крупную сумму"
@@ -2636,7 +2506,7 @@ msgstr "Выберите способ оплаты."
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:2005
+#: code:addons/point_of_sale/static/src/js/screens.js:2022
 #, python-format
 msgid "Please select the Customer"
 msgstr "Пожалуйста выберите клиента"
@@ -2761,6 +2631,11 @@ msgid "Pos Order Line"
 msgstr ""
 
 #. module: point_of_sale
+#: model:ir.model.fields,field_description:point_of_sale.field_pos_config_pos_session_duration
+msgid "Pos Session Duration"
+msgstr ""
+
+#. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_config_pos_session_state
 msgid "Pos Session State"
 msgstr "Состояние сеанса ТП"
@@ -2793,12 +2668,6 @@ msgstr "Индекс"
 #: selection:pos.order,state:0 selection:report.pos.order,state:0
 msgid "Posted"
 msgstr "Проведено"
-
-#. module: point_of_sale
-#: model:product.product,name:point_of_sale.pomme_de_terre
-#: model:product.template,name:point_of_sale.pomme_de_terre_product_template
-msgid "Potatoes"
-msgstr "Картофель"
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_config_iface_precompute_cash
@@ -2837,7 +2706,7 @@ msgstr "Оценённый продукт"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:2149
+#: code:addons/point_of_sale/static/src/js/screens.js:2172
 #: code:addons/point_of_sale/static/src/xml/pos.xml:388
 #: code:addons/point_of_sale/static/src/xml/pos.xml:461
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_order_pricelist_id
@@ -2888,7 +2757,7 @@ msgstr "Печать через прокси"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/chrome.js:389
+#: code:addons/point_of_sale/static/src/js/chrome.js:390
 #, python-format
 msgid "Printer"
 msgstr "Принтер"
@@ -3036,18 +2905,6 @@ msgid "Recovery Session"
 msgstr "Сеанс восстановления"
 
 #. module: point_of_sale
-#: model:product.product,name:point_of_sale.poivron_rouges
-#: model:product.template,name:point_of_sale.poivron_rouges_product_template
-msgid "Red Pepper"
-msgstr "Красный перец"
-
-#. module: point_of_sale
-#: model:product.product,name:point_of_sale.pamplemousse_rouge_pamplemousse
-#: model:product.template,name:point_of_sale.pamplemousse_rouge_pamplemousse_product_template
-msgid "Red grapefruit"
-msgstr "Красный грейпфрукт"
-
-#. module: point_of_sale
 #. openerp-web
 #: code:addons/point_of_sale/static/src/xml/pos.xml:1367
 #, python-format
@@ -3135,7 +2992,7 @@ msgstr "Заказы продаж"
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_order_user_id
 #: model:ir.ui.view,arch_db:point_of_sale.view_pos_order_filter
 msgid "Salesman"
-msgstr "Продавец"
+msgstr "Менеджер продаж"
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_report_pos_order_user_id
@@ -3155,7 +3012,7 @@ msgstr ""
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/chrome.js:397
+#: code:addons/point_of_sale/static/src/js/chrome.js:398
 #, python-format
 msgid "Scale"
 msgstr "Масштаб"
@@ -3181,7 +3038,7 @@ msgstr "Сканировать через прокси"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/chrome.js:380
+#: code:addons/point_of_sale/static/src/js/chrome.js:381
 #, python-format
 msgid "Scanner"
 msgstr "Сканер"
@@ -3232,14 +3089,14 @@ msgstr "Выбрать пользователя"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:2137
+#: code:addons/point_of_sale/static/src/js/screens.js:2160
 #, python-format
 msgid "Select pricelist"
 msgstr "Выбор прайс-листа"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:2078
+#: code:addons/point_of_sale/static/src/js/screens.js:2095
 #, python-format
 msgid "Select tax"
 msgstr "Выбрать налог"
@@ -3248,7 +3105,7 @@ msgstr "Выбрать налог"
 #: code:addons/point_of_sale/models/pos_order.py:236
 #, python-format
 msgid "Selected orders do not have the same session!"
-msgstr "Выбранные заказы из другого сеанса!"
+msgstr "Выбранные заказы не имеют той же сессии!"
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_category_sequence
@@ -3276,13 +3133,13 @@ msgstr "Servido por"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:2018
+#: code:addons/point_of_sale/static/src/js/screens.js:2035
 #, python-format
 msgid "Server Error"
 msgstr "Ошибка сервера"
 
 #. module: point_of_sale
-#: code:addons/point_of_sale/models/pos_config.py:447
+#: code:addons/point_of_sale/models/pos_config.py:459
 #: model:ir.model.fields,field_description:point_of_sale.field_account_bank_statement_pos_session_id
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_make_payment_session_id
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_order_session_id
@@ -3317,11 +3174,11 @@ msgstr "Сессия:"
 #: model:ir.ui.menu,name:point_of_sale.menu_pos_session_all
 #: model:ir.ui.view,arch_db:point_of_sale.view_pos_config_kanban
 msgid "Sessions"
-msgstr "Сеансы"
+msgstr "Сессии"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:1185
+#: code:addons/point_of_sale/static/src/js/screens.js:1195
 #, python-format
 msgid "Set Customer"
 msgstr "Установить клиента"
@@ -3468,12 +3325,6 @@ msgid "Street"
 msgstr "Улица"
 
 #. module: point_of_sale
-#: model:product.product,name:point_of_sale.limon
-#: model:product.template,name:point_of_sale.limon_product_template
-msgid "Stringers"
-msgstr "Стрингеры"
-
-#. module: point_of_sale
 #. openerp-web
 #: code:addons/point_of_sale/static/src/xml/pos.xml:818
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_order_line_price_subtotal_incl
@@ -3542,7 +3393,7 @@ msgstr "Взять Деньги"
 #. module: point_of_sale
 #. openerp-web
 #: code:addons/point_of_sale/models/pos_order.py:325
-#: code:addons/point_of_sale/static/src/js/screens.js:2091
+#: code:addons/point_of_sale/static/src/js/screens.js:2114
 #, python-format
 msgid "Tax"
 msgstr "Налог"
@@ -3600,7 +3451,7 @@ msgstr "Налоги"
 #: code:addons/point_of_sale/static/src/xml/pos.xml:1318
 #, python-format
 msgid "Taxes:"
-msgstr "Налоги:"
+msgstr "Налоги"
 
 #. module: point_of_sale
 #. openerp-web
@@ -3634,21 +3485,21 @@ msgstr ""
 "                   или действия, связанные со сканированным штрих-кодом."
 
 #. module: point_of_sale
-#: code:addons/point_of_sale/models/pos_config.py:230
+#: code:addons/point_of_sale/models/pos_config.py:242
 #, python-format
 msgid ""
 "The company of a payment method is different than the one of point of sale"
 msgstr "Компания метод оплаты отличается от того, что в пункте продажи"
 
 #. module: point_of_sale
-#: code:addons/point_of_sale/models/pos_config.py:220
+#: code:addons/point_of_sale/models/pos_config.py:232
 #, python-format
 msgid ""
 "The company of the sales journal is different than the one of point of sale"
 msgstr ""
 
 #. module: point_of_sale
-#: code:addons/point_of_sale/models/pos_config.py:215
+#: code:addons/point_of_sale/models/pos_config.py:227
 #, python-format
 msgid ""
 "The company of the stock location is different than the one of point of sale"
@@ -3657,7 +3508,7 @@ msgstr ""
 "продажи"
 
 #. module: point_of_sale
-#: code:addons/point_of_sale/models/pos_config.py:235
+#: code:addons/point_of_sale/models/pos_config.py:247
 #, python-format
 msgid "The default pricelist must be included in the available pricelists."
 msgstr ""
@@ -3670,14 +3521,14 @@ msgid ""
 msgstr ""
 
 #. module: point_of_sale
-#: code:addons/point_of_sale/models/pos_config.py:225
+#: code:addons/point_of_sale/models/pos_config.py:237
 #, python-format
 msgid ""
 "The invoice journal and the point of sale must belong to the same company"
 msgstr "Журнал счета и пункт продажи должны принадлежать одной компании"
 
 #. module: point_of_sale
-#: code:addons/point_of_sale/models/pos_config.py:241
+#: code:addons/point_of_sale/models/pos_config.py:253
 #, python-format
 msgid ""
 "The invoice journal must be in the same currency as the Sales Journal or the"
@@ -3687,7 +3538,7 @@ msgstr ""
 #. module: point_of_sale
 #: sql_constraint:pos.session:0
 msgid "The name of this POS Session must be unique !"
-msgstr "Название этого сеанса ТП должно быть уникальным !"
+msgstr "Название этой сессии ТП должно быть уникальным !"
 
 #. module: point_of_sale
 #: model:ir.model.fields,help:point_of_sale.field_res_partner_pos_order_count
@@ -3697,14 +3548,14 @@ msgstr ""
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:2013
+#: code:addons/point_of_sale/static/src/js/screens.js:2030
 #, python-format
 msgid "The order could not be sent"
 msgstr "Не удалось отправить заказ."
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:2024
+#: code:addons/point_of_sale/static/src/js/screens.js:2041
 #, python-format
 msgid "The order could not be sent to the server due to an unknown error"
 msgstr "Не удалось отправить заказ на сервер из-за неизвестной ошибки."
@@ -3743,7 +3594,7 @@ msgstr "Категории товаров будут отображаться с
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:1340
+#: code:addons/point_of_sale/static/src/js/screens.js:1350
 #, python-format
 msgid "The provided file could not be read due to an unknown error"
 msgstr "Предоставленный файл не может быть прочитан из-за неизвестной ошибки"
@@ -3764,10 +3615,17 @@ msgstr ""
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:2019
+#: code:addons/point_of_sale/static/src/js/screens.js:2036
 #, python-format
 msgid "The server encountered an error while receiving your order."
 msgstr "При получении вашего заказа сервер обнаружил ошибку."
+
+#. module: point_of_sale
+#: model:ir.ui.view,arch_db:point_of_sale.view_pos_config_kanban
+msgid ""
+"The session has been opened for an unusually long period. Please consider "
+"closing."
+msgstr ""
 
 #. module: point_of_sale
 #: model:ir.ui.view,arch_db:point_of_sale.view_pos_open_statement
@@ -3806,7 +3664,7 @@ msgstr ""
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:1957
+#: code:addons/point_of_sale/static/src/js/screens.js:1974
 #, python-format
 msgid ""
 "There is no cash payment method available in this point of sale to handle the change.\n"
@@ -3841,7 +3699,7 @@ msgstr "Отсутствует счёт дебиторской задолжен�
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:1928
+#: code:addons/point_of_sale/static/src/js/screens.js:1945
 #, python-format
 msgid ""
 "There must be at least one product in your order before it can be validated"
@@ -3867,9 +3725,9 @@ msgid ""
 "of his session saying that he needs to contact his manager."
 msgstr ""
 "В этом поле указывается максимальная разница между окончательным балансом и "
-"теоретической суммой при закрытии сеанса для менеджеров, не принадлежащих "
+"теоретической суммой при закрытии сессии для менеджеров, не принадлежащих "
 "КПО. Если этот максимум будет достигнут, у пользователя будет сообщение об "
-"ошибке при закрытии его сеанса, заявив, что ему нужно связаться с "
+"ошибке при закрытии его сессии, заявив, что ему нужно связаться с "
 "менеджером."
 
 #. module: point_of_sale
@@ -3914,7 +3772,7 @@ msgstr ""
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/chrome.js:273
+#: code:addons/point_of_sale/static/src/js/chrome.js:274
 #, python-format
 msgid ""
 "This operation will destroy all unpaid orders in the browser. You will lose "
@@ -3924,7 +3782,7 @@ msgstr ""
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/chrome.js:263
+#: code:addons/point_of_sale/static/src/js/chrome.js:264
 #, python-format
 msgid ""
 "This operation will permanently destroy all paid orders from the local "
@@ -3988,6 +3846,11 @@ msgstr "Совет Продукт"
 #: model:product.template,name:point_of_sale.product_product_tip_product_template
 msgid "Tips"
 msgstr "Советы"
+
+#. module: point_of_sale
+#: model:ir.ui.view,arch_db:point_of_sale.view_pos_config_kanban
+msgid "To Close"
+msgstr "Закрыть"
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_product_product_to_weight
@@ -4096,22 +3959,17 @@ msgstr "Неизвестный штрих-код"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:2061
+#: code:addons/point_of_sale/static/src/js/screens.js:2040
 #, python-format
 msgid "Unknown Error"
 msgstr "Неизвестная ошибка"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:1337
+#: code:addons/point_of_sale/static/src/js/screens.js:1334
 #, python-format
 msgid "Unsupported File Format"
 msgstr "Неподдерживаемый формат файла"
-
-#. module: point_of_sale
-#: model:ir.ui.view,arch_db:point_of_sale.view_pos_config_kanban
-msgid "Unused"
-msgstr ""
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_config_use_existing_lots
@@ -4207,12 +4065,6 @@ msgid "Validate Closing & Post Entries"
 msgstr "Проверять закрытие и проводку записей"
 
 #. module: point_of_sale
-#: model:product.product,name:point_of_sale.partner_product_6
-#: model:product.template,name:point_of_sale.partner_product_6_product_template
-msgid "Vauxoo.com"
-msgstr "Vauxoo.com"
-
-#. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_config_iface_vkeyboard
 msgid "Virtual KeyBoard"
 msgstr "Виртуальная клавиатура"
@@ -4255,18 +4107,12 @@ msgstr ""
 #: code:addons/point_of_sale/static/src/xml/pos.xml:1473
 #, python-format
 msgid "With a"
-msgstr "🤑 "
+msgstr "Con un"
 
 #. module: point_of_sale
 #: model:ir.ui.view,arch_db:point_of_sale.view_report_pos_order_search
 msgid "Year"
 msgstr "Год"
-
-#. module: point_of_sale
-#: model:product.product,name:point_of_sale.poivron_jaunes
-#: model:product.template,name:point_of_sale.poivron_jaunes_product_template
-msgid "Yellow Peppers"
-msgstr "Желтый перец"
 
 #. module: point_of_sale
 #: model:ir.ui.view,arch_db:point_of_sale.view_pos_session_form
@@ -4313,7 +4159,7 @@ msgstr ""
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:1938
+#: code:addons/point_of_sale/static/src/js/screens.js:1955
 #, python-format
 msgid ""
 "You cannot have a negative amount in a Bank payment. Use a cash payment "
@@ -4403,7 +4249,7 @@ msgstr ""
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:2006
+#: code:addons/point_of_sale/static/src/js/screens.js:2023
 #, python-format
 msgid "You need to select the customer before you can invoice an order."
 msgstr ""
@@ -4413,18 +4259,18 @@ msgstr ""
 #: code:addons/point_of_sale/models/pos_session.py:166
 #, python-format
 msgid "You should assign a Point of Sale to your session."
-msgstr "Вы должны назначить точку продаж для вашго сеанса."
+msgstr "Вы должны назначить точку продаж для вашей сессии."
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/chrome.js:55
+#: code:addons/point_of_sale/static/src/js/chrome.js:56
 #, python-format
 msgid "You will lose any data associated with the current order"
 msgstr "Вы потеряете все данные, связанные с текущим заказом"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:1269
+#: code:addons/point_of_sale/static/src/js/screens.js:1279
 #, python-format
 msgid "Your Internet connection is probably down."
 msgstr "Возможно, подключение к Интернету отключено."
@@ -4456,12 +4302,6 @@ msgid "ZIP"
 msgstr "Индекс"
 
 #. module: point_of_sale
-#: model:product.product,name:point_of_sale.courgette
-#: model:product.template,name:point_of_sale.courgette_product_template
-msgid "Zucchini"
-msgstr "Цуккини"
-
-#. module: point_of_sale
 #. openerp-web
 #: code:addons/point_of_sale/static/src/xml/pos.xml:1282
 #, python-format
@@ -4478,13 +4318,7 @@ msgstr "barcode.rule"
 #: code:addons/point_of_sale/static/src/xml/pos.xml:1222
 #, python-format
 msgid "belong to another session:"
-msgstr "принадлежат к другому сеансу:"
-
-#. module: point_of_sale
-#: model:product.product,name:point_of_sale.partner_product_8
-#: model:product.template,name:point_of_sale.partner_product_8_product_template
-msgid "camptocamp.com"
-msgstr "camptocamp.com"
+msgstr "принадлежат к другой сессии:"
 
 #. module: point_of_sale
 #. openerp-web
@@ -4545,20 +4379,20 @@ msgstr "Ошибка"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/screens.js:1971
+#: code:addons/point_of_sale/static/src/js/screens.js:1988
 #, python-format
 msgid "for an order of"
 msgstr "для порядка"
 
 #. module: point_of_sale
-#: code:addons/point_of_sale/models/pos_config.py:323
+#: code:addons/point_of_sale/models/pos_config.py:335
 #, python-format
 msgid "not used"
 msgstr "не используется"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/chrome.js:292
+#: code:addons/point_of_sale/static/src/js/chrome.js:293
 #: code:addons/point_of_sale/static/src/xml/pos.xml:1216
 #, python-format
 msgid "paid orders"
@@ -4615,7 +4449,7 @@ msgstr "таб"
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/chrome.js:284
+#: code:addons/point_of_sale/static/src/js/chrome.js:285
 #: code:addons/point_of_sale/static/src/xml/pos.xml:1217
 #, python-format
 msgid "unpaid orders"

@@ -3,26 +3,30 @@
 # * website_quote
 # 
 # Translators:
-# Martin Trigaux <mat@odoo.com>, 2017
-# Murat Kaplan <muratk@projetgrup.com>, 2017
-# İlknur Püskül <ilknurpuskull@gmail.com>, 2017
-# checkyoursix <batuhan.akpinar@gmail.com>, 2017
 # Ramiz Deniz Öner <deniz@denizoner.com>, 2017
+# Murat Kaplan <muratk@projetgrup.com>, 2017
 # Ediz Duman <neps1192@gmail.com>, 2017
-# Levent Karakaş <levent@mektup.at>, 2017
+# Martin Trigaux <mat@odoo.com>, 2017
+# selim kartal <kartalselim37@gmail.com>, 2017
+# gezgin biri <gezginbiri@hotmail.com>, 2017
 # Saban Yildiz <sabany@projetgrup.com>, 2017
 # Gökhan Erdoğdu <gokhan.erdogdu@mechsoft.com.tr>, 2017
+# Fırat Kaya <firat.kaya@mechsoft.com.tr>, 2017
 # Ayhan KIZILTAN <akiziltan76@hotmail.com>, 2017
-# Güven YILMAZ <guvenyilmaz@outlook.com.tr>, 2017
+# checkyoursix <batuhan.akpinar@gmail.com>, 2017
 # Mehmet Demirel <mdemirell@gmail.com>, 2017
+# Ahmet Altinisik <aaltinisik@altinkaya.com.tr>, 2017
+# İlknur Püskül <ilknurpuskull@gmail.com>, 2017
 # Hakan ıı <hkn1979@gmail.com>, 2017
+# Güven YILMAZ <guvenyilmaz@outlook.com.tr>, 2017
+# Levent Karakaş <levent@mektup.at>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-10-24 09:00+0000\n"
 "PO-Revision-Date: 2017-10-24 09:00+0000\n"
-"Last-Translator: Hakan ıı <hkn1979@gmail.com>, 2017\n"
+"Last-Translator: Levent Karakaş <levent@mektup.at>, 2017\n"
 "Language-Team: Turkish (https://www.transifex.com/odoo/teams/41243/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -655,7 +659,7 @@ msgstr "Varsayılan Şablon"
 #: model:ir.ui.view,arch_db:website_quote.report_saleorder_validity_date
 #: model:ir.ui.view,arch_db:website_quote.view_sale_quote_template_form
 msgid "Description"
-msgstr "Açıklama"
+msgstr "Tanım"
 
 #. module: website_quote
 #: model:ir.model.fields,field_description:website_quote.field_product_product_quote_description
@@ -1155,7 +1159,7 @@ msgstr "Öde"
 #. module: website_quote
 #: model:ir.ui.menu,name:website_quote.payment_acquirer_menu_sale
 msgid "Payment Acquirers"
-msgstr "Ödeme Alıcısı"
+msgstr "Ödeme Sistemleri"
 
 #. module: website_quote
 #: model:ir.ui.view,arch_db:website_quote.so_quotation_content
@@ -1239,7 +1243,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:website_quote.field_sale_quote_option_quantity
 #: model:ir.ui.view,arch_db:website_quote.pricing
 msgid "Quantity"
-msgstr "Miktar"
+msgstr "Adet"
 
 #. module: website_quote
 #: model:ir.model,name:website_quote.model_sale_order
@@ -1249,7 +1253,7 @@ msgstr "Teklif"
 #. module: website_quote
 #: model:ir.model.fields,field_description:website_quote.field_sale_quote_template_number_of_days
 msgid "Quotation Duration"
-msgstr "Teklif Süresi"
+msgstr "Teklif Verme Süresi"
 
 #. module: website_quote
 #: model:ir.model,name:website_quote.model_sale_quote_option
@@ -1693,7 +1697,7 @@ msgstr "Siparişiniz"
 #. module: website_quote
 #: model:ir.ui.view,arch_db:website_quote.so_quotation_content
 msgid "Your Quotation"
-msgstr "Teklif"
+msgstr "Sizin Teklifiniz"
 
 #. module: website_quote
 #: model:ir.ui.view,arch_db:website_quote.so_quotation_content

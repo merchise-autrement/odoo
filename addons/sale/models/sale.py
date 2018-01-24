@@ -130,11 +130,11 @@ class SaleOrder(models.Model):
         help="Manually set the expiration date of your quotation (offer), or it will set the date automatically based on the template if online quotation is installed.")
     is_expired = fields.Boolean(compute='_compute_is_expired', string="Is expired")
     create_date = fields.Datetime(string='Creation Date', readonly=True, index=True, help="Date on which sales order is created.")
-    confirmation_date = fields.Datetime(string='Confirmation Date', readonly=True, index=True, help="Date on which the sales order is confirmed.", oldname="date_confirm")
+    confirmation_date = fields.Datetime(string='Confirmation Date', readonly=True, index=True, help="Date on which the sales order is confirmed.", oldname="date_confirm", copy=False)
     user_id = fields.Many2one('res.users', string='Salesperson', index=True, track_visibility='onchange', default=lambda self: self.env.user)
     partner_id = fields.Many2one('res.partner', string='Customer', readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}, required=True, change_default=True, index=True, track_visibility='always')
-    partner_invoice_id = fields.Many2one('res.partner', string='Invoice Address', readonly=True, required=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}, help="Invoice address for current sales order.")
-    partner_shipping_id = fields.Many2one('res.partner', string='Delivery Address', readonly=True, required=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}, help="Delivery address for current sales order.")
+    partner_invoice_id = fields.Many2one('res.partner', string='Invoice Address', readonly=True, required=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)], 'sale': [('readonly', False)]}, help="Invoice address for current sales order.")
+    partner_shipping_id = fields.Many2one('res.partner', string='Delivery Address', readonly=True, required=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)], 'sale': [('readonly', False)]}, help="Delivery address for current sales order.")
 
     pricelist_id = fields.Many2one('product.pricelist', string='Pricelist', required=True, readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}, help="Pricelist for current sales order.")
     currency_id = fields.Many2one("res.currency", related='pricelist_id.currency_id', string="Currency", readonly=True, required=True)
@@ -497,6 +497,13 @@ class SaleOrder(models.Model):
         }
 
     @api.multi
+    @api.returns('self', lambda value: value.id)
+    def message_post(self, **kwargs):
+        if self.env.context.get('mark_so_as_sent'):
+            self.filtered(lambda o: o.state == 'draft').write({'state': 'sent'})
+        return super(SaleOrder, self.with_context(mail_post_autofollow=True)).message_post(**kwargs)
+
+    @api.multi
     def force_quotation_send(self):
         for order in self:
             email_act = order.action_quotation_send()
@@ -713,36 +720,6 @@ class SaleOrderLine(models.Model):
         for line in self:
             line.qty_delivered_updateable = (line.order_id.state == 'sale') and (line.product_id.service_type == 'manual') and (line.product_id.expense_policy == 'no')
 
-    @api.depends('state',
-                 'price_reduce_taxinc',
-                 'qty_delivered',
-                 'invoice_lines',
-                 'invoice_lines.price_total',
-                 'invoice_lines.invoice_id',
-                 'invoice_lines.invoice_id.state',
-                 'invoice_lines.invoice_id.refund_invoice_ids',
-                 'invoice_lines.invoice_id.refund_invoice_ids.state',
-                 'invoice_lines.invoice_id.refund_invoice_ids.amount_total')
-    def _compute_invoice_amount(self):
-        for line in self:
-            # Invoice lines referenced by this line
-            invoice_lines = line.invoice_lines.filtered(lambda l: l.invoice_id.state in ('open', 'paid'))
-            # Refund invoices linked to invoice_lines
-            refund_invoices = invoice_lines.mapped('invoice_id.refund_invoice_ids').filtered(lambda inv: inv.state in ('open', 'paid'))
-            # Total invoiced amount
-            invoiced_amount_total = sum(invoice_lines.mapped('price_total'))
-            # Total refunded amount
-            refund_amount_total = sum(refund_invoices.mapped('amount_total'))
-            # Total of remaining amount to invoice on the sale ordered (and draft invoice included) to support upsell (when
-            # delivered quantity is higher than ordered one). Draft invoice are ignored on purpose, the 'to invoice' should
-            # come only from the SO lines.
-            total_sale_line = line.price_total
-            if line.product_id.invoice_policy == 'delivery':
-                total_sale_line = line.price_reduce_taxinc * line.qty_delivered
-
-            line.amt_invoiced = invoiced_amount_total - refund_amount_total
-            line.amt_to_invoice = (total_sale_line - invoiced_amount_total) if line.state in ['sale', 'done'] else 0.0
-
     @api.depends('qty_invoiced', 'qty_delivered', 'product_uom_qty', 'order_id.state')
     def _get_to_invoice_qty(self):
         """
@@ -924,9 +901,6 @@ class SaleOrderLine(models.Model):
     customer_lead = fields.Float(
         'Delivery Lead Time', required=True, default=0.0,
         help="Number of days between the order confirmation and the shipping of the products to the customer", oldname="delay")
-    amt_to_invoice = fields.Monetary(string='Amount To Invoice', compute='_compute_invoice_amount', compute_sudo=True, store=True)
-    amt_invoiced = fields.Monetary(string='Amount Invoiced', compute='_compute_invoice_amount', compute_sudo=True, store=True)
-
     layout_category_id = fields.Many2one('sale.layout_category', string='Section')
     layout_category_sequence = fields.Integer(string='Layout Sequence')
     # TODO: remove layout_category_sequence in master or make it work properly
@@ -1093,7 +1067,7 @@ class SaleOrderLine(models.Model):
     @api.multi
     def unlink(self):
         if self.filtered(lambda x: x.state in ('sale', 'done')):
-            raise UserError(_('You can not remove a sales order line.\nDiscard changes and try setting the quantity to 0.'))
+            raise UserError(_('You can not remove an order line once the sales order is confirmed.\nYou should rather set the quantity to 0.'))
         return super(SaleOrderLine, self).unlink()
 
     @api.multi

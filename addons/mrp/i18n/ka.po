@@ -4,15 +4,13 @@
 # 
 # Translators:
 # Martin Trigaux <mat@odoo.com>, 2017
-# Saba Khmaladze <skhmaladze@uglt.org>, 2018
-# Giorgi Melitauri <gmelitauri@live.com>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-11-16 08:08+0000\n"
 "PO-Revision-Date: 2017-11-16 08:08+0000\n"
-"Last-Translator: Giorgi Melitauri <gmelitauri@live.com>, 2018\n"
+"Last-Translator: Martin Trigaux <mat@odoo.com>, 2017\n"
 "Language-Team: Georgian (https://www.transifex.com/odoo/teams/41243/ka/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -150,7 +148,7 @@ msgstr ""
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.mrp_workcenter_kanban
 msgid "<span>Reporting</span>"
-msgstr "<span> ანგარიშგება</span>"
+msgstr ""
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.stock_production_type_kanban
@@ -275,7 +273,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp.field_mrp_workcenter_active
 #: model:ir.ui.view,arch_db:mrp.mrp_message_view_search
 msgid "Active"
-msgstr "აქტიური"
+msgstr ""
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workorder_active_move_line_ids
@@ -285,7 +283,7 @@ msgstr ""
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.mrp_workcenter_block_wizard_form
 msgid "Add a description..."
-msgstr "აღწერის დამატება..."
+msgstr ""
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.res_config_settings_view_form
@@ -681,7 +679,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp.field_mrp_workcenter_color
 #: model:ir.model.fields,field_description:mrp.field_mrp_workorder_color
 msgid "Color"
-msgstr "ფერი"
+msgstr ""
 
 #. module: mrp
 #: model:ir.model,name:mrp.model_res_company
@@ -713,7 +711,7 @@ msgstr ""
 #. module: mrp
 #: model:ir.ui.menu,name:mrp.menu_mrp_configuration
 msgid "Configuration"
-msgstr "კონფიგურაცია"
+msgstr ""
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.view_mrp_production_filter
@@ -840,7 +838,7 @@ msgstr ""
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.oee_search_view
 msgid "Date"
-msgstr "თარიღ"
+msgstr ""
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_production_date_planned_finished
@@ -1089,7 +1087,7 @@ msgstr ""
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.view_mrp_production_filter
 msgid "Future Activities"
-msgstr "მომავალი ქმედებები"
+msgstr ""
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.mrp_workcenter_view
@@ -1257,7 +1255,7 @@ msgstr ""
 #: selection:mrp.production,state:0 selection:mrp.workcenter,working_state:0
 #: selection:mrp.workorder,state:0
 msgid "In Progress"
-msgstr "მიმდინარე"
+msgstr ""
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_document_index_content
@@ -1433,7 +1431,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mrp.mrp_unbuild_search_view
 #: model:ir.ui.view,arch_db:mrp.view_mrp_production_filter
 msgid "Late Activities"
-msgstr "ბოლო აქტივობები"
+msgstr ""
 
 #. module: mrp
 #: code:addons/mrp/models/mrp_production.py:432
@@ -1515,7 +1513,7 @@ msgstr ""
 #. module: mrp
 #: model:res.groups,name:mrp.group_mrp_manager
 msgid "Manager"
-msgstr "მმართველი"
+msgstr ""
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_routing_workcenter_time_cycle_manual
@@ -1674,7 +1672,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp.field_mrp_message_message
 #: model:ir.ui.view,arch_db:mrp.mrp_message_view_tree
 msgid "Message"
-msgstr "შეტყობინება"
+msgstr ""
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_document_mimetype
@@ -1727,7 +1725,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mrp.mrp_unbuild_search_view
 #: model:ir.ui.view,arch_db:mrp.view_mrp_production_filter
 msgid "My Activities"
-msgstr "ჩემი აქტივობები"
+msgstr ""
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.mrp_message_view_search
@@ -1738,7 +1736,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp.field_mrp_message_name
 #: model:ir.model.fields,field_description:mrp.field_mrp_workcenter_name
 msgid "Name"
-msgstr "სახელი"
+msgstr ""
 
 #. module: mrp
 #: code:addons/mrp/models/mrp_production.py:46
@@ -1809,7 +1807,7 @@ msgstr ""
 #: selection:mrp.document,priority:0 selection:mrp.production,priority:0
 #: selection:mrp.workcenter,working_state:0
 msgid "Normal"
-msgstr "ნორმალური"
+msgstr ""
 
 #. module: mrp
 #: model:ir.model.fields,help:mrp.field_stock_scrap_workorder_id
@@ -1992,7 +1990,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mrp.mrp_workcenter_kanban
 #: selection:mrp.workcenter.productivity.loss,loss_type:0
 msgid "Performance"
-msgstr "წარმადობა"
+msgstr ""
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.oee_search_view
@@ -2055,7 +2053,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp.field_mrp_document_priority
 #: model:ir.model.fields,field_description:mrp.field_mrp_production_priority
 msgid "Priority"
-msgstr "პრიორიტეტი"
+msgstr ""
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.res_config_settings_view_form
@@ -2517,7 +2515,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mrp.mrp_message_view_form_embedded_bom
 #: model:ir.ui.view,arch_db:mrp.mrp_message_view_form_embedded_product
 msgid "Save"
-msgstr "შენახვა"
+msgstr ""
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.res_config_settings_view_form
@@ -2673,7 +2671,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mrp.mrp_workcenter_kanban
 #: model:ir.ui.view,arch_db:mrp.stock_production_type_kanban
 msgid "Settings"
-msgstr "პარამეტრები"
+msgstr ""
 
 #. module: mrp
 #: code:addons/mrp/models/mrp_unbuild.py:89
@@ -2691,8 +2689,6 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mrp.view_mrp_production_filter
 msgid "Show all records which has next action date is before today"
 msgstr ""
-"ყველა ჩანაწერის ჩვენება, რომლებსაც შემდეგი მოქმედების თარიღი აქვს დღევანდელ "
-"დღემდე"
 
 #. module: mrp
 #: model:product.product,description:mrp.product_product_computer_desk_head
@@ -2727,7 +2723,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp.field_mrp_production_date_start
 #: model:ir.model.fields,field_description:mrp.field_mrp_workcenter_productivity_date_start
 msgid "Start Date"
-msgstr "დაწყების თარიღი"
+msgstr ""
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.mrp_production_workcenter_form_view_inherit
@@ -3077,13 +3073,13 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mrp.oee_search_view
 #: model:ir.ui.view,arch_db:mrp.view_mrp_production_work_order_search
 msgid "Today"
-msgstr "დღეს"
+msgstr ""
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.mrp_unbuild_search_view
 #: model:ir.ui.view,arch_db:mrp.view_mrp_production_filter
 msgid "Today Activities"
-msgstr "დღევანდელი აქტივობები"
+msgstr ""
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.mrp_bom_cost_report
@@ -3226,7 +3222,7 @@ msgstr ""
 #. module: mrp
 #: selection:mrp.production,priority:0
 msgid "Urgent"
-msgstr "სასწრაფო"
+msgstr ""
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_document_url
@@ -3256,7 +3252,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mrp.oee_search_view
 #: model:res.groups,name:mrp.group_mrp_user
 msgid "User"
-msgstr "მომხმარებელი"
+msgstr ""
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.res_config_settings_view_form

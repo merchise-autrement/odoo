@@ -321,8 +321,8 @@ msgstr "Archiwalne"
 
 #. module: website_slides
 #: selection:slide.slide,download_security:0
-msgid "Authenticated Users Only"
-msgstr ""
+msgid "Authentified Users Only"
+msgstr "tylko autoryzowani użytkownicy"
 
 #. module: website_slides
 #: model:slide.slide,name:website_slides.slide_5

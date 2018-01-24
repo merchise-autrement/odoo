@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-30 13:11+0000\n"
-"PO-Revision-Date: 2017-11-30 13:11+0000\n"
+"POT-Creation-Date: 2017-10-24 08:59+0000\n"
+"PO-Revision-Date: 2017-10-24 08:59+0000\n"
 "Last-Translator: Iulian Cutui <iulian.cutui@gmail.com>, 2017\n"
 "Language-Team: Romanian (https://www.transifex.com/odoo/teams/41243/ro/)\n"
 "MIME-Version: 1.0\n"
@@ -27,7 +27,7 @@ msgid "&amp;nbsp;"
 msgstr "&amp;nbsp;"
 
 #. module: website_sale
-#: model:ir.ui.view,arch_db:website_sale.cart_lines
+#: model:ir.ui.view,arch_db:website_sale.reduction_code
 msgid "/shop/cart"
 msgstr ""
 
@@ -289,9 +289,6 @@ msgid ""
 "                                        <strong> Rules &amp; Formulas</strong>\n"
 "                                    </span>"
 msgstr ""
-"<span class=\"panel-title\">\n"
-"                                        <strong> Reguli &amp; Formule</strong>\n"
-"                                    </span>"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -1163,7 +1160,7 @@ msgstr "Configurează liste de prețuri"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.checkout
 msgid "Confirm <span class=\"fa fa-long-arrow-right\"/>"
-msgstr "Confirmă <span class=\"fa fa-long-arrow-right\"/>"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.payment
@@ -1594,6 +1591,7 @@ msgid "Have Genius call the tunes."
 msgstr ""
 
 #. module: website_sale
+#: model:ir.ui.view,arch_db:website_sale.payment
 #: model:ir.ui.view,arch_db:website_sale.reduction_code
 msgid "Have a promo code? Fill in this field and apply."
 msgstr ""
@@ -1852,7 +1850,7 @@ msgstr "Ultimul an"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Legal Name"
-msgstr "Nume legal"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
@@ -2006,7 +2004,7 @@ msgstr "Rețea"
 
 #. module: website_sale
 #. openerp-web
-#: code:addons/website_sale/controllers/main.py:968
+#: code:addons/website_sale/controllers/main.py:967
 #: code:addons/website_sale/static/src/js/website_sale.editor.js:32
 #: model:ir.ui.view,arch_db:website_sale.content_new_product
 #, python-format
@@ -2155,7 +2153,7 @@ msgid "Parent Category"
 msgstr "Categorie superioară"
 
 #. module: website_sale
-#: code:addons/website_sale/controllers/main.py:756
+#: code:addons/website_sale/controllers/main.py:755
 #, python-format
 msgid "Pay Now"
 msgstr "Achită acum"
@@ -2163,7 +2161,7 @@ msgstr "Achită acum"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.payment
 msgid "Pay Now <span class=\"fa fa-long-arrow-right\"/>"
-msgstr "Plătește acum <span class=\"fa fa-long-arrow-right\"/>"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.payment
@@ -2332,7 +2330,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:website_sale.product_template_form_view
 #: model:ir.ui.view,arch_db:website_sale.view_product_image_form
 msgid "Product Images"
-msgstr "Imagini produs"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.product
@@ -2401,6 +2399,11 @@ msgstr ""
 #: model:ir.ui.view,arch_db:website_sale.product
 msgid "Products"
 msgstr "Produse"
+
+#. module: website_sale
+#: model:ir.ui.view,arch_db:website_sale.reduction_code
+msgid "Promo Code"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_sale
@@ -2731,7 +2734,7 @@ msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
-msgid "Send a recovery email to authenticated shoppers"
+msgid "Send a recovery email to authentified shoppers"
 msgstr ""
 
 #. module: website_sale
@@ -2904,7 +2907,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Sort by price"
-msgstr "Sortare după preț"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.sort
@@ -2999,7 +3002,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.address
 msgid "TIN / VAT"
-msgstr "CUI / TVA"
+msgstr ""
 
 #. module: website_sale
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_11
@@ -3186,11 +3189,6 @@ msgstr ""
 #: model:ir.ui.view,arch_db:website_sale.report_shop_saleorder_document
 msgid "Total"
 msgstr "Total"
-
-#. module: website_sale
-#: model:ir.ui.view,arch_db:website_sale.cart_popover
-msgid "True"
-msgstr ""
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_product_attribute_type
@@ -3517,7 +3515,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.cart_popover
 msgid "items)"
-msgstr "poziții)"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model.fields,help:website_sale.field_res_config_settings_cart_abandoned_delay
@@ -3537,12 +3535,12 @@ msgstr "product.attribute.value"
 #. module: website_sale
 #: model:ir.model,name:website_sale.model_product_image
 msgid "product.image"
-msgstr "product.image"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model,name:website_sale.model_product_style
 msgid "product.style"
-msgstr "product.style"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model,name:website_sale.model_res_config_settings

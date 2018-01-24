@@ -2795,7 +2795,7 @@ msgstr "Scrie o notă. Cei interesați nu vor fi notificați."
 #. module: mail
 #: model:ir.ui.view,arch_db:mail.mail_activity_view_form_popup
 msgid "Log a note..."
-msgstr "Scrie o notă..."
+msgstr ""
 
 #. module: mail
 #: model:ir.ui.view,arch_db:mail.mail_activity_view_form_popup
@@ -5764,7 +5764,7 @@ msgstr "vânzări"
 #: code:addons/mail/models/mail_thread.py:966
 #, python-format
 msgid "skipping"
-msgstr "livrare"
+msgstr ""
 
 #. module: mail
 #. openerp-web

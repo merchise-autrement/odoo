@@ -4,15 +4,13 @@
 # 
 # Translators:
 # Martin Trigaux <mat@odoo.com>, 2017
-# Link-Up <linkup.way@gmail.com>, 2018
-# Linda Stockelova <stockeloval@btlnet.com>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.saas~18\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-20 09:53+0000\n"
 "PO-Revision-Date: 2017-09-20 09:53+0000\n"
-"Last-Translator: Linda Stockelova <stockeloval@btlnet.com>, 2018\n"
+"Last-Translator: Martin Trigaux <mat@odoo.com>, 2017\n"
 "Language-Team: Korean (https://www.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -29,13 +27,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account_active
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_tag_active
 msgid "Active"
-msgstr "활성화"
+msgstr ""
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line_amount
 #: model:ir.ui.view,arch_db:analytic.view_account_analytic_line_form
 msgid "Amount"
-msgstr "금액"
+msgstr ""
 
 #. module: analytic
 #: model:ir.model,name:analytic.model_account_analytic_account
@@ -63,7 +61,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:analytic.account_analytic_tag_form_view
 #: model:ir.ui.view,arch_db:analytic.account_analytic_tag_tree_view
 msgid "Analytic Accounts Tags"
-msgstr "분석적 계정 태그"
+msgstr ""
 
 #. module: analytic
 #: model:ir.actions.act_window,name:analytic.account_analytic_line_action_entries
@@ -81,7 +79,7 @@ msgstr ""
 #. module: analytic
 #: model:ir.model,name:analytic.model_account_analytic_line
 msgid "Analytic Line"
-msgstr "분석 명세"
+msgstr ""
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account_line_ids
@@ -96,12 +94,12 @@ msgstr ""
 #. module: analytic
 #: model:ir.model,name:analytic.model_account_analytic_tag
 msgid "Analytic Tags"
-msgstr "태그 분석"
+msgstr ""
 
 #. module: analytic
 #: model:ir.ui.view,arch_db:analytic.view_account_analytic_account_search
 msgid "Archived"
-msgstr "보관완료"
+msgstr ""
 
 #. module: analytic
 #: model:ir.ui.view,arch_db:analytic.view_account_analytic_account_search
@@ -126,7 +124,7 @@ msgstr ""
 #. module: analytic
 #: model:ir.actions.act_window,help:analytic.account_analytic_tag_action
 msgid "Click to add a new tag."
-msgstr "클릭해서 새로운 태그를 추가합니다."
+msgstr ""
 
 #. module: analytic
 #: model:ir.actions.act_window,help:analytic.action_analytic_account_form
@@ -194,7 +192,7 @@ msgstr "고객"
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line_date
 msgid "Date"
-msgstr "날짜"
+msgstr ""
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account_debit
@@ -287,7 +285,7 @@ msgstr "수량"
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account_code
 msgid "Reference"
-msgstr "참조"
+msgstr ""
 
 #. module: analytic
 #: model:ir.actions.act_window,help:analytic.account_analytic_line_action
@@ -333,7 +331,7 @@ msgstr "총계"
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line_user_id
 msgid "User"
-msgstr "사용자"
+msgstr ""
 
 #. module: analytic
 #: model:ir.ui.view,arch_db:analytic.view_account_analytic_account_form

@@ -2,6 +2,7 @@ odoo.define('payment.payment_form', function (require) {
     "use strict";
 
     var ajax = require('web.ajax');
+    var config = require('web.config');
     var core = require('web.core');
     var Dialog = require("web.Dialog");
     var Widget = require("web.Widget");
@@ -120,7 +121,7 @@ odoo.define('payment.payment_form', function (require) {
                             _t('Server Error'),
                             _t("<p>We are not able to add your payment method at the moment.</p>") +
                                "<p>" +
-                               (core.debug ? (data.data.message.replace(/\n/g, "<br />")): '') +
+                               (config.debug ? (data.data.message.replace(/\n/g, "<br />")): '') +
                                "</p>"
                         );
                     });
@@ -167,7 +168,7 @@ odoo.define('payment.payment_form', function (require) {
                                 _t('Server Error'),
                                 _t("<p>We are not able to redirect you to the payment form.</p>") +
                                    "<p>" +
-                                   (core.debug ? (data.data.message.replace(/\n/g, "<br />")): '') +
+                                   (config.debug ? (data.data.message.replace(/\n/g, "<br />")): '') +
                                    "</p>"
                             );
                         });
@@ -276,7 +277,7 @@ odoo.define('payment.payment_form', function (require) {
                         _t('Server error'),
                         _t("<p>We are not able to add your payment method at the moment.</p>") +
                            "<p>" +
-                           (core.debug ? (data.data.message.replace(/\n/g, "<br />")): '') +
+                           (config.debug ? (data.data.message.replace(/\n/g, "<br />")): '') +
                            "</p>"
                     );
                 });
@@ -343,7 +344,7 @@ odoo.define('payment.payment_form', function (require) {
             }, function (type, err) {
                 self.displayError(
                     _t('Server Error'),
-                    _t("<p>We are not able to delete your payment method at the moment.</p>") + (core.debug ? err.data.message : '')
+                    _t("<p>We are not able to delete your payment method at the moment.</p>") + (config.debug ? err.data.message : '')
                 );
             });
         },

@@ -7,7 +7,6 @@
 # Wanradt Koell <wanradt@gmail.com>, 2017
 # Arma Gedonsky <armagedonsky@hot.ee>, 2017
 # Rivo Zängov <eraser@eraser.ee>, 2017
-# Eneli Õigus <enelioigus@gmail.com>, 2017
 # Egon Raamat <egon@avalah.ee>, 2017
 msgid ""
 msgstr ""
@@ -299,7 +298,7 @@ msgstr "Arhiveeritud"
 
 #. module: website_slides
 #: selection:slide.slide,download_security:0
-msgid "Authenticated Users Only"
+msgid "Authentified Users Only"
 msgstr ""
 
 #. module: website_slides
@@ -1337,7 +1336,7 @@ msgstr ""
 #. module: website_slides
 #: model:ir.ui.view,arch_db:website_slides.view_slide_slide_form
 msgid "Website"
-msgstr "Internetileht"
+msgstr "Veebisait"
 
 #. module: website_slides
 #. openerp-web

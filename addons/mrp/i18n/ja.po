@@ -10,6 +10,7 @@
 # 高木正勝 <masakatsu.takagi@pro-spire.co.jp>, 2017
 # Manami Hashi <manami@roomsfor.hk>, 2017
 # NOKA Shigekazu <shigekazu.noka@gmail.com>, 2017
+# SHIMIZU Taku <shimizu.taku@gmail.com>, 2017
 # Takahiro MURAKAMI <murakami@date-yakkyoku.com>, 2017
 # Tim Siu Lai <tl@roomsfor.hk>, 2017
 msgid ""
@@ -213,12 +214,12 @@ msgstr "<strong>印刷日:</strong><br/>"
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.report_mrporder
 msgid "<strong>Product:</strong><br/>"
-msgstr "<strong>プロダクト:</strong><br/>"
+msgstr "<strong>製品:</strong><br/>"
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.report_mrporder
 msgid "<strong>Product</strong>"
-msgstr "<strong>プロダクト</strong>"
+msgstr "<strong>製品</strong>"
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.report_mrporder
@@ -441,7 +442,7 @@ msgstr "基準"
 msgid ""
 "Based on a Bill of Material, a Manufacturing Order will consume raw materials\n"
 "                and produce finished products."
-msgstr "製造オーダは部品表に基づき構成品在庫を消費し、製造品在庫を作成します。"
+msgstr ""
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.report_mrporder
@@ -485,7 +486,7 @@ msgstr "部品表には完成品の生産に必要な原材料のリストを定
 #: model:ir.actions.act_window,name:mrp.mrp_bom_form_action
 #: model:ir.ui.menu,name:mrp.menu_mrp_bom_form_action
 msgid "Bills of Materials"
-msgstr "部品表"
+msgstr ""
 
 #. module: mrp
 #: model:ir.actions.act_window,help:mrp.mrp_bom_form_action
@@ -602,7 +603,7 @@ msgstr "能力"
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.view_change_production_qty_wizard
 msgid "Change Product Qty"
-msgstr "プロダクト数量変更"
+msgstr "製品数量変更"
 
 #. module: mrp
 #: model:ir.actions.act_window,name:mrp.action_change_production_qty
@@ -612,12 +613,12 @@ msgstr "生産数量を変更"
 #. module: mrp
 #: model:ir.model,name:mrp.model_change_production_qty
 msgid "Change Quantity of Products"
-msgstr "プロダクト数量変更"
+msgstr "製品数量変更"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_production_check_to_done
 msgid "Check Produced Qty"
-msgstr "プロダクト数量チェック"
+msgstr "製品数量チェック"
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.mrp_production_form_view
@@ -644,12 +645,12 @@ msgstr ""
 #. module: mrp
 #: model:ir.actions.act_window,help:mrp.mrp_production_action
 msgid "Click here to create a Manufacturing Order."
-msgstr "クリックして製造オーダを作成してください。"
+msgstr ""
 
 #. module: mrp
 #: model:ir.actions.act_window,help:mrp.mrp_unbuild
 msgid "Click here to create a Unbuild Order."
-msgstr "クリックして解体オーダを作成してください。"
+msgstr ""
 
 #. module: mrp
 #: model:ir.actions.act_window,help:mrp.mrp_routing_action
@@ -1314,7 +1315,7 @@ msgstr "この作業オーダでロット番号をスキャンする必要のあ
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_production_is_locked
 msgid "Is Locked"
-msgstr "ロック済"
+msgstr ""
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workcenter_productivity_loss_manual
@@ -1560,7 +1561,7 @@ msgstr "この倉庫で製造する"
 #. module: mrp
 #: selection:mrp.bom,type:0
 msgid "Manufacture this product"
-msgstr "このプロダクトを製造"
+msgstr "この製品を製造"
 
 #. module: mrp
 #: code:addons/mrp/models/stock_warehouse.py:64
@@ -1619,7 +1620,7 @@ msgstr "製造オーダ"
 msgid ""
 "Manufacturing Orders can be generated automatically based on customer\n"
 "                requirements or reordering rules."
-msgstr "製造オーダは顧客要求もしくは再オーダ規則に基づき自動生成することが可能です。"
+msgstr ""
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.view_mrp_production_filter
@@ -1688,7 +1689,7 @@ msgstr "基準生産計画"
 #: model:ir.model.fields,field_description:mrp.field_mrp_production_availability
 #: model:ir.model.fields,field_description:mrp.field_mrp_workorder_production_availability
 msgid "Materials Availability"
-msgstr "構成品利用可能性"
+msgstr ""
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_message_message
@@ -1721,7 +1722,7 @@ msgstr "移動 完了 "
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.res_config_settings_view_form
 msgid "Move forward deadline start dates by"
-msgstr "開始期日を次の日数早める:"
+msgstr ""
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workorder_move_raw_ids
@@ -2036,7 +2037,7 @@ msgstr "計画 オーダ"
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.res_config_settings_view_form
 msgid "Plan manufacturing or purchase orders based on forecasts"
-msgstr "フォーキャストに基づき製造オーダ/購買オーダを計画"
+msgstr ""
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.stock_production_type_kanban
@@ -2086,7 +2087,7 @@ msgstr "優先度"
 msgid ""
 "Process operations at specific work centers based on the routing\n"
 "                                        and carry out quality checks."
-msgstr "工順に基づき特定の作業区での操作を処理し、品質検査を実施"
+msgstr ""
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_unbuild_produce_line_ids
@@ -2113,7 +2114,7 @@ msgstr "製造"
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.res_config_settings_view_form
 msgid "Produce residual products (A + B -&gt; C + D)"
-msgstr "副産品を生産(A + B -&gt; C + D)"
+msgstr ""
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.production_message
@@ -2136,12 +2137,12 @@ msgstr "生産済"
 #: model:ir.ui.view,arch_db:mrp.view_mrp_bom_line_filter
 #: model:ir.ui.view,arch_db:mrp.view_mrp_production_filter
 msgid "Product"
-msgstr "プロダクト"
+msgstr "製品"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_res_config_settings_module_mrp_plm
 msgid "Product Lifecycle Management (PLM)"
-msgstr "プロダクトライフサイクル管理(PLM)"
+msgstr "製品ライフサイクル管理 (PLM)"
 
 #. module: mrp
 #: model:ir.actions.act_window,name:mrp.action_mrp_unbuild_moves
@@ -2152,41 +2153,41 @@ msgstr "プロダクト移動"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_product_produce_line_product_produce_id
 msgid "Product Produce"
-msgstr "プロダクト生産"
+msgstr "製品生産"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_bom_line_product_qty
 msgid "Product Quantity"
-msgstr "プロダクト数量"
+msgstr "製品数量"
 
 #. module: mrp
 #: model:ir.model,name:mrp.model_product_template
 #: model:ir.model.fields,field_description:mrp.field_mrp_message_product_tmpl_id
 #: model:ir.model.fields,field_description:mrp.field_mrp_production_product_tmpl_id
 msgid "Product Template"
-msgstr "プロダクトテンプレート"
+msgstr "製品テンプレート"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_bom_line_product_uom_id
 #: model:ir.model.fields,field_description:mrp.field_mrp_bom_product_uom_id
 #: model:ir.model.fields,field_description:mrp.field_mrp_production_product_uom_id
 msgid "Product Unit of Measure"
-msgstr "プロダクト単位"
+msgstr "製品単位"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_bom_product_id
 msgid "Product Variant"
-msgstr "プロダクトバリアント"
+msgstr "製品バリアント"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_product_produce_produce_line_ids
 msgid "Product to Track"
-msgstr "プロダクトの追跡"
+msgstr "製品の追跡"
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.view_mrp_message_kanban
 msgid "Product:"
-msgstr "プロダクト:"
+msgstr "製品："
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_product_produce_production_id
@@ -2282,7 +2283,7 @@ msgstr "生産性ロス"
 #: model:ir.ui.menu,name:mrp.menu_mrp_product_form
 #: model:ir.ui.view,arch_db:mrp.res_config_settings_view_form
 msgid "Products"
-msgstr "プロダクト"
+msgstr "製品"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_production_propagate
@@ -2433,12 +2434,12 @@ msgstr ""
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_res_config_settings_module_mrp_repair
 msgid "Repair"
-msgstr "修理"
+msgstr ""
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.res_config_settings_view_form
 msgid "Repair products and invoice the repair orders"
-msgstr "プロダクトを修理し、修理オーダから請求書を発行"
+msgstr ""
 
 #. module: mrp
 #: model:ir.ui.menu,name:mrp.menu_mrp_reporting
@@ -2546,12 +2547,12 @@ msgstr "保存"
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.res_config_settings_view_form
 msgid "Schedule manufacturing orders earlier to avoid delays"
-msgstr "遅延を避けるため、製造オーダを早めにスケジュール"
+msgstr ""
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.res_config_settings_view_form
 msgid "Schedule the maintenance of your equipment"
-msgstr "設備の保守をスケジュール"
+msgstr ""
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workorder_date_planned_finished
@@ -2641,7 +2642,7 @@ msgstr "MRPワークセンターの検索"
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.res_config_settings_view_form
 msgid "Security Lead Time"
-msgstr "安全リードタイム"
+msgstr ""
 
 #. module: mrp
 #: model:ir.model.fields,help:mrp.field_res_company_manufacturing_lead
@@ -2760,7 +2761,7 @@ msgstr "作業開始"
 #: model:ir.model.fields,field_description:mrp.field_mrp_production_state
 #: model:ir.model.fields,field_description:mrp.field_mrp_workorder_production_state
 msgid "State"
-msgstr "状態"
+msgstr "都道府県・州"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_unbuild_state
@@ -2780,7 +2781,7 @@ msgstr "在庫移動"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_production_move_dest_ids
 msgid "Stock Movements of Produced Goods"
-msgstr "製造品の在庫移動"
+msgstr ""
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_document_store_fname
@@ -3196,7 +3197,7 @@ msgstr "解体オーダ"
 msgid ""
 "Unbuild Orders are used to break down a product you manufactured or "
 "purchased into its components, based on its Bill of Material."
-msgstr "解体オーダは、製造品または購買品を部品表に基づき解体するのに使用されます。"
+msgstr ""
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.mrp_bom_cost_report
@@ -3274,7 +3275,7 @@ msgstr ""
 msgid ""
 "Use the Produce button or process the work orders to create some finished "
 "products."
-msgstr "製造ボタンを押下または作業オーダを処理して、完成品在庫を作成してください。"
+msgstr ""
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.product_product_form_view_bom_button
@@ -3501,7 +3502,7 @@ msgstr "作業オーダ"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_res_config_settings_group_mrp_routings
 msgid "Work Orders & Quality"
-msgstr "作業オーダと品質"
+msgstr ""
 
 #. module: mrp
 #: model:ir.actions.act_window,name:mrp.mrp_workorder_delta_report

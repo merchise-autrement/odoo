@@ -26,7 +26,7 @@ msgstr ""
 #. module: payment
 #: model:ir.model.fields,field_description:payment.field_payment_transaction_html_3ds
 msgid "3D Secure HTML"
-msgstr "3DセキュアHTML"
+msgstr "3D Secure HTML"
 
 #. module: payment
 #: model:ir.ui.view,arch_db:payment.confirm
@@ -156,7 +156,7 @@ msgstr "<span><i>キャンセル,</i> お支払いはキャンセルされまし
 msgid ""
 "<span><i>Done,</i> Your online payment has been successfully processed. "
 "Thank you for your order.</span>"
-msgstr "<span><i>完了。</i> お支払が正常に処理されました。ご注文ありがとうございました。</span>"
+msgstr "<span><i>完了,</i> オンライン支払いが正常に処理されました。 ご注文ありがとうございました。</span>"
 
 #. module: payment
 #: model:payment.acquirer,error_msg:payment.payment_acquirer_adyen
@@ -301,22 +301,22 @@ msgstr "Buckaroo"
 #. module: payment
 #: model:ir.model.fields,field_description:payment.field_payment_transaction_callback_res_id
 msgid "Callback Document ID"
-msgstr "コールバックドキュメントID"
+msgstr ""
 
 #. module: payment
 #: model:ir.model.fields,field_description:payment.field_payment_transaction_callback_model_id
 msgid "Callback Document Model"
-msgstr "コールバックドキュメントモデル"
+msgstr ""
 
 #. module: payment
 #: model:ir.model.fields,field_description:payment.field_payment_transaction_callback_hash
 msgid "Callback Hash"
-msgstr "コールバックハッシュ"
+msgstr ""
 
 #. module: payment
 #: model:ir.model.fields,field_description:payment.field_payment_transaction_callback_method
 msgid "Callback Method"
-msgstr "コールバックメソッド"
+msgstr ""
 
 #. module: payment
 #. openerp-web
@@ -628,7 +628,7 @@ msgstr "画像"
 #. module: payment
 #: model:ir.model.fields,field_description:payment.field_payment_icon_image_payment_form
 msgid "Image displayed on the payment form"
-msgstr "支払フォームに表示される画像"
+msgstr ""
 
 #. module: payment
 #: model:payment.acquirer,name:payment.payment_acquirer_ogone

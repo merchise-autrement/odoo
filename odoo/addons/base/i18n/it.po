@@ -5,14 +5,13 @@
 # Translators:
 # Martin Trigaux <mat@odoo.com>, 2017
 # Paolo Valier <paolo.valier@hotmail.it>, 2017
-# Pietro Della Notte <pdellanotte@gmail.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-11-08 13:21+0000\n"
 "PO-Revision-Date: 2017-11-08 13:21+0000\n"
-"Last-Translator: Pietro Della Notte <pdellanotte@gmail.com>, 2017\n"
+"Last-Translator: Paolo Valier <paolo.valier@hotmail.it>, 2017\n"
 "Language-Team: Italian (https://www.transifex.com/odoo/teams/41243/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -4389,7 +4388,7 @@ msgstr ""
 #. module: base
 #: model:ir.ui.view,arch_db:base.res_lang_form
 msgid "%w - Weekday number [0(Sunday),6].\""
-msgstr "%w - Giorno della settimana [0(Domenica),6].\""
+msgstr ""
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.res_lang_form
@@ -5214,7 +5213,7 @@ msgstr "Attivo"
 #. module: base
 #: model:ir.module.module,summary:base.module_website_sale_delivery
 msgid "Add Delivery Costs to Online Sales"
-msgstr "Aggiungi i costi di consegna alle Vendite Online"
+msgstr ""
 
 #. module: base
 #: model:ir.module.module,summary:base.module_transifex
@@ -6291,7 +6290,7 @@ msgstr ""
 #. module: base
 #: selection:ir.property,type:0
 msgid "Boolean"
-msgstr "Booleano"
+msgstr ""
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_theme_bootswatch
@@ -6839,7 +6838,7 @@ msgstr ""
 #. module: base
 #: model:ir.actions.act_window,help:base.action_partner_category_form
 msgid "Click to create a new partner tag."
-msgstr "Clicca per creare un nuovo tag partner."
+msgstr ""
 
 #. module: base
 #: selection:ir.logging,type:0
@@ -7040,7 +7039,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_res_partner_commercial_company_name
 #: model:ir.model.fields,field_description:base.field_res_users_commercial_company_name
 msgid "Company Name Entity"
-msgstr "Entità Nome Azienda"
+msgstr ""
 
 #. module: base
 #: model:ir.actions.act_window,name:base.ir_property_form
@@ -8100,7 +8099,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_delivery
 msgid "Delivery Costs"
-msgstr "Costi di Consegna"
+msgstr ""
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_module_module_demo
@@ -9196,7 +9195,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:base.view_model_fields_tree
 #: model:ir.ui.view,arch_db:base.view_model_form
 msgid "Fields"
-msgstr "Campi"
+msgstr ""
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_model_form
@@ -9495,7 +9494,7 @@ msgstr ""
 #: selection:ir.actions.act_window,target:0
 #: selection:ir.actions.client,target:0
 msgid "Full Screen"
-msgstr "Schermo intero"
+msgstr ""
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_logging_func
@@ -10593,7 +10592,7 @@ msgstr ""
 #. module: base
 #: model:ir.ui.menu,name:base.menu_translation_export
 msgid "Import / Export"
-msgstr "Importa / Exporta"
+msgstr ""
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_bank_statement_import_camt
@@ -10744,7 +10743,7 @@ msgstr ""
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_view_form
 msgid "Inherited Views"
-msgstr "Viste ereditate"
+msgstr ""
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_model_inherited_model_ids
@@ -10841,7 +10840,7 @@ msgstr ""
 #. module: base
 #: selection:ir.property,type:0
 msgid "Integer"
-msgstr "Intero"
+msgstr ""
 
 #. module: base
 #: model:ir.module.module,description:base.module_web_clearbit
@@ -11036,7 +11035,7 @@ msgstr ""
 #. module: base
 #: selection:res.partner,type:0
 msgid "Invoice address"
-msgstr "Indirizzo fatturazione"
+msgstr ""
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account
@@ -11282,7 +11281,7 @@ msgstr ""
 #: code:addons/base/module/wizard/base_language_install.py:39
 #, python-format
 msgid "Language Pack"
-msgstr "Pacchetto Lingua"
+msgstr ""
 
 #. module: base
 #: code:addons/base/res/res_lang.py:218
@@ -11967,7 +11966,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_mrp_maintenance
 msgid "Maintenance - MRP"
-msgstr "Manutenzione - MRP"
+msgstr ""
 
 #. module: base
 #: model:res.country,name:base.mw
@@ -12799,7 +12798,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_cron_nextcall
 msgid "Next Execution Date"
-msgstr "Data Prossima Esecuzione"
+msgstr ""
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_sequence_date_range_number_next
@@ -15076,7 +15075,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_pos_reprint
 msgid "Point of Sale Receipt Reprinting"
-msgstr "Ristampa Ricevute Punto Vendita"
+msgstr ""
 
 #. module: base
 #: model:res.country,name:base.pl
@@ -15495,7 +15494,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_purchase_requisition
 msgid "Purchase Agreements"
-msgstr "Contratti d'Acquisto"
+msgstr ""
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_purchase
@@ -16654,7 +16653,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_res_partner_partner_share
 #: model:ir.model.fields,field_description:base.field_res_users_partner_share
 msgid "Share Partner"
-msgstr "Condividi Partner"
+msgstr ""
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_users_share
@@ -16704,7 +16703,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_sign
 msgid "Sign"
-msgstr "Firma"
+msgstr ""
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_users_signature
@@ -17845,8 +17844,6 @@ msgid ""
 "There is already a shared filter set as default for %(model)s, delete or "
 "change it before setting a new default"
 msgstr ""
-"Esiste già un filtro condiviso predefinito per %(model)s, è necessario "
-"cancellarlo o cambiarlo prima di impostarne uno nuovo predefinito"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_res_lang_iso_code
@@ -18123,12 +18120,12 @@ msgstr ""
 #. module: base
 #: model:ir.ui.view,arch_db:base.report_irmodeloverview
 msgid "Transient: False"
-msgstr "Transitorio: Vero"
+msgstr ""
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.report_irmodeloverview
 msgid "Transient: True"
-msgstr "Transitorio: Vero"
+msgstr ""
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_transifex
@@ -18748,7 +18745,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:base.view_users_simple_form
 #: model:ir.ui.view,arch_db:base.view_users_tree
 msgid "Users"
-msgstr "Utenti"
+msgstr ""
 
 #. module: base
 #: model:ir.ui.menu,name:base.menu_users
@@ -19188,7 +19185,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_form_editor
 msgid "Website Form Builder"
-msgstr "Generatore Form Sito web"
+msgstr ""
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_helpdesk_form
@@ -19346,9 +19343,6 @@ msgid ""
 "When no specific mail server is requested for a mail, the highest priority "
 "one is used. Default priority is 10 (smaller number = higher priority)"
 msgstr ""
-"Quando nessun server mail è richiesto dalla email, quello a priorità più "
-"alta viene utilizzato. La priorità predefinita è 10 (numero piccolo = alta "
-"priorità)"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.sequence_view
@@ -19509,7 +19503,7 @@ msgstr ""
 #: code:addons/base/ir/ir_ui_view.py:343
 #, python-format
 msgid "You cannot create recursive inherited views."
-msgstr "Non è possibile creare viste ereditate ricorsive."
+msgstr ""
 
 #. module: base
 #: code:addons/base/res/res_users.py:336

@@ -3,12 +3,11 @@
 # * anonymization
 # 
 # Translators:
-# Martin Trigaux <mat@odoo.com>, 2017
-# Mateus Lopes <mateus1@gmail.com>, 2017
-# Adriel Kotviski <kotviski@gmail.com>, 2017
+# Martin Trigaux <mat@odoo.com>, 2016
+# Mateus Lopes <mateus1@gmail.com>, 2016
+# grazziano <gra.negocia@gmail.com>, 2016
+# Adriel Kotviski <kotviski@gmail.com>, 2016
 # Rodrigo de Almeida Sottomaior Macedo <rmsolucoeseminformatic4@gmail.com>, 2017
-# grazziano <gra.negocia@gmail.com>, 2017
-# André Augusto Firmino Cordeiro <a.cordeito@gmail.com>, 2017
 # SILMAR PINHEIRO VIANA <pinheirosilmar@gmail.com>, 2017
 msgid ""
 msgstr ""
@@ -150,7 +149,7 @@ msgstr "Direção"
 #: model:ir.model.fields,field_description:anonymization.field_ir_model_fields_anonymization_migration_fix_display_name
 #: model:ir.model.fields,field_description:anonymization.field_ir_model_fields_anonymize_wizard_display_name
 msgid "Display Name"
-msgstr "Nome exibido"
+msgstr "Nome para Exibição"
 
 #. module: anonymization
 #: selection:ir.model.fields.anonymization.history,state:0
@@ -230,7 +229,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:anonymization.field_ir_model_fields_anonymization_migration_fix___last_update
 #: model:ir.model.fields,field_description:anonymization.field_ir_model_fields_anonymize_wizard___last_update
 msgid "Last Modified on"
-msgstr "Última modificação em"
+msgstr "Última Modificação em"
 
 #. module: anonymization
 #: model:ir.model.fields,field_description:anonymization.field_ir_model_fields_anonymization_history_write_uid

@@ -3,9 +3,9 @@
 # * hr_org_chart
 # 
 # Translators:
+# Eduardo Magdalena <emagdalena@close2circle.com>, 2017
 # Pedro M. Baeza <pedro.baeza@gmail.com>, 2017
 # Sergio Flores <vitavitae1@gmail.com>, 2017
-# Eduardo Magdalena <emagdalena@close2circle.com>, 2017
 # Jesus Zapata <jesus@vauxoo.com>, 2017
 msgid ""
 msgstr ""

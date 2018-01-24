@@ -13,15 +13,14 @@
 # ifaraz ir <ifarazir@gmail.com>, 2017
 # hamid hvbnet <hvbnet@yahoo.com>, 2017
 # Morovat Guivi <tarjomac@gmail.com>, 2017
-# mohammad azarbara <mohammadazarbara98@gmail.com>, 2017
-# Arash Sardari <arashss77@gmail.com>, 2018
+# سید محمد آذربرا <mohammadazarbara98@gmail.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-11-16 08:08+0000\n"
 "PO-Revision-Date: 2017-11-16 08:08+0000\n"
-"Last-Translator: Arash Sardari <arashss77@gmail.com>, 2018\n"
+"Last-Translator: سید محمد آذربرا <mohammadazarbara98@gmail.com>, 2017\n"
 "Language-Team: Persian (https://www.transifex.com/odoo/teams/41243/fa/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -115,7 +114,7 @@ msgid ""
 "                                <span>We would be delighted to assist you along the way. Contact us through our\n"
 "                                <a href=\"https://www.odoo.com/help\">support form</a> if you have any question.\n"
 "                                You can also discover how to get the best out of Odoo CRM with our </span>\n"
-"                                <a target=\"_blank\" href=\"https://www.odoo.com/documentation/user/11.0/crm.html\">\n"
+"                                <a target=\"_blank\" href=\"https://www.odoo.com/documentation/user/10.0/crm.html\">\n"
 "                                <span style=\"text-decoration:underline;\">User Documentation</span></a>\n"
 "                                </span><span> or with our </span>\n"
 "                                <a target=\"_blank\" href=\"https://www.odoo.com/documentation\">\n"
@@ -4022,7 +4021,7 @@ msgstr ""
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
 msgid "Use"
-msgstr "استفاده"
+msgstr ""
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.res_config_settings_view_form
@@ -4203,7 +4202,7 @@ msgstr ""
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
 msgid "Welcome"
-msgstr "خوش آمدید"
+msgstr ""
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -4480,7 +4479,7 @@ msgstr "یا"
 #. module: crm
 #: model:ir.model,name:crm.model_res_config_settings
 msgid "res.config.settings"
-msgstr "res.config.settings"
+msgstr ""
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner

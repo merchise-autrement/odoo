@@ -4,15 +4,13 @@
 # 
 # Translators:
 # Martin Trigaux <mat@odoo.com>, 2017
-# Eneko <eastigarraga@codesyntax.com>, 2018
-# Mikel Lizarralde <mikellizarralde@gmail.com>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-11-16 08:08+0000\n"
 "PO-Revision-Date: 2017-11-16 08:08+0000\n"
-"Last-Translator: Mikel Lizarralde <mikellizarralde@gmail.com>, 2018\n"
+"Last-Translator: Martin Trigaux <mat@odoo.com>, 2017\n"
 "Language-Team: Basque (https://www.transifex.com/odoo/teams/41243/eu/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -106,7 +104,7 @@ msgid ""
 "                                <span>We would be delighted to assist you along the way. Contact us through our\n"
 "                                <a href=\"https://www.odoo.com/help\">support form</a> if you have any question.\n"
 "                                You can also discover how to get the best out of Odoo CRM with our </span>\n"
-"                                <a target=\"_blank\" href=\"https://www.odoo.com/documentation/user/11.0/crm.html\">\n"
+"                                <a target=\"_blank\" href=\"https://www.odoo.com/documentation/user/10.0/crm.html\">\n"
 "                                <span style=\"text-decoration:underline;\">User Documentation</span></a>\n"
 "                                </span><span> or with our </span>\n"
 "                                <a target=\"_blank\" href=\"https://www.odoo.com/documentation\">\n"
@@ -179,8 +177,6 @@ msgstr ""
 msgid ""
 "<b>Invite coworkers</b> via email.<br/><i>Enter one email per line.</i>"
 msgstr ""
-"<b>Gonbidatu lankideak</b> e-postaz.<br/><i>Sartu e-posta helbide bat "
-"lerroko.</i>"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -316,10 +312,6 @@ msgid ""
 "                                            <strong> Screen Customization</strong>\n"
 "                                        </span>"
 msgstr ""
-"<span class=\"panel-title\">\n"
-"                                            <span class=\"fa fa-laptop\"/>\n"
-"                                            <strong> Pantailaren pertsonalizazioa</strong>\n"
-"                                        </span>"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -329,10 +321,6 @@ msgid ""
 "                                            <strong> Create Custom Reports</strong>\n"
 "                                        </span>"
 msgstr ""
-"<span class=\"panel-title\">\n"
-"                                            <span class=\"fa fa-pencil-square-o\"/>\n"
-"                                            <strong> Sortu pertsonalizatutako txostenak</strong>\n"
-"                                        </span>"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -342,10 +330,6 @@ msgid ""
 "                                            <strong> Workflow Customization</strong>\n"
 "                                        </span>"
 msgstr ""
-"<span class=\"panel-title\">\n"
-"                                            <span class=\"fa fa-sitemap\"/>\n"
-"                                            <strong> Lan-fluxuaren pertsonalizazioa</strong>\n"
-"                                        </span>"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -1181,7 +1165,7 @@ msgstr ""
 #: code:addons/crm/static/src/js/tour.js:70
 #, python-format
 msgid "Configuration options are available in the Settings app."
-msgstr "Konfigurazio aukerak eskuragarri daude Ezapenen atalean."
+msgstr ""
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -1595,7 +1579,7 @@ msgstr ""
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.view_create_opportunity_simplified
 msgid "Discard"
-msgstr "Baztertu"
+msgstr ""
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_base_partner_merge_automatic_wizard_display_name
@@ -1664,7 +1648,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:crm.crm_case_form_view_leads
 #: model:ir.ui.view,arch_db:crm.crm_case_form_view_oppor
 msgid "Email"
-msgstr "E-posta"
+msgstr ""
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.sales_team_form_view_in_crm
@@ -1710,7 +1694,7 @@ msgstr ""
 #. module: crm
 #: model:ir.model,name:crm.model_calendar_event
 msgid "Event"
-msgstr "Gertakizuna"
+msgstr ""
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -2191,7 +2175,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:crm.field_crm_partner_binding___last_update
 #: model:ir.model.fields,field_description:crm.field_crm_stage___last_update
 msgid "Last Modified on"
-msgstr "Azken aldaketa"
+msgstr ""
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_activity_report_view_search
@@ -2511,7 +2495,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:crm.field_res_users_meeting_ids
 #: model:ir.ui.view,arch_db:crm.view_partners_form_crm1
 msgid "Meetings"
-msgstr "Bilerak"
+msgstr ""
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.merge_opportunity_form
@@ -2951,7 +2935,7 @@ msgstr ""
 #. module: crm
 #: selection:base.partner.merge.automatic.wizard,state:0
 msgid "Option"
-msgstr "Aukera"
+msgstr ""
 
 #. module: crm
 #: model:ir.model.fields,help:crm.field_crm_team_alias_force_thread_id
@@ -2964,7 +2948,7 @@ msgstr ""
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.base_partner_merge_automatic_wizard_form
 msgid "Options"
-msgstr "Aukerak"
+msgstr ""
 
 #. module: crm
 #: model:crm.lead.tag,name:crm.categ_oppor8
@@ -2984,7 +2968,7 @@ msgstr ""
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_team_alias_user_id
 msgid "Owner"
-msgstr "Jabea"
+msgstr ""
 
 #. module: crm
 #. openerp-web
@@ -3304,7 +3288,7 @@ msgstr ""
 #: model:ir.ui.menu,name:crm.crm_menu_report
 #: model:ir.ui.view,arch_db:crm.crm_planner
 msgid "Reporting"
-msgstr "Txostenak"
+msgstr ""
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_stage_requirements
@@ -3701,7 +3685,7 @@ msgstr ""
 #. module: crm
 #: sql_constraint:crm.lead.tag:0
 msgid "Tag name already exists !"
-msgstr "Etiketaren izena existitzen da jada!"
+msgstr ""
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead_tag_ids
@@ -4189,7 +4173,7 @@ msgstr ""
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
 msgid "Welcome"
-msgstr "Ongi etorri"
+msgstr ""
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -4468,7 +4452,7 @@ msgstr ""
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
 msgid "send us an email"
-msgstr "bidaliguzu e-posta mezu bat"
+msgstr ""
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner

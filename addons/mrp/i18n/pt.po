@@ -4,14 +4,13 @@
 # 
 # Translators:
 # Martin Trigaux <mat@odoo.com>, 2017
-# Manuela Silva <manuela.silva@sky.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-11-16 08:08+0000\n"
 "PO-Revision-Date: 2017-11-16 08:08+0000\n"
-"Last-Translator: Manuela Silva <manuela.silva@sky.com>, 2017\n"
+"Last-Translator: Martin Trigaux <mat@odoo.com>, 2017\n"
 "Language-Team: Portuguese (https://www.transifex.com/odoo/teams/41243/pt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -274,7 +273,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp.field_mrp_workcenter_active
 #: model:ir.ui.view,arch_db:mrp.mrp_message_view_search
 msgid "Active"
-msgstr "Ativo"
+msgstr ""
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workorder_active_move_line_ids
@@ -617,7 +616,7 @@ msgstr ""
 #: code:addons/mrp/static/src/xml/mrp.xml:9
 #, python-format
 msgid "Clear"
-msgstr "Limpar"
+msgstr ""
 
 #. module: mrp
 #: model:ir.actions.act_window,help:mrp.mrp_workcenter_kanban_action
@@ -902,7 +901,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mrp.mrp_message_view_form_embedded_bom
 #: model:ir.ui.view,arch_db:mrp.mrp_message_view_form_embedded_product
 msgid "Discard"
-msgstr "Rejeitar"
+msgstr ""
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_change_production_qty_display_name
@@ -1035,7 +1034,7 @@ msgstr ""
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.mrp_unbuild_search_view
 msgid "Filters"
-msgstr "Filtros"
+msgstr ""
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.mrp_production_workcenter_form_view_inherit
@@ -1737,7 +1736,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp.field_mrp_message_name
 #: model:ir.model.fields,field_description:mrp.field_mrp_workcenter_name
 msgid "Name"
-msgstr "Nome"
+msgstr ""
 
 #. module: mrp
 #: code:addons/mrp/models/mrp_production.py:46
@@ -1751,7 +1750,7 @@ msgstr "Nome"
 #: code:addons/mrp/models/mrp_unbuild.py:82
 #, python-format
 msgid "New"
-msgstr "Novo"
+msgstr ""
 
 #. module: mrp
 #: model:product.product,description:mrp.product_product_laptop_keypad
@@ -2516,7 +2515,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mrp.mrp_message_view_form_embedded_bom
 #: model:ir.ui.view,arch_db:mrp.mrp_message_view_form_embedded_product
 msgid "Save"
-msgstr "Guardar"
+msgstr ""
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.res_config_settings_view_form
@@ -2630,7 +2629,7 @@ msgstr ""
 #: code:addons/mrp/static/src/xml/mrp.xml:8
 #, python-format
 msgid "Select"
-msgstr "Selecionar"
+msgstr ""
 
 #. module: mrp
 #: model:product.product,name:mrp.product_product_build_kit
@@ -3074,7 +3073,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mrp.oee_search_view
 #: model:ir.ui.view,arch_db:mrp.view_mrp_production_work_order_search
 msgid "Today"
-msgstr "Hoje"
+msgstr ""
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.mrp_unbuild_search_view
@@ -3211,14 +3210,14 @@ msgstr ""
 #: code:addons/mrp/static/src/xml/mrp.xml:7
 #, python-format
 msgid "Upload your file"
-msgstr "Envie o seu ficheiro"
+msgstr ""
 
 #. module: mrp
 #. openerp-web
 #: code:addons/mrp/static/src/xml/mrp.xml:6
 #, python-format
 msgid "Uploading..."
-msgstr "A enviar..."
+msgstr ""
 
 #. module: mrp
 #: selection:mrp.production,priority:0
@@ -3322,7 +3321,7 @@ msgstr ""
 #: code:addons/mrp/models/mrp_bom.py:76 code:addons/mrp/models/mrp_bom.py:254
 #, python-format
 msgid "Warning"
-msgstr "Aviso"
+msgstr ""
 
 #. module: mrp
 #: model:ir.model.fields,help:mrp.field_mrp_bom_picking_type_id
@@ -3734,7 +3733,7 @@ msgstr ""
 #. module: mrp
 #: model:ir.model,name:mrp.model_res_config_settings
 msgid "res.config.settings"
-msgstr "res.config.settings"
+msgstr ""
 
 #. module: mrp
 #: model:ir.model,name:mrp.model_stock_scrap

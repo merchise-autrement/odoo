@@ -4,14 +4,13 @@
 # 
 # Translators:
 # Martin Trigaux <mat@odoo.com>, 2017
-# Manuela Silva <manuela.silva@sky.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-11-30 13:12+0000\n"
 "PO-Revision-Date: 2017-11-30 13:12+0000\n"
-"Last-Translator: Manuela Silva <manuela.silva@sky.com>, 2017\n"
+"Last-Translator: Martin Trigaux <mat@odoo.com>, 2017\n"
 "Language-Team: Portuguese (https://www.transifex.com/odoo/teams/41243/pt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -56,7 +55,7 @@ msgstr ""
 #. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_channel_rule_action
 msgid "Action"
-msgstr "Ação"
+msgstr ""
 
 #. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_mail_channel_anonymous_name
@@ -275,7 +274,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:im_livechat.rating_rating_action_livechat_report
 #: model:ir.ui.menu,name:im_livechat.rating_rating_menu_livechat
 msgid "Customer Ratings"
-msgstr "Classificações de Clientes"
+msgstr ""
 
 #. module: im_livechat
 #: model:ir.actions.act_window,help:im_livechat.rating_rating_action_livechat_report
@@ -416,7 +415,7 @@ msgstr "ID"
 #. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_channel_image
 msgid "Image"
-msgstr "Imagem"
+msgstr ""
 
 #. module: im_livechat
 #: model:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_kanban
@@ -564,7 +563,7 @@ msgstr ""
 #. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_channel_name
 msgid "Name"
-msgstr "Nome"
+msgstr ""
 
 #. module: im_livechat
 #: code:addons/im_livechat/models/mail_channel.py:125
@@ -652,7 +651,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:im_livechat.mail_channel_view_form
 #: model:ir.ui.view,arch_db:im_livechat.mail_channel_view_tree
 msgid "Rating"
-msgstr "Classificação"
+msgstr ""
 
 #. module: im_livechat
 #. openerp-web

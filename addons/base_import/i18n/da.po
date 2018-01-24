@@ -227,7 +227,7 @@ msgstr ""
 #: code:addons/base_import/static/src/xml/base_import.xml:115
 #, python-format
 msgid "For CSV files, the issue could be an incorrect encoding."
-msgstr "For CSV filer kan problemet være en forkert indkodning."
+msgstr ""
 
 #. module: base_import
 #. openerp-web
@@ -500,7 +500,7 @@ msgstr "Test Import"
 #: code:addons/base_import/static/src/js/import_action.js:52
 #, python-format
 msgid "Text Delimiter:"
-msgstr "Tekstafgrænser"
+msgstr ""
 
 #. module: base_import
 #. openerp-web

@@ -3,17 +3,15 @@
 # * website_sale_delivery
 # 
 # Translators:
-# Pedro M. Baeza <pedro.baeza@gmail.com>, 2017
-# Martin Trigaux <mat@odoo.com>, 2017
-# Rafael Blasco <rafabn@antiun.com>, 2017
-# Luis M. Ontalba <luis.martinez@tecnativa.com>, 2017
-# Alejandro Santana <alejandrosantana@anubia.es>, 2017
-# Antonio Trueba <atgayol@gmail.com>, 2017
+# Alejandro Santana <alejandrosantana@anubia.es>, 2016
+# Ana Juaristi <ajuaristio@gmail.com>, 2016
+# Rafael Blasco <rafabn@antiun.com>, 2016
+# Jose Manuel <admin@jaboweb.com>, 2016
+# Martin Trigaux <mat@odoo.com>, 2016
+# Antonio Trueba <atgayol@gmail.com>, 2016
+# Pedro M. Baeza <pedro.baeza@gmail.com>, 2016
 # RGB Consulting <odoo@rgbconsulting.com>, 2017
-# Jose Manuel <admin@jaboweb.com>, 2017
-# Ana Juaristi <ajuaristio@gmail.com>, 2017
-# Vicent Cubells <vicent.cubells@tecnativa.com>, 2017
-# Eduardo Magdalena <emagdalena@close2circle.com>, 2017
+# Luis M. Ontalba <luis.martinez@tecnativa.com>, 2017
 # Christopher Ormaza <chris.ormaza@gmail.com>, 2017
 msgid ""
 msgstr ""
@@ -72,7 +70,7 @@ msgstr ""
 #. module: website_sale_delivery
 #: model:ir.model,name:website_sale_delivery.model_delivery_carrier
 msgid "Carrier"
-msgstr "Forma de envío"
+msgstr "Transportista"
 
 #. module: website_sale_delivery
 #: model:ir.ui.view,arch_db:website_sale_delivery.payment_delivery

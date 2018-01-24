@@ -3,9 +3,9 @@
 # * base_address_extended
 # 
 # Translators:
-# Martin Trigaux <mat@odoo.com>, 2017
-# Jeffery CHEN Fan <jeffery9@gmail.com>, 2017
 # 钟小华 <mackz@sina.com>, 2017
+# Jeffery CHEN Fan <jeffery9@gmail.com>, 2017
+# Martin Trigaux <mat@odoo.com>, 2017
 # 山西清水欧度(QQ:54773801) <54773801@qq.com>, 2018
 msgid ""
 msgstr ""
@@ -48,7 +48,7 @@ msgstr "国家"
 #: model:ir.model.fields,field_description:base_address_extended.field_res_partner_street_number2
 #: model:ir.model.fields,field_description:base_address_extended.field_res_users_street_number2
 msgid "Door Number"
-msgstr "门号"
+msgstr "门牌号"
 
 #. module: base_address_extended
 #: model:ir.model.fields,help:base_address_extended.field_res_country_street_format
@@ -103,4 +103,4 @@ msgstr "街道格式..."
 #: code:addons/base_address_extended/models/base_address_extended.py:126
 #, python-format
 msgid "Unrecognized field %s in street format."
-msgstr "街道格式无法识别的字段%s"
+msgstr "无法识别的字段%s"

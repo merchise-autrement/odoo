@@ -3,7 +3,7 @@
 # * purchase_mrp
 # 
 # Translators:
-# Luis M. Ontalba <luis.martinez@tecnativa.com>, 2017
+# Martin Trigaux <mat@odoo.com>, 2016
 # Pedro M. Baeza <pedro.baeza@gmail.com>, 2017
 msgid ""
 msgstr ""
@@ -22,7 +22,7 @@ msgstr ""
 #. module: purchase_mrp
 #: model:ir.model,name:purchase_mrp.model_purchase_order_line
 msgid "Purchase Order Line"
-msgstr "Línea de pedido de compra"
+msgstr "Línea pedido de compra"
 
 #. module: purchase_mrp
 #: model:ir.model,name:purchase_mrp.model_stock_move

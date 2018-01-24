@@ -3,10 +3,10 @@
 # * pos_discount
 # 
 # Translators:
-# Andrey Skabelin <inactive+a.skabelin@transifex.com>, 2017
-# Эдуард Манятовский <manyatovskiy@gmail.com>, 2017
-# Martin Trigaux <mat@odoo.com>, 2017
 # Max Belyanin <maxbelyanin@gmail.com>, 2017
+# Andrey Skabelin <inactive+a.skabelin@transifex.com>, 2017
+# Martin Trigaux <mat@odoo.com>, 2017
+# Эдуард Манятовский <manyatovskiy@gmail.com>, 2017
 # Dmitry sky <d.v.selitsky@gmail.com>, 2017
 msgid ""
 msgstr ""
@@ -40,7 +40,10 @@ msgid "Discount %"
 msgstr "% cкидки"
 
 #. module: pos_discount
+#. openerp-web
+#: code:addons/pos_discount/static/src/js/discount.js:14
 #: model:ir.model.fields,field_description:pos_discount.field_pos_config_discount_pc
+#, python-format
 msgid "Discount Percentage"
 msgstr "Скидка в процентах"
 

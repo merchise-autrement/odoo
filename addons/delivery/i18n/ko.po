@@ -4,14 +4,13 @@
 # 
 # Translators:
 # Martin Trigaux <mat@odoo.com>, 2017
-# Link-Up <linkup.way@gmail.com>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-11-30 13:12+0000\n"
 "PO-Revision-Date: 2017-11-30 13:12+0000\n"
-"Last-Translator: Link-Up <linkup.way@gmail.com>, 2018\n"
+"Last-Translator: Martin Trigaux <mat@odoo.com>, 2017\n"
 "Language-Team: Korean (https://www.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -33,7 +32,7 @@ msgstr ""
 #. module: delivery
 #: model:mail.template,subject:delivery.mail_template_data_delivery_notification
 msgid "${object.subject}"
-msgstr "${object.subject}"
+msgstr ""
 
 #. module: delivery
 #: model:mail.template,body_html:delivery.mail_template_data_delivery_confirmation
@@ -152,12 +151,12 @@ msgstr ""
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_carrier_active
 msgid "Active"
-msgstr "활성화"
+msgstr ""
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_carrier_amount
 msgid "Amount"
-msgstr "금액"
+msgstr ""
 
 #. module: delivery
 #: model:ir.model.fields,help:delivery.field_delivery_carrier_amount
@@ -169,7 +168,7 @@ msgstr ""
 #. module: delivery
 #: model:ir.ui.view,arch_db:delivery.view_delivery_carrier_search
 msgid "Archived"
-msgstr "보관완료"
+msgstr ""
 
 #. module: delivery
 #: selection:delivery.carrier,delivery_type:0
@@ -227,7 +226,7 @@ msgstr ""
 #. module: delivery
 #: model:ir.model,name:delivery.model_res_partner
 msgid "Contact"
-msgstr "연락처"
+msgstr ""
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_carrier_country_ids
@@ -339,7 +338,7 @@ msgstr ""
 #. module: delivery
 #: model:ir.ui.view,arch_db:delivery.choose_delivery_package_view_form
 msgid "Discard"
-msgstr "폐기"
+msgstr ""
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_choose_delivery_package_display_name
@@ -359,7 +358,7 @@ msgstr ""
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_carrier_prod_environment
 msgid "Environment"
-msgstr "환경"
+msgstr ""
 
 #. module: delivery
 #: code:addons/delivery/models/delivery_grid.py:50
@@ -557,7 +556,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:delivery.field_delivery_price_rule_name
 #: model:ir.ui.view,arch_db:delivery.view_delivery_carrier_form
 msgid "Name"
-msgstr "이름"
+msgstr ""
 
 #. module: delivery
 #: selection:product.packaging,package_carrier_type:0
@@ -657,7 +656,7 @@ msgstr ""
 #. module: delivery
 #: model:ir.ui.view,arch_db:delivery.view_delivery_carrier_form
 msgid "Pricing"
-msgstr "가격책정"
+msgstr ""
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_carrier_price_rule_ids
@@ -850,7 +849,7 @@ msgstr ""
 #: selection:delivery.price.rule,variable_factor:0
 #: model:ir.model.fields,field_description:delivery.field_stock_picking_volume
 msgid "Volume"
-msgstr "부피"
+msgstr ""
 
 #. module: delivery
 #: selection:delivery.price.rule,variable:0

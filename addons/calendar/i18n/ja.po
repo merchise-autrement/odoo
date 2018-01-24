@@ -400,7 +400,7 @@ msgstr "活動"
 #. module: calendar
 #: model:ir.model,name:calendar.model_mail_activity_type
 msgid "Activity Type"
-msgstr "活動タイプ"
+msgstr ""
 
 #. module: calendar
 #: model:ir.model.fields,field_description:calendar.field_calendar_event_allday
@@ -1079,7 +1079,7 @@ msgstr "定期ルール"
 #. module: calendar
 #: model:ir.model.fields,field_description:calendar.field_calendar_alarm_duration
 msgid "Remind Before"
-msgstr "リマインダ"
+msgstr ""
 
 #. module: calendar
 #: model:ir.model.fields,field_description:calendar.field_calendar_event_alarm_ids
@@ -1089,7 +1089,7 @@ msgstr "リマインド"
 #. module: calendar
 #: model:ir.model.fields,field_description:calendar.field_calendar_event_count
 msgid "Repeat"
-msgstr "繰返し"
+msgstr "繰り返し"
 
 #. module: calendar
 #: model:ir.model.fields,field_description:calendar.field_calendar_event_interval
@@ -1099,7 +1099,7 @@ msgstr "繰返し周期"
 #. module: calendar
 #: model:ir.model.fields,field_description:calendar.field_calendar_event_final_date
 msgid "Repeat Until"
-msgstr "次まで繰返し"
+msgstr "繰り返し（まで）"
 
 #. module: calendar
 #: model:ir.model.fields,help:calendar.field_calendar_event_interval
@@ -1109,7 +1109,7 @@ msgstr "反復間隔（日 / 週 / 月 / 年）"
 #. module: calendar
 #: model:ir.model.fields,help:calendar.field_calendar_event_count
 msgid "Repeat x times"
-msgstr "x回繰返し"
+msgstr "x回繰り返し"
 
 #. module: calendar
 #: model:ir.model.fields,field_description:calendar.field_calendar_event_partner_id

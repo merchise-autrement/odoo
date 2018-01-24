@@ -2,16 +2,12 @@
 # This file contains the translation of the following modules:
 # * website_sale
 # 
-# Translators:
-# Martin Trigaux <mat@odoo.com>, 2017
-# Arnis Putniņš <arnis.putnins@its1.lv>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-30 13:11+0000\n"
-"PO-Revision-Date: 2017-11-30 13:11+0000\n"
-"Last-Translator: Arnis Putniņš <arnis.putnins@its1.lv>, 2018\n"
+"POT-Creation-Date: 2017-10-24 08:59+0000\n"
+"PO-Revision-Date: 2017-10-24 08:59+0000\n"
 "Language-Team: Latvian (https://www.transifex.com/odoo/teams/41243/lv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -25,7 +21,7 @@ msgid "&amp;nbsp;"
 msgstr ""
 
 #. module: website_sale
-#: model:ir.ui.view,arch_db:website_sale.cart_lines
+#: model:ir.ui.view,arch_db:website_sale.reduction_code
 msgid "/shop/cart"
 msgstr ""
 
@@ -114,7 +110,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "<i class=\"fa fa-envelope-o\"/> Ask Our Experts"
-msgstr "<i class=\"fa fa-envelope-o\"/> Ask Our Experts"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.checkout
@@ -247,11 +243,6 @@ msgid ""
 "                                        <span class=\"small\">Recommended if &gt;50 items</span>\n"
 "                                    </span>"
 msgstr ""
-"<span class=\"panel-title\">\n"
-"                                        <span class=\"fa\" data-icon=\"\"/>\n"
-"                                        <strong>Import a file</strong><br/>\n"
-"                                        <span class=\"small\">Recommended if &gt;50 items</span>\n"
-"                                    </span>"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -262,11 +253,6 @@ msgid ""
 "                                        <span class=\"small\">Recommended if &lt;50 items</span>\n"
 "                                    </span>"
 msgstr ""
-"<span class=\"panel-title\">\n"
-"                                        <span class=\"fa\" data-icon=\"\"/>\n"
-"                                        <strong> Create manually</strong><br/>\n"
-"                                        <span class=\"small\">Recommended if &lt;50 items</span>\n"
-"                                    </span>"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -283,9 +269,6 @@ msgid ""
 "                                        <strong> Rules &amp; Formulas</strong>\n"
 "                                    </span>"
 msgstr ""
-"<span class=\"panel-title\">\n"
-"                                        <strong> Rules &amp; Formulas</strong>\n"
-"                                    </span>"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -484,8 +467,6 @@ msgid ""
 "<strong>For complex imports</strong> (&gt;5000 items, product variants, "
 "pictures, etc.):"
 msgstr ""
-"<strong>For complex imports</strong> (&gt;5000 items, product variants, "
-"pictures, etc.):"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -507,7 +488,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "<strong>Next actions:</strong>"
-msgstr "<strong>Nākošās aktivitātes:</strong>"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.confirmation
@@ -752,7 +733,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Address"
-msgstr "Adrese"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.option_collapse_products_categories
@@ -817,7 +798,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Apply multi-currencies"
-msgstr "Pielietot multivalūtas"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
@@ -1037,7 +1018,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.address
 msgid "City"
-msgstr "Pilsēta"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.products
@@ -1089,7 +1070,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Community &amp; Enterprise users:"
-msgstr "Community &amp; Enterprise users:"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -1099,7 +1080,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.address
 msgid "Company Name"
-msgstr "Uzņēmuma nosaukums"
+msgstr ""
 
 #. module: website_sale
 #: model:product.public.category,name:website_sale.Components
@@ -1154,7 +1135,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Configure your pricelists"
-msgstr "Configure your pricelists"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.checkout
@@ -1196,7 +1177,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.model,name:website_sale.model_res_partner
 msgid "Contact"
-msgstr "Kontakts"
+msgstr ""
 
 #. module: website_sale
 #. openerp-web
@@ -1210,7 +1191,7 @@ msgstr ""
 #: model:ir.model,name:website_sale.model_res_country
 #: model:ir.ui.view,arch_db:website_sale.address
 msgid "Country"
-msgstr "Valsts"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.address
@@ -1220,21 +1201,21 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Create your product items"
-msgstr "Create your product items"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_product_image_create_uid
 #: model:ir.model.fields,field_description:website_sale.field_product_public_category_create_uid
 #: model:ir.model.fields,field_description:website_sale.field_product_style_create_uid
 msgid "Created by"
-msgstr "Izveidoja"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_product_image_create_date
 #: model:ir.model.fields,field_description:website_sale.field_product_public_category_create_date
 #: model:ir.model.fields,field_description:website_sale.field_product_style_create_date
 msgid "Created on"
-msgstr "Izveidots"
+msgstr ""
 
 #. module: website_sale
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_14
@@ -1268,7 +1249,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.menu,name:website_sale.menu_orders_customers
 msgid "Customers"
-msgstr "Klienti"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -1355,7 +1336,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:website_sale.field_product_public_category_display_name
 #: model:ir.model.fields,field_description:website_sale.field_product_style_display_name
 msgid "Display Name"
-msgstr "Display Name"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
@@ -1409,7 +1390,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.address
 msgid "Email"
-msgstr "E-pasts"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
@@ -1419,7 +1400,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.model,name:website_sale.model_mail_compose_message
 msgid "Email composition wizard"
-msgstr "E-pasta sastādīšanas vednis"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
@@ -1588,6 +1569,7 @@ msgid "Have Genius call the tunes."
 msgstr ""
 
 #. module: website_sale
+#: model:ir.ui.view,arch_db:website_sale.payment
 #: model:ir.ui.view,arch_db:website_sale.reduction_code
 msgid "Have a promo code? Fill in this field and apply."
 msgstr ""
@@ -1651,7 +1633,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:website_sale.field_product_public_category_id
 #: model:ir.model.fields,field_description:website_sale.field_product_style_id
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #. module: website_sale
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_1
@@ -1756,13 +1738,13 @@ msgstr ""
 #. module: website_sale
 #: model:ir.actions.act_window,name:website_sale.action_invoices_ecommerce
 msgid "Invoices"
-msgstr "Rēķini"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_res_config_settings_module_account_invoicing
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Invoicing"
-msgstr "Rēķinu izrakstīšana"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
@@ -1806,12 +1788,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:website_sale.field_product_public_category___last_update
 #: model:ir.model.fields,field_description:website_sale.field_product_style___last_update
 msgid "Last Modified on"
-msgstr "Last Modified on"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.sale_report_view_search_website
 msgid "Last Month"
-msgstr "Last Month"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_res_partner_last_website_so_id
@@ -1824,14 +1806,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:website_sale.field_product_public_category_write_uid
 #: model:ir.model.fields,field_description:website_sale.field_product_style_write_uid
 msgid "Last Updated by"
-msgstr "Pēdējo reizi atjaunoja"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_product_image_write_date
 #: model:ir.model.fields,field_description:website_sale.field_product_public_category_write_date
 #: model:ir.model.fields,field_description:website_sale.field_product_style_write_date
 msgid "Last Updated on"
-msgstr "Pēdējās izmaiņas"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.sale_report_view_search_website
@@ -1978,7 +1960,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:website_sale.field_product_public_category_name
 #: model:ir.ui.view,arch_db:website_sale.address
 msgid "Name"
-msgstr "Nosaukums"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.sort
@@ -1997,7 +1979,7 @@ msgstr ""
 
 #. module: website_sale
 #. openerp-web
-#: code:addons/website_sale/controllers/main.py:968
+#: code:addons/website_sale/controllers/main.py:967
 #: code:addons/website_sale/static/src/js/website_sale.editor.js:32
 #: model:ir.ui.view,arch_db:website_sale.content_new_product
 #, python-format
@@ -2069,7 +2051,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Online users: we do it for you!"
-msgstr "Online users: we do it for you!"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_sale_order_only_services
@@ -2146,7 +2128,7 @@ msgid "Parent Category"
 msgstr ""
 
 #. module: website_sale
-#: code:addons/website_sale/controllers/main.py:756
+#: code:addons/website_sale/controllers/main.py:755
 #, python-format
 msgid "Pay Now"
 msgstr ""
@@ -2203,7 +2185,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.address
 msgid "Phone"
-msgstr "Telefons"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -2259,7 +2241,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:website_sale.cart_lines
 #: model:ir.ui.view,arch_db:website_sale.payment
 msgid "Price"
-msgstr "Cena"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_website_pricelist_ids
@@ -2269,7 +2251,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.model,name:website_sale.model_product_pricelist
 msgid "Pricelist"
-msgstr "Cenrādis"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.actions.act_window,name:website_sale.website_product_pricelist3
@@ -2286,7 +2268,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Pricing &amp; Discounts"
-msgstr "Pricing &amp; Discounts"
+msgstr ""
 
 #. module: website_sale
 #: model:product.public.category,name:website_sale.printer
@@ -2302,7 +2284,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:website_sale.payment
 #, python-format
 msgid "Product"
-msgstr "Produkts"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model,name:website_sale.model_product_attribute
@@ -2348,12 +2330,12 @@ msgstr ""
 #. module: website_sale
 #: model:ir.model,name:website_sale.model_product_template
 msgid "Product Template"
-msgstr "Produkta Veidne"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.menu,name:website_sale.product_catalog_variants
 msgid "Product Variants"
-msgstr "Produkta varianti"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -2391,7 +2373,12 @@ msgstr ""
 #: model:ir.ui.menu,name:website_sale.menu_product_settings
 #: model:ir.ui.view,arch_db:website_sale.product
 msgid "Products"
-msgstr "Produkti"
+msgstr ""
+
+#. module: website_sale
+#: model:ir.ui.view,arch_db:website_sale.reduction_code
+msgid "Promo Code"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_sale
@@ -2452,7 +2439,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:website_sale.payment
 #, python-format
 msgid "Quantity"
-msgstr "Daudzums"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -2467,7 +2454,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.model,name:website_sale.model_sale_order
 msgid "Quotation"
-msgstr "Tāme"
+msgstr ""
 
 #. module: website_sale
 #: selection:product.attribute,type:0
@@ -2517,7 +2504,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.menu,name:website_sale.menu_reporting
 msgid "Reporting"
-msgstr "Atskaites"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.404
@@ -2584,7 +2571,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:website_sale.sale_report_view_search_website
 #, python-format
 msgid "Sales"
-msgstr "Tirdzniecība"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model,name:website_sale.model_crm_team
@@ -2592,7 +2579,7 @@ msgstr "Tirdzniecība"
 #: model:ir.model.fields,field_description:website_sale.field_website_salesteam_id
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Sales Channel"
-msgstr "Pārdošanas kanāls"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.sale_report_view_pivot_website
@@ -2611,7 +2598,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:website_sale.field_res_config_settings_salesperson_id
 #: model:ir.model.fields,field_description:website_sale.field_website_salesperson_id
 msgid "Salesperson"
-msgstr "Pārdevējs"
+msgstr ""
 
 #. module: website_sale
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_11
@@ -2678,7 +2665,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Select your pricing preference and allow discounts"
-msgstr "Select your pricing preference and allow discounts"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -2722,7 +2709,7 @@ msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
-msgid "Send a recovery email to authenticated shoppers"
+msgid "Send a recovery email to authentified shoppers"
 msgstr ""
 
 #. module: website_sale
@@ -2735,7 +2722,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_product_public_category_sequence
 msgid "Sequence"
-msgstr "Sērija"
+msgstr ""
 
 #. module: website_sale
 #: model:product.public.category,name:website_sale.server
@@ -2745,7 +2732,7 @@ msgstr ""
 #. module: website_sale
 #: model:product.public.category,name:website_sale.services
 msgid "Services"
-msgstr "Pakalpojumi"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -2861,7 +2848,7 @@ msgstr ""
 #. module: website_sale
 #: model:product.public.category,name:website_sale.Software
 msgid "Software"
-msgstr "Programmatūra"
+msgstr ""
 
 #. module: website_sale
 #. openerp-web
@@ -2944,7 +2931,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.confirmation
 msgid "Subtotal"
-msgstr "Apakšsumma kopā"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.confirmation
@@ -3006,7 +2993,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Taxes"
-msgstr "Nodokļi"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.confirmation
@@ -3170,17 +3157,12 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.report_shop_saleorder_document
 msgid "Total"
-msgstr "Summa"
-
-#. module: website_sale
-#: model:ir.ui.view,arch_db:website_sale.cart_popover
-msgid "True"
 msgstr ""
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_product_attribute_type
 msgid "Type"
-msgstr "Tips"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
@@ -3209,7 +3191,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.confirmation
 msgid "Unit Price"
-msgstr "Vienības Cena"
+msgstr ""
 
 #. module: website_sale
 #. openerp-web
@@ -3237,7 +3219,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Use our import templates to get your catalog ready in no time!"
-msgstr "Use our import templates to get your catalog ready in no time!"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.cart_popover
@@ -3253,7 +3235,7 @@ msgstr ""
 #: model:ir.model,name:website_sale.model_website
 #: model:ir.ui.view,arch_db:website_sale.product_template_form_view
 msgid "Website"
-msgstr "Website"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model,name:website_sale.model_product_public_category
@@ -3532,7 +3514,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.model,name:website_sale.model_res_config_settings
 msgid "res.config.settings"
-msgstr "res.config.settings"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -3547,7 +3529,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "use Odoo API to import through scripts"
-msgstr "use Odoo API to import through scripts"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_product_pricelist_website_id

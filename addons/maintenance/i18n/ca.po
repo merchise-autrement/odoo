@@ -46,7 +46,7 @@ msgstr ""
 #. module: maintenance
 #: model:ir.ui.view,arch_db:maintenance.maintenance_team_kanban
 msgid "<span>Reporting</span>"
-msgstr "<span>Informes</span>"
+msgstr ""
 
 #. module: maintenance
 #: model:ir.ui.view,arch_db:maintenance.maintenance_team_kanban
@@ -129,7 +129,7 @@ msgstr "Arxivat"
 #. module: maintenance
 #: model:ir.model,name:maintenance.model_maintenance_equipment_category
 msgid "Asset Category"
-msgstr "Categoria d'actiu"
+msgstr ""
 
 #. module: maintenance
 #: model:ir.ui.view,arch_db:maintenance.hr_equipment_category_view_tree
@@ -466,7 +466,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:maintenance.field_maintenance_stage_id
 #: model:ir.model.fields,field_description:maintenance.field_maintenance_team_id
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #. module: maintenance
 #: model:ir.model.fields,help:maintenance.field_maintenance_equipment_category_alias_parent_thread_id
@@ -502,7 +502,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:maintenance.field_maintenance_stage___last_update
 #: model:ir.model.fields,field_description:maintenance.field_maintenance_team___last_update
 msgid "Last Modified on"
-msgstr "Darrera modificació feta el"
+msgstr ""
 
 #. module: maintenance
 #: model:ir.model.fields,field_description:maintenance.field_maintenance_equipment_category_write_uid
@@ -511,7 +511,7 @@ msgstr "Darrera modificació feta el"
 #: model:ir.model.fields,field_description:maintenance.field_maintenance_stage_write_uid
 #: model:ir.model.fields,field_description:maintenance.field_maintenance_team_write_uid
 msgid "Last Updated by"
-msgstr "Actualitzat per última vegada per"
+msgstr ""
 
 #. module: maintenance
 #: model:ir.model.fields,field_description:maintenance.field_maintenance_equipment_category_write_date
@@ -520,7 +520,7 @@ msgstr "Actualitzat per última vegada per"
 #: model:ir.model.fields,field_description:maintenance.field_maintenance_stage_write_date
 #: model:ir.model.fields,field_description:maintenance.field_maintenance_team_write_date
 msgid "Last Updated on"
-msgstr "Actualitzat per última vegada el dia"
+msgstr ""
 
 #. module: maintenance
 #: model:ir.ui.view,arch_db:maintenance.hr_equipment_request_view_search
@@ -939,7 +939,7 @@ msgstr ""
 #. module: maintenance
 #: model:ir.model.fields,field_description:maintenance.field_maintenance_stage_sequence
 msgid "Sequence"
-msgstr "Seqüència"
+msgstr ""
 
 #. module: maintenance
 #: model:ir.model.fields,field_description:maintenance.field_maintenance_equipment_serial_no

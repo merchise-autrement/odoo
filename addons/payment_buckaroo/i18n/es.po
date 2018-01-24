@@ -64,7 +64,7 @@ msgstr "¿Cómo configurar su cuenta Buckaroo?"
 #. module: payment_buckaroo
 #: model:ir.model,name:payment_buckaroo.model_payment_acquirer
 msgid "Payment Acquirer"
-msgstr "Medio de pago"
+msgstr "Método de pago"
 
 #. module: payment_buckaroo
 #: model:ir.model,name:payment_buckaroo.model_payment_transaction

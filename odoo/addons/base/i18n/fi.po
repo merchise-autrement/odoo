@@ -10803,12 +10803,12 @@ msgstr ""
 #. module: base
 #: model:ir.module.category,description:base.module_category_human_resources
 msgid "Helps you manage your employees."
-msgstr "Auttaa työntekijöiden hallinnassa."
+msgstr ""
 
 #. module: base
 #: model:ir.module.category,description:base.module_category_hr_expense
 msgid "Helps you manage your expenses."
-msgstr "Auttaa kulujen hallinnassa."
+msgstr ""
 
 #. module: base
 #: model:ir.module.category,description:base.module_category_warehouse_management
@@ -10843,7 +10843,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.category,description:base.module_category_hr_payroll
 msgid "Helps you manage your payrolls."
-msgstr "Auttaa palkkojen hallinnassa."
+msgstr ""
 
 #. module: base
 #: model:ir.module.category,description:base.module_category_project_management

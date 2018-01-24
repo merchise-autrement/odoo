@@ -192,7 +192,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp_repair.field_mrp_repair_company_id
 #: model:ir.ui.view,arch_db:mrp_repair.view_repair_order_form_filter
 msgid "Company"
-msgstr "Companyia"
+msgstr ""
 
 #. module: mrp_repair
 #: model:ir.ui.view,arch_db:mrp_repair.view_repair_order_form
@@ -331,7 +331,7 @@ msgstr "Activitats Futures"
 #. module: mrp_repair
 #: model:ir.ui.view,arch_db:mrp_repair.view_repair_order_form_filter
 msgid "Group By"
-msgstr "Agrupa per"
+msgstr ""
 
 #. module: mrp_repair
 #: model:ir.model.fields,field_description:mrp_repair.field_mrp_repair_make_invoice_group
@@ -361,7 +361,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp_repair.field_mrp_repair_make_invoice_id
 #: model:ir.model.fields,field_description:mrp_repair.field_stock_warn_insufficient_qty_repair_id
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #. module: mrp_repair
 #: model:ir.actions.act_window,help:mrp_repair.action_repair_order_tree
@@ -446,7 +446,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp_repair.field_mrp_repair_make_invoice___last_update
 #: model:ir.model.fields,field_description:mrp_repair.field_stock_warn_insufficient_qty_repair___last_update
 msgid "Last Modified on"
-msgstr "Darrera modificació feta el"
+msgstr ""
 
 #. module: mrp_repair
 #: model:ir.model.fields,field_description:mrp_repair.field_mrp_repair_cancel_write_uid
@@ -456,7 +456,7 @@ msgstr "Darrera modificació feta el"
 #: model:ir.model.fields,field_description:mrp_repair.field_mrp_repair_write_uid
 #: model:ir.model.fields,field_description:mrp_repair.field_stock_warn_insufficient_qty_repair_write_uid
 msgid "Last Updated by"
-msgstr "Actualitzat per última vegada per"
+msgstr ""
 
 #. module: mrp_repair
 #: model:ir.model.fields,field_description:mrp_repair.field_mrp_repair_cancel_write_date
@@ -466,7 +466,7 @@ msgstr "Actualitzat per última vegada per"
 #: model:ir.model.fields,field_description:mrp_repair.field_mrp_repair_write_date
 #: model:ir.model.fields,field_description:mrp_repair.field_stock_warn_insufficient_qty_repair_write_date
 msgid "Last Updated on"
-msgstr "Actualitzat per última vegada el dia"
+msgstr ""
 
 #. module: mrp_repair
 #: model:ir.ui.view,arch_db:mrp_repair.view_repair_order_form_filter
@@ -551,7 +551,7 @@ msgstr ""
 #. module: mrp_repair
 #: model:ir.ui.view,arch_db:mrp_repair.view_repair_order_form_filter
 msgid "Partner"
-msgstr "Empresa"
+msgstr ""
 
 #. module: mrp_repair
 #: model:ir.model.fields,field_description:mrp_repair.field_mrp_repair_operations
@@ -584,7 +584,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp_repair.field_mrp_repair_line_product_id
 #: model:ir.ui.view,arch_db:mrp_repair.view_repair_order_form_filter
 msgid "Product"
-msgstr "Producte"
+msgstr ""
 
 #. module: mrp_repair
 #: model:ir.model.fields,field_description:mrp_repair.field_mrp_repair_product_qty
@@ -944,7 +944,7 @@ msgstr ""
 #. module: mrp_repair
 #: model:ir.ui.view,arch_db:mrp_repair.view_cancel_repair
 msgid "Yes"
-msgstr "Sí"
+msgstr ""
 
 #. module: mrp_repair
 #: code:addons/mrp_repair/models/mrp_repair.py:300

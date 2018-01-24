@@ -10,7 +10,7 @@
      * Optimised processing by complex query (multiple actions at once)
      * Default field values
      * Permissions optimisation
-     * Persistant object: DB postgresql
+     * Persistent object: DB postgresql
      * Data conversion
      * Multi-level caching system
      * Two different inheritance mechanisms
@@ -755,7 +755,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         """
         # determine values of mode, current_module and noupdate
         mode = self._context.get('mode', 'init')
-        current_module = self._context.get('module', '')
+        current_module = self._context.get('module', '__import__')
         noupdate = self._context.get('noupdate', False)
 
         # add current module in context for the conversion of xml ids

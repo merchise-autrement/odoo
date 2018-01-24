@@ -252,7 +252,7 @@ def _fileopen(path, mode, basedir, pathinfo, basename=None):
                 pass
     # Not found
     if name.endswith('.rml'):
-        raise IOError('Report %r doesn\'t exist or deleted' % basename)
+        raise IOError('Report %r does not exist or has been deleted' % basename)
     raise IOError('File not found: %s' % basename)
 
 
@@ -260,7 +260,7 @@ def _fileopen(path, mode, basedir, pathinfo, basename=None):
 # iterables
 #----------------------------------------------------------
 def flatten(list):
-    """Flatten a list of elements into a uniqu list
+    """Flatten a list of elements into a unique list
     Author: Christophe Simonis (christophe@tinyerp.com)
 
     Examples::
@@ -349,7 +349,7 @@ def topological_sort(elems):
 try:
     import xlwt
 
-    # add some sanitizations to respect the excel sheet name restrictions
+    # add some sanitization to respect the excel sheet name restrictions
     # as the sheet name is often translatable, can not control the input
     class PatchedWorkbook(xlwt.Workbook):
         def add_sheet(self, name, cell_overwrite_ok=False):
@@ -368,7 +368,7 @@ except ImportError:
 try:
     import xlsxwriter
 
-    # add some sanitizations to respect the excel sheet name restrictions
+    # add some sanitization to respect the excel sheet name restrictions
     # as the sheet name is often translatable, can not control the input
     class PatchedXlsxWorkbook(xlsxwriter.Workbook):
 
@@ -403,9 +403,9 @@ def scan_languages():
     :returns: a list of (lang_code, lang_name) pairs
     :rtype: [(str, unicode)]
     """
-    csvpath = odoo.modules.module.get_resource_path('base', 'res', 'res.lang.csv')
+    csvpath = odoo.modules.module.get_resource_path('base', 'data', 'res.lang.csv')
     try:
-        # read (code, name) from languages in base/res/res.lang.csv
+        # read (code, name) from languages in base/data/res.lang.csv
         with open(csvpath, 'rb') as csvfile:
             reader = pycompat.csv_reader(csvfile, delimiter=',', quotechar='"')
             fields = next(reader)
@@ -897,7 +897,7 @@ class ConstantMapping(Mapping):
 
     def __iter__(self):
         """
-        same as len, defaultdict udpates its iterable keyset with each key
+        same as len, defaultdict updates its iterable keyset with each key
         requested, is there a point for this?
         """
         return iter([])

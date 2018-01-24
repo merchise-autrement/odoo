@@ -3,21 +3,25 @@
 # * portal
 # 
 # Translators:
-# Pedro M. Baeza <pedro.baeza@gmail.com>, 2017
-# Martin Trigaux <mat@odoo.com>, 2017
-# Antonio Trueba <atgayol@gmail.com>, 2017
+# Antonio Trueba <atgayol@gmail.com>, 2016
+# Ivan Nieto <ivan.n.s@tuta.io>, 2016
+# Martin Trigaux <mat@odoo.com>, 2016
+# Leonardo Chianea <noamixcontenidos@gmail.com>, 2016
+# Mateo Tibaquirá Palacios <nestormateo@gmail.com>, 2016
+# Alejandro Santana <alejandrosantana@anubia.es>, 2016
+# oihane <oihanecruce@gmail.com>, 2016
+# Carles Antoli <carlesantoli@hotmail.com>, 2016
+# Pedro M. Baeza <pedro.baeza@gmail.com>, 2016
+# Jesús Alan Ramos Rodríguez <alan.ramos@jarsa.com.mx>, 2016
+# Ana Juaristi <ajuaristio@gmail.com>, 2016
 # Luis M. Ontalba <luis.martinez@tecnativa.com>, 2017
 # Glen Sojo <inactive+glen.sojo@transifex.com>, 2017
-# Ana Juaristi <ajuaristio@gmail.com>, 2017
+# Eduardo Magdalena <emagdalena@close2circle.com>, 2017
+# Alejandro Die Sanchis <marketing@domatix.com>, 2017
 # David Sanchez <david.sanchez@jarsa.com.mx>, 2017
-# Mateo Tibaquirá Palacios <nestormateo@gmail.com>, 2017
-# Alejandro Santana <alejandrosantana@anubia.es>, 2017
 # Jose Manuel <admin@jaboweb.com>, 2017
 # Inigo Zuluaga <inigo_zuluaga@yahoo.es>, 2017
-# Jesús Alan Ramos Rodríguez <alan.ramos@jarsa.com.mx>, 2017
 # Gustavo Valverde <g.valverde02@gmail.com>, 2017
-# Alejandro Die Sanchis <marketing@domatix.com>, 2017
-# Eduardo Magdalena <emagdalena@close2circle.com>, 2017
 # Carlos Lopez <celm1990@hotmail.com>, 2018
 msgid ""
 msgstr ""
@@ -175,7 +179,7 @@ msgstr "Creado por"
 #: model:ir.model.fields,field_description:portal.field_portal_wizard_create_date
 #: model:ir.model.fields,field_description:portal.field_portal_wizard_user_create_date
 msgid "Created on"
-msgstr "Creado en"
+msgstr "Creado el"
 
 #. module: portal
 #: model:ir.model.fields,help:portal.field_account_invoice_portal_url
@@ -191,7 +195,7 @@ msgstr "URL para portal"
 #: model:ir.model.fields,field_description:portal.field_portal_wizard_display_name
 #: model:ir.model.fields,field_description:portal.field_portal_wizard_user_display_name
 msgid "Display Name"
-msgstr "Nombre mostrado"
+msgstr "Nombre a mostrar"
 
 #. module: portal
 #. openerp-web
@@ -222,7 +226,7 @@ msgstr "El Grupo %s no es de Portal"
 #: model:ir.model.fields,field_description:portal.field_portal_wizard_id
 #: model:ir.model.fields,field_description:portal.field_portal_wizard_user_id
 msgid "ID"
-msgstr "ID (identificación)"
+msgstr "ID"
 
 #. module: portal
 #: model:ir.model.fields,field_description:portal.field_portal_wizard_user_in_portal
@@ -251,13 +255,13 @@ msgstr "Última modificación en"
 #: model:ir.model.fields,field_description:portal.field_portal_wizard_user_write_uid
 #: model:ir.model.fields,field_description:portal.field_portal_wizard_write_uid
 msgid "Last Updated by"
-msgstr "Última actualización de"
+msgstr "Última actualización por"
 
 #. module: portal
 #: model:ir.model.fields,field_description:portal.field_portal_wizard_user_write_date
 #: model:ir.model.fields,field_description:portal.field_portal_wizard_write_date
 msgid "Last Updated on"
-msgstr "Última actualización en"
+msgstr "Última actualización el"
 
 #. module: portal
 #. openerp-web
@@ -641,7 +645,7 @@ msgstr "Código postal"
 #: code:addons/portal/static/src/xml/portal_chatter.xml:56
 #, python-format
 msgid "avatar"
-msgstr ""
+msgstr "avatar"
 
 #. module: portal
 #. openerp-web

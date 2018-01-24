@@ -4,14 +4,13 @@
 # 
 # Translators:
 # Martin Trigaux <mat@odoo.com>, 2017
-# Manuela Silva <manuela.silva@sky.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.saas~18\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-20 09:53+0000\n"
 "PO-Revision-Date: 2017-09-20 09:53+0000\n"
-"Last-Translator: Manuela Silva <manuela.silva@sky.com>, 2017\n"
+"Last-Translator: Martin Trigaux <mat@odoo.com>, 2017\n"
 "Language-Team: Portuguese (https://www.transifex.com/odoo/teams/41243/pt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -223,12 +222,12 @@ msgstr ""
 #. module: payment
 #: model:ir.ui.view,arch_db:payment.acquirer_kanban
 msgid "Activate"
-msgstr "Ativar"
+msgstr ""
 
 #. module: payment
 #: model:ir.model.fields,field_description:payment.field_payment_token_active
 msgid "Active"
-msgstr "Ativo"
+msgstr ""
 
 #. module: payment
 #: model:ir.model.fields,field_description:payment.field_payment_acquirer_fees_active
@@ -509,7 +508,7 @@ msgstr ""
 #. module: payment
 #: model:ir.model.fields,field_description:payment.field_payment_transaction_partner_email
 msgid "Email"
-msgstr "E-mail"
+msgstr ""
 
 #. module: payment
 #: model:ir.model.fields,field_description:payment.field_payment_acquirer_environment
@@ -520,7 +519,7 @@ msgstr ""
 #. module: payment
 #: selection:payment.transaction,state:0
 msgid "Error"
-msgstr "Erro"
+msgstr ""
 
 #. module: payment
 #: model:ir.model.fields,field_description:payment.field_payment_acquirer_error_msg
@@ -567,7 +566,7 @@ msgstr ""
 #. module: payment
 #: selection:payment.transaction,type:0
 msgid "Form"
-msgstr "Formulário"
+msgstr ""
 
 #. module: payment
 #: model:ir.model.fields,field_description:payment.field_payment_acquirer_view_template_id
@@ -613,7 +612,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:payment.field_payment_acquirer_image
 #: model:ir.model.fields,field_description:payment.field_payment_icon_image
 msgid "Image"
-msgstr "Imagem"
+msgstr ""
 
 #. module: payment
 #: model:ir.model.fields,field_description:payment.field_payment_icon_image_payment_form
@@ -780,7 +779,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:payment.payment_icon_form_view
 #: model:ir.ui.view,arch_db:payment.transaction_form
 msgid "Name"
-msgstr "Nome"
+msgstr ""
 
 #. module: payment
 #: model:ir.model.fields,help:payment.field_payment_token_name
@@ -824,7 +823,7 @@ msgstr ""
 #: code:addons/payment/static/src/js/payment_form.js:376
 #, python-format
 msgid "Ok"
-msgstr "Ok"
+msgstr ""
 
 #. module: payment
 #: code:addons/payment/models/payment_acquirer.py:759

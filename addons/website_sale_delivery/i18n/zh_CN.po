@@ -3,13 +3,14 @@
 # * website_sale_delivery
 # 
 # Translators:
-# Jeffery CHEN Fan <jeffery9@gmail.com>, 2017
-# fausthuang <faust_huang@hotmail.com>, 2017
-# 苏州远鼎 <tiexinliu@126.com>, 2017
+# Jeffery CHEN Fan <jeffery9@gmail.com>, 2016
+# mrshelly <mrshelly@hotmail.com>, 2016
+# 钟小华 <mackz@sina.com>, 2016
+# fausthuang <faust_huang@hotmail.com>, 2016
+# Martin Trigaux <mat@odoo.com>, 2016
+# Talway <9010446@qq.com>, 2016
+# 苏州远鼎 <tiexinliu@126.com>, 2016
 # 菜小蛇 <lttlsnk@gmail.com>, 2017
-# 钟小华 <mackz@sina.com>, 2017
-# mrshelly <mrshelly@hotmail.com>, 2017
-# Martin Trigaux <mat@odoo.com>, 2017
 # 山西清水欧度(QQ:54773801) <54773801@qq.com>, 2018
 msgid ""
 msgstr ""
@@ -65,7 +66,7 @@ msgstr "您想与客户沟通的产品说明。 此说明将被复制到每个�
 #. module: website_sale_delivery
 #: model:ir.model,name:website_sale_delivery.model_delivery_carrier
 msgid "Carrier"
-msgstr "承运商"
+msgstr "承运方"
 
 #. module: website_sale_delivery
 #: model:ir.ui.view,arch_db:website_sale_delivery.payment_delivery
@@ -156,7 +157,7 @@ msgstr "报价单"
 #: code:addons/website_sale_delivery/controllers/main.py:41
 #, python-format
 msgid "Sorry, we are unable to ship your order"
-msgstr "报歉，你的订单我们无法运送"
+msgstr "报歉，您的订单我们无法运送"
 
 #. module: website_sale_delivery
 #: model:ir.model.fields,help:website_sale_delivery.field_sale_order_amount_delivery
@@ -166,7 +167,7 @@ msgstr "不含税金的总额。"
 #. module: website_sale_delivery
 #: model:ir.ui.view,arch_db:website_sale_delivery.portal_order_page_shipping_tracking
 msgid "Tracking:"
-msgstr "追踪:"
+msgstr "追踪"
 
 #. module: website_sale_delivery
 #: model:ir.ui.view,arch_db:website_sale_delivery.res_config_settings_view_form

@@ -56,22 +56,22 @@ msgstr "Mostrar Nom"
 #. module: pos_cache
 #: model:ir.model.fields,field_description:pos_cache.field_pos_cache_id
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #. module: pos_cache
 #: model:ir.model.fields,field_description:pos_cache.field_pos_cache___last_update
 msgid "Last Modified on"
-msgstr "Darrera modificació feta el"
+msgstr ""
 
 #. module: pos_cache
 #: model:ir.model.fields,field_description:pos_cache.field_pos_cache_write_uid
 msgid "Last Updated by"
-msgstr "Actualitzat per última vegada per"
+msgstr ""
 
 #. module: pos_cache
 #: model:ir.model.fields,field_description:pos_cache.field_pos_cache_write_date
 msgid "Last Updated on"
-msgstr "Actualitzat per última vegada el dia"
+msgstr ""
 
 #. module: pos_cache
 #. openerp-web

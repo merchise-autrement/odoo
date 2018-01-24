@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-30 13:11+0000\n"
-"PO-Revision-Date: 2017-11-30 13:11+0000\n"
+"POT-Creation-Date: 2017-10-24 08:59+0000\n"
+"PO-Revision-Date: 2017-10-24 08:59+0000\n"
 "Last-Translator: 高木正勝 <masakatsu.takagi@pro-spire.co.jp>, 2017\n"
 "Language-Team: Japanese (https://www.transifex.com/odoo/teams/41243/ja/)\n"
 "MIME-Version: 1.0\n"
@@ -29,7 +29,7 @@ msgid "&amp;nbsp;"
 msgstr "&amp;nbsp;"
 
 #. module: website_sale
-#: model:ir.ui.view,arch_db:website_sale.cart_lines
+#: model:ir.ui.view,arch_db:website_sale.reduction_code
 msgid "/shop/cart"
 msgstr ""
 
@@ -130,7 +130,7 @@ msgstr "<i class=\"fa fa-envelope-o\"/> 担当にEメール"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.checkout
 msgid "<i class=\"fa fa-plus-square\" aria-hidden=\"true\"/> Add an address"
-msgstr "<i class=\"fa fa-plus-square\" aria-hidden=\"true\"/> アドレスを追加"
+msgstr "<i class=\"fa fa-plus-square\" aria-hidden=\"true\"/> 住所を追加"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.confirmation
@@ -143,8 +143,6 @@ msgid ""
 "<i class=\"fa fa-shopping-cart\"/>\n"
 "                    My Cart"
 msgstr ""
-"<i class=\"fa fa-shopping-cart\"/>\n"
-"                    マイカート"
 
 #. module: website_sale
 #: code:addons/website_sale/models/crm_team.py:58
@@ -173,7 +171,7 @@ msgstr "<small><i class=\"fa fa-trash-o\"/> 削除</small>"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.total
 msgid "<span class=\"col-xs-6 text-right h4 mt0\">Total:</span>"
-msgstr "<span class=\"col-xs-6 text-right h4 mt0\">合計:</span>"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.total
@@ -242,7 +240,7 @@ msgid ""
 "                <span class=\"visible-xs-inline\">Continue</span>"
 msgstr ""
 "<span class=\"fa fa-long-arrow-left\"/>\n"
-"                <span class=\"hidden-xs\">買物を続ける</span>\n"
+"                <span class=\"hidden-xs\">お買い物を続ける</span>\n"
 "                <span class=\"visible-xs-inline\">継続</span>"
 
 #. module: website_sale
@@ -267,9 +265,6 @@ msgid ""
 "                                        <span class=\"visible-xs-inline\">Checkout</span>\n"
 "                                        <span class=\"fa fa-long-arrow-right\"/>"
 msgstr ""
-"<span class=\"hidden-xs\">チェックアウト</span>\n"
-"                                        <span class=\"visible-xs-inline\">チェックアウト</span>\n"
-"                                        <span class=\"fa fa-long-arrow-right\"/>"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -464,12 +459,12 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.wizard_checkout
 msgid "<span> &amp; Shipping</span>"
-msgstr "<span> &amp; 出荷先</span>"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.wizard_checkout
 msgid "<span>Billing</span>"
-msgstr "<span>請求先</span>"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.confirmation
@@ -489,7 +484,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.wizard_checkout
 msgid "<span>Review Order</span>"
-msgstr "<span>オーダ内容確認</span>"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.sort
@@ -497,7 +492,7 @@ msgid ""
 "<span>Sort by</span>\n"
 "                        <span class=\"caret\"/>"
 msgstr ""
-"<span>ソート順</span>\n"
+"<span>並び順</span>\n"
 "                        <span class=\"caret\"/>"
 
 #. module: website_sale
@@ -585,7 +580,7 @@ msgstr "<strong>次のアクション：</strong>"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.confirmation
 msgid "<strong>Order Details:</strong>"
-msgstr "<strong>ご注文詳細:</strong>"
+msgstr "<strong>注文詳細:</strong>"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.report_shop_saleorder_document
@@ -595,7 +590,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.confirmation
 msgid "<strong>Payment Information:</strong>"
-msgstr "<strong>お支払情報:</strong>"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -605,7 +600,7 @@ msgstr "<strong>価格</strong>（通貨）"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "<strong>Product/Service name</strong>"
-msgstr "<strong>プロダクト/サービス名</strong>"
+msgstr "<strong>製品/サービス名</strong>"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -844,12 +839,12 @@ msgstr "アドレス"
 #: model:ir.ui.view,arch_db:website_sale.option_collapse_products_categories
 #: model:ir.ui.view,arch_db:website_sale.products_categories
 msgid "All Products"
-msgstr "全プロダクト"
+msgstr "全製品"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Allow shoppers to compare products based on their attributes"
-msgstr "特性ごとにプロダクトを比較できるようにする"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model.fields,help:website_sale.field_product_pricelist_selectable
@@ -875,7 +870,7 @@ msgstr "代替プロダクト:"
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_crm_team_abandoned_carts_amount
 msgid "Amount of Abandoned Carts"
-msgstr "放棄カート金額"
+msgstr ""
 
 #. module: website_sale
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_14
@@ -910,22 +905,22 @@ msgstr "多通貨を適用"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Apply right VAT rates for digital products sold in EU"
-msgstr "EUで販売されるデジタルプロダクトに正しいVAT率を適用"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Apply specific prices per country, discounts, etc."
-msgstr "国ごとに特定の価格や値引を適用"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Assignation"
-msgstr "割当"
+msgstr "割当て"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Assignation of online orders"
-msgstr "オンラインオーダへの割当"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.menu,name:website_sale.menu_catalog_variants_action
@@ -941,7 +936,7 @@ msgstr "属性"
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_res_config_settings_automatic_invoice
 msgid "Automatic Invoice"
-msgstr "自動請求"
+msgstr ""
 
 #. module: website_sale
 #. openerp-web
@@ -1050,7 +1045,7 @@ msgstr "カートリカバリEメール"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Cart are considered abandoned after"
-msgstr "放置判定時間数"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_sale_order_cart_recovery_email_sent
@@ -1276,7 +1271,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Confirmation Email"
-msgstr "確認Eメール"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.wizard_checkout
@@ -1356,7 +1351,7 @@ msgstr "通貨"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Customer Experience"
-msgstr "顧客経験"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -1391,7 +1386,7 @@ msgstr "デフォルト価格リスト"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Default Sales Tax"
-msgstr "デフォルト販売税"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -1406,7 +1401,7 @@ msgstr "放置カートに対し送付するデフォルトのリカバリEメ�
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Default sales tax applied to local transactions"
-msgstr "ローカル取引に適用されるデフォルト販売税"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -1458,12 +1453,12 @@ msgstr "表示名"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Display an images carousel on product pages"
-msgstr "プロダクトページに画像カルーセルを表示"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Display crossed-out public prices"
-msgstr "取消線付のリスト価格を表示"
+msgstr ""
 
 #. module: website_sale
 #. openerp-web
@@ -1522,7 +1517,7 @@ msgstr "Eメール構成ウィザード"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Email for Abandoned carts"
-msgstr "放置カート用のEメール"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model.fields,help:website_sale.field_res_config_settings_order_mail_template
@@ -1532,7 +1527,7 @@ msgstr "チェックアウトプロセスの終了時に顧客に送信される
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Email sent to the customer after the checkout"
-msgstr "チェックアウト後に顧客に送付されるEメール"
+msgstr ""
 
 #. module: website_sale
 #. openerp-web
@@ -1654,7 +1649,7 @@ msgstr "ウェブサイトから"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Generate the invoice automatically when the order is confirmed"
-msgstr "オーダ確認時に自動的に請求書生成"
+msgstr ""
 
 #. module: website_sale
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_11
@@ -1699,6 +1694,7 @@ msgid "Have Genius call the tunes."
 msgstr "天才は、曲を呼んできました。"
 
 #. module: website_sale
+#: model:ir.ui.view,arch_db:website_sale.payment
 #: model:ir.ui.view,arch_db:website_sale.reduction_code
 msgid "Have a promo code? Fill in this field and apply."
 msgstr ""
@@ -1754,7 +1750,7 @@ msgstr "あなたのグルーヴを手に入れる方法。"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "How total tax amount is computed in orders and invoices"
-msgstr "オーダおよび請求書での税額計算"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.payment_sale_note
@@ -1852,7 +1848,7 @@ msgstr "真に生き生きとした色を個別に較正。"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Install Optional Products (cross-selling)"
-msgstr "オプションプロダクトのインストール (クロスセリング)"
+msgstr "オプション製品のインストール(クロスセリング)"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -1889,7 +1885,7 @@ msgstr "請求"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Issue invoices to customers"
-msgstr "顧客に請求書を発行"
+msgstr ""
 
 #. module: website_sale
 #: code:addons/website_sale/models/sale_order.py:146
@@ -1963,7 +1959,7 @@ msgstr "先週"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.sale_report_view_search_website
 msgid "Last Year"
-msgstr "昨年"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -1973,12 +1969,12 @@ msgstr "会社名"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Let returning shoppers save products in a whishlist"
-msgstr "プロダクトをウィッシュリストに保存できるようにする"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Let the customer enter a shipping address"
-msgstr "出荷先アドレスを入力できるようにする"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -2034,7 +2030,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Manage availability of products"
-msgstr "プロダクトの利用可能性管理"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
@@ -2078,7 +2074,7 @@ msgstr "さらにエネルギー効率が良い。"
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_res_config_settings_group_website_multiimage
 msgid "Multi-Images"
-msgstr "複数画像"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -2123,7 +2119,7 @@ msgstr "ネットワーク"
 
 #. module: website_sale
 #. openerp-web
-#: code:addons/website_sale/controllers/main.py:968
+#: code:addons/website_sale/controllers/main.py:967
 #: code:addons/website_sale/static/src/js/website_sale.editor.js:32
 #: model:ir.ui.view,arch_db:website_sale.content_new_product
 #, python-format
@@ -2143,7 +2139,7 @@ msgstr "標準オファーは月額費用無し"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.products
 msgid "No product defined."
-msgstr "プロダクトが定義されていません。"
+msgstr "製品が定義されていません。"
 
 #. module: website_sale
 #: selection:res.config.settings,sale_delivery_settings:0
@@ -2163,7 +2159,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_crm_team_abandoned_carts_count
 msgid "Number of Abandoned Carts"
-msgstr "放棄カート数"
+msgstr ""
 
 #. module: website_sale
 #. openerp-web
@@ -2212,7 +2208,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_res_config_settings_module_website_sale_options
 msgid "Optional Products"
-msgstr "オプションプロダクト"
+msgstr "オプション製品"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -2272,7 +2268,7 @@ msgid "Parent Category"
 msgstr "親カテゴリ"
 
 #. module: website_sale
-#: code:addons/website_sale/controllers/main.py:756
+#: code:addons/website_sale/controllers/main.py:755
 #, python-format
 msgid "Pay Now"
 msgstr "今支払う"
@@ -2280,12 +2276,12 @@ msgstr "今支払う"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.payment
 msgid "Pay Now <span class=\"fa fa-long-arrow-right\"/>"
-msgstr "今支払う <span class=\"fa fa-long-arrow-right\"/>"
+msgstr "今すぐ支払う <span class=\"fa fa-long-arrow-right\"/>"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.payment
 msgid "Pay with"
-msgstr "お支払"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.menu,name:website_sale.menu_ecommerce_payment_acquirers
@@ -2307,7 +2303,7 @@ msgstr "支払いは手動で調整する必要があります"
 #: model:ir.ui.view,arch_db:website_sale.extra_info_option
 #: model:ir.ui.view,arch_db:website_sale.wizard_checkout
 msgid "Payment<span class=\"chevron\"/>"
-msgstr "お支払<span class=\"chevron\"/>"
+msgstr "支払い<span class=\"chevron\"/>"
 
 #. module: website_sale
 #: model:ir.actions.act_window,name:website_sale.payment_transaction_action_payments_to_capture
@@ -2431,12 +2427,12 @@ msgstr "プリンタ"
 #: model:ir.ui.view,arch_db:website_sale.payment
 #, python-format
 msgid "Product"
-msgstr "プロダクト"
+msgstr "製品"
 
 #. module: website_sale
 #: model:ir.model,name:website_sale.model_product_attribute
 msgid "Product Attribute"
-msgstr "プロダクト属性"
+msgstr "製品属性"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
@@ -2446,23 +2442,23 @@ msgstr "プロダクトカタログ"
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_res_config_settings_module_website_sale_comparison
 msgid "Product Comparison Tool"
-msgstr "プロダクト比較ツール"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.product_template_form_view
 #: model:ir.ui.view,arch_db:website_sale.view_product_image_form
 msgid "Product Images"
-msgstr "プロダクト画像"
+msgstr "製品画像"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.product
 msgid "Product Name"
-msgstr "プロダクト名"
+msgstr "製品名"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Product Pages"
-msgstr "プロダクトページ"
+msgstr "製品ページ"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
@@ -2472,32 +2468,32 @@ msgstr "プロダクト価格"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.product_public_category_tree_view
 msgid "Product Public Categories"
-msgstr "プロダクト公共カテゴリ"
+msgstr "製品公共カテゴリー"
 
 #. module: website_sale
 #: model:ir.model,name:website_sale.model_product_template
 msgid "Product Template"
-msgstr "プロダクトテンプレート"
+msgstr "製品テンプレート"
 
 #. module: website_sale
 #: model:ir.ui.menu,name:website_sale.product_catalog_variants
 msgid "Product Variants"
-msgstr "プロダクトバリアント"
+msgstr "製品バリアント"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Product attributes filter"
-msgstr "プロダクト属性フィルタ"
+msgstr "製品属性フィルタ"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Product categories list"
-msgstr "プロダクトカテゴリ一覧"
+msgstr "製品カテゴリ一覧"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Product descriptions"
-msgstr "プロダクト説明"
+msgstr "製品の説明"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.product_price
@@ -2507,12 +2503,12 @@ msgstr "商品がありません"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.404
 msgid "Product not found!"
-msgstr "プロダクトが見つかりません。"
+msgstr "製品が見つかりません。"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Product prices displaying in web catalog"
-msgstr "ウェブカタログでのプロダクト価格表示"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.actions.act_window,name:website_sale.product_template_action_website
@@ -2520,12 +2516,17 @@ msgstr "ウェブカタログでのプロダクト価格表示"
 #: model:ir.ui.menu,name:website_sale.menu_product_settings
 #: model:ir.ui.view,arch_db:website_sale.product
 msgid "Products"
-msgstr "プロダクト"
+msgstr "製品"
+
+#. module: website_sale
+#: model:ir.ui.view,arch_db:website_sale.reduction_code
+msgid "Promo Code"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_sale
 msgid "Promote"
-msgstr "プロモート"
+msgstr "宣伝"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
@@ -2641,7 +2642,7 @@ msgstr "リカバリEメール送信対象"
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_product_image_product_tmpl_id
 msgid "Related Product"
-msgstr "関連プロダクト"
+msgstr "関連製品"
 
 #. module: website_sale
 #: model:ir.ui.menu,name:website_sale.menu_reporting
@@ -2651,7 +2652,7 @@ msgstr "レポーティング"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.404
 msgid "Return to the product list."
-msgstr "プロダクト一覧に戻る"
+msgstr "製品一覧に戻る"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -2851,12 +2852,12 @@ msgstr "もっと売る"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Sell content to download or URL links"
-msgstr "ダウンロード可能なコンテンツもしくはURLリンクを販売"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Sell in several currencies"
-msgstr "複数通貨で販売"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.actions.server,name:website_sale.ir_actions_server_sale_cart_recovery_email
@@ -2870,7 +2871,7 @@ msgstr "リカバリEメールを送信"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
-msgid "Send a recovery email to authenticated shoppers"
+msgid "Send a recovery email to authentified shoppers"
 msgstr ""
 
 #. module: website_sale
@@ -2905,7 +2906,7 @@ msgstr "代替案、アクセサリ、オプションを製品詳細フォーム
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Set product attributes (e.g. color, size) to sell variants"
-msgstr "プロダクト特性(色、サイズ等)を設定しバリアントを販売"
+msgstr "プロダクト特性 (色、サイズ等) を設定しバリアントを販売"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.bill_to
@@ -2922,7 +2923,7 @@ msgstr "配送"
 #: model:ir.ui.view,arch_db:website_sale.address
 #: model:ir.ui.view,arch_db:website_sale.checkout
 msgid "Shipping Address"
-msgstr "出荷宛先"
+msgstr "お届け先の住所"
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_res_config_settings_module_website_sale_delivery
@@ -2969,7 +2970,7 @@ msgstr "ショッピング体験"
 #. module: website_sale
 #: model:res.groups,name:website_sale.group_website_multi_image
 msgid "Show multi image on eCommerce"
-msgstr "eコマースで複数画像表示"
+msgstr "eコマースでマルチ画像を表示する"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.confirmation
@@ -3042,7 +3043,7 @@ msgstr "申し訳ありませんが、この製品はもうありません。"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Sort by price"
-msgstr "価格でソート"
+msgstr "価格で並べ替え"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.sort
@@ -3072,12 +3073,12 @@ msgstr "州/都道府県"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.address
 msgid "Street 2"
-msgstr "アドレス2 (ビル名等)"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.address
 msgid "Street <span class=\"hidden-xs\"> and Number</span>"
-msgstr "アドレス1<span class=\"hidden-xs\"> (番地)</span>"
+msgstr "通り名<span class=\"hidden-xs\"> と地番</span>"
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_product_style_name
@@ -3112,7 +3113,7 @@ msgstr "より高価な選択肢を顧客に提案する(アップセル戦略)�
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Suggest optional products when adding to cart"
-msgstr "カート追加時にオプションプロダクトを提案"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -3339,11 +3340,6 @@ msgid "Total"
 msgstr "合計"
 
 #. module: website_sale
-#: model:ir.ui.view,arch_db:website_sale.cart_popover
-msgid "True"
-msgstr ""
-
-#. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_product_attribute_type
 msgid "Type"
 msgstr "タイプ"
@@ -3408,7 +3404,7 @@ msgstr "インポートテンプレートを使用して、すぐにカタログ
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.cart_popover
 msgid "View Cart ("
-msgstr "買物かごを見る ("
+msgstr "買い物かごの中身を見る("
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_product_product_website_published
@@ -3426,7 +3422,7 @@ msgstr "ウェブサイト"
 #: model:ir.model.fields,field_description:website_sale.field_product_product_public_categ_ids
 #: model:ir.model.fields,field_description:website_sale.field_product_template_public_categ_ids
 msgid "Website Product Category"
-msgstr "ウェブサイトプロダクトカテゴリ"
+msgstr "ウェブサイト製品カテゴリ"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.product_public_category_form_view
@@ -3508,7 +3504,7 @@ msgstr "Why you'll love an iPad."
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_res_config_settings_module_website_sale_wishlist
 msgid "Wishlists"
-msgstr "ウィッシュリスト"
+msgstr ""
 
 #. module: website_sale
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_1

@@ -18,7 +18,6 @@ var dom = require('web.dom');
 var session = require('web.session');
 var MockServer = require('web.MockServer');
 var Widget = require('web.Widget');
-var view_registry = require('web.view_registry');
 
 var DebouncedField = basic_fields.DebouncedField;
 
@@ -100,8 +99,7 @@ function createView(params) {
  * @param {any[]} [params.domain] the initial domain for the view
  * @param {Object} [params.context] the initial context for the view
  * @param {Object} [params.debug=false] if true, the widget will be appended in
- *   the DOM. Also, the logLevel will be forced to 2 and the uncaught OdooEvent
- *   will be logged
+ *   the DOM. Also, RPCs and uncaught OdooEvent will be logged
  * @param {string[]} [params.groupBy] the initial groupBy for the view
  * @param {integer} [params.fieldDebounce=0] the debounce value to use for the
  *   duration of the test.
@@ -117,15 +115,8 @@ function createView(params) {
 function createAsyncView(params) {
     var $target = $('#qunit-fixture');
     var widget = new Widget();
-
-    // handle debug parameter: render target, log stuff, ...
     if (params.debug) {
         $target = $('body');
-        params.logLevel = 2;
-        observe(widget);
-        var separator = window.location.href.indexOf('?') !== -1 ? "&" : "?";
-        var url = window.location.href + separator + 'testId=' + QUnit.config.current.testId;
-        console.log('%c[debug] debug mode activated', 'color: blue; font-weight: bold;', url);
         $target.addClass('debug');
     }
 
@@ -145,13 +136,7 @@ function createAsyncView(params) {
 
     _.extend(viewOptions, params.viewOptions);
 
-
-    if (viewInfo.arch.attrs.js_class) {
-        var jsClsssView = view_registry.get(viewInfo.arch.attrs.js_class);
-        var view = new jsClsssView(viewInfo, viewOptions);
-    } else{
-        var view = new params.View(viewInfo, viewOptions);
-    }
+    var view = new params.View(viewInfo, viewOptions);
 
     // make sure images do not trigger a GET on the server
     $target.on('DOMNodeInserted.removeSRC', function () {
@@ -163,13 +148,6 @@ function createAsyncView(params) {
     var $control_panel = $('<div>').addClass('o_control_panel').appendTo($web_client);
     var $content = $('<div>').addClass('o_content').appendTo($web_client);
     var $view_manager = $('<div>').addClass('o_view_manager_content').appendTo($content);
-
-    // make sure all Odoo events bubbling up are intercepted
-    if (params.intercepts) {
-        _.each(params.intercepts, function (cb, name) {
-            intercept(widget, name, cb);
-        });
-    }
 
     return view.getController(widget).then(function (view) {
         // override the view's 'destroy' so that it calls 'destroy' on the widget
@@ -232,10 +210,8 @@ function createAsyncView(params) {
  *   date. It is given to the mock server.
  * @param {Object} params.data the data given to the created mock server. It is
  *   used to generate mock answers for every kind of routes supported by odoo
- * @param {number} [params.logLevel] the log level. If it is 0, no logging is
- *   done, if 1, some light logging is done, if 2, detailed logs will be
- *   displayed for all rpcs.  Most of the time, when working on a test, it is
- *   frequent to set this parameter to 2
+ * @param {number} [params.debug] if set to true, logs RPCs and uncaught Odoo
+ *   events.
  * @param {function} [params.mockRPC] a function that will be used to override
  *   the _performRpc method from the mock server. It is really useful to add
  *   some custom rpc mocks, or to check some assertions.
@@ -246,6 +222,17 @@ function createAsyncView(params) {
  * @param {Object} [params.translateParameters] if given, it will be used to
  *   extend the core._t.database.parameters object. After the widget
  *   destruction, the original parameters will be restored.
+ * @param {Object} [params.intercepts] an object with event names as key, and
+ *   callback as value.  Each key,value will be used to intercept the event.
+ *   Note that this is particularly useful if you want to intercept events going
+ *   up in the init process of the view, because there are no other way to do it
+ *   after this method returns. Some events ('call_service', "load_views",
+ *   "get_session", "load_filters") have a special treatment beforehand.
+ * @param {boolean} [debounce=true] set to false to completely remove the
+ *   debouncing, forcing the handler to be called directly (not on the next
+ *   execution stack, like it does with delay=0).
+ * @param {boolean} [throttle=false] set to true to keep the throttling, which
+ *   is completely removed by default.
  *
  * @returns {MockServer} the instance of the mock server, created by this
  *   function. It is necessary for createAsyncView so that method can call some
@@ -256,14 +243,21 @@ function addMockEnvironment(widget, params) {
     if (params.mockRPC) {
         Server = MockServer.extend({_performRpc: params.mockRPC});
     }
+    if (params.debug) {
+        observe(widget);
+        var separator = window.location.href.indexOf('?') !== -1 ? "&" : "?";
+        var url = window.location.href + separator + 'testId=' + QUnit.config.current.testId;
+        console.log('%c[debug] debug mode activated', 'color: blue; font-weight: bold;', url);
+    }
     var mockServer = new Server(params.data, {
-        logLevel: params.logLevel,
+        archs: params.archs,
         currentDate: params.currentDate,
+        debug: params.debug,
     });
     // make sure the debounce value for input fields is set to 0
-    var initialDebounce = DebouncedField.prototype.DEBOUNCE;
+    var initialDebounceValue = DebouncedField.prototype.DEBOUNCE;
     DebouncedField.prototype.DEBOUNCE = params.fieldDebounce || 0;
-    var initialSession, initialConfig, initialParameters;
+    var initialSession, initialConfig, initialParameters, initialDebounce, initialThrottle;
     initialSession = _.extend({}, session);
     session.getTZOffset = function () {
         return 0; // by default, but may be overriden in specific tests
@@ -285,6 +279,18 @@ function addMockEnvironment(widget, params) {
         initialParameters = _.extend({}, core._t.database.parameters);
         _.extend(core._t.database.parameters, params.translateParameters);
     }
+    if (params.debounce === false) {
+        initialDebounce = _.debounce;
+        _.debounce = function (func) {
+            return func;
+        };
+    }
+    if (!('throttle' in params) || !params.throttle) {
+        initialThrottle = _.throttle;
+        _.throttle = function (func) {
+            return func;
+        };
+    }
 
     var widgetDestroy = widget.destroy;
     widget.destroy = function () {
@@ -292,7 +298,13 @@ function addMockEnvironment(widget, params) {
         // widget is destroyed, at the end of each test to avoid collisions
         core.bus.trigger('clear_cache');
 
-        DebouncedField.prototype.DEBOUNCE = initialDebounce;
+        DebouncedField.prototype.DEBOUNCE = initialDebounceValue;
+        if (params.debounce === false) {
+            _.debounce = initialDebounce;
+        }
+        if (!('throttle' in params) || !params.throttle) {
+            _.throttle = initialThrottle;
+        }
 
         var key;
         if ('session' in params) {
@@ -325,30 +337,21 @@ function addMockEnvironment(widget, params) {
     });
 
     intercept(widget, "load_views", function (event) {
-        if (params.logLevel === 2) {
-            console.log('[mock] load_views', event.data);
-        }
-        var views = {};
-        var model = event.data.modelName;
-        _.each(event.data.views, function (view_descr) {
-            var view_id = view_descr[0] || false;
-            var view_type = view_descr[1];
-            var key = [model, view_id, view_type].join(',');
-            var arch = params.archs[key];
-            var viewParams = {
-                arch: arch,
-                model: model,
-                viewOptions: {
-                    context: event.data.context.eval(),
-                },
-            };
-            if (!arch) {
-                throw new Error('No arch found for key ' + key);
-            }
-            views[view_type] = mockServer.fieldsViewGet(viewParams);
+        mockServer.performRpc('/web/dataset/call_kw/' + event.data.modelName, {
+            args: [],
+            kwargs: {
+                context: event.data.context,
+                options: event.data.options,
+                views: event.data.views,
+            },
+            method: 'load_views',
+            model: event.data.modelName,
+        }).then(function (views) {
+            views = _.mapObject(views, function (viewParams) {
+                return mockServer.fieldsViewGet(viewParams);
+            });
+            event.data.on_success(views);
         });
-
-        event.data.on_success(views);
     });
 
     intercept(widget, "get_session", function (event) {
@@ -356,11 +359,18 @@ function addMockEnvironment(widget, params) {
     });
 
     intercept(widget, "load_filters", function (event) {
-        if (params.logLevel === 2) {
+        if (params.debug) {
             console.log('[mock] load_filters', event.data);
         }
         event.data.on_success([]);
     });
+
+    // make sure all Odoo events bubbling up are intercepted
+    if ('intercepts' in params) {
+        _.each(params.intercepts, function (cb, name) {
+            intercept(widget, name, cb);
+        });
+    }
 
     return mockServer;
 }
@@ -390,6 +400,19 @@ function createModel(params) {
     };
 
     return model;
+}
+
+/**
+ * create a widget parent from given parameters.
+ *
+ * @param {Object} params This object will be given to addMockEnvironment, so
+ *   any parameters from that method applies
+ * @returns {Widget}
+ */
+function createParent(params) {
+    var widget = new Widget();
+    addMockEnvironment(widget, params);
+    return widget;
 }
 
 /**
@@ -596,6 +619,7 @@ return $.when(
         addMockEnvironment: addMockEnvironment,
         createAsyncView: createAsyncView,
         createModel: createModel,
+        createParent: createParent,
         createView: createView,
         dragAndDrop: dragAndDrop,
         intercept: intercept,

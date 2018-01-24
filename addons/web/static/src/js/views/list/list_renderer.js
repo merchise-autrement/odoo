@@ -4,7 +4,6 @@ odoo.define('web.ListRenderer', function (require) {
 var BasicRenderer = require('web.BasicRenderer');
 var config = require('web.config');
 var core = require('web.core');
-var Dialog = require('web.Dialog');
 var dom = require('web.dom');
 var field_utils = require('web.field_utils');
 var Pager = require('web.Pager');
@@ -276,9 +275,9 @@ var ListRenderer = BasicRenderer.extend({
             return $td.append(this._renderWidget(record, node));
         }
         if (node.attrs.widget || (options && options.renderWidgets)) {
-            var widget = this._renderFieldWidget(node, record, _.pick(options, 'mode'));
-            this._handleAttributes(widget.$el, node);
-            return $td.append(widget.$el);
+            var $el = this._renderFieldWidget(node, record, _.pick(options, 'mode'));
+            this._handleAttributes($el, node);
+            return $td.append($el);
         }
         var name = node.attrs.name;
         var field = this.state.fields[name];

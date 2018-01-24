@@ -4,14 +4,13 @@
 # 
 # Translators:
 # Martin Trigaux <mat@odoo.com>, 2017
-# Manuela Silva <manuela.silva@sky.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.saas~18\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-20 09:53+0000\n"
 "PO-Revision-Date: 2017-09-20 09:53+0000\n"
-"Last-Translator: Manuela Silva <manuela.silva@sky.com>, 2017\n"
+"Last-Translator: Martin Trigaux <mat@odoo.com>, 2017\n"
 "Language-Team: Portuguese (https://www.transifex.com/odoo/teams/41243/pt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -37,7 +36,7 @@ msgstr ""
 #. module: membership
 #: model:ir.ui.view,arch_db:membership.membership_products_kanban
 msgid "<i class=\"fa fa-clock-o\" aria-hidden=\"true\"/><strong> From: </strong>"
-msgstr "<i class=\"fa fa-clock-o\" aria-hidden=\"true\"/><strong> De: </strong>"
+msgstr ""
 
 #. module: membership
 #: model:ir.ui.view,arch_db:membership.membership_products_kanban
@@ -305,7 +304,7 @@ msgstr "ID"
 #. module: membership
 #: model:ir.ui.view,arch_db:membership.membership_product_search_form_view
 msgid "Inactive"
-msgstr "Inativo"
+msgstr ""
 
 #. module: membership
 #: model:ir.model,name:membership.model_account_invoice
@@ -516,7 +515,7 @@ msgstr ""
 #. module: membership
 #: model:ir.ui.view,arch_db:membership.view_report_membership_search
 msgid "Month"
-msgstr "Mês"
+msgstr ""
 
 #. module: membership
 #: selection:membership.membership_line,state:0

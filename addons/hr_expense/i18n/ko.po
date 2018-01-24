@@ -4,15 +4,13 @@
 # 
 # Translators:
 # Martin Trigaux <mat@odoo.com>, 2017
-# Link-Up <linkup.way@gmail.com>, 2018
-# Linda Stockelova <stockeloval@btlnet.com>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-11-16 08:08+0000\n"
 "PO-Revision-Date: 2017-11-16 08:08+0000\n"
-"Last-Translator: Linda Stockelova <stockeloval@btlnet.com>, 2018\n"
+"Last-Translator: Martin Trigaux <mat@odoo.com>, 2017\n"
 "Language-Team: Korean (https://www.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -162,12 +160,12 @@ msgstr ""
 #. module: hr_expense
 #: model:ir.ui.view,arch_db:hr_expense.report_expense_sheet
 msgid "<strong>Date:</strong>"
-msgstr "<strong>일자:</strong>"
+msgstr ""
 
 #. module: hr_expense
 #: model:ir.ui.view,arch_db:hr_expense.report_expense_sheet
 msgid "<strong>Description:</strong>"
-msgstr "<strong>묘사:</strong>"
+msgstr ""
 
 #. module: hr_expense
 #: model:ir.ui.view,arch_db:hr_expense.hr_expense_planner
@@ -222,7 +220,7 @@ msgstr ""
 #. module: hr_expense
 #: model:ir.ui.view,arch_db:hr_expense.report_expense_sheet
 msgid "<strong>Total</strong>"
-msgstr "<strong>합계</strong>"
+msgstr ""
 
 #. module: hr_expense
 #: model:ir.ui.view,arch_db:hr_expense.hr_expense_planner
@@ -257,7 +255,7 @@ msgstr ""
 #. module: hr_expense
 #: model:ir.ui.view,arch_db:hr_expense.product_product_expense_form_view
 msgid "Accounting"
-msgstr "회계"
+msgstr ""
 
 #. module: hr_expense
 #: model:ir.ui.view,arch_db:hr_expense.hr_expense_planner
@@ -422,7 +420,7 @@ msgstr ""
 #. module: hr_expense
 #: model:ir.ui.menu,name:hr_expense.menu_hr_expense_configuration
 msgid "Configuration"
-msgstr "환경 설정"
+msgstr ""
 
 #. module: hr_expense
 #: model:ir.ui.view,arch_db:hr_expense.hr_expense_planner
@@ -482,7 +480,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_expense.field_hr_expense_sheet_accounting_date
 #: model:ir.ui.view,arch_db:hr_expense.report_expense_sheet
 msgid "Date"
-msgstr "날짜"
+msgstr ""
 
 #. module: hr_expense
 #: model:ir.model.fields,field_description:hr_expense.field_res_config_settings_expense_alias_prefix
@@ -493,7 +491,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_expense.field_hr_expense_sheet_department_id
 #: model:ir.ui.view,arch_db:hr_expense.view_hr_expense_sheet_filter
 msgid "Department"
-msgstr "부서"
+msgstr ""
 
 #. module: hr_expense
 #: model:ir.ui.view,arch_db:hr_expense.hr_expense_planner
@@ -517,7 +515,7 @@ msgstr "표시 이름"
 #: model:ir.ui.view,arch_db:hr_expense.hr_expense_form_view
 #: model:ir.ui.view,arch_db:hr_expense.view_hr_expense_sheet_form
 msgid "Documents"
-msgstr "문서"
+msgstr ""
 
 #. module: hr_expense
 #: model:ir.ui.view,arch_db:hr_expense.hr_expense_planner
@@ -545,7 +543,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:hr_expense.view_hr_expense_filter
 #: model:ir.ui.view,arch_db:hr_expense.view_hr_expense_sheet_filter
 msgid "Employee"
-msgstr "임직원"
+msgstr ""
 
 #. module: hr_expense
 #: selection:hr.expense,payment_mode:0
@@ -987,7 +985,7 @@ msgstr ""
 #. module: hr_expense
 #: model:res.groups,name:hr_expense.group_hr_expense_manager
 msgid "Manager"
-msgstr "관리자"
+msgstr ""
 
 #. module: hr_expense
 #. openerp-web
@@ -1036,7 +1034,7 @@ msgstr ""
 #. module: hr_expense
 #: model:ir.ui.view,arch_db:hr_expense.report_expense_sheet
 msgid "Name"
-msgstr "이름"
+msgstr ""
 
 #. module: hr_expense
 #: model:ir.ui.view,arch_db:hr_expense.view_hr_expense_filter
@@ -1449,7 +1447,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:hr_expense.action_hr_expense_configuration
 #: model:ir.ui.menu,name:hr_expense.menu_hr_expense_global_settings
 msgid "Settings"
-msgstr "설정"
+msgstr ""
 
 #. module: hr_expense
 #: model:ir.ui.view,arch_db:hr_expense.res_config_settings_view_form
@@ -1816,7 +1814,7 @@ msgstr ""
 #. module: hr_expense
 #: model:ir.model,name:hr_expense.model_res_config_settings
 msgid "res.config.settings"
-msgstr "res.config.settings"
+msgstr ""
 
 #. module: hr_expense
 #: model:ir.ui.view,arch_db:hr_expense.hr_expense_planner

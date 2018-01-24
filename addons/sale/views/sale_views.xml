@@ -61,7 +61,7 @@
             parent="menu_sale_report"
             sequence="3"/>
 
-        <menuitem id="product_menu_catalog" name="Catalog" action="product.product_template_action" parent="sale_menu_root" sequence="4" groups="sales_team.group_sale_salesman"/>
+        <menuitem id="product_menu_catalog" name="Products" action="product.product_template_action" parent="sale_menu_root" sequence="4" groups="sales_team.group_sale_salesman"/>
         <menuitem id="menu_product" name="Product Variants" parent="product_menu_catalog" sequence="2" groups="product.group_product_variant" active="False"/>
         <menuitem action="product.product_template_action" id="menu_product_template_action" parent="product_menu_catalog" sequence="1" active="False"/>
         <menuitem id="prod_config_main" name="Products" parent="menu_sale_config" sequence="5"/>
@@ -148,7 +148,7 @@
                 <tree string="Sales Orders" decoration-bf="message_needaction==True" decoration-muted="state=='cancel'">
                     <field name="message_needaction" invisible="1"/>
                     <field name="name" string="Order Number"/>
-                    <field name="confirmation_date" string="Order Date"/>
+                    <field name="confirmation_date" string="Confirmation Date"/>
                     <field name="partner_id"/>
                     <field name="user_id"/>
                     <field name="amount_total" sum="Total Tax Included" widget="monetary"/>
@@ -298,7 +298,8 @@
                                     <field name="product_id"
                                         attrs="{'readonly': [('product_updatable', '=', False)]}"
                                         force_save="1"
-                                        context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id}"
+                                        context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id,
+                                        'default_lst_price': price_unit, 'default_description_sale': name}"
                                        />
                                     <field name="layout_category_id" groups="sale.group_sale_layout"/>
                                     <field name="name"/>
@@ -391,6 +392,7 @@
                                 <group string="Reporting" name="technical" groups="base.group_no_one">
                                     <field groups="base.group_no_one" name="origin"/>
                                 </group>
+                                <group name="utm_link" groups="base.group_no_one"/>
                             </group>
                         </page>
                     </notebook>
@@ -445,9 +447,9 @@
                         domain="[('activity_ids.date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))
                         ]"/>
                     <group expand="0" string="Group By">
-                        <filter name="salesperson" string="Salesperson" domain="[]" context="{'group_by':'user_id'}"/>
+                        <filter string="Salesperson" name="salesperson" domain="[]" context="{'group_by':'user_id'}"/>
                         <filter name="customer" string="Customer" domain="[]" context="{'group_by':'partner_id'}"/>
-                        <filter name="group_by_date_order" string="Order Month" domain="[]" context="{'group_by':'date_order'}"/>
+                        <filter string="Order Month" name="order_month" domain="[]" context="{'group_by':'date_order'}"/>
                     </group>
                </search>
             </field>
@@ -475,11 +477,8 @@
             <field name="inherit_id" ref="sale.view_sales_order_filter"/>
             <field name="arch" type="xml">
                 <xpath expr="//filter[@name='my_sale_orders_filter']" position="after">
-                    <separator/>
-                    <filter string="Sales" name="sales" domain="[('state','in',('progress','done'))]" />
-                    <separator/>
-                    <filter string="To Invoice" domain="[('invoice_status','=','to invoice')]" />
-                    <filter string="Upselling" domain="[('invoice_status','=','upselling')]" />
+                    <filter string="To Invoice" name="to_invoice" domain="[('invoice_status','=','to invoice')]" />
+                    <filter string="Upselling" name="upselling" domain="[('invoice_status','=','upselling')]" />
                 </xpath>
             </field>
         </record>
@@ -531,7 +530,7 @@
         </record>
 
         <menuitem id="menu_sale_invoicing"
-            name="Invoicing"
+            name="To Invoice"
             parent="sale_menu_root"
             sequence="3" groups="sales_team.group_sale_salesman"/>
 
@@ -580,9 +579,6 @@
               </p><p>
                 Your next actions should flow efficiently: confirm the Quotation
                 to a Sales Order, then create the Invoice and collect the Payment.
-              </p><p>
-                Note that once a Quotation becomes a Sales Order, it will be moved
-                from the Quotations list to the Sales Order list.
               </p>
             </field>
         </record>
@@ -617,17 +613,17 @@
             <field name="model">sale.order.line</field>
             <field name="arch" type="xml">
                 <search string="Search Sales Order">
-                    <filter string="To Invoice" domain="[('qty_to_invoice','!=', 0)]"  help="Sales Order Lines ready to be invoiced"/>
+                    <filter string="To Invoice" name="to_invoice" domain="[('qty_to_invoice','!=', 0)]"  help="Sales Order Lines ready to be invoiced"/>
                     <separator/>
-                    <filter string="My Sales Order Lines" domain="[('salesman_id','=',uid)]" help="Sales Order Lines related to a Sales Order of mine"/>
+                    <filter string="My Sales Order Lines" name="my_sales_order_lines" domain="[('salesman_id','=',uid)]" help="Sales Order Lines related to a Sales Order of mine"/>
                     <field name="order_id"/>
                     <field name="order_partner_id" operator="child_of"/>
                     <field name="product_id"/>
                     <field name="salesman_id"/>
                     <group expand="0" string="Group By">
-                        <filter string="Product" domain="[]" context="{'group_by':'product_id'}"/>
-                        <filter string="Order" domain="[]" context="{'group_by':'order_id'}"/>
-                        <filter string="Salesperson" domain="[]" context="{'group_by':'salesman_id'}"/>
+                        <filter string="Product" name="product" domain="[]" context="{'group_by':'product_id'}"/>
+                        <filter string="Order" name="order" domain="[]" context="{'group_by':'order_id'}"/>
+                        <filter string="Salesperson" name="salesperson" domain="[]" context="{'group_by':'salesman_id'}"/>
                     </group>
                 </search>
             </field>
@@ -653,7 +649,7 @@
                         <field string="Sales" name="sales_count" widget="statinfo" />
                     </button>
                 </button>
-                <group name="sale_warning" position="replace">
+                <group name="description" position="after">
                     <group string="Warning when Selling this Product" groups="sale.group_warning_sale">
                         <field name="sale_line_warn" nolabel="1"/>
                         <field name="sale_line_warn_msg" colspan="3" nolabel="1"
@@ -671,11 +667,11 @@
             <field name="arch" type="xml">
                 <button name="toggle_active" position="before">
                     <button class="oe_stat_button" name="action_view_sales"
-                        type="object" icon="fa-usd">
+                        type="object" icon="fa-usd" attrs="{'invisible': [('sale_ok', '=', False)]}">
                         <field string="Sales" name="sales_count" widget="statinfo" />
                     </button>
                 </button>
-                <group name="sale_warning" position="replace">
+                <group name="description" position="after">
                     <group string="Warning when Selling this Product" groups="sale.group_warning_sale">
                         <field name="sale_line_warn" nolabel="1"/>
                         <field name="sale_line_warn_msg" colspan="3" nolabel="1"
@@ -690,8 +686,8 @@
             <field name="model">product.template</field>
             <field name="inherit_id" ref="product.product_template_form_view"/>
             <field name="arch" type="xml">
-                <group name="invoicing" position="inside">
-                    <group string="Invoicing" name="invoicing" attrs="{'invisible': [('sale_ok','=',False)]}">
+                <group name="sale" position="inside">
+                    <group string="Invoicing" name="invoicing">
                         <field name="invoice_policy" widget="radio"/>
                         <field name="service_type" widget="radio" invisible="True"/>
                     </group>
@@ -709,7 +705,7 @@
                     <field name="team_id"/>
                 </xpath>
                 <xpath expr="//group/filter[@name='status']" position="after">
-                    <filter string="Sales Channel" domain="[]" context="{'group_by':'team_id'}"/>
+                    <filter string="Sales Channel" name="sales_channel" domain="[]" context="{'group_by':'team_id'}"/>
                 </xpath>
             </field>
         </record>
@@ -889,7 +885,7 @@
             <field name="view_id" ref="account.invoice_tree"/>
             <field name="domain">[
                 ('state', 'not in', ['draft', 'cancel']),
-                ('type', '=', 'out_invoice')]</field>
+                ('type', 'in', ['out_invoice', 'out_refund'])]</field>
             <field name="context">{
                     'search_default_team_id': [active_id],
                     'default_team_id': active_id,

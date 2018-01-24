@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-30 13:11+0000\n"
-"PO-Revision-Date: 2017-11-30 13:11+0000\n"
+"POT-Creation-Date: 2017-11-16 08:08+0000\n"
+"PO-Revision-Date: 2017-11-16 08:08+0000\n"
 "Last-Translator: kent_ocean <ke.tanabe@gmail.com>, 2017\n"
 "Language-Team: Japanese (https://www.transifex.com/odoo/teams/41243/ja/)\n"
 "MIME-Version: 1.0\n"
@@ -948,11 +948,6 @@ msgid "Active"
 msgstr "有効"
 
 #. module: project
-#: model:ir.ui.view,arch_db:project.project_planner
-msgid "Activities"
-msgstr "活動"
-
-#. module: project
 #: model:ir.actions.act_window,name:project.mail_activity_type_action_config_project_types
 #: model:ir.ui.menu,name:project.project_menu_config_activity_type
 msgid "Activity Types"
@@ -1068,7 +1063,7 @@ msgstr "アーカイブ済"
 #. module: project
 #: model:ir.ui.view,arch_db:project.view_task_form2
 msgid "Assign to Me"
-msgstr "自分に割当"
+msgstr ""
 
 #. module: project
 #: model:ir.model.fields,field_description:project.field_report_project_task_user_date_start
@@ -1414,7 +1409,7 @@ msgstr "コピーライティング/デザイン"
 #. module: project
 #: model:ir.model.fields,field_description:project.field_project_task_displayed_image_id
 msgid "Cover Image"
-msgstr "カバーイメージ"
+msgstr ""
 
 #. module: project
 #: model:ir.ui.view,arch_db:project.project_project_view_form_simplified
@@ -1535,7 +1530,7 @@ msgstr "このタスクの現在のステージ"
 #. module: project
 #: model:ir.actions.act_window,help:project.project_task_action_activity
 msgid "Currently there are not any activity scheduled."
-msgstr "現在活動予定はありません。"
+msgstr ""
 
 #. module: project
 #: code:addons/project/models/project.py:818
@@ -2468,7 +2463,7 @@ msgstr ""
 #. module: project
 #: model:ir.ui.view,arch_db:project.res_config_settings_view_form
 msgid "Manage your resources with Gantt charts"
-msgstr "ガントチャートでリソースを管理"
+msgstr ""
 
 #. module: project
 #: model:ir.ui.view,arch_db:project.view_project_project_filter
@@ -2678,11 +2673,6 @@ msgstr "添付ファイルの数"
 
 #. module: project
 #: model:ir.ui.view,arch_db:project.project_planner
-msgid "Objectives"
-msgstr "Objectives"
-
-#. module: project
-#: model:ir.ui.view,arch_db:project.project_planner
 msgid ""
 "Odoo Project is a super fast and easy way to make your activities and tasks visible to\n"
 "                        everyone in your company. Follow how things progress, see when things are stuck, know\n"
@@ -2810,7 +2800,7 @@ msgid "Planner"
 msgstr "プランナー"
 
 #. module: project
-#: code:addons/project/models/project.py:887
+#: code:addons/project/models/project.py:925
 #, python-format
 msgid ""
 "Please remove existing tasks in the project linked to the accounts you want "
@@ -2849,7 +2839,7 @@ msgstr "プライバシー"
 #. module: project
 #: model:ir.ui.view,arch_db:project.project_planner
 msgid "Product or software version"
-msgstr "プロダクトまたはソフトウェアのバージョン"
+msgstr "製品またはソフトウェアのバージョン"
 
 #. module: project
 #: code:addons/project/models/project.py:346
@@ -2945,7 +2935,6 @@ msgstr ""
 #: model:ir.ui.view,arch_db:project.portal_layout
 #: model:ir.ui.view,arch_db:project.portal_my_home
 #: model:ir.ui.view,arch_db:project.portal_my_projects
-#: model:ir.ui.view,arch_db:project.project_planner
 #: model:ir.ui.view,arch_db:project.view_project
 msgid "Projects"
 msgstr "プロジェクト"
@@ -3293,7 +3282,7 @@ msgstr "タスクの仕様は記述済"
 #. module: project
 #: model:ir.ui.view,arch_db:project.res_config_settings_view_form
 msgid "Split your tasks to organize your work into sub-milestones"
-msgstr "タスクを分割し、より細かいマイルストンで作業管理"
+msgstr ""
 
 #. module: project
 #. openerp-web
@@ -3435,7 +3424,7 @@ msgstr "タスクブロック"
 #. module: project
 #: model:ir.ui.view,arch_db:project.res_config_settings_view_form
 msgid "Task Management"
-msgstr "タスク管理"
+msgstr ""
 
 #. module: project
 #: model:mail.message.subtype,name:project.mt_project_task_new
@@ -3755,7 +3744,7 @@ msgstr "タスクの時間見積"
 #. module: project
 #: model:ir.ui.view,arch_db:project.res_config_settings_view_form
 msgid "Time Management"
-msgstr "時間管理"
+msgstr ""
 
 #. module: project
 #: model:ir.ui.view,arch_db:project.edit_project
@@ -3834,7 +3823,7 @@ msgstr "タスクの顧客満足度を追跡"
 #. module: project
 #: model:ir.ui.view,arch_db:project.res_config_settings_view_form
 msgid "Track time spent on projects and tasks"
-msgstr "プロジェクトやタスクの時間消費を追跡"
+msgstr ""
 
 #. module: project
 #: model:ir.ui.view,arch_db:project.view_task_project_user_search
@@ -3851,7 +3840,7 @@ msgstr "未読メッセージ"
 #. module: project
 #: model:res.groups,name:project.group_subtask_project
 msgid "Use Subtask Project"
-msgstr "サブタスクプロジェクトを使用"
+msgstr ""
 
 #. module: project
 #: model:ir.model.fields,field_description:project.field_project_project_label_tasks
@@ -3866,7 +3855,7 @@ msgstr "タイムシートを使用"
 #. module: project
 #: model:ir.ui.view,arch_db:project.res_config_settings_view_form
 msgid "Use collaborative rich text pads on tasks"
-msgstr "タスクにて共同作業用のリッチテキストパッドを使用"
+msgstr ""
 
 #. module: project
 #: model:ir.ui.view,arch_db:project.project_planner
@@ -3977,7 +3966,7 @@ msgstr "<b>プロジェクトを管理</b>するより良い方法をお探し�
 #. module: project
 #: model:ir.model.fields,field_description:project.field_project_task_email_cc
 msgid "Watchers Emails"
-msgstr "ウォッチャーのEメール"
+msgstr "傍観者のEメール"
 
 #. module: project
 #: model:ir.ui.view,arch_db:project.project_planner

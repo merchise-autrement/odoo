@@ -6,15 +6,14 @@
 # Martin Trigaux <mat@odoo.com>, 2017
 # Arma Gedonsky <armagedonsky@hot.ee>, 2017
 # Rivo Zängov <eraser@eraser.ee>, 2017
-# Eneli Õigus <enelioigus@gmail.com>, 2017
 # Wanradt Koell <wanradt@gmail.com>, 2017
 # Egon Raamat <egon@avalah.ee>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-30 13:11+0000\n"
-"PO-Revision-Date: 2017-11-30 13:11+0000\n"
+"POT-Creation-Date: 2017-10-24 08:59+0000\n"
+"PO-Revision-Date: 2017-10-24 08:59+0000\n"
 "Last-Translator: Egon Raamat <egon@avalah.ee>, 2017\n"
 "Language-Team: Estonian (https://www.transifex.com/odoo/teams/41243/et/)\n"
 "MIME-Version: 1.0\n"
@@ -29,7 +28,7 @@ msgid "&amp;nbsp;"
 msgstr "&amp;nbsp;"
 
 #. module: website_sale
-#: model:ir.ui.view,arch_db:website_sale.cart_lines
+#: model:ir.ui.view,arch_db:website_sale.reduction_code
 msgid "/shop/cart"
 msgstr ""
 
@@ -655,7 +654,7 @@ msgid ""
 "A rounding per line is advised if your prices are tax-included. That way, "
 "the sum of line subtotals equals the total with taxes."
 msgstr ""
-"Ümardamine rea kaupa on soovituslik, kui hinnad sisaldavad maksu. Sellisel "
+"Ümmardamine rea kaupa on soovituslik, kui hinnad sisaldavad maksu. Sellisel "
 "juhul ridade summa on võrdne kogusummaga."
 
 #. module: website_sale
@@ -1075,7 +1074,7 @@ msgstr ""
 #. module: website_sale
 #: selection:product.attribute,type:0
 msgid "Color"
-msgstr "Värv"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -1405,7 +1404,7 @@ msgstr "E-post"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Email Template"
-msgstr "E-kirja näidis"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model,name:website_sale.model_mail_compose_message
@@ -1579,6 +1578,7 @@ msgid "Have Genius call the tunes."
 msgstr ""
 
 #. module: website_sale
+#: model:ir.ui.view,arch_db:website_sale.payment
 #: model:ir.ui.view,arch_db:website_sale.reduction_code
 msgid "Have a promo code? Fill in this field and apply."
 msgstr ""
@@ -1993,7 +1993,7 @@ msgstr ""
 
 #. module: website_sale
 #. openerp-web
-#: code:addons/website_sale/controllers/main.py:968
+#: code:addons/website_sale/controllers/main.py:967
 #: code:addons/website_sale/static/src/js/website_sale.editor.js:32
 #: model:ir.ui.view,arch_db:website_sale.content_new_product
 #, python-format
@@ -2142,10 +2142,10 @@ msgid "Parent Category"
 msgstr "Ülemkategooria"
 
 #. module: website_sale
-#: code:addons/website_sale/controllers/main.py:756
+#: code:addons/website_sale/controllers/main.py:755
 #, python-format
 msgid "Pay Now"
-msgstr "Maksa kohe"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.payment
@@ -2155,7 +2155,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.payment
 msgid "Pay with"
-msgstr "Maksa"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.menu,name:website_sale.menu_ecommerce_payment_acquirers
@@ -2388,6 +2388,11 @@ msgstr ""
 #: model:ir.ui.view,arch_db:website_sale.product
 msgid "Products"
 msgstr "Tooted"
+
+#. module: website_sale
+#: model:ir.ui.view,arch_db:website_sale.reduction_code
+msgid "Promo Code"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_sale
@@ -2718,7 +2723,7 @@ msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
-msgid "Send a recovery email to authenticated shoppers"
+msgid "Send a recovery email to authentified shoppers"
 msgstr ""
 
 #. module: website_sale
@@ -2822,7 +2827,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.confirmation
 msgid "Sign Up"
-msgstr "Registreeru"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_sale
@@ -2918,7 +2923,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.address
 msgid "Street 2"
-msgstr "Tänav 2"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.address
@@ -3169,11 +3174,6 @@ msgid "Total"
 msgstr "Kokku"
 
 #. module: website_sale
-#: model:ir.ui.view,arch_db:website_sale.cart_popover
-msgid "True"
-msgstr ""
-
-#. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_product_attribute_type
 msgid "Type"
 msgstr "Tüüp"
@@ -3249,7 +3249,7 @@ msgstr "Nähtav veebilehel"
 #: model:ir.model,name:website_sale.model_website
 #: model:ir.ui.view,arch_db:website_sale.product_template_form_view
 msgid "Website"
-msgstr "Internetileht"
+msgstr "Veebisait"
 
 #. module: website_sale
 #: model:ir.model,name:website_sale.model_product_public_category
@@ -3436,7 +3436,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.address
 msgid "Zip Code"
-msgstr "Postiindeks"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -3473,7 +3473,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "hours"
-msgstr "tundi"
+msgstr ""
 
 #. module: website_sale
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_11
@@ -3533,7 +3533,7 @@ msgstr "res.config.settings"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "set company logo"
-msgstr "määra ettevõtte logo"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.payment_sale_note

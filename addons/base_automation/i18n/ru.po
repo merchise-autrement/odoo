@@ -3,16 +3,17 @@
 # * base_automation
 # 
 # Translators:
-# Sergey Vilizhanin <sv@grimmette.ru>, 2017
-# Эдуард Манятовский <manyatovskiy@gmail.com>, 2017
 # Martin Trigaux <mat@odoo.com>, 2017
 # Max Belyanin <maxbelyanin@gmail.com>, 2017
+# Masha Koc <mariya.kos.ua@gmail.com>, 2017
+# Максим Дронь <dronmax@gmail.com>, 2017
+# Sergey Vilizhanin <sv@grimmette.ru>, 2017
+# Viktor Pogrebniak <vp@aifil.ru>, 2017
+# Эдуард Манятовский <manyatovskiy@gmail.com>, 2017
 # Gennady Marchenko <gennadym@gmail.com>, 2017
 # Русский «kolobok2048» Ивашка <kolobok2048@gmail.com>, 2017
-# Максим Дронь <dronmax@gmail.com>, 2017
-# Masha Koc <mariya.kos.ua@gmail.com>, 2017
 # Denis Trepalin <zekarious@gmail.com>, 2017
-# Viktor Pogrebniak <vp@aifil.ru>, 2017
+# Артур Чеботарь <artcha.chebotar@gmail.com>, 2017
 # Dimko Pythonic <d.v.selitsky@gmail.com>, 2017
 msgid ""
 msgstr ""
@@ -62,7 +63,7 @@ msgstr "Тип действия"
 #: model:ir.model.fields,field_description:base_automation.field_base_automation_active
 #: model:ir.model.fields,field_description:base_automation.field_base_automation_lead_test_active
 msgid "Active"
-msgstr "Актив"
+msgstr "Активно"
 
 #. module: base_automation
 #: model:ir.model.fields,field_description:base_automation.field_base_automation_channel_ids
@@ -476,7 +477,7 @@ msgstr "Удалить действие"
 #. module: base_automation
 #: model:ir.ui.view,arch_db:base_automation.view_base_automation_form
 msgid "Remove the contextual action related to this server action"
-msgstr "Удалить контекстное действие, связанное с действием этого сервера"
+msgstr "Удалить контекстное действие, связанное с действием этого сервера."
 
 #. module: base_automation
 #: model:ir.model.fields,field_description:base_automation.field_base_automation_lead_test_user_id

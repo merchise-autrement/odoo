@@ -94,7 +94,8 @@
                         <button string="Schedule" name="action_close_dialog"
                             type="object" class="btn-primary"/>
                         <button string="Mark as Done" name="action_done"
-                            type="object" class="btn-primary"/>
+                            type="object" class="btn-default"/>
+                        <button string="Done &amp; Schedule Next" name="action_done_schedule_next" type="object" class="btn-default"/>
                         <button string="Discard" class="btn-default" special="cancel" />
                     </footer>
                 </sheet>
@@ -124,9 +125,9 @@
                         ]"/>
                 <separator/>
                 <group expand="0" string="Group By">
-                    <filter string="Deadline" context="{'group_by': 'date_deadline'}"/>
-                    <filter string="Created By" context="{'group_by': 'create_uid'}"/>
-                    <filter string="Activity Type" context="{'group_by': 'activity_type_id'}"/>
+                    <filter string="Deadline" name="date_deadline" context="{'group_by': 'date_deadline'}"/>
+                    <filter string="Created By" name="createdby" context="{'group_by': 'create_uid'}"/>
+                    <filter string="Activity Type" name="activittype" context="{'group_by': 'activity_type_id'}"/>
                 </group>
             </search>
         </field>

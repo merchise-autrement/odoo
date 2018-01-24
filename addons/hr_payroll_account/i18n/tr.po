@@ -4,6 +4,8 @@
 # 
 # Translators:
 # Martin Trigaux <mat@odoo.com>, 2017
+# Ediz Duman <neps1192@gmail.com>, 2017
+# Ramiz Deniz Öner <deniz@denizoner.com>, 2017
 # Murat Kaplan <muratk@projetgrup.com>, 2017
 # Ayhan KIZILTAN <akiziltan76@hotmail.com>, 2017
 msgid ""
@@ -29,14 +31,14 @@ msgstr "Muhasebe"
 #. module: hr_payroll_account
 #: model:ir.model.fields,field_description:hr_payroll_account.field_hr_payslip_move_id
 msgid "Accounting Entry"
-msgstr "Muhasebe Kaydı"
+msgstr "Muhasebe Girişi"
 
 #. module: hr_payroll_account
 #: code:addons/hr_payroll_account/models/hr_payroll_account.py:113
 #: code:addons/hr_payroll_account/models/hr_payroll_account.py:128
 #, python-format
 msgid "Adjustment Entry"
-msgstr "Düzeltme Kaydı"
+msgstr "Düzeltme Girişi"
 
 #. module: hr_payroll_account
 #: model:ir.model.fields,field_description:hr_payroll_account.field_hr_contract_analytic_account_id
@@ -65,7 +67,7 @@ msgstr "Borç Hesabı"
 #. module: hr_payroll_account
 #: model:ir.model,name:hr_payroll_account.model_hr_contract
 msgid "Employee Contract"
-msgstr "Personel Sözleşmesi"
+msgstr "Çalışan Sözleşmesi"
 
 #. module: hr_payroll_account
 #: model:ir.model,name:hr_payroll_account.model_hr_payslip_employees

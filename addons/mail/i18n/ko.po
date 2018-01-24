@@ -4,14 +4,13 @@
 # 
 # Translators:
 # Martin Trigaux <mat@odoo.com>, 2017
-# Link-Up <linkup.way@gmail.com>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-11-30 13:11+0000\n"
 "PO-Revision-Date: 2017-11-30 13:11+0000\n"
-"Last-Translator: Link-Up <linkup.way@gmail.com>, 2018\n"
+"Last-Translator: Martin Trigaux <mat@odoo.com>, 2017\n"
 "Language-Team: Korean (https://www.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -456,7 +455,7 @@ msgstr ""
 #. module: mail
 #: model:ir.ui.view,arch_db:mail.view_mail_alias_search
 msgid "Active"
-msgstr "활성화"
+msgstr ""
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_compose_message_active_domain
@@ -505,7 +504,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mail.mail_activity_view_search
 #, python-format
 msgid "Activity"
-msgstr "활동"
+msgstr ""
 
 #. module: mail
 #: model:ir.model,name:mail.model_mail_activity_mixin
@@ -516,7 +515,7 @@ msgstr ""
 #: model:ir.model,name:mail.model_mail_activity_type
 #: model:ir.ui.view,arch_db:mail.mail_activity_view_search
 msgid "Activity Type"
-msgstr "활동 타입"
+msgstr ""
 
 #. module: mail
 #: model:ir.actions.act_window,name:mail.mail_activity_type_action
@@ -537,7 +536,7 @@ msgstr ""
 #: code:addons/mail/static/src/xml/client_action.xml:87
 #, python-format
 msgid "Add"
-msgstr "추가"
+msgstr ""
 
 #. module: mail
 #. openerp-web
@@ -669,12 +668,12 @@ msgstr ""
 #: code:addons/mail/static/src/xml/systray.xml:28
 #, python-format
 msgid "All"
-msgstr "전체"
+msgstr ""
 
 #. module: mail
 #: selection:ir.model.fields,track_visibility:0
 msgid "Always"
-msgstr "항상"
+msgstr ""
 
 #. module: mail
 #. openerp-web
@@ -890,7 +889,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mail.field_mail_activity_activity_category
 #: model:ir.model.fields,field_description:mail.field_mail_activity_type_category
 msgid "Category"
-msgstr "분류"
+msgstr ""
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_email_template_preview_email_cc
@@ -1046,7 +1045,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:mail.action_email_compose_message_wizard
 #: model:ir.ui.view,arch_db:mail.email_compose_message_wizard_form
 msgid "Compose Email"
-msgstr "메일 작성"
+msgstr ""
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_compose_message_composition_mode
@@ -1076,7 +1075,7 @@ msgstr ""
 #. module: mail
 #: model:ir.model,name:mail.model_res_partner
 msgid "Contact"
-msgstr "연락처"
+msgstr ""
 
 #. module: mail
 #: model:ir.ui.view,arch_db:mail.email_template_form
@@ -1195,7 +1194,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mail.field_mail_message_date
 #: model:ir.model.fields,field_description:mail.field_survey_mail_compose_message_date
 msgid "Date"
-msgstr "날짜"
+msgstr ""
 
 #. module: mail
 #: model:ir.model.fields,help:mail.field_account_analytic_account_message_last_post
@@ -1288,7 +1287,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mail.field_mail_channel_alias_defaults
 #: model:ir.model.fields,field_description:mail.field_mail_test_alias_defaults
 msgid "Default Values"
-msgstr "기본 값"
+msgstr ""
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_email_template_preview_use_default_to
@@ -1366,7 +1365,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mail.mail_activity_view_form_popup
 #, python-format
 msgid "Discard"
-msgstr "폐기"
+msgstr ""
 
 #. module: mail
 #: model:ir.ui.menu,name:mail.mail_channel_menu_root_chat
@@ -1445,7 +1444,7 @@ msgstr ""
 #: code:addons/mail/static/src/xml/activity.xml:79
 #, python-format
 msgid "Done"
-msgstr "완료"
+msgstr ""
 
 #. module: mail
 #. openerp-web
@@ -1473,7 +1472,7 @@ msgstr ""
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_activity_date_deadline
 msgid "Due Date"
-msgstr "만기 시한"
+msgstr ""
 
 #. module: mail
 #. openerp-web
@@ -1516,7 +1515,7 @@ msgstr ""
 #: selection:mail.message,message_type:0
 #: selection:survey.mail.compose.message,message_type:0
 msgid "Email"
-msgstr "이메일"
+msgstr ""
 
 #. module: mail
 #: model:ir.ui.view,arch_db:mail.mail_channel_view_form
@@ -1556,7 +1555,7 @@ msgstr ""
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_ir_act_server_template_id
 msgid "Email Template"
-msgstr "이메일 서식"
+msgstr ""
 
 #. module: mail
 #: model:ir.model,name:mail.model_email_template_preview
@@ -2005,7 +2004,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mail.mail_activity_view_search
 #: model:ir.ui.view,arch_db:mail.res_partner_view_search_inherit_mail
 msgid "Future Activities"
-msgstr "향후 활동"
+msgstr ""
 
 #. module: mail
 #: model:ir.ui.view,arch_db:mail.view_message_form
@@ -2028,7 +2027,7 @@ msgstr "그룹화"
 #. module: mail
 #: model:ir.ui.view,arch_db:mail.view_email_template_search
 msgid "Group by..."
-msgstr "그룹화..."
+msgstr ""
 
 #. module: mail
 #: model:ir.ui.view,arch_db:mail.mail_channel_view_tree
@@ -2665,12 +2664,12 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mail.mail_activity_view_search
 #: model:ir.ui.view,arch_db:mail.res_partner_view_search_inherit_mail
 msgid "Late Activities"
-msgstr "지연된 활동"
+msgstr ""
 
 #. module: mail
 #: model:ir.ui.view,arch_db:mail.mail_channel_view_kanban
 msgid "Leave"
-msgstr "휴가"
+msgstr ""
 
 #. module: mail
 #. openerp-web
@@ -2724,7 +2723,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mail.email_compose_message_wizard_form
 #, python-format
 msgid "Log"
-msgstr "기록"
+msgstr ""
 
 #. module: mail
 #. openerp-web
@@ -2862,7 +2861,7 @@ msgstr ""
 #: code:addons/mail/static/src/xml/web_kanban_activity.xml:49
 #, python-format
 msgid "Mark as done"
-msgstr "완료로 표시"
+msgstr ""
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_channel_image_medium
@@ -3110,13 +3109,13 @@ msgstr ""
 #. module: mail
 #: model:ir.ui.view,arch_db:mail.view_mail_search
 msgid "Month"
-msgstr "월"
+msgstr ""
 
 #. module: mail
 #: model:ir.ui.view,arch_db:mail.mail_activity_view_search
 #: model:ir.ui.view,arch_db:mail.res_partner_view_search_inherit_mail
 msgid "My Activities"
-msgstr "나의 활동"
+msgstr ""
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_email_template_preview_name
@@ -3127,7 +3126,7 @@ msgstr "나의 활동"
 #: model:ir.model.fields,field_description:mail.field_mail_test_simple_name
 #: model:ir.ui.view,arch_db:mail.mail_channel_view_form
 msgid "Name"
-msgstr "이름"
+msgstr ""
 
 #. module: mail
 #: model:ir.model.fields,help:mail.field_mail_compose_message_record_name
@@ -3375,7 +3374,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mail.field_mail_activity_note
 #: model:mail.message.subtype,name:mail.mt_note
 msgid "Note"
-msgstr "노트"
+msgstr ""
 
 #. module: mail
 #. openerp-web
@@ -3983,7 +3982,7 @@ msgstr ""
 #: selection:stock.picking,activity_state:0
 #: selection:survey.survey,activity_state:0
 msgid "Planned"
-msgstr "계획됨"
+msgstr ""
 
 #. module: mail
 #. openerp-web
@@ -4134,7 +4133,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mail.email_compose_message_wizard_form
 #: model:ir.ui.view,arch_db:mail.view_message_form
 msgid "Recipients"
-msgstr "받는 사람"
+msgstr ""
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_activity_recommended_activity_type_id
@@ -4157,7 +4156,7 @@ msgstr ""
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_mail_references
 msgid "References"
-msgstr "참조"
+msgstr ""
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_activity_res_id
@@ -4271,7 +4270,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mail.field_stock_picking_activity_user_id
 #: model:ir.model.fields,field_description:mail.field_survey_survey_activity_user_id
 msgid "Responsible"
-msgstr "담당자"
+msgstr ""
 
 #. module: mail
 #: model:ir.ui.view,arch_db:mail.view_mail_form
@@ -4319,7 +4318,7 @@ msgstr ""
 #. module: mail
 #: model:ir.ui.view,arch_db:mail.mail_activity_view_form_popup
 msgid "Schedule"
-msgstr "일정"
+msgstr ""
 
 #. module: mail
 #. openerp-web
@@ -4376,7 +4375,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mail.email_compose_message_wizard_form
 #, python-format
 msgid "Send"
-msgstr "전송"
+msgstr ""
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_wizard_invite_send_mail
@@ -4458,7 +4457,7 @@ msgstr "순서"
 #: code:addons/mail/static/src/xml/client_action.xml:139
 #, python-format
 msgid "Settings"
-msgstr "설정"
+msgstr ""
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_shortcode_shortcode_type
@@ -4480,7 +4479,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mail.mail_activity_view_search
 #: model:ir.ui.view,arch_db:mail.res_partner_view_search_inherit_mail
 msgid "Show all records which has next action date is before today"
-msgstr "다음 활동 일자가 오늘 이전인 모든 자료 조회"
+msgstr ""
 
 #. module: mail
 #: code:addons/mail/models/mail_channel.py:667
@@ -4680,7 +4679,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mail.field_mail_activity_summary
 #: model:ir.model.fields,field_description:mail.field_mail_activity_type_summary
 msgid "Summary"
-msgstr "요약"
+msgstr ""
 
 #. module: mail
 #: selection:mail.compose.message,message_type:0
@@ -4863,7 +4862,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mail.mail_activity_view_search
 #: model:ir.ui.view,arch_db:mail.res_partner_view_search_inherit_mail
 msgid "Today Activities"
-msgstr "금일 활동"
+msgstr ""
 
 #. module: mail
 #: model:mail.activity.type,name:mail.mail_activity_data_todo
@@ -4875,7 +4874,7 @@ msgstr ""
 #: code:addons/mail/static/src/js/activity.js:36
 #, python-format
 msgid "Tomorrow"
-msgstr "내일"
+msgstr ""
 
 #. module: mail
 #: model:ir.ui.view,arch_db:mail.mail_channel_view_form
@@ -5170,7 +5169,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mail.view_mail_form
 #: model:ir.ui.view,arch_db:mail.view_mail_tree
 msgid "User"
-msgstr "사용자"
+msgstr ""
 
 #. module: mail
 #. openerp-web
@@ -5183,7 +5182,7 @@ msgstr ""
 #. module: mail
 #: model:ir.model,name:mail.model_res_users
 msgid "Users"
-msgstr "사용자"
+msgstr ""
 
 #. module: mail
 #: code:addons/mail/models/mail_channel.py:711
@@ -5598,7 +5597,7 @@ msgstr ""
 #. module: mail
 #: model:ir.model,name:mail.model_res_config_settings
 msgid "res.config.settings"
-msgstr "res.config.settings"
+msgstr ""
 
 #. module: mail
 #: code:addons/mail/models/mail_thread.py:913

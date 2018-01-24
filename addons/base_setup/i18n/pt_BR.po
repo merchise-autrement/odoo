@@ -3,11 +3,11 @@
 # * base_setup
 # 
 # Translators:
-# grazziano <gra.negocia@gmail.com>, 2017
-# Mateus Lopes <mateus1@gmail.com>, 2017
-# Manel Tinoco <maneltinoco@gmail.com>, 2017
-# Martin Trigaux <mat@odoo.com>, 2017
-# Rodrigo de Almeida Sottomaior Macedo <rmsolucoeseminformatic4@gmail.com>, 2017
+# grazziano <gra.negocia@gmail.com>, 2016
+# Martin Trigaux <mat@odoo.com>, 2016
+# Mateus Lopes <mateus1@gmail.com>, 2016
+# Manel Tinoco <maneltinoco@gmail.com>, 2016
+# Rodrigo de Almeida Sottomaior Macedo <rmsolucoeseminformatic4@gmail.com>, 2016
 # Luiz Carlos de Lima <luiz.carlos@akretion.com.br>, 2017
 # falexandresilva <falexandresilva@gmail.com>, 2017
 # SILMAR PINHEIRO VIANA <pinheirosilmar@gmail.com>, 2017

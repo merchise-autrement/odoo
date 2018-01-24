@@ -800,7 +800,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:gamification.field_gamification_goal_end_date
 #: model:ir.ui.view,arch_db:gamification.goal_search_view
 msgid "End Date"
-msgstr "Data final"
+msgstr ""
 
 #. module: gamification
 #: model:ir.model.fields,help:gamification.field_gamification_goal_definition_batch_mode
@@ -1020,7 +1020,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:gamification.goal_definition_search_view
 #: model:ir.ui.view,arch_db:gamification.goal_search_view
 msgid "Group By"
-msgstr "Agrupa per"
+msgstr ""
 
 #. module: gamification
 #: model:ir.model.fields,help:gamification.field_gamification_challenge_report_message_group_id
@@ -1057,7 +1057,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:gamification.field_gamification_goal_id
 #: model:ir.model.fields,field_description:gamification.field_gamification_goal_wizard_id
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_goal_definition_res_id_field
@@ -1132,7 +1132,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:gamification.field_gamification_goal_definition___last_update
 #: model:ir.model.fields,field_description:gamification.field_gamification_goal_wizard___last_update
 msgid "Last Modified on"
-msgstr "Darrera modificació feta el"
+msgstr ""
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge_last_report_date
@@ -1154,7 +1154,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:gamification.field_gamification_goal_wizard_write_uid
 #: model:ir.model.fields,field_description:gamification.field_gamification_goal_write_uid
 msgid "Last Updated by"
-msgstr "Actualitzat per última vegada per"
+msgstr ""
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge_user_wizard_write_date
@@ -1166,7 +1166,7 @@ msgstr "Actualitzat per última vegada per"
 #: model:ir.model.fields,field_description:gamification.field_gamification_goal_wizard_write_date
 #: model:ir.model.fields,field_description:gamification.field_gamification_goal_write_date
 msgid "Last Updated on"
-msgstr "Actualitzat per última vegada el dia"
+msgstr ""
 
 #. module: gamification
 #: selection:gamification.challenge,visibility_mode:0
@@ -1556,7 +1556,7 @@ msgstr ""
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge_line_sequence
 msgid "Sequence"
-msgstr "Seqüència"
+msgstr ""
 
 #. module: gamification
 #: model:ir.model.fields,help:gamification.field_gamification_challenge_line_sequence
@@ -1605,7 +1605,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge_start_date
 #: model:ir.model.fields,field_description:gamification.field_gamification_goal_start_date
 msgid "Start Date"
-msgstr "Data d'inici"
+msgstr ""
 
 #. module: gamification
 #: model:ir.ui.view,arch_db:gamification.goal_form_view
@@ -1904,7 +1904,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:gamification.field_gamification_goal_user_id
 #: model:ir.ui.view,arch_db:gamification.goal_search_view
 msgid "User"
-msgstr "Usuari"
+msgstr ""
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge_user_domain

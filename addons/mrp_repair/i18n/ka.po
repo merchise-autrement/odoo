@@ -4,15 +4,13 @@
 # 
 # Translators:
 # Martin Trigaux <mat@odoo.com>, 2017
-# Saba Khmaladze <skhmaladze@uglt.org>, 2018
-# Giorgi Melitauri <gmelitauri@live.com>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.saas~18\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-10-02 11:27+0000\n"
 "PO-Revision-Date: 2017-10-02 11:27+0000\n"
-"Last-Translator: Giorgi Melitauri <gmelitauri@live.com>, 2018\n"
+"Last-Translator: Martin Trigaux <mat@odoo.com>, 2017\n"
 "Language-Team: Georgian (https://www.transifex.com/odoo/teams/41243/ka/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -123,7 +121,7 @@ msgstr ""
 #. module: mrp_repair
 #: selection:mrp.repair.line,type:0
 msgid "Add"
-msgstr "დამატება"
+msgstr ""
 
 #. module: mrp_repair
 #: model:ir.ui.view,arch_db:mrp_repair.view_repair_order_form
@@ -328,7 +326,7 @@ msgstr ""
 #. module: mrp_repair
 #: model:ir.ui.view,arch_db:mrp_repair.view_repair_order_form_filter
 msgid "Future Activities"
-msgstr "მომავალი ქმედებები"
+msgstr ""
 
 #. module: mrp_repair
 #: model:ir.ui.view,arch_db:mrp_repair.view_repair_order_form_filter
@@ -473,7 +471,7 @@ msgstr "ბოლოს განახლებულია"
 #. module: mrp_repair
 #: model:ir.ui.view,arch_db:mrp_repair.view_repair_order_form_filter
 msgid "Late Activities"
-msgstr "ბოლო აქტივობები"
+msgstr ""
 
 #. module: mrp_repair
 #: model:ir.model.fields,field_description:mrp_repair.field_mrp_repair_line_lot_id
@@ -499,7 +497,7 @@ msgstr ""
 #. module: mrp_repair
 #: model:ir.ui.view,arch_db:mrp_repair.view_repair_order_form_filter
 msgid "My Activities"
-msgstr "ჩემი აქტივობები"
+msgstr ""
 
 #. module: mrp_repair
 #: selection:mrp.repair,invoice_method:0
@@ -621,7 +619,7 @@ msgstr "რაოდენობა"
 #. module: mrp_repair
 #: selection:mrp.repair,state:0
 msgid "Quotation"
-msgstr "ციტატა"
+msgstr ""
 
 #. module: mrp_repair
 #: model:ir.actions.report,name:mrp_repair.action_report_mrp_repair_order
@@ -789,8 +787,6 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mrp_repair.view_repair_order_form_filter
 msgid "Show all records which has next action date is before today"
 msgstr ""
-"ყველა ჩანაწერის ჩვენება, რომლებსაც შემდეგი მოქმედების თარიღი აქვს დღევანდელ "
-"დღემდე"
 
 #. module: mrp_repair
 #: model:ir.model.fields,field_description:mrp_repair.field_mrp_repair_line_location_id
@@ -876,7 +872,7 @@ msgstr ""
 #. module: mrp_repair
 #: model:ir.ui.view,arch_db:mrp_repair.view_repair_order_form_filter
 msgid "Today Activities"
-msgstr "დღევანდელი აქტივობები"
+msgstr ""
 
 #. module: mrp_repair
 #: model:ir.model.fields,field_description:mrp_repair.field_mrp_repair_amount_total

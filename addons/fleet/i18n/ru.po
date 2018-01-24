@@ -4,24 +4,23 @@
 # 
 # Translators:
 # Martin Trigaux <mat@odoo.com>, 2017
-# Sergey Vilizhanin <sv@grimmette.ru>, 2017
-# Collex100 <manyatovskiy@gmail.com>, 2017
-# Max Belyanin <maxbelyanin@gmail.com>, 2017
-# Роман Яхненко <bsap132@gmail.com>, 2017
 # Максим Дронь <dronmax@gmail.com>, 2017
-# Viktor Pogrebniak <vp@aifil.ru>, 2017
+# Max Belyanin <maxbelyanin@gmail.com>, 2017
+# Sergey Vilizhanin <sv@grimmette.ru>, 2017
+# Эдуард Манятовский <manyatovskiy@gmail.com>, 2017
 # Gennady Marchenko <gennadym@gmail.com>, 2017
+# Viktor Pogrebniak <vp@aifil.ru>, 2017
+# Русский «kolobok2048» Ивашка <kolobok2048@gmail.com>, 2017
 # Masha Koc <mariya.kos.ua@gmail.com>, 2017
 # Denis Trepalin <zekarious@gmail.com>, 2017
-# Русский «kolobok2048» Ивашка <kolobok2048@gmail.com>, 2017
-# Dmitry sky <d.v.selitsky@gmail.com>, 2017
+# Dimko Pythonic <d.v.selitsky@gmail.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.saas~18\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-20 09:54+0000\n"
 "PO-Revision-Date: 2017-09-20 09:54+0000\n"
-"Last-Translator: Dmitry sky <d.v.selitsky@gmail.com>, 2017\n"
+"Last-Translator: Dimko Pythonic <d.v.selitsky@gmail.com>, 2017\n"
 "Language-Team: Russian (https://www.transifex.com/odoo/teams/41243/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -86,7 +85,7 @@ msgstr "Стоимость активации"
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_active
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_contract_active
 msgid "Active"
-msgstr "Актив"
+msgstr "Активно"
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_fuel_view_form
@@ -499,12 +498,11 @@ msgstr "Издержки в месяц"
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_log_contract_cost_generated
 msgid ""
-"Costs paid at regular intervals, depending on the cost frequency. If the "
-"cost frequency is set to unique, the cost will be logged at the start date"
+"Costs paid at regular intervals, depending on the cost frequency.If the cost"
+" frequency is set to unique, the cost will be logged at the start date"
 msgstr ""
-"Расходы, оплачиваемые регулярно, в зависимости от частоты издержек. Если "
-"частота издержек будет установлена в уникальную, то издержка будет "
-"зарегистрирована в дате начала"
+"Стоимость регулярно оплачивается исходя из частоты. Если частота стоимости "
+"уникальна, то она будет записана со начальной датой"
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_form
@@ -825,7 +823,7 @@ msgstr "Произведенные периодические затраты"
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_odometer_view_search
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_view_search
 msgid "Group By"
-msgstr "Группировать по"
+msgstr "Группировать"
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_view_search
@@ -1858,7 +1856,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_services_odometer_unit
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_odometer_unit_2892
 msgid "Unit"
-msgstr "Единица"
+msgstr "Ед."
 
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_cost_odometer_unit

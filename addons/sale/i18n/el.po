@@ -73,51 +73,6 @@ msgid ""
 "% endif\n"
 "</p>\n"
 msgstr ""
-"\n"
-"<p>Αγαπητέ/η ${object.partner_id.name}\n"
-"% set access_action = object.with_context(force_website=True).get_access_action()\n"
-"% set is_online = access_action and access_action['type'] == 'ir.actions.act_url'\n"
-"% set doc_name = 'quotation' if object.state in ('draft', 'sent') else 'order confirmation'\n"
-"% set pay_sign_name =  object.get_portal_confirmation_action()\n"
-"% set access_name = is_online and object.state in ('draft', 'sent') and pay_sign_name in ('pay', 'sign') and 'Accept and %s online' % pay_sign_name or 'View %s' % doc_name\n"
-"% set access_url = is_online and object.get_mail_url() or ''\n"
-"\n"
-"% if object.partner_id.parent_id:\n"
-"    (<i>${object.partner_id.parent_id.name}</i>)\n"
-"% endif\n"
-",</p>\n"
-"<p>\n"
-"Εδώ είναι \n"
-"% if ctx.get('proforma')\n"
-"ως συνημμένο, το προ-τιμολόγιο σας\n"
-"% else\n"
-"το έγγραφο ${doc_name} <strong>${object.name}</strong>\n"
-"% endif\n"
-"% if object.origin:\n"
-"(με αναφορά: ${object.origin} )\n"
-"% endif\n"
-"που ανέρχεται σε <strong>${object.amount_total} ${object.pricelist_id.currency_id.name}</strong>\n"
-"από ${object.company_id.name}.\n"
-"</p>\n"
-"\n"
-"% if is_online and not ctx.get('proforma'):\n"
-"    <br/><br/>\n"
-"    <center>\n"
-"        <a href=\"${access_url}\" style=\"background-color: #1abc9c; padding: 20px; text-decoration: none; color: #fff; border-radius: 5px; font-size: 16px;\" class=\"o_default_snippet_text\">${access_name}</a>\n"
-"        <br/><br/><br/>\n"
-"        <span style=\"color:#888888\">(ή δείτε το συνημμένο αρχείο PDF)</span>\n"
-"    </center>\n"
-"    <br/>\n"
-"% endif\n"
-"\n"
-"<p>Μπορείτε να απαντήσετε σε σε αυτό το email εάν έχετε απορίες.</p>\n"
-"<p>Σας ευχαριστούμε,</p>\n"
-"\n"
-"<p style=\"color:#888888;\">\n"
-"% if object.user_id and object.user_id.signature:\n"
-"    ${object.user_id.signature | safe}\n"
-"% endif\n"
-"</p>\n"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_product_product_sales_count
@@ -262,78 +217,6 @@ msgid ""
 "                </html>\n"
 "            "
 msgstr ""
-"<html>\n"
-"                <head></head>\n"
-"                % set record = ctx.get('record')\n"
-"                % set company = record and record.company_id or user.company_id\n"
-"                <body style=\"margin: 0; padding: 0;\">\n"
-"                <table border=\"0\" width=\"100%\" cellpadding=\"0\" bgcolor=\"#ededed\" style=\"padding: 20px; background-color: #ededed; border-collapse:separate;\" summary=\"o_mail_notification\">\n"
-"                    <tbody>\n"
-"\n"
-"                      <!-- HEADER -->\n"
-"                      <tr>\n"
-"                        <td align=\"center\" style=\"min-width: 590px;\">\n"
-"                          <table width=\"590\" border=\"0\" cellpadding=\"0\" bgcolor=\"#875A7B\" style=\"min-width: 590px; background-color: rgb(135,90,123); padding: 20px; border-collapse:separate;\">\n"
-"                            <tr>\n"
-"                              <td valign=\"middle\">\n"
-"                                  <span style=\"font-size:20px; color:white; font-weight: bold;\">\n"
-"                                      ${object.record_name}\n"
-"                                  </span>\n"
-"                              </td>\n"
-"                              <td valign=\"middle\" align=\"right\">\n"
-"                                  <img src=\"/logo.png?company=${company.id}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" alt=\"${company.name}\">\n"
-"                              </td>\n"
-"                            </tr>\n"
-"                          </table>\n"
-"                        </td>\n"
-"                      </tr>\n"
-"\n"
-"                      <!-- CONTENT -->\n"
-"                      <tr>\n"
-"                        <td align=\"center\" style=\"min-width: 590px;\">\n"
-"                          <table width=\"590\" border=\"0\" cellpadding=\"0\" bgcolor=\"#ffffff\" style=\"min-width: 590px; background-color: rgb(255, 255, 255); padding: 20px; border-collapse:separate;\">\n"
-"                            <tbody>\n"
-"                              <td valign=\"top\" style=\"font-family:Arial,Helvetica,sans-serif; color: #555; font-size: 14px;\">\n"
-"                                ${object.body | safe}\n"
-"                              </td>\n"
-"                            </tbody>\n"
-"                          </table>\n"
-"                        </td>\n"
-"                      </tr>\n"
-"\n"
-"                      <!-- FOOTER -->\n"
-"                      <tr>\n"
-"                        <td align=\"center\" style=\"min-width: 590px;\">\n"
-"                          <table width=\"590\" border=\"0\" cellpadding=\"0\" bgcolor=\"#875A7B\" style=\"min-width: 590px; background-color: rgb(135,90,123); padding: 20px; border-collapse:separate;\">\n"
-"                            <tr>\n"
-"                              <td valign=\"middle\" align=\"left\" style=\"color: #fff; padding-top: 10px; padding-bottom: 10px; font-size: 12px;\">\n"
-"                                ${company.name}<br/>\n"
-"                                ${company.phone or ''}\n"
-"                              </td>\n"
-"                              <td valign=\"middle\" align=\"right\" style=\"color: #fff; padding-top: 10px; padding-bottom: 10px; font-size: 12px;\">\n"
-"                                % if company.email:\n"
-"                                <a href=\"mailto:${company.email}\" style=\"text-decoration:none; color: white;\">${company.email}</a><br/>\n"
-"                                % endif\n"
-"                                % if company.website:\n"
-"                                    <a href=\"${company.website}\" style=\"text-decoration:none; color: white;\">\n"
-"                                        ${company.website}\n"
-"                                    </a>\n"
-"                                % endif\n"
-"                              </td>\n"
-"                            </tr>\n"
-"                          </table>\n"
-"                        </td>\n"
-"                      </tr>\n"
-"                      <tr>\n"
-"                        <td align=\"center\">\n"
-"                            Δημιουργήθηκε με <a target=\"_blank\" href=\"https://www.odoo.com\">Odoo</a>.\n"
-"                        </td>\n"
-"                      </tr>\n"
-"                    </tbody>\n"
-"                </table>\n"
-"                </body>\n"
-"                </html>\n"
-"            "
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.portal_order_page
@@ -677,7 +560,7 @@ msgstr "Στο κόστος"
 #. module: sale
 #: model:ir.ui.menu,name:sale.menu_variants_action
 msgid "Attribute Values"
-msgstr "Τιμές Χαρακτηριστικών"
+msgstr "Αξίες Χαρακτηριστικών"
 
 #. module: sale
 #: model:ir.ui.menu,name:sale.menu_attribute_action
@@ -689,7 +572,7 @@ msgstr "Ιδιότητες"
 #: selection:product.template,sale_line_warn:0
 #: selection:res.partner,sale_warn:0
 msgid "Blocking Message"
-msgstr "Μήνυμα Αποκλεισμού"
+msgstr "Μπλοκαρισμένο Μήνυμα"
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.res_config_settings_view_form
@@ -1397,7 +1280,7 @@ msgstr "Πολιτική Τιμολόγησης"
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_crm_team_invoiced_target
 msgid "Invoicing Target"
-msgstr "Στόχος Τιμολόγησης"
+msgstr ""
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.report_saleorder_document
@@ -1417,7 +1300,7 @@ msgstr "Είναι μια προκαταβολή"
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_is_expired
 msgid "Is expired"
-msgstr "Έχει λήξει"
+msgstr ""
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_report_all_channels_sales___last_update
@@ -1455,7 +1338,7 @@ msgstr "Καθυστερημένες Δραστηριότητες"
 #: model:ir.model.fields,field_description:sale.field_account_invoice_line_layout_category_sequence
 #: model:ir.model.fields,field_description:sale.field_sale_order_line_layout_category_sequence
 msgid "Layout Sequence"
-msgstr "Ακολουθία Διάταξης"
+msgstr ""
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.res_config_settings_view_form
@@ -1506,9 +1389,6 @@ msgid ""
 "Timesheets on contract: Invoice based on the tracked hours on the related timesheet.\n"
 "Create a task and track hours: Create a task on the sales order validation and track the work hours."
 msgstr ""
-"Ορισμός ποσοτήτων χειροκίνητα στην παραγγελία: Τιμολόγηση βασισμένη στην χειροκίνητη ποσότητα, χωρίς τη δημιουργία αναλυτικού λογαριασμού.\n"
-"Φύλλο Χρόνου Εργασίας σε συμβόλαιο: Τιμολόγηση βασισμένη στις ώρες από το σχετικό φύλλο εργασίας.\n"
-"Δημιουργία μιας εργασίας και παρακολούθηση ωρών: Δημιουργήστε μια εργασία στην επικύρωση της παραγγελίας και παρακολουθήστε τις ώρες εργασίας."
 
 #. module: sale
 #: model:ir.model.fields,help:sale.field_sale_order_validity_date
@@ -1517,9 +1397,6 @@ msgid ""
 "the date automatically based on the template if online quotation is "
 "installed."
 msgstr ""
-"Ρυθμίστε χειροκίνητα την ημερομηνία λήξης της προσφοράς σας (προσφορά) ή θα "
-"οριστεί η ημερομηνία αυτόματα με βάση το πρότυπο εάν έχει εγκατασταθεί το "
-"άρθρωμα \"Online Προσφορές\"."
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_res_config_settings_module_sale_margin
@@ -1552,7 +1429,7 @@ msgstr "Πολλαπλές Τιμές Πωλήσεων ανά Είδος"
 #: selection:res.config.settings,multi_sales_price_method:0
 #: selection:res.config.settings,sale_pricelist_setting:0
 msgid "Multiple prices per product (e.g. customer segments, currencies)"
-msgstr "Πολλαπλές τιμές ανά είδος (π.χ. τμήματα πελατών, νομίσματα)"
+msgstr ""
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.view_sales_order_filter
@@ -1609,8 +1486,6 @@ msgid ""
 "Note that once a Quotation becomes a Sales Order, it will be moved\n"
 "                from the Quotations list to the Sales Order list."
 msgstr ""
-"Λάβετε υπόψη ότι μόλις μια προσφορά γίνει παραγγελία, θα μεταφερθεί από τη "
-"λίστα προσφορών στην λίστα των παραγγελιών."
 
 #. module: sale
 #: model:ir.actions.act_window,help:sale.action_quotations
@@ -1618,8 +1493,6 @@ msgid ""
 "Note that once a Quotation becomes a Sales Order, it will be moved\n"
 "            from the Quotations list to the Sales Order list."
 msgstr ""
-"Λάβετε υπόψη ότι μόλις μια προσφορά γίνει παραγγελία, θα μεταφερθεί από τη "
-"λίστα προσφορών στην λίστα των παραγγελιών."
 
 #. module: sale
 #: model:ir.actions.act_window,help:sale.act_res_partner_2_sale_order
@@ -1628,8 +1501,6 @@ msgid ""
 "Note that once a Quotation becomes a Sales Order, it will be moved from the "
 "Quotations list to the Sales Order list."
 msgstr ""
-"Λάβετε υπόψη ότι μόλις μια προσφορά γίνει παραγγελία, θα μεταφερθεί από τη "
-"λίστα προσφορών στην λίστα των παραγγελιών."
 
 #. module: sale
 #: selection:sale.order,invoice_status:0
@@ -1649,12 +1520,12 @@ msgstr ""
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_crm_team_quotations_count
 msgid "Number of quotations to invoice"
-msgstr "Πλήθος των Προσφορών για Τιμολόγηση"
+msgstr ""
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_crm_team_sales_to_invoice_count
 msgid "Number of sales to invoice"
-msgstr "Πλήθος των Πωλήσεων για Τιμολόγηση"
+msgstr ""
 
 #. module: sale
 #: model:ir.actions.act_window,help:sale.action_orders
@@ -1664,9 +1535,6 @@ msgid ""
 "                    From the <i>Sales Orders</i> menu, you can track delivery\n"
 "                    orders or services."
 msgstr ""
-"Μόλις επιβεβαιωθεί η προσφορά, γίνεται παραγγελία.\n"
-"Θα μπορείτε να τιμολογήσετε και να συλλέγετε πληρωμές.\n"
-"Από το μενού <i>Παραγγελίες</i> μπορείτε να παρακολουθήσετε την παράδοση των παραγγελιών ή των υπηρεσιών."
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_res_config_settings_module_sale_payment
@@ -1690,7 +1558,7 @@ msgstr "Μόνο ακέραιη τιμή θα πρέπει να είναι έγ�
 #: code:addons/sale/controllers/portal.py:209
 #, python-format
 msgid "Operation not allowed"
-msgstr "Η λειτουργία δεν επιτρέπεται"
+msgstr ""
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.portal_my_home_menu_sale
@@ -1718,7 +1586,7 @@ msgstr "Ημερ. Παραγγελίας"
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.res_config_settings_view_form
 msgid "Order Line Sections"
-msgstr "Τμήματα Γραμμών Παραγγελίας"
+msgstr ""
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_order_line
@@ -1755,8 +1623,6 @@ msgstr "Κατάσταση Εντολής"
 #, python-format
 msgid "Order is not in a state requiring customer validation."
 msgstr ""
-"Η παραγγελία δεν βρίσκεται σε κατάσταση που απαιτεί επικύρωση από τον "
-"πελάτη."
 
 #. module: sale
 #: code:addons/sale/controllers/portal.py:225
@@ -1767,7 +1633,7 @@ msgstr "Η παραγγελία υπογράφηκε από %s"
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.crm_team_salesteams_view_kanban
 msgid "Order to Invoice"
-msgstr "Παραγγελία προς Τιμολόγηση"
+msgstr ""
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.view_order_form
@@ -1876,14 +1742,13 @@ msgstr "Όροι Πληρωμής"
 #. module: sale
 #: model:res.groups,name:sale.group_sale_layout
 msgid "Personalize sales order and invoice report"
-msgstr "Εξατομικεύστε την παραγγελία πώλησης και την αναφορά τιμολογίου"
+msgstr ""
 
 #. module: sale
 #: code:addons/sale/models/sale.py:353
 #, python-format
 msgid "Please define an accounting sales journal for this company."
 msgstr ""
-"Παρακαλώ καθορίστε ένα λογιστικό ημερολόγιο πωλήσεων για αυτήν την εταιρία."
 
 #. module: sale
 #: code:addons/sale/models/sale.py:916
@@ -1908,24 +1773,22 @@ msgstr "Μειώση Τιμής"
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line_price_reduce_taxexcl
 msgid "Price Reduce Tax excl"
-msgstr "Μείωση Τιμής χωρίς ΦΠΑ"
+msgstr ""
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line_price_reduce_taxinc
 msgid "Price Reduce Tax inc"
-msgstr "Μείωση Τιμής με ΦΠΑ"
+msgstr ""
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_report_all_channels_sales_price_subtotal
 msgid "Price Subtotal"
-msgstr "Μερικό σύνολο Τιμής"
+msgstr ""
 
 #. module: sale
 #: selection:res.config.settings,sale_pricelist_setting:0
 msgid "Price computed from formulas (discounts, margins, roundings)"
 msgstr ""
-"Τιμή που υπολογίζεται από τους τύπους (εκπτώσεις, περιθώρια, "
-"στρογγυλοποιήσεις)"
 
 #. module: sale
 #: model:ir.model,name:sale.model_product_pricelist
@@ -1952,8 +1815,6 @@ msgstr "Τιμοκατάλογοι"
 #: selection:res.config.settings,multi_sales_price_method:0
 msgid "Prices computed from formulas (discounts, margins, roundings)"
 msgstr ""
-"Οι τιμές υπολογίζονται από τους τύπους (εκπτώσεις, περιθώρια, "
-"στρογγυλοποιήσεις)"
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.res_config_settings_view_form
@@ -2000,7 +1861,7 @@ msgstr "Κατηγορία Είδους"
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line_product_image
 msgid "Product Image"
-msgstr "Εικόνα Είδους"
+msgstr ""
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_report_all_channels_sales_product_qty
@@ -2166,7 +2027,7 @@ msgstr "Προσφορές και Πωλήσεις"
 #: model:ir.model.fields,field_description:sale.field_product_product_expense_policy
 #: model:ir.model.fields,field_description:sale.field_product_template_expense_policy
 msgid "Re-Invoice Expenses"
-msgstr "Επανατιμολόγηση Εξόδων"
+msgstr ""
 
 #. module: sale
 #: code:addons/sale/controllers/portal.py:87
@@ -2190,7 +2051,7 @@ msgstr "Διαμόρφωση Εκθέσεων"
 #. module: sale
 #: model:ir.ui.menu,name:sale.Report_configuration
 msgid "Report Layout Categories"
-msgstr "Κατηγορίες Διάταξης Αναφοράς"
+msgstr ""
 
 #. module: sale
 #: model:ir.ui.menu,name:sale.menu_sale_report
@@ -2387,8 +2248,6 @@ msgid ""
 "Selecting \"Blocking Message\" will throw an exception with the message and "
 "block the flow. The Message has to be written in the next field."
 msgstr ""
-"Εάν επιλέξετε την \"Προειδοποίηση\" θα ειδοποιήσει το χρήστη με το μήνυμα.\n"
-"Εάν επιλέξετε το \"Μήνυμα αποκλεισμού\" η διαδικασία θα διακοπεί και θα εμφανιστεί ένα μήνυμα. Γράψτε το μήνυμα στο επόμενο πεδίο."
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.res_config_settings_view_form
@@ -2424,10 +2283,6 @@ msgid ""
 "content about a product (instructions, rules, links, media, etc.). Create "
 "and set the email template from the product detail form (in Sales tab)."
 msgstr ""
-"Η αποστολή ενός email είναι χρήσιμη εάν θέλετε να μοιραστείτε συγκεκριμένες "
-"πληροφορίες ή περιεχόμενο, σχετικά με ένα προϊόν (οδηγίες, κανόνες, "
-"συνδέσμους, μέσα κ.λπ.). Δημιουργήστε και ρυθμίστε το πρότυπο email από τη "
-"φόρμα λεπτομερειών προϊόντος (στην καρτέλα Πωλήσεις)."
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_layout_category_sequence
@@ -2443,7 +2298,7 @@ msgstr "Υπηρεσίες"
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_crm_team_use_invoices
 msgid "Set Invoicing Target"
-msgstr "Ορισμός Στόχου Τιμολόγησης"
+msgstr ""
 
 #. module: sale
 #. openerp-web
@@ -2484,8 +2339,6 @@ msgstr "Ρυθμίσεις"
 #: model:ir.ui.view,arch_db:sale.view_order_form
 msgid "Setup default terms and conditions in your sales settings ..."
 msgstr ""
-"Ρυθμίστε τους προεπιλεγμένους όρους και τις προϋποθέσεις στις ρυθμίσεις "
-"πώλησης ..."
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.res_config_settings_view_form
@@ -2507,12 +2360,12 @@ msgstr ""
 #. module: sale
 #: model:res.groups,comment:sale.group_show_price_total
 msgid "Show line subtotals with taxes included (B2C)"
-msgstr "Εμφάνιση των υποσύνολων γραμμής με τους φόρους (B2C)"
+msgstr ""
 
 #. module: sale
 #: model:res.groups,comment:sale.group_show_price_subtotal
 msgid "Show line subtotals without taxes (B2B)"
-msgstr "Εμφάνιση των υποσύνολων γραμμής χωρίς τους φόρους (B2B)"
+msgstr ""
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.res_config_settings_view_form
@@ -2532,12 +2385,12 @@ msgstr "Εμφάνιση τυποποιημένων όρων &amp; προϋπο�
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_res_config_settings_group_show_price_subtotal
 msgid "Show subtotal"
-msgstr "Εμφάνιση υποσυνόλου"
+msgstr ""
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_res_config_settings_group_show_price_total
 msgid "Show total"
-msgstr "Εμφάνιση συνόλου"
+msgstr ""
 
 #. module: sale
 #: selection:res.config.settings,portal_confirmation_options:0
@@ -2548,7 +2401,7 @@ msgstr "Υπογραφή"
 #: code:addons/sale/controllers/portal.py:211
 #, python-format
 msgid "Signature is missing."
-msgstr "Δεν υπάρχει υπογραφή."
+msgstr ""
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.res_config_settings_view_form
@@ -2591,9 +2444,6 @@ msgid ""
 "Target of invoice revenue for the current month. This is the amount the "
 "sales channel estimates to be able to invoice this month."
 msgstr ""
-"Στόχος εσόδων τιμολόγησης για τον τρέχοντα μήνα. Αυτό είναι το ποσό για το "
-"κανάλι πωλήσεων που υπολογίζεται ότι θα μπορέσει να τιμολογήσει αυτόν το "
-"μήνα."
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_res_config_settings_sale_show_tax
@@ -2637,12 +2487,12 @@ msgstr "Οι φόροι που χρησιμοποιούνται για τις κ
 #. module: sale
 #: model:ir.model.fields,help:sale.field_res_config_settings_module_sale_payment
 msgid "Technical field implied by user choice of online_confirmation"
-msgstr "Τεχνικό πεδίο που ορίζεται όταν ο χρήστης επιλέξει επιβεβαίωση online"
+msgstr ""
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_res_config_settings_sale_note
 msgid "Terms & Conditions"
-msgstr "Όροι & Προϋποθέσεις"
+msgstr ""
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_note
@@ -2657,8 +2507,6 @@ msgid ""
 "The Sales Order %s linked to the Analytic Account must be validated before "
 "registering expenses."
 msgstr ""
-"Η παραγγελία %s που συνδέεται με τον Αναλυτικό Λογαριασμό Λογιστικής πρέπει "
-"να επικυρωθεί πριν καταγραφούν τα έξοδα."
 
 #. module: sale
 #: model:ir.model.fields,help:sale.field_sale_advance_payment_inv_amount
@@ -2676,8 +2524,6 @@ msgid ""
 "The margin is computed as the sum of product sales prices minus the cost set"
 " in their detail form."
 msgstr ""
-"Το περιθώριο υπολογίζεται ως το άθροισμα των τιμών πώλησης των ειδών μείον "
-"το κόστος που καθορίζεται στην φόρμα λεπτομέρειες."
 
 #. module: sale
 #: code:addons/sale/wizard/sale_make_invoice_advance.py:149
@@ -2717,7 +2563,7 @@ msgstr "Δεν υπάρχουν παραγγελίες στον λογαριασ
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.portal_my_quotations
 msgid "There are currently no quotations for your account."
-msgstr "Δεν υπάρχουν προς το παρόν προσφορές για το λογαριασμό σας."
+msgstr ""
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.res_config_settings_view_form
@@ -2726,10 +2572,6 @@ msgid ""
 "must be set in the Sales tab of the product detail form. 2) Price computed "
 "from formulas: must be set in the pricelist form."
 msgstr ""
-"Υπάρχουν δύο τρόποι διαχείρισης των τιμοκαταλόγων: 1) Πολλαπλές τιμές ανά "
-"είδος: πρέπει να οριστούν στην καρτέλα Πωλήσεις της φόρμας λεπτομερειών του "
-"είδους. 2) Η τιμή υπολογίζεται από τους τύπους: πρέπει να οριστεί στη φόρμα "
-"τιμοκαταλόγου."
 
 #. module: sale
 #: code:addons/sale/wizard/sale_make_invoice_advance.py:74
@@ -2745,13 +2587,13 @@ msgstr ""
 #. module: sale
 #: code:addons/sale/models/sale.py:430 code:addons/sale/models/sale.py:434
 #, python-format
-msgid "There is no invoiceable line."
-msgstr "Δεν υπάρχει τιμολογητέα γραμμή."
+msgid "There is no invoicable line."
+msgstr ""
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.portal_order_error
 msgid "There was an error processing this page."
-msgstr "Παρουσιάστηκε σφάλμα κατά την επεξεργασία αυτής της σελίδας."
+msgstr ""
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.view_order_product_search
@@ -2764,8 +2606,6 @@ msgid ""
 "This default value is applied to any new product created. This can be "
 "changed in the product detail form."
 msgstr ""
-"Αυτή η προεπιλεγμένη τιμή εφαρμόζεται σε κάθε νέο είδος που δημιουργήθηκε. "
-"Αυτό μπορεί να αλλάξει στη φόρμα λεπτομερειών του είδους."
 
 #. module: sale
 #: model:ir.actions.act_window,help:sale.action_order_report_all
@@ -2818,7 +2658,7 @@ msgstr ""
 #. module: sale
 #: selection:product.template,service_type:0
 msgid "Timesheets on project (one fare per SO/Project)"
-msgstr "Φύλλα Χρόνου Εργασίας για το έργο (ένας φύλλο ανά Παραγγελία/Έργο)"
+msgstr ""
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line_qty_to_invoice
@@ -2875,7 +2715,7 @@ msgstr "Τιμή Μονάδας"
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.view_order_form
 msgid "Unit Price:"
-msgstr "Τιμή Μονάδας:"
+msgstr ""
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line_product_uom
@@ -2958,7 +2798,7 @@ msgstr "Προειδοποιήσεις για τις Πωλήσεις"
 #: model:ir.ui.view,arch_db:sale.product_form_view_sale_order_button
 #: model:ir.ui.view,arch_db:sale.product_template_form_view_sale_order_button
 msgid "Warning when Selling this Product"
-msgstr "Προειδοποίηση κατά την πώληση αυτού του είδους"
+msgstr ""
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_res_config_settings_group_warning_sale
@@ -2984,8 +2824,6 @@ msgid ""
 "You can not delete a sent quotation or a sales order! Try to cancel it "
 "before."
 msgstr ""
-"Δεν μπορείτε να διαγράψετε μια απεσταλμένη προσφορά ή μία παραγγελία! "
-"Δοκιμάστε πρώτα να την ακυρώσετε."
 
 #. module: sale
 #: code:addons/sale/models/sale.py:1069
@@ -2994,8 +2832,6 @@ msgid ""
 "You can not remove a sales order line.\n"
 "Discard changes and try setting the quantity to 0."
 msgstr ""
-"Δεν μπορείτε να καταργήσετε μια γραμμή παραγγελίας πώλησης.\n"
-"Απορρίψτε τις αλλαγές και δοκιμάστε να ορίσετε την ποσότητα σε 0."
 
 #. module: sale
 #: model:ir.actions.act_window,help:sale.action_orders_to_invoice
@@ -3015,7 +2851,7 @@ msgstr "Θα βρείτε εδώ όλες τις παραγγελίες που �
 #: code:addons/sale/controllers/portal.py:229
 #, python-format
 msgid "Your Order has been confirmed."
-msgstr "Η παραγγελία σας έχει επιβεβαιωθεί."
+msgstr ""
 
 #. module: sale
 #: model:ir.actions.act_window,help:sale.action_quotations_salesteams
@@ -3023,8 +2859,6 @@ msgid ""
 "Your next actions should flow efficiently: confirm the Quotation\n"
 "                to a Sales Order, then create the Invoice and collect the Payment."
 msgstr ""
-"Οι επόμενες ενέργειες σας θα πρέπει να γίνουν αποτελεσματικά: \n"
-"επιβεβαιώστε την Προσφορά σε μια Παραγγελία, μετά δημιουργήστε το Τιμολόγιο και εισπράξτε την Πληρωμή."
 
 #. module: sale
 #: model:ir.actions.act_window,help:sale.action_quotations
@@ -3032,8 +2866,6 @@ msgid ""
 "Your next actions should flow efficiently: confirm the Quotation\n"
 "            to a Sales Order, then create the Invoice and collect the Payment."
 msgstr ""
-"Οι επόμενες ενέργειες σας θα πρέπει να γίνουν αποτελεσματικά: \n"
-"επιβεβαιώστε την Προσφορά σε μια Παραγγελία, μετά δημιουργήστε το Τιμολόγιο και εισπράξτε την Πληρωμή."
 
 #. module: sale
 #: model:ir.actions.act_window,help:sale.act_res_partner_2_sale_order
@@ -3042,9 +2874,6 @@ msgid ""
 "Your next actions should flow efficiently: confirm the Quotation to a Sales "
 "Order, then create the Invoice and collect the Payment."
 msgstr ""
-"Οι επόμενες ενέργειες σας θα πρέπει να είναι αποτελεσματικές: επιβεβαιώστε "
-"την προσφορά σε παραγγελία, στη συνέχεια δημιουργήστε το Τιμολόγιο και "
-"συλλέξτε την Πληρωμή."
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.portal_order_error

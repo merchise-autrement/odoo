@@ -105,7 +105,7 @@ msgstr ""
 #. module: fetchmail
 #: model:ir.model.fields,field_description:fetchmail.field_fetchmail_server_id
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #. module: fetchmail
 #: model:ir.ui.view,arch_db:fetchmail.view_email_server_search
@@ -162,17 +162,17 @@ msgstr ""
 #. module: fetchmail
 #: model:ir.model.fields,field_description:fetchmail.field_fetchmail_server___last_update
 msgid "Last Modified on"
-msgstr "Darrera modificació feta el"
+msgstr ""
 
 #. module: fetchmail
 #: model:ir.model.fields,field_description:fetchmail.field_fetchmail_server_write_uid
 msgid "Last Updated by"
-msgstr "Actualitzat per última vegada per"
+msgstr ""
 
 #. module: fetchmail
 #: model:ir.model.fields,field_description:fetchmail.field_fetchmail_server_write_date
 msgid "Last Updated on"
-msgstr "Actualitzat per última vegada el dia"
+msgstr ""
 
 #. module: fetchmail
 #: selection:fetchmail.server,type:0

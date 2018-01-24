@@ -2,16 +2,12 @@
 # This file contains the translation of the following modules:
 # * resource
 # 
-# Translators:
-# Martin Trigaux <mat@odoo.com>, 2017
-# Arnis Putniņš <arnis.putnins@its1.lv>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.saas~18\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-20 09:53+0000\n"
 "PO-Revision-Date: 2017-09-20 09:53+0000\n"
-"Last-Translator: Arnis Putniņš <arnis.putnins@its1.lv>, 2018\n"
 "Language-Team: Latvian (https://www.transifex.com/odoo/teams/41243/lv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,12 +19,12 @@ msgstr ""
 #: code:addons/resource/models/resource.py:703
 #, python-format
 msgid "%s (copy)"
-msgstr "%s (kopija)"
+msgstr ""
 
 #. module: resource
 #: model:ir.model.fields,field_description:resource.field_resource_resource_active
 msgid "Active"
-msgstr "Aktīvs"
+msgstr ""
 
 #. module: resource
 #: model:ir.actions.act_window,name:resource.resource_calendar_closing_days
@@ -38,7 +34,7 @@ msgstr ""
 #. module: resource
 #: model:ir.model,name:resource.model_res_company
 msgid "Companies"
-msgstr "Uzņēmumi"
+msgstr ""
 
 #. module: resource
 #: model:ir.model.fields,field_description:resource.field_hr_employee_company_id
@@ -51,7 +47,7 @@ msgstr "Uzņēmumi"
 #: model:ir.ui.view,arch_db:resource.view_resource_calendar_leaves_search
 #: model:ir.ui.view,arch_db:resource.view_resource_resource_search
 msgid "Company"
-msgstr "Uzņēmums"
+msgstr ""
 
 #. module: resource
 #: model:ir.model.fields,field_description:resource.field_resource_calendar_attendance_create_uid
@@ -60,7 +56,7 @@ msgstr "Uzņēmums"
 #: model:ir.model.fields,field_description:resource.field_resource_resource_create_uid
 #: model:ir.model.fields,field_description:resource.field_resource_test_create_uid
 msgid "Created by"
-msgstr "Izveidoja"
+msgstr ""
 
 #. module: resource
 #: model:ir.model.fields,field_description:resource.field_resource_calendar_attendance_create_date
@@ -69,7 +65,7 @@ msgstr "Izveidoja"
 #: model:ir.model.fields,field_description:resource.field_resource_resource_create_date
 #: model:ir.model.fields,field_description:resource.field_resource_test_create_date
 msgid "Created on"
-msgstr "Izveidots"
+msgstr ""
 
 #. module: resource
 #: model:ir.model.fields,field_description:resource.field_resource_calendar_attendance_dayofweek
@@ -107,7 +103,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:resource.field_resource_resource_display_name
 #: model:ir.model.fields,field_description:resource.field_resource_test_display_name
 msgid "Display Name"
-msgstr "Display Name"
+msgstr ""
 
 #. module: resource
 #: model:ir.model.fields,field_description:resource.field_resource_resource_time_efficiency
@@ -153,7 +149,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:resource.view_resource_calendar_leaves_search
 #: model:ir.ui.view,arch_db:resource.view_resource_resource_search
 msgid "Group By"
-msgstr "Grupēt pēc"
+msgstr ""
 
 #. module: resource
 #: model:ir.ui.view,arch_db:resource.view_resource_calendar_attendance_form
@@ -173,7 +169,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:resource.field_resource_resource_id
 #: model:ir.model.fields,field_description:resource.field_resource_test_id
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #. module: resource
 #: model:ir.model.fields,help:resource.field_resource_calendar_leaves_resource_id
@@ -188,8 +184,6 @@ msgid ""
 "If the active field is set to False, it will allow you to hide the resource "
 "record without removing it."
 msgstr ""
-"Lauka 'Aktīvs sistēmā' atzīmēšana kā False ļaus Jums paslēpt resursa "
-"ierakstu, to nedzēšot."
 
 #. module: resource
 #: model:ir.ui.view,arch_db:resource.view_resource_resource_search
@@ -204,7 +198,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:resource.field_resource_resource___last_update
 #: model:ir.model.fields,field_description:resource.field_resource_test___last_update
 msgid "Last Modified on"
-msgstr "Last Modified on"
+msgstr ""
 
 #. module: resource
 #: model:ir.model.fields,field_description:resource.field_resource_calendar_attendance_write_uid
@@ -213,7 +207,7 @@ msgstr "Last Modified on"
 #: model:ir.model.fields,field_description:resource.field_resource_resource_write_uid
 #: model:ir.model.fields,field_description:resource.field_resource_test_write_uid
 msgid "Last Updated by"
-msgstr "Pēdējo reizi atjaunoja"
+msgstr ""
 
 #. module: resource
 #: model:ir.model.fields,field_description:resource.field_resource_calendar_attendance_write_date
@@ -222,7 +216,7 @@ msgstr "Pēdējo reizi atjaunoja"
 #: model:ir.model.fields,field_description:resource.field_resource_resource_write_date
 #: model:ir.model.fields,field_description:resource.field_resource_test_write_date
 msgid "Last Updated on"
-msgstr "Pēdējās izmaiņas"
+msgstr ""
 
 #. module: resource
 #: model:ir.model,name:resource.model_resource_calendar_leaves
@@ -240,7 +234,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:resource.field_resource_calendar_leave_ids
 #: model:ir.ui.view,arch_db:resource.resource_calendar_form
 msgid "Leaves"
-msgstr "Atvaļinājumi"
+msgstr ""
 
 #. module: resource
 #: selection:resource.resource,resource_type:0
@@ -270,7 +264,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:resource.field_resource_resource_name
 #: model:ir.model.fields,field_description:resource.field_resource_test_name
 msgid "Name"
-msgstr "Nosaukums"
+msgstr ""
 
 #. module: resource
 #: model:ir.model.fields,field_description:resource.field_resource_calendar_leaves_name
@@ -282,7 +276,7 @@ msgstr ""
 #. module: resource
 #: model:ir.model.fields,help:resource.field_resource_resource_user_id
 msgid "Related user name for the resource to manage its access."
-msgstr "Ar resursu saistītā lietotāja vārds tā piekļuves pārvaldīšanai."
+msgstr ""
 
 #. module: resource
 #: model:ir.model.fields,field_description:resource.field_hr_employee_resource_id
@@ -480,18 +474,18 @@ msgstr ""
 #. module: resource
 #: model:ir.ui.view,arch_db:resource.view_resource_resource_search
 msgid "Type"
-msgstr "Tips"
+msgstr ""
 
 #. module: resource
 #: model:ir.model.fields,field_description:resource.field_resource_resource_user_id
 #: model:ir.ui.view,arch_db:resource.view_resource_resource_search
 msgid "User"
-msgstr "Lietotājs"
+msgstr ""
 
 #. module: resource
 #: model:ir.model,name:resource.model_res_users
 msgid "Users"
-msgstr "Lietotāji"
+msgstr ""
 
 #. module: resource
 #: selection:resource.calendar.attendance,dayofweek:0

@@ -108,7 +108,6 @@ def py2exe_options():
                         'xlsxwriter',
                         'xlwt',
                         'xml', 'xml.dom',
-                        'yaml',
 
                         # Merchise
                         'celery>=3.1.19,<5.0.0',
@@ -168,7 +167,6 @@ setup(
         'python-dateutil',
         'pytz',
         'pyusb >= 1.0.0b1',
-        'pyyaml',
         'qrcode',
         'reportlab',  # windows binary pypi.python.org/pypi/reportlab
         'requests',

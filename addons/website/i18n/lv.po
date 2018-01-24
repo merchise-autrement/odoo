@@ -2,17 +2,12 @@
 # This file contains the translation of the following modules:
 # * website
 # 
-# Translators:
-# Martin Trigaux <mat@odoo.com>, 2017
-# JanisJanis <jbojars@gmail.com>, 2017
-# Arnis Putniņš <arnis.putnins@its1.lv>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-30 13:11+0000\n"
-"PO-Revision-Date: 2017-11-30 13:11+0000\n"
-"Last-Translator: Arnis Putniņš <arnis.putnins@its1.lv>, 2018\n"
+"POT-Creation-Date: 2017-11-16 08:08+0000\n"
+"PO-Revision-Date: 2017-11-16 08:08+0000\n"
 "Language-Team: Latvian (https://www.transifex.com/odoo/teams/41243/lv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -89,13 +84,6 @@ msgstr ""
 msgid ""
 "(e.g. business name, location) tends to improve your ranking in search "
 "engines and consequently increases your traffic. Do it:"
-msgstr ""
-
-#. module: website
-#: model:ir.ui.view,arch_db:website.layout_footer_copyright
-msgid ""
-",\n"
-"                                                      the #1"
 msgstr ""
 
 #. module: website
@@ -661,7 +649,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "<strong>Next actions:</strong>"
-msgstr "<strong>Nākošās aktivitātes:</strong>"
+msgstr ""
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -823,7 +811,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:website.field_website_page_active
 #: model:ir.model.fields,field_description:website.field_website_redirect_active
 msgid "Active"
-msgstr "Aktīvs"
+msgstr ""
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_three_columns
@@ -1085,7 +1073,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:website.view_website_form
 #, python-format
 msgid "Cancel"
-msgstr "Atcelt"
+msgstr ""
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_feature_grid
@@ -1133,7 +1121,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.snippet_options
 msgid "City"
-msgstr "Pilsēta"
+msgstr ""
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -1178,7 +1166,7 @@ msgstr ""
 #: code:addons/website/static/src/xml/website.gallery.xml:51
 #, python-format
 msgid "Close"
-msgstr "Aizvērt"
+msgstr ""
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -1195,12 +1183,12 @@ msgstr ""
 #. module: website
 #: model:ir.model,name:website.model_res_company
 msgid "Companies"
-msgstr "Uzņēmumi"
+msgstr ""
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_company_id
 msgid "Company"
-msgstr "Uzņēmums"
+msgstr ""
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.layout_footer_copyright
@@ -1215,7 +1203,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.menu,name:website.menu_website_global_configuration
 msgid "Configuration"
-msgstr "Uzstādījumi"
+msgstr ""
 
 #. module: website
 #. openerp-web
@@ -1227,7 +1215,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "Congratulations, you're done!"
-msgstr "Congratulations, you're done!"
+msgstr ""
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.footer_default
@@ -1237,13 +1225,13 @@ msgstr ""
 #. module: website
 #: model:ir.model,name:website.model_res_partner
 msgid "Contact"
-msgstr "Kontakts"
+msgstr ""
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.403 model:ir.ui.view,arch_db:website.404
 #: model:ir.ui.view,arch_db:website.res_config_settings_view_form
 msgid "Contact Us"
-msgstr "Kontakti"
+msgstr ""
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.contactus
@@ -1315,6 +1303,11 @@ msgid "Create Page"
 msgstr ""
 
 #. module: website
+#: model:ir.ui.view,arch_db:website.layout_footer_copyright
+msgid "Create a"
+msgstr ""
+
+#. module: website
 #: model:ir.ui.view,arch_db:website.res_config_settings_view_form
 msgid "Create a Google Project and Get a Key"
 msgstr ""
@@ -1335,7 +1328,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:website.field_website_page_create_uid
 #: model:ir.model.fields,field_description:website.field_website_redirect_create_uid
 msgid "Created by"
-msgstr "Izveidoja"
+msgstr ""
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_create_date
@@ -1343,7 +1336,7 @@ msgstr "Izveidoja"
 #: model:ir.model.fields,field_description:website.field_website_page_create_date
 #: model:ir.model.fields,field_description:website.field_website_redirect_create_date
 msgid "Created on"
-msgstr "Izveidots"
+msgstr ""
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.snippet_options
@@ -1451,12 +1444,12 @@ msgstr ""
 #: code:addons/website/static/src/xml/website.seo.xml:20
 #, python-format
 msgid "Description"
-msgstr "Apraksts"
+msgstr ""
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "Design"
-msgstr "Design"
+msgstr ""
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.snippet_options
@@ -1469,7 +1462,7 @@ msgstr ""
 #: code:addons/website/static/src/js/menu/seo.js:343
 #, python-format
 msgid "Discard"
-msgstr "Discard"
+msgstr ""
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.template_partner_comment
@@ -1489,7 +1482,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:website.field_website_redirect_display_name
 #: model:ir.model.fields,field_description:website.field_website_seo_metadata_display_name
 msgid "Display Name"
-msgstr "Display Name"
+msgstr ""
 
 #. module: website
 #. openerp-web
@@ -1575,7 +1568,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.publish_management
 msgid "Edit"
-msgstr "Labot"
+msgstr ""
 
 #. module: website
 #. openerp-web
@@ -1635,7 +1628,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "End"
-msgstr "End"
+msgstr ""
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_comparisons
@@ -1650,7 +1643,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "Examples"
-msgstr "Piemēri"
+msgstr ""
 
 #. module: website
 #. openerp-web
@@ -1970,7 +1963,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.menu_search
 msgid "Group By"
-msgstr "Grupēt pēc"
+msgstr ""
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_page_groups_id
@@ -2055,13 +2048,13 @@ msgstr ""
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_id
-#: model:ir.model.fields,field_description:website.field_website_menu_id_7241
+#: model:ir.model.fields,field_description:website.field_website_menu_id_7239
 #: model:ir.model.fields,field_description:website.field_website_page_id
 #: model:ir.model.fields,field_description:website.field_website_published_mixin_id
 #: model:ir.model.fields,field_description:website.field_website_redirect_id
 #: model:ir.model.fields,field_description:website.field_website_seo_metadata_id
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #. module: website
 #: model:ir.model.fields,help:website.field_website_page_xml_id
@@ -2206,7 +2199,7 @@ msgstr ""
 
 #. module: website
 #. openerp-web
-#: code:addons/website/static/src/js/content/website_root.js:212
+#: code:addons/website/static/src/js/content/website_root.js:209
 #, python-format
 msgid ""
 "It might be possible to edit the relevant items or fix the issue in <a "
@@ -2268,14 +2261,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:website.field_website_redirect___last_update
 #: model:ir.model.fields,field_description:website.field_website_seo_metadata___last_update
 msgid "Last Modified on"
-msgstr "Last Modified on"
+msgstr ""
 
 #. module: website
 #. openerp-web
 #: code:addons/website/static/src/xml/website.backend.xml:110
 #, python-format
 msgid "Last Month"
-msgstr "Last Month"
+msgstr ""
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_menu_write_uid
@@ -2283,7 +2276,7 @@ msgstr "Last Month"
 #: model:ir.model.fields,field_description:website.field_website_redirect_write_uid
 #: model:ir.model.fields,field_description:website.field_website_write_uid
 msgid "Last Updated by"
-msgstr "Pēdējo reizi atjaunoja"
+msgstr ""
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_menu_write_date
@@ -2291,7 +2284,7 @@ msgstr "Pēdējo reizi atjaunoja"
 #: model:ir.model.fields,field_description:website.field_website_redirect_write_date
 #: model:ir.model.fields,field_description:website.field_website_write_date
 msgid "Last Updated on"
-msgstr "Pēdējās izmaiņas"
+msgstr ""
 
 #. module: website
 #. openerp-web
@@ -2431,7 +2424,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.snippet_options
 msgid "Medium"
-msgstr "Vidējs"
+msgstr ""
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_company_team
@@ -2543,7 +2536,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:website.res_config_settings_view_form
 #, python-format
 msgid "Name"
-msgstr "Nosaukums"
+msgstr ""
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.res_config_settings_view_form
@@ -2719,11 +2712,6 @@ msgid "Open Source ERP"
 msgstr ""
 
 #. module: website
-#: model:ir.ui.view,arch_db:website.layout_footer_copyright
-msgid "Open Source eCommerce"
-msgstr ""
-
-#. module: website
 #: model:ir.ui.view,arch_db:website.user_navbar
 msgid "Optimize SEO"
 msgstr ""
@@ -2887,7 +2875,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.template_partner_comment
 msgid "Partners"
-msgstr "Partneri"
+msgstr ""
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -2919,7 +2907,7 @@ msgstr ""
 #. module: website
 #: model:ir.model,name:website.model_web_planner
 msgid "Planner"
-msgstr "Planner"
+msgstr ""
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.theme_customize
@@ -2932,11 +2920,6 @@ msgid ""
 "Post content on other people blogs, forums, websites, that are related to "
 "your environment."
 msgstr ""
-
-#. module: website
-#: model:ir.ui.view,arch_db:website.layout_footer_copyright
-msgid "Powered by"
-msgstr "Powered by"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.kanban_contain
@@ -3272,14 +3255,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:website.field_website_page_priority
 #: model:ir.model.fields,field_description:website.field_website_redirect_sequence
 msgid "Sequence"
-msgstr "Sērija"
+msgstr ""
 
 #. module: website
 #: model:ir.actions.act_window,name:website.action_website_configuration
 #: model:ir.ui.menu,name:website.menu_website_website_settings
 #: model:ir.ui.view,arch_db:website.user_navbar
 msgid "Settings"
-msgstr "Iestatījumi"
+msgstr ""
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.snippet_options
@@ -3681,7 +3664,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:website.snippet_options
 #, python-format
 msgid "Type"
-msgstr "Tips"
+msgstr ""
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.500
@@ -3906,7 +3889,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:website.res_config_settings_view_form
 #: model:ir.ui.view,arch_db:website.view_server_action_search_website
 msgid "Website"
-msgstr "Website"
+msgstr ""
 
 #. module: website
 #: model:ir.actions.act_window,name:website.action_module_website
@@ -4119,7 +4102,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "Welcome"
-msgstr "Welcome"
+msgstr ""
 
 #. module: website
 #. openerp-web
@@ -4388,6 +4371,11 @@ msgid "found(s)"
 msgstr ""
 
 #. module: website
+#: model:ir.ui.view,arch_db:website.layout_footer_copyright
+msgid "free website"
+msgstr ""
+
+#. module: website
 #. openerp-web
 #: code:addons/website/static/src/xml/website.seo.xml:28
 #, python-format
@@ -4487,7 +4475,7 @@ msgstr ""
 #. module: website
 #: model:ir.model,name:website.model_res_config_settings
 msgid "res.config.settings"
-msgstr "res.config.settings"
+msgstr ""
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -4559,6 +4547,11 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "will help you:"
+msgstr ""
+
+#. module: website
+#: model:ir.ui.view,arch_db:website.layout_footer_copyright
+msgid "with"
 msgstr ""
 
 #. module: website

@@ -162,7 +162,7 @@ msgstr "Podział rachunku"
 #: code:addons/pos_restaurant/static/src/xml/multiprint.xml:39
 #, python-format
 msgid "CANCELLED"
-msgstr "ANULOWANO"
+msgstr "Anulowano "
 
 #. module: pos_restaurant
 #. openerp-web

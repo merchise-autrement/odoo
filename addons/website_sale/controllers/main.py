@@ -6,7 +6,7 @@ from werkzeug.exceptions import Forbidden
 
 from odoo import http, tools, _
 from odoo.http import request
-from odoo.addons.base.ir.ir_qweb.fields import nl2br
+from odoo.addons.base.models.ir_qweb_fields import nl2br
 from odoo.addons.http_routing.models.ir_http import slug
 from odoo.addons.website.controllers.main import QueryURL
 from odoo.exceptions import ValidationError
@@ -750,18 +750,6 @@ class WebsiteSale(http.Controller):
         values['tokens'] = request.env['payment.token'].search(
             [('partner_id', '=', order.partner_id.id),
             ('acquirer_id', 'in', [acq.id for acq in values['s2s_acquirers']])])
-
-        for acq in values['form_acquirers']:
-            acq.form = acq.with_context(submit_class='btn btn-primary', submit_txt=_('Pay Now')).sudo().render(
-                '/',
-                order.amount_total,
-                order.pricelist_id.currency_id.id,
-                values={
-                    'return_url': '/shop/payment/validate',
-                    'partner_id': shipping_partner_id,
-                    'billing_partner_id': order.partner_invoice_id.id,
-                }
-            )
 
         return values
 

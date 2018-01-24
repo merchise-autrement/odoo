@@ -9,14 +9,13 @@
 # Norimichi Sugimoto <norimichi.sugimoto@tls-ltd.co.jp>, 2017
 # Manami Hashi <manami@roomsfor.hk>, 2017
 # NOKA Shigekazu <shigekazu.noka@gmail.com>, 2017
-# 前園義博 <yoshihiro.maezono@pro-spire.co.jp>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.saas~18\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-20 09:54+0000\n"
 "PO-Revision-Date: 2017-09-20 09:54+0000\n"
-"Last-Translator: 前園義博 <yoshihiro.maezono@pro-spire.co.jp>, 2018\n"
+"Last-Translator: NOKA Shigekazu <shigekazu.noka@gmail.com>, 2017\n"
 "Language-Team: Japanese (https://www.transifex.com/odoo/teams/41243/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,23 +27,23 @@ msgstr ""
 #: code:addons/fleet/models/fleet_vehicle.py:198
 #, python-format
 msgid "%s %s has been added to the fleet!"
-msgstr "%s %s 艦隊に追加されました！"
+msgstr ""
 
 #. module: fleet
 #: code:addons/fleet/models/fleet_vehicle_cost.py:274
 #, python-format
 msgid "%s contract(s) will expire soon and should be renewed and/or closed!"
-msgstr "%s 契約はすぐに失効し、更新または閉鎖する必要があります。"
+msgstr ""
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_view_form
 msgid "<span>g/km</span>"
-msgstr "<span>g/km</span>"
+msgstr ""
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_view_form
 msgid "<span>kW</span>"
-msgstr "<span>kW</span>"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_1
@@ -54,22 +53,22 @@ msgstr "A/C コンプレッサー 交換"
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_2
 msgid "A/C Condenser Replacement"
-msgstr "A / Cコンデンサーの交換"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_3
 msgid "A/C Diagnosis"
-msgstr "A / C診断"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_4
 msgid "A/C Evaporator Replacement"
-msgstr "A / Cエバポレータの交換"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_5
 msgid "A/C Recharge"
-msgstr "A / C再充電"
+msgstr ""
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_form
@@ -107,7 +106,7 @@ msgstr "全ての車両"
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_7
 msgid "Alternator Replacement"
-msgstr "オルタネーター交換"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_contract_cost_amount
@@ -125,7 +124,7 @@ msgstr "アーカイブ済"
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_service_9
 msgid "Assistance"
-msgstr "援助"
+msgstr ""
 
 #. module: fleet
 #: selection:fleet.vehicle,transmission:0
@@ -138,7 +137,7 @@ msgstr "自動"
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_fuel_auto_generated
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_services_auto_generated
 msgid "Automatically Generated"
-msgstr "自動的に生成された"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_8
@@ -148,32 +147,32 @@ msgstr "ボールジョイント 交換"
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_9
 msgid "Battery Inspection"
-msgstr "バッテリー検査"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_10
 msgid "Battery Replacement"
-msgstr "バッテリ交換"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_11
 msgid "Brake Caliper Replacement"
-msgstr "ブレーキキャリパー交換"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_12
 msgid "Brake Inspection"
-msgstr "ブレーキ点検"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_13
 msgid "Brake Pad(s) Replacement"
-msgstr "ブレーキパッド交換"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model,name:fleet.model_fleet_vehicle_model_brand
 msgid "Brand of the vehicle"
-msgstr "車のブランド"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.vehicle.tag,name:fleet.vehicle_tag_break
@@ -193,22 +192,22 @@ msgstr "CO2 排出量"
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_service_1
 msgid "Calculation Benefit In Kind"
-msgstr "種類の計算利益"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_14
 msgid "Car Wash"
-msgstr "洗車"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_car_value
 msgid "Catalog Value (VAT Incl.)"
-msgstr "カタログ値 (付加価値税を含む)"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_15
 msgid "Catalytic Converter Replacement"
-msgstr "触媒コンバータの交換"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_service_type_category
@@ -226,7 +225,7 @@ msgstr "費用種別"
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_16
 msgid "Charging System Diagnosis"
-msgstr "課金システムの診断"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_vin_sn
@@ -236,13 +235,13 @@ msgstr "ナンバープレート"
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_log_contract_state
 msgid "Choose whether the contract is still valid or not"
-msgstr "契約が有効かどうかを選択する"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_service_type_category
 msgid ""
 "Choose whether the service refer to contracts, vehicle services or both"
-msgstr "サービスが契約、車両サービス、またはその両方を参照するかどうかを選択する"
+msgstr ""
 
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_vehicle_tag_action
@@ -257,7 +256,7 @@ msgstr "クリックして新規契約を作成する"
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_vehicle_costs_action
 msgid "Click to create a new cost."
-msgstr "新しいコストを作成する場合にクリックします。"
+msgstr ""
 
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_vehicle_log_fuel_action
@@ -267,7 +266,7 @@ msgstr "クリックして新規の燃料履歴を作成する"
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_vehicle_model_brand_action
 msgid "Click to create a new make."
-msgstr "新しいメイクを作成する場合にクリックします。"
+msgstr ""
 
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_vehicle_model_action
@@ -282,17 +281,17 @@ msgstr "クリックして新しい「走行距離履歴」を作成する"
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_vehicle_log_services_action
 msgid "Click to create a new service entry."
-msgstr "クリックすると、新しいサービスエントリが作成されます。"
+msgstr ""
 
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_vehicle_contract_types_action
 msgid "Click to create a new type of contract."
-msgstr "クリックすると新しいタイプの契約が作成されます。"
+msgstr ""
 
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_vehicle_service_types_action
 msgid "Click to create a new type of service."
-msgstr "クリックすると新しいタイプのサービスが作成されます。"
+msgstr ""
 
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_vehicle_action
@@ -302,12 +301,12 @@ msgstr "クリックして新しい 「車両」 を作成する"
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_vehicle_state_action
 msgid "Click to create a vehicle status."
-msgstr "クリックすると車両ステータスが作成されます。"
+msgstr ""
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_form
 msgid "Close Contract"
-msgstr "契約締結"
+msgstr ""
 
 #. module: fleet
 #: selection:fleet.vehicle.log.contract,state:0
@@ -332,7 +331,7 @@ msgstr "車両の色"
 #. module: fleet
 #: model:fleet.vehicle.tag,name:fleet.vehicle_tag_compact
 msgid "Compact"
-msgstr "コンパクト"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_company_id
@@ -386,7 +385,7 @@ msgstr "契約タイプ"
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_log_fuel_contract_id
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_log_services_contract_id
 msgid "Contract attached to this cost"
-msgstr "この費用に付随する契約"
+msgstr ""
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_form
@@ -407,7 +406,7 @@ msgstr "契約履歴"
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_view_kanban
 msgid "Contract(s)"
-msgstr "契約"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_contract_purchaser_id
@@ -424,7 +423,7 @@ msgstr "契約"
 #. module: fleet
 #: model:fleet.vehicle.tag,name:fleet.vehicle_tag_convertible
 msgid "Convertible"
-msgstr "コンバーチブル"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_contract_cost_id
@@ -439,7 +438,7 @@ msgstr "原価"
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_fuel_description
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_services_description
 msgid "Cost Description"
-msgstr "コストの説明"
+msgstr ""
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_costs_view_form
@@ -454,7 +453,7 @@ msgstr "費用サブタイプ"
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_costs_view_search
 msgid "Cost Type"
-msgstr "コストタイプ"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model,name:fleet.model_fleet_vehicle_cost
@@ -472,7 +471,7 @@ msgstr "契約時に1度だけ発生する費用"
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_log_fuel_cost_subtype_id
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_log_services_cost_subtype_id
 msgid "Cost type purchased with this cost"
-msgstr "この費用で購入された原価タイプ"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_cost_count
@@ -494,8 +493,8 @@ msgstr "1ヶ月あたりの費用"
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_log_contract_cost_generated
 msgid ""
-"Costs paid at regular intervals, depending on the cost frequency. If the "
-"cost frequency is set to unique, the cost will be logged at the start date"
+"Costs paid at regular intervals, depending on the cost frequency.If the cost"
+" frequency is set to unique, the cost will be logged at the start date"
 msgstr ""
 
 #. module: fleet
@@ -560,24 +559,24 @@ msgstr "日付"
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_log_fuel_date
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_log_services_date
 msgid "Date when the cost has been executed"
-msgstr "原価が実行された日付"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_log_contract_start_date
 msgid "Date when the coverage of the contract begins"
-msgstr "契約の適用範囲が始まる日"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_log_contract_expiration_date
 msgid ""
 "Date when the coverage of the contract expirates (by default, one year after"
 " begin date)"
-msgstr "契約の対象期間が満了する日（デフォルトでは、開始日の1年後）"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_acquisition_date
 msgid "Date when the vehicle has been immatriculated"
-msgstr "車両に登記の日付"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_service_2
@@ -638,23 +637,21 @@ msgid ""
 "Each contract (e.g.: leasing) may include several services\n"
 "            (reparation, insurances, periodic maintenance)."
 msgstr ""
-"各契約（例：リース）には、複数のサービス\n"
-"             （賠償、保険、定期的なメンテナンス）。"
 
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_vehicle_service_types_action
 msgid "Each service can used in contracts, as a standalone service or both."
-msgstr "各サービスは、契約、スタンドアロンサービス、またはその両方として使用できます。"
+msgstr ""
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_costs_view_search
 msgid "Effective Costs"
-msgstr "実効コスト"
+msgstr ""
 
 #. module: fleet
 #: selection:fleet.vehicle,fuel_type:0
 msgid "Electric"
-msgstr "電気"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_service_17
@@ -664,7 +661,7 @@ msgstr "排出量"
 #. module: fleet
 #: model:fleet.vehicle.tag,name:fleet.vehicle_tag_leasing
 msgid "Employee Car"
-msgstr "社員車"
+msgstr ""
 
 #. module: fleet
 #: code:addons/fleet/models/fleet_vehicle_cost.py:44
@@ -675,32 +672,32 @@ msgstr "「走行距離メーター」欄を入力してください"
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_18
 msgid "Engine Belt Inspection"
-msgstr "エンジンベルト検査"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_19
 msgid "Engine Coolant Replacement"
-msgstr "エンジンクーラントの交換"
+msgstr ""
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_view_form
 msgid "Engine Options"
-msgstr "エンジンオプション"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_20
 msgid "Engine/Drive Belt(s) Replacement"
-msgstr "エンジン/ドライブベルトの交換"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_service_13
 msgid "Entry into service tax"
-msgstr "サービス税への入国"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_21
 msgid "Exhaust Manifold Replacement"
-msgstr "排気マニホールド交換"
+msgstr ""
 
 #. module: fleet
 #: selection:fleet.vehicle.log.contract,state:0
@@ -712,7 +709,7 @@ msgstr "契約期間終了済"
 #: selection:fleet.vehicle.log.contract,state:0
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_search
 msgid "Expiring Soon"
-msgstr "すぐに失効する"
+msgstr ""
 
 #. module: fleet
 #: model:ir.module.category,name:fleet.module_fleet_category
@@ -725,7 +722,7 @@ msgstr "車両"
 #: model:ir.cron,cron_name:fleet.ir_cron_contract_costs_generator
 #: model:ir.cron,name:fleet.ir_cron_contract_costs_generator
 msgid "Fleet: Generate contracts costs based on costs frequency"
-msgstr "Fleet：コスト頻度に基づいて契約コストを生成する"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_cost_cost_type
@@ -733,12 +730,12 @@ msgstr "Fleet：コスト頻度に基づいて契約コストを生成する"
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_log_fuel_cost_type
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_log_services_cost_type
 msgid "For internal purpose only"
-msgstr "内部目的のみの場合"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_log_contract_cost_frequency
 msgid "Frequency of the recuring cost"
-msgstr "経費の頻度"
+msgstr ""
 
 #. module: fleet
 #: selection:fleet.vehicle.cost,cost_type:0
@@ -754,7 +751,7 @@ msgstr "燃料費用（月ごと）"
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_22
 msgid "Fuel Injector Replacement"
-msgstr "燃料インジェクタの交換"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_fuel_logs_count
@@ -777,12 +774,12 @@ msgstr "燃料タイプ"
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_fuel_type
 msgid "Fuel Used by the vehicle"
-msgstr "車両によって使用される燃料"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model,name:fleet.model_fleet_vehicle_log_fuel
 msgid "Fuel log for vehicles"
-msgstr "車両用燃料ログ"
+msgstr ""
 
 #. module: fleet
 #: selection:fleet.vehicle,fuel_type:0
@@ -797,7 +794,7 @@ msgstr "一般情報"
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_contract_generated_cost_ids
 msgid "Generated Costs"
-msgstr "生成されたコスト"
+msgstr ""
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_form
@@ -817,42 +814,42 @@ msgstr "グループ化"
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_view_search
 msgid "Has Alert(s)"
-msgstr "アラートあり"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_contract_renewal_overdue
 msgid "Has Contracts Overdue"
-msgstr "契約期限を過ぎている"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_contract_renewal_due_soon
 msgid "Has Contracts to renew"
-msgstr "更新契約があります"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_24
 msgid "Head Gasket(s) Replacement"
-msgstr "ヘッドガスケットの交換"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_25
 msgid "Heater Blower Motor Replacement"
-msgstr "ヒーターブロワーモーター交換"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_26
 msgid "Heater Control Valve Replacement"
-msgstr "ヒーター制御弁の交換"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_27
 msgid "Heater Core Replacement"
-msgstr "ヒーターコア交換"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_28
 msgid "Heater Hose Replacement"
-msgstr "ヒーターホースの交換"
+msgstr ""
 
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_vehicle_log_fuel_action
@@ -861,9 +858,6 @@ msgid ""
 "            also filter logs of a particular vehicle using the search\n"
 "            field."
 msgstr ""
-"ここでは、すべての車両の給油項目を追加できます。 \n"
-"検索フィールドを使用して、特定の車両のログを\n"
-"フィルタリングすることもできます。"
 
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_vehicle_odometer_action
@@ -872,9 +866,6 @@ msgid ""
 "            You can also show odometer value for a particular vehicle using\n"
 "            the search field."
 msgstr ""
-"ここでは、すべての車両にさまざまなオドメーター項目を追加できます。\n"
-"                           検索フィールドを使用して、特定の車両のオドメータ値を\n"
-"                           表示することもできます。"
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_horsepower
@@ -909,12 +900,12 @@ msgstr "ID"
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_29
 msgid "Ignition Coil Replacement"
-msgstr "点火コイルの交換"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_acquisition_date
 msgid "Immatriculation Date"
-msgstr "登記日"
+msgstr ""
 
 #. module: fleet
 #: selection:fleet.vehicle.log.contract,state:0
@@ -941,18 +932,18 @@ msgstr "着信"
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_form
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_services_view_form
 msgid "Indicative Cost"
-msgstr "指標コスト"
+msgstr ""
 
 #. module: fleet
 #: model:ir.ui.menu,name:fleet.menu_fleet_reporting_indicative_costs
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_costs_view_search
 msgid "Indicative Costs"
-msgstr "指標コスト"
+msgstr ""
 
 #. module: fleet
 #: model:ir.actions.act_window,name:fleet.fleet_costs_reporting_non_effective_action
 msgid "Indicative Costs Analysis"
-msgstr "指標コスト分析"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_contract_sum_cost
@@ -968,7 +959,7 @@ msgstr "車両に関する情報"
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_30
 msgid "Intake Manifold Gasket Replacement"
-msgstr "インテークマニホールドガスケットの交換"
+msgstr ""
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_form
@@ -984,7 +975,7 @@ msgstr "請求書参照"
 #. module: fleet
 #: model:fleet.vehicle.tag,name:fleet.vehicle_tag_junior
 msgid "Junior"
-msgstr "ジュニア"
+msgstr ""
 
 #. module: fleet
 #: selection:fleet.vehicle,odometer_unit:0
@@ -994,7 +985,7 @@ msgstr "キロメートル"
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_odometer_view_kanban
 msgid "Km"
-msgstr "Km"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_service_type___last_update
@@ -1060,12 +1051,12 @@ msgstr "ライセンスプレート"
 #: code:addons/fleet/models/fleet_vehicle.py:223
 #, python-format
 msgid "License Plate: from '%s' to '%s'"
-msgstr "ライセンスプレート：'%s' 〜 '%s'"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_license_plate
 msgid "License plate number of the vehicle (i = plate number for a car)"
-msgstr "車両のナンバープレート番号（i =車のプレート番号）"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_fuel_liter
@@ -1081,7 +1072,7 @@ msgstr "ロケーション"
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_location
 msgid "Location of the vehicle (garage, ...)"
-msgstr "車両の場所 (ガレージ、...)"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_image
@@ -1107,12 +1098,12 @@ msgstr "ロゴ（小サイズ）"
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_model_brand_name
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_model_view_search
 msgid "Make"
-msgstr "作ります"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_model_brand_id
 msgid "Make of the vehicle"
-msgstr "車のメイク"
+msgstr ""
 
 #. module: fleet
 #: model:ir.actions.act_window,help:fleet.fleet_vehicle_log_contract_action
@@ -1121,14 +1112,11 @@ msgid ""
 "            their related services, costs. Odoo will automatically warn\n"
 "            you when some contracts have to be renewed."
 msgstr ""
-"Manage all your contracts (leasing, insurances, etc.) with\n"
-"            their related services, costs. Odoo will automatically warn\n"
-"            you when some contracts have to be renewed."
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_service_11
 msgid "Management Fee"
-msgstr "管理手数料"
+msgstr ""
 
 #. module: fleet
 #: model:res.groups,name:fleet.fleet_group_manager
@@ -1171,18 +1159,18 @@ msgstr "モデル"
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_model_brand_view_form
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_model_brand_view_tree
 msgid "Model Make"
-msgstr "モデルメイク"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_model_year
 msgid "Model Year"
-msgstr "モデル年"
+msgstr ""
 
 #. module: fleet
 #: model:ir.actions.act_window,name:fleet.fleet_vehicle_model_brand_action
 #: model:ir.ui.menu,name:fleet.fleet_vehicle_model_brand_menu
 msgid "Model make of Vehicle"
-msgstr "自動車のモデルメイク"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_model_name
@@ -1192,18 +1180,18 @@ msgstr "モデル"
 #. module: fleet
 #: model:ir.model,name:fleet.model_fleet_vehicle_model
 msgid "Model of a vehicle"
-msgstr "車両のモデル"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_model_id
 msgid "Model of the vehicle"
-msgstr "車両のモデル"
+msgstr ""
 
 #. module: fleet
 #: code:addons/fleet/models/fleet_vehicle.py:212
 #, python-format
 msgid "Model: from '%s' to '%s'"
-msgstr "モデル： '%s' から '%s'まで"
+msgstr ""
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_model_view_tree
@@ -1236,7 +1224,7 @@ msgstr "名称"
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_contract_renewal_name
 msgid "Name of contract to renew soon"
-msgstr "すぐに更新する契約の名前"
+msgstr ""
 
 #. module: fleet
 #: selection:fleet.vehicle.log.contract,cost_frequency:0
@@ -1294,7 +1282,7 @@ msgstr "走行履歴"
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_odometer_unit
 msgid "Odometer Unit"
-msgstr "走行距離計ユニット"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_cost_odometer
@@ -1312,7 +1300,7 @@ msgstr "平均走行距離（車両ごと）"
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_contract_odometer
 msgid "Odometer at creation"
-msgstr "作成時の走行距離計"
+msgstr ""
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_form
@@ -1322,12 +1310,12 @@ msgstr "走行距離 詳細"
 #. module: fleet
 #: model:ir.model,name:fleet.model_fleet_vehicle_odometer
 msgid "Odometer log for a vehicle"
-msgstr "車両の走行距離計ログ"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_log_contract_odometer
 msgid "Odometer measure of the vehicle at the moment of the contract creation"
-msgstr "契約作成の瞬間における車両の走行距離計"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_cost_odometer
@@ -1427,7 +1415,7 @@ msgstr "親"
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_log_fuel_parent_id
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_log_services_parent_id
 msgid "Parent cost to this current cost"
-msgstr "この現在のコストに対する親コスト"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_log_contract_purchaser_id
@@ -1442,17 +1430,17 @@ msgstr "電力"
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_35
 msgid "Power Steering Hose Replacement"
-msgstr "パワーステアリングホースの交換"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_36
 msgid "Power Steering Pump Replacement"
-msgstr "パワーステアリングポンプの交換"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,help:fleet.field_fleet_vehicle_power
 msgid "Power in kW of the vehicle"
-msgstr "車両のパワー（kW）"
+msgstr ""
 
 #. module: fleet
 #: model:ir.ui.view,arch_db:fleet.fleet_vehicle_log_contract_view_form
@@ -1470,7 +1458,7 @@ msgstr "リッター単価"
 #. module: fleet
 #: model:fleet.vehicle.tag,name:fleet.vehicle_tag_purchased
 msgid "Purchased"
-msgstr "購入した"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_fuel_purchaser_id
@@ -1481,7 +1469,7 @@ msgstr "購入者"
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_37
 msgid "Radiator Repair"
-msgstr "ラジエーター修理"
+msgstr ""
 
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_contract_cost_generated
@@ -1491,7 +1479,7 @@ msgstr "合計費用"
 #. module: fleet
 #: model:ir.model.fields,field_description:fleet.field_fleet_vehicle_log_contract_cost_frequency
 msgid "Recurring Cost Frequency"
-msgstr "経費の頻度"
+msgstr ""
 
 #. module: fleet
 #: model:fleet.service.type,name:fleet.type_service_refueling

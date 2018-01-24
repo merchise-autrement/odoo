@@ -3,12 +3,13 @@
 
 from datetime import datetime
 
-from odoo.addons.mail.tests.common import TestMail
+from odoo.tests.common import TransactionCase
 from odoo.tools import mute_logger
 
 
-class TestSale(TestMail):
-    @mute_logger('odoo.addons.base.ir.ir_model', 'odoo.osv.orm')
+class TestSale(TransactionCase):
+
+    @mute_logger('odoo.addons.base.models.ir_model', 'odoo.osv.orm')
     def setUp(self):
         super(TestSale, self).setUp()
 

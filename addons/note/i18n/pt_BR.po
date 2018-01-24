@@ -3,12 +3,11 @@
 # * note
 # 
 # Translators:
-# Martin Trigaux <mat@odoo.com>, 2017
-# Mateus Lopes <mateus1@gmail.com>, 2017
-# grazziano <gra.negocia@gmail.com>, 2017
-# Rodrigo de Almeida Sottomaior Macedo <rmsolucoeseminformatic4@gmail.com>, 2017
-# Cezar José Sant Anna Junior <cezar.santanna@gmail.com>, 2017
-# André Augusto Firmino Cordeiro <a.cordeito@gmail.com>, 2017
+# Mateus Lopes <mateus1@gmail.com>, 2016
+# Martin Trigaux <mat@odoo.com>, 2016
+# grazziano <gra.negocia@gmail.com>, 2016
+# Cezar José Sant Anna Junior <cezar.santanna@gmail.com>, 2016
+# Rodrigo de Almeida Sottomaior Macedo <rmsolucoeseminformatic4@gmail.com>, 2016
 # SILMAR PINHEIRO VIANA <pinheirosilmar@gmail.com>, 2017
 msgid ""
 msgstr ""
@@ -90,7 +89,7 @@ msgstr "Excluir"
 #: model:ir.model.fields,field_description:note.field_note_stage_display_name
 #: model:ir.model.fields,field_description:note.field_note_tag_display_name
 msgid "Display Name"
-msgstr "Nome exibido"
+msgstr "Nome para Exibição"
 
 #. module: note
 #: model:ir.model.fields,field_description:note.field_note_stage_fold
@@ -119,7 +118,7 @@ msgstr "ID"
 #: model:ir.model.fields,field_description:note.field_note_stage___last_update
 #: model:ir.model.fields,field_description:note.field_note_tag___last_update
 msgid "Last Modified on"
-msgstr "Última modificação em"
+msgstr "Última Modificação em"
 
 #. module: note
 #: model:ir.model.fields,field_description:note.field_note_note_write_uid

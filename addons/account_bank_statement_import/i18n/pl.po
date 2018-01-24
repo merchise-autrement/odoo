@@ -203,12 +203,12 @@ msgstr "Utworzono"
 #. module: account_bank_statement_import
 #: model:ir.model.fields,field_description:account_bank_statement_import.field_account_bank_statement_import_journal_creation_refund_sequence_id
 msgid "Credit Note Entry Sequence"
-msgstr "Numeracja korekt"
+msgstr ""
 
 #. module: account_bank_statement_import
 #: model:ir.model.fields,field_description:account_bank_statement_import.field_account_bank_statement_import_journal_creation_refund_sequence_number_next
 msgid "Credit Notes: Next Number"
-msgstr "Korekty: Następny numer"
+msgstr ""
 
 #. module: account_bank_statement_import
 #: model:ir.model.fields,field_description:account_bank_statement_import.field_account_bank_statement_import_journal_creation_currency_id
@@ -223,7 +223,7 @@ msgstr "Metody otrzymywania płatności"
 #. module: account_bank_statement_import
 #: model:ir.model.fields,field_description:account_bank_statement_import.field_account_bank_statement_import_journal_creation_refund_sequence
 msgid "Dedicated Credit Note Sequence"
-msgstr "Dedykowana numeracja korekt"
+msgstr ""
 
 #. module: account_bank_statement_import
 #: model:ir.model.fields,field_description:account_bank_statement_import.field_account_bank_statement_import_journal_creation_default_credit_account_id

@@ -3,12 +3,12 @@
 # * stock_picking_batch
 # 
 # Translators:
-# Güven YILMAZ <guvenyilmaz@outlook.com.tr>, 2017
-# Saban Yildiz <sabany@projetgrup.com>, 2017
 # Murat Kaplan <muratk@projetgrup.com>, 2017
+# Saban Yildiz <sabany@projetgrup.com>, 2017
+# Levent Karakaş <levent@mektup.at>, 2017
 # Martin Trigaux <mat@odoo.com>, 2017
 # Ediz Duman <neps1192@gmail.com>, 2017
-# Gökhan Erdoğdu <gokhan.erdogdu@mechsoft.com.tr>, 2017
+# Güven YILMAZ <guvenyilmaz@outlook.com.tr>, 2017
 # Ramiz Deniz Öner <deniz@denizoner.com>, 2017
 msgid ""
 msgstr ""
@@ -101,7 +101,7 @@ msgstr "Toplu transfer oluşturmak için tıklayın"
 #. module: stock_picking_batch
 #: model:ir.ui.view,arch_db:stock_picking_batch.stock_picking_batch_form
 msgid "Confirm"
-msgstr "Onayla"
+msgstr "Doğrula"
 
 #. module: stock_picking_batch
 #: model:ir.ui.view,arch_db:stock_picking_batch.stock_picking_batch_form
@@ -130,7 +130,7 @@ msgstr "Görünüm Adı"
 #: model:ir.ui.view,arch_db:stock_picking_batch.stock_picking_batch_form
 #: selection:stock.picking.batch,state:0
 msgid "Done"
-msgstr "Biten"
+msgstr "Transfer"
 
 #. module: stock_picking_batch
 #: selection:stock.picking.batch,state:0
@@ -182,7 +182,7 @@ msgstr "Transfer"
 #. module: stock_picking_batch
 #: model:ir.ui.view,arch_db:stock_picking_batch.stock_picking_batch_filter
 msgid "In Progress"
-msgstr "Sürüyor..."
+msgstr "Aktif"
 
 #. module: stock_picking_batch
 #: model:ir.model.fields,field_description:stock_picking_batch.field_stock_picking_batch___last_update
@@ -237,7 +237,7 @@ msgstr "Ön teslimat yapılacak transfer"
 #: model:ir.model.fields,field_description:stock_picking_batch.field_stock_picking_batch_picking_ids
 #: model:ir.ui.view,arch_db:stock_picking_batch.stock_picking_batch_form
 msgid "Pickings"
-msgstr "Transferler"
+msgstr "Transfer Listeleri"
 
 #. module: stock_picking_batch
 #: model:ir.ui.view,arch_db:stock_picking_batch.stock_picking_batch_form
@@ -252,7 +252,7 @@ msgstr "Sorumlu"
 #. module: stock_picking_batch
 #: selection:stock.picking.batch,state:0
 msgid "Running"
-msgstr "Aktif"
+msgstr "Süren"
 
 #. module: stock_picking_batch
 #: model:ir.ui.view,arch_db:stock_picking_batch.stock_picking_batch_filter

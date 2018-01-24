@@ -347,6 +347,20 @@ var FieldChar = InputField.extend(TranslatableFieldMixin, {
         this.$el = this.$el.add(this._renderTranslateButton());
         return def;
     },
+    /**
+     * Trim the value input by the user.
+     *
+     * @override
+     * @private
+     * @param {any} value
+     * @param {Object} [options]
+     */
+    _setValue: function (value, options) {
+        if (this.field.trim) {
+            value = value.trim();
+        }
+        return this._super(value, options);
+    },
 });
 
 
@@ -424,7 +438,7 @@ var FieldDate = InputField.extend({
             def = this.datewidget.appendTo('<div>').done(function () {
                 self.datewidget.$el.addClass(self.$el.attr('class'));
                 self._prepareInput(self.datewidget.$input);
-                self.replaceElement(self.datewidget.$el);
+                self._replaceElement(self.datewidget.$el);
             });
         }
         return $.when(def, this._super.apply(this, arguments));

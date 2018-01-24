@@ -34,7 +34,7 @@ class AccountAccountTag(models.Model):
 
     name = fields.Char(required=True)
     applicability = fields.Selection([('accounts', 'Accounts'), ('taxes', 'Taxes')], required=True, default='accounts')
-    color = fields.Integer('Color Index', default=10)
+    color = fields.Integer('Color Index')
     active = fields.Boolean(default=True, help="Set active to false to hide the Account Tag without removing it.")
 
 #----------------------------------------------------------
@@ -107,7 +107,7 @@ class AccountAccount(models.Model):
     def _set_opening_debit_credit(self, amount, field):
         """ Generic function called by both opening_debit and opening_credit's
         inverse function. 'Amount' parameter is the value to be set, and field
-        either 'debit' or 'credit', depending on wich one of these two fields
+        either 'debit' or 'credit', depending on which one of these two fields
         got assigned.
         """
         opening_move = self.company_id.account_opening_move_id
@@ -176,8 +176,7 @@ class AccountAccount(models.Model):
 
     @api.onchange('internal_type')
     def onchange_internal_type(self):
-        if self.internal_type in ('receivable', 'payable'):
-            self.reconcile = True
+        self.reconcile = self.internal_type in ('receivable', 'payable')
 
     @api.onchange('code')
     def onchange_code(self):
@@ -215,7 +214,7 @@ class AccountAccount(models.Model):
     def load(self, fields, data):
         """ Overridden for better performances when importing a list of account
         with opening debit/credit. In that case, the auto-balance is postpone
-        untill the whole file has been imported.
+        until the whole file has been imported.
         """
         rslt = super(AccountAccount, self).load(fields, data)
 
@@ -225,21 +224,56 @@ class AccountAccount(models.Model):
                 company._auto_balance_opening_move()
         return rslt
 
+    def _toggle_reconcile_to_true(self):
+        '''Toggle the `reconcile´ boolean from False -> True
+
+        Note that: lines with debit = credit = amount_currency = 0 are set to `reconciled´ = True
+        '''
+        query = """
+            UPDATE account_move_line SET
+                reconciled = CASE WHEN debit = 0 AND credit = 0 AND amount_currency = 0
+                    THEN true ELSE false END,
+                amount_residual = (debit-credit),
+                amount_residual_currency = amount_currency
+            WHERE full_reconcile_id IS NULL and account_id IN %s
+        """
+        self.env.cr.execute(query, [tuple(self.ids)])
+
+    def _toggle_reconcile_to_false(self):
+        '''Toggle the `reconcile´ boolean from True -> False
+
+        Note that it is disallowed if some lines are partially reconciled.
+        '''
+        partial_lines_count = self.env['account.move.line'].search_count([
+            ('account_id', 'in', self.ids),
+            ('full_reconcile_id', '=', False),
+            ('|'),
+            ('matched_debit_ids', '!=', False),
+            ('matched_credit_ids', '!=', False),
+        ])
+        if partial_lines_count > 0:
+            raise UserError(_('You cannot switch an account to not allow the reconciliation'
+                              'if some partial reconciliations are still pending.'))
+        query = """
+            UPDATE account_move_line
+                SET amount_residual = 0, amount_residual_currency = 0
+            WHERE full_reconcile_id = NULL AND account_id IN %s
+        """
+        self.env.cr.execute(query, [tuple(self.ids)])
+
     @api.multi
     def write(self, vals):
-        # Dont allow changing the company_id when account_move_line already exist
+        # Do not allow changing the company_id when account_move_line already exist
         if vals.get('company_id', False):
             move_lines = self.env['account.move.line'].search([('account_id', 'in', self.ids)], limit=1)
             for account in self:
                 if (account.company_id.id != vals['company_id']) and move_lines:
                     raise UserError(_('You cannot change the owner company of an account that already contains journal items.'))
-        # If user change the reconcile flag, all aml should be recomputed for that account and this is very costly.
-        # So to prevent some bugs we add a constraint saying that you cannot change the reconcile field if there is any aml existing
-        # for that account.
-        if vals.get('reconcile'):
-            move_lines = self.env['account.move.line'].search([('account_id', 'in', self.ids)], limit=1)
-            if len(move_lines):
-                raise UserError(_('You cannot change the value of the reconciliation on this account as it already has some moves'))
+        if 'reconcile' in vals:
+            if vals['reconcile']:
+                self.filtered(lambda r: not r.reconcile)._toggle_reconcile_to_true()
+            else:
+                self.filtered(lambda r: r.reconcile)._toggle_reconcile_to_false()
         return super(AccountAccount, self).write(vals)
 
     @api.multi
@@ -558,20 +592,22 @@ class AccountJournal(models.Model):
 
         :param name: name of the bank account
         :param company: company for which the wizard is running
-        :param currency_id: ID of the currency in wich is the bank account
+        :param currency_id: ID of the currency in which is the bank account
         :param type: either 'cash' or 'bank'
         :return: mapping of field names and values
         :rtype: dict
         '''
-
+        digits = 6
+        acc = self.env['account.account'].search([('company_id', '=', company.id)], limit=1)
+        if acc:
+            digits = len(acc.code)
         # Seek the next available number for the account code
-        code_digits = company.accounts_code_digits or 0
         if type == 'bank':
             account_code_prefix = company.bank_account_code_prefix or ''
         else:
             account_code_prefix = company.cash_account_code_prefix or company.bank_account_code_prefix or ''
         for num in range(1, 100):
-            new_code = str(account_code_prefix.ljust(code_digits - 1, '0')) + str(num)
+            new_code = str(account_code_prefix.ljust(digits - 1, '0')) + str(num)
             rec = self.env['account.account'].search([('code', '=', new_code), ('company_id', '=', company.id)], limit=1)
             if not rec:
                 break
@@ -770,18 +806,6 @@ class AccountTax(models.Model):
         ('name_company_uniq', 'unique(name, company_id, type_tax_use)', 'Tax names must be unique !'),
     ]
 
-    @api.multi
-    def unlink(self):
-        company_id = self.env.user.company_id.id
-        IrDefault = self.env['ir.default']
-        taxes = self.browse(IrDefault.get('product.template', 'taxes_id', company_id=company_id) or [])
-        if self & taxes:
-            IrDefault.sudo().set('product.template', 'taxes_id', (taxes - self).ids, company_id=company_id)
-        taxes = self.browse(IrDefault.get('product.template', 'supplier_taxes_id', company_id=company_id) or [])
-        if self & taxes:
-            IrDefault.sudo().set('product.template', 'supplier_taxes_id', (taxes - self).ids, company_id=company_id)
-        return super(AccountTax, self).unlink()
-
     @api.one
     @api.constrains('children_tax_ids', 'type_tax_use')
     def _check_children_scope(self):
@@ -796,7 +820,7 @@ class AccountTax(models.Model):
 
     @api.model
     def name_search(self, name, args=None, operator='ilike', limit=80):
-        """ Returns a list of tupples containing id, name, as internally it is called {def name_get}
+        """ Returns a list of tuples containing id, name, as internally it is called {def name_get}
             result format: {[(id, name), (id, name), ...]}
         """
         args = args or []
@@ -881,7 +905,7 @@ class AccountTax(models.Model):
 
     @api.multi
     def compute_all(self, price_unit, currency=None, quantity=1.0, product=None, partner=None):
-        """ Returns all information required to apply taxes (in self + their children in case of a tax goup).
+        """ Returns all information required to apply taxes (in self + their children in case of a tax group).
             We consider the sequence of the parent for group of taxes.
                 Eg. considering letters as taxes and alphabetic order as sequence :
                 [G, B([A, D, F]), E, C] will be computed as [A, D, F, C, E, G]

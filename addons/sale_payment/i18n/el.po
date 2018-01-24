@@ -25,19 +25,19 @@ msgstr ""
 #: code:addons/sale_payment/models/payment.py:111
 #, python-format
 msgid "<%s> transaction (%s) failed: <%s>"
-msgstr "<%s> η συναλλαγή (%s) απέτυχε: <%s>"
+msgstr ""
 
 #. module: sale_payment
 #: code:addons/sale_payment/models/payment.py:118
 #, python-format
 msgid "<%s> transaction (%s) invalid state: %s"
-msgstr "<%s> η συναλλαγή (%s) έχει λάθος κατάσταση: %s"
+msgstr ""
 
 #. module: sale_payment
 #: code:addons/sale_payment/models/payment.py:126
 #, python-format
 msgid "<%s> transaction (%s) order confirmation failed: <%s>"
-msgstr "<%s> η συναλλαγή (%s) επιβεβαίωσης παραγγελίας απέτυχε: <%s>"
+msgstr ""
 
 #. module: sale_payment
 #: model:ir.ui.view,arch_db:sale_payment.portal_my_orders_payment
@@ -90,12 +90,12 @@ msgstr "Εγκεκριμένες Συναλλαγές Πληρωμών"
 #. module: sale_payment
 #: model:ir.ui.view,arch_db:sale_payment.crm_team_salesteams_view_kanban_inherit_website_portal_sale
 msgid "Awaiting Payment"
-msgstr "Αναμονή Πληρωμής"
+msgstr ""
 
 #. module: sale_payment
 #: model:ir.ui.view,arch_db:sale_payment.crm_team_salesteams_view_kanban_inherit_website_portal_sale
 msgid "Awaiting Payments"
-msgstr "Αναμονή Πληρωμών"
+msgstr ""
 
 #. module: sale_payment
 #: code:addons/sale_payment/controllers/payment.py:52
@@ -104,13 +104,11 @@ msgid ""
 "If we store your payment information on our server, subscription payments "
 "will be made automatically."
 msgstr ""
-"Εάν αποθηκεύσουμε τα στοιχεία πληρωμής σας στον εξυπηρετητή μας, οι πληρωμές"
-" συνδρομών θα πραγματοποιηθούν αυτόματα."
 
 #. module: sale_payment
 #: model:ir.model.fields,field_description:sale_payment.field_sale_order_payment_tx_id
 msgid "Last Transaction"
-msgstr "Τελευταία Συναλλαγή"
+msgstr ""
 
 #. module: sale_payment
 #: model:ir.model.fields,field_description:sale_payment.field_sale_order_payment_transaction_count
@@ -130,13 +128,13 @@ msgstr "Πλήθος των συναλλαγών για καταγραφή"
 #. module: sale_payment
 #: model:ir.ui.view,arch_db:sale_payment.portal_order_success
 msgid "Order successfully paid."
-msgstr "Η παραγγελία έχει πληρωθεί επιτυχώς."
+msgstr ""
 
 #. module: sale_payment
 #: code:addons/sale_payment/controllers/payment.py:50
 #, python-format
 msgid "Pay"
-msgstr "Πληρωμή"
+msgstr ""
 
 #. module: sale_payment
 #: code:addons/sale_payment/models/payment.py:187
@@ -162,12 +160,12 @@ msgstr "Συναλλαγή Πληρωμής"
 #. module: sale_payment
 #: model:ir.ui.view,arch_db:sale_payment.crm_team_salesteams_view_kanban_inherit_website_portal_sale
 msgid "Payment to Capture"
-msgstr "Πληρωμή για Καταγραφή"
+msgstr ""
 
 #. module: sale_payment
 #: model:ir.ui.view,arch_db:sale_payment.crm_team_salesteams_view_kanban_inherit_website_portal_sale
 msgid "Payments to Capture"
-msgstr "Πληρωμές για Καταγραφή"
+msgstr "Πληρωμές για Λήψη"
 
 #. module: sale_payment
 #: model:ir.actions.act_window,name:sale_payment.payment_transaction_action_pending
@@ -194,22 +192,16 @@ msgstr "Παραγγελία"
 msgid ""
 "There was an error processing your payment: impossible to validate order."
 msgstr ""
-"Παρουσιάστηκε σφάλμα κατά την επεξεργασία της πληρωμής σας: δεν είναι δυνατή"
-" η επικύρωση της παραγγελίας."
 
 #. module: sale_payment
 #: model:ir.ui.view,arch_db:sale_payment.portal_order_error
 msgid "There was an error processing your payment: invalid order state."
 msgstr ""
-"Παρουσιάστηκε σφάλμα κατά την επεξεργασία της πληρωμής σας: μη έγκυρη "
-"κατάσταση παραγγελίας."
 
 #. module: sale_payment
 #: model:ir.ui.view,arch_db:sale_payment.portal_order_error
 msgid "There was an error processing your payment: invalid order."
 msgstr ""
-"Παρουσιάστηκε σφάλμα κατά την επεξεργασία της πληρωμής σας: μη έγκυρη "
-"κατάσταση παραγγελίας."
 
 #. module: sale_payment
 #: model:ir.ui.view,arch_db:sale_payment.portal_order_error
@@ -217,37 +209,27 @@ msgid ""
 "There was an error processing your payment: issue with credit card ID "
 "validation."
 msgstr ""
-"Παρουσιάστηκε σφάλμα κατά την επεξεργασία της πληρωμής σας:  πρόβλημα με την"
-" επικύρωση ταυτότητας της πιστωτικής κάρτας."
 
 #. module: sale_payment
 #: model:ir.ui.view,arch_db:sale_payment.portal_order_error
 msgid ""
 "There was an error processing your payment: transaction amount issue.<br/>"
 msgstr ""
-"Παρουσιάστηκε σφάλμα κατά την επεξεργασία της πληρωμής σας: πρόβλημα με το "
-"ποσό συναλλαγής.<br/>"
 
 #. module: sale_payment
 #: model:ir.ui.view,arch_db:sale_payment.portal_order_error
 msgid "There was an error processing your payment: transaction failed.<br/>"
 msgstr ""
-"Παρουσιάστηκε σφάλμα κατά την επεξεργασία της πληρωμής σας: απέτυχε η "
-"συναλλαγή.<br/>"
 
 #. module: sale_payment
 #: model:ir.ui.view,arch_db:sale_payment.portal_order_error
 msgid "There was an error processing your payment: transaction issue.<br/>"
 msgstr ""
-"Παρουσιάστηκε σφάλμα κατά την επεξεργασία της πληρωμής σας: πρόβλημα με τη "
-"συναλλαγή.<br/>"
 
 #. module: sale_payment
 #: model:ir.ui.view,arch_db:sale_payment.portal_order_error
 msgid "There was en error processing your payment: invalid credit card ID."
 msgstr ""
-"Παρουσιάστηκε σφάλμα κατά την επεξεργασία της πληρωμής σας: μη έγκυρη "
-"ταυτότητα πιστωτικής κάρτας."
 
 #. module: sale_payment
 #: model:ir.model.fields,field_description:sale_payment.field_sale_order_payment_tx_ids

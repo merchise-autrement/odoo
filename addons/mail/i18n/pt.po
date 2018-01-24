@@ -4,14 +4,13 @@
 # 
 # Translators:
 # Martin Trigaux <mat@odoo.com>, 2017
-# Manuela Silva <manuela.silva@sky.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-11-30 13:11+0000\n"
 "PO-Revision-Date: 2017-11-30 13:11+0000\n"
-"Last-Translator: Manuela Silva <manuela.silva@sky.com>, 2017\n"
+"Last-Translator: Martin Trigaux <mat@odoo.com>, 2017\n"
 "Language-Team: Portuguese (https://www.transifex.com/odoo/teams/41243/pt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -148,7 +147,7 @@ msgstr ""
 #: code:addons/mail/models/mail_template.py:248
 #, python-format
 msgid "%s (copy)"
-msgstr "%s (cópia)"
+msgstr ""
 
 #. module: mail
 #: code:addons/mail/models/mail_thread.py:236
@@ -456,7 +455,7 @@ msgstr ""
 #. module: mail
 #: model:ir.ui.view,arch_db:mail.view_mail_alias_search
 msgid "Active"
-msgstr "Ativo"
+msgstr ""
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_compose_message_active_domain
@@ -505,7 +504,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mail.mail_activity_view_search
 #, python-format
 msgid "Activity"
-msgstr "Atividade"
+msgstr ""
 
 #. module: mail
 #: model:ir.model,name:mail.model_mail_activity_mixin
@@ -537,7 +536,7 @@ msgstr ""
 #: code:addons/mail/static/src/xml/client_action.xml:87
 #, python-format
 msgid "Add"
-msgstr "Adicionar"
+msgstr ""
 
 #. module: mail
 #. openerp-web
@@ -704,7 +703,7 @@ msgstr ""
 #: code:addons/mail/static/src/js/followers.js:333
 #, python-format
 msgid "Apply"
-msgstr "Aplicar"
+msgstr ""
 
 #. module: mail
 #. openerp-web
@@ -1328,7 +1327,7 @@ msgstr ""
 #: code:addons/mail/static/src/xml/thread.xml:320
 #, python-format
 msgid "Delete this attachment"
-msgstr "Eliminar este anexo"
+msgstr ""
 
 #. module: mail
 #: selection:mail.mail,state:0
@@ -1366,7 +1365,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mail.mail_activity_view_form_popup
 #, python-format
 msgid "Discard"
-msgstr "Rejeitar"
+msgstr ""
 
 #. module: mail
 #: model:ir.ui.menu,name:mail.mail_channel_menu_root_chat
@@ -1492,7 +1491,7 @@ msgstr ""
 #: code:addons/mail/static/src/xml/activity.xml:62
 #, python-format
 msgid "Edit"
-msgstr "Editar"
+msgstr ""
 
 #. module: mail
 #. openerp-web
@@ -1516,7 +1515,7 @@ msgstr ""
 #: selection:mail.message,message_type:0
 #: selection:survey.mail.compose.message,message_type:0
 msgid "Email"
-msgstr "E-mail"
+msgstr ""
 
 #. module: mail
 #: model:ir.ui.view,arch_db:mail.mail_channel_view_form
@@ -3110,7 +3109,7 @@ msgstr ""
 #. module: mail
 #: model:ir.ui.view,arch_db:mail.view_mail_search
 msgid "Month"
-msgstr "Mês"
+msgstr ""
 
 #. module: mail
 #: model:ir.ui.view,arch_db:mail.mail_activity_view_search
@@ -3127,7 +3126,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mail.field_mail_test_simple_name
 #: model:ir.ui.view,arch_db:mail.mail_channel_view_form
 msgid "Name"
-msgstr "Nome"
+msgstr ""
 
 #. module: mail
 #: model:ir.model.fields,help:mail.field_mail_compose_message_record_name
@@ -3616,7 +3615,7 @@ msgstr ""
 #. module: mail
 #: model:ir.ui.view,arch_db:mail.message_user_assigned
 msgid "Odoo"
-msgstr "Odoo"
+msgstr ""
 
 #. module: mail
 #. openerp-web
@@ -3717,7 +3716,7 @@ msgstr ""
 #. module: mail
 #: selection:mail.channel.partner,fold_state:0
 msgid "Open"
-msgstr "Abrir"
+msgstr ""
 
 #. module: mail
 #: model:ir.ui.view,arch_db:mail.view_mail_alias_form
@@ -4044,7 +4043,7 @@ msgstr ""
 #. module: mail
 #: model:ir.ui.view,arch_db:mail.message_user_assigned
 msgid "Powered by"
-msgstr "Desenvolvido por"
+msgstr ""
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_activity_type_previous_type_ids
@@ -4857,7 +4856,7 @@ msgstr ""
 #: selection:survey.survey,activity_state:0
 #, python-format
 msgid "Today"
-msgstr "Hoje"
+msgstr ""
 
 #. module: mail
 #: model:ir.ui.view,arch_db:mail.mail_activity_view_search
@@ -5183,7 +5182,7 @@ msgstr ""
 #. module: mail
 #: model:ir.model,name:mail.model_res_users
 msgid "Users"
-msgstr "Utilizadores"
+msgstr ""
 
 #. module: mail
 #: code:addons/mail/models/mail_channel.py:711
@@ -5204,7 +5203,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:mail.message_user_assigned
 #, python-format
 msgid "View"
-msgstr "Ver"
+msgstr ""
 
 #. module: mail
 #: code:addons/mail/models/mail_thread.py:668
@@ -5598,7 +5597,7 @@ msgstr ""
 #. module: mail
 #: model:ir.model,name:mail.model_res_config_settings
 msgid "res.config.settings"
-msgstr "res.config.settings"
+msgstr ""
 
 #. module: mail
 #: code:addons/mail/models/mail_thread.py:913

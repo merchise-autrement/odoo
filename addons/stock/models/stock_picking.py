@@ -31,7 +31,7 @@ class PickingType(models.Model):
         help="This is the default destination location when you create a picking manually with this operation type. It is possible however to change it or that the routes put another location. If it is empty, it will check for the customer location on the partner. ")
     code = fields.Selection([('incoming', 'Vendors'), ('outgoing', 'Customers'), ('internal', 'Internal')], 'Type of Operation', required=True)
     return_picking_type_id = fields.Many2one('stock.picking.type', 'Operation Type for Returns')
-    show_entire_packs = fields.Boolean('Allow moving packs', help="If checked, this shows the packs to be moved as a whole in the Operations tab all the time, even if there was no entire pack reserved.")
+    show_entire_packs = fields.Boolean('Move Entire Packages', help="If checked, this shows the packs to be moved as a whole in the Operations tab all the time, even if there was no entire pack reserved.")
     warehouse_id = fields.Many2one(
         'stock.warehouse', 'Warehouse', ondelete='cascade',
         default=lambda self: self.env['stock.warehouse'].search([('company_id', '=', self.env.user.company_id.id)], limit=1))
@@ -495,7 +495,7 @@ class Picking(models.Model):
         # As it is a create the format will be a list of (0, 0, dict)
         if vals.get('move_lines') and vals.get('location_id') and vals.get('location_dest_id'):
             for move in vals['move_lines']:
-                if len(move) == 3:
+                if len(move) == 3 and move[0] == 0:
                     move[2]['location_id'] = vals['location_id']
                     move[2]['location_dest_id'] = vals['location_dest_id']
         res = super(Picking, self).create(vals)

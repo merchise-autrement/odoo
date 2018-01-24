@@ -3,23 +3,21 @@
 # * hr_attendance
 # 
 # Translators:
-# Jeffery CHEN Fan <jeffery9@gmail.com>, 2017
-# waveyeung <waveyeung@qq.com>, 2017
+# Jeffery CHEN Fan <jeffery9@gmail.com>, 2016
 # 苏州远鼎 <tiexinliu@126.com>, 2017
-# Talway <9010446@qq.com>, 2017
-# Martin Trigaux <mat@odoo.com>, 2017
+# waveyeung <waveyeung@qq.com>, 2017
 # liAnGjiA <liangjia@qq.com>, 2017
-# 老窦 北京 <2662059195@qq.com>, 2017
 # Liping Wang <lynn.config@gmail.com>, 2017
 # Bo Cao <cao.poobo@hotmail.com>, 2017
-# Xu Lei <xulei8@qq.com>, 2017
+# Martin Trigaux <mat@odoo.com>, 2017
+# 老窦 北京 <2662059195@qq.com>, 2017
 # 山西清水欧度(QQ:54773801) <54773801@qq.com>, 2018
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 11.0\n"
+"Project-Id-Version: Odoo Server saas~11.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-16 08:08+0000\n"
-"PO-Revision-Date: 2017-11-16 08:08+0000\n"
+"POT-Creation-Date: 2017-12-13 14:36+0000\n"
+"PO-Revision-Date: 2017-12-13 14:36+0000\n"
 "Last-Translator: 山西清水欧度(QQ:54773801) <54773801@qq.com>, 2018\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/odoo/teams/41243/zh_CN/)\n"
 "MIME-Version: 1.0\n"
@@ -74,7 +72,7 @@ msgstr "期待很快与您见面！"
 #: model:ir.ui.view,arch_db:hr_attendance.hr_attendance_view_pivot
 #: model:ir.ui.view,arch_db:hr_attendance.view_employee_form_inherit_hr_attendance
 msgid "Attendance"
-msgstr "考勤"
+msgstr "出勤"
 
 #. module: hr_attendance
 #: model:ir.actions.act_window,name:hr_attendance.hr_attendance_action_graph
@@ -91,7 +89,7 @@ msgstr "出勤分析"
 #: model:ir.ui.view,arch_db:hr_attendance.hr_department_view_kanban
 #: model:ir.ui.view,arch_db:hr_attendance.res_config_settings_view_form
 msgid "Attendances"
-msgstr "考勤"
+msgstr "出勤"
 
 #. module: hr_attendance
 #: model:ir.model.fields,field_description:hr_attendance.field_hr_employee_barcode
@@ -363,7 +361,7 @@ msgstr "早上好"
 #: code:addons/hr_attendance/static/src/js/greeting_message.js:80
 #, python-format
 msgid "Good night"
-msgstr "晚上好"
+msgstr "晚上"
 
 #. module: hr_attendance
 #. openerp-web
@@ -437,7 +435,7 @@ msgstr "请求无效，请返回主菜单。"
 #. module: hr_attendance
 #: model:ir.ui.menu,name:hr_attendance.menu_hr_attendance_kiosk_mode
 msgid "Kiosk Mode"
-msgstr "Kiosk模式"
+msgstr "Kiosk 模式"
 
 #. module: hr_attendance
 #: model:ir.model.fields,field_description:hr_attendance.field_hr_employee_last_attendance_id
@@ -447,12 +445,12 @@ msgstr "上次出勤"
 #. module: hr_attendance
 #: model:ir.model.fields,field_description:hr_attendance.field_hr_attendance___last_update
 msgid "Last Modified on"
-msgstr "最后修改时间"
+msgstr "最后修改日"
 
 #. module: hr_attendance
 #: model:ir.model.fields,field_description:hr_attendance.field_hr_attendance_write_uid
 msgid "Last Updated by"
-msgstr "最后更新者"
+msgstr "最后更新人"
 
 #. module: hr_attendance
 #: model:ir.model.fields,field_description:hr_attendance.field_hr_attendance_write_date
@@ -583,6 +581,16 @@ msgid "Settings"
 msgstr "设置"
 
 #. module: hr_attendance
+#: model:ir.ui.view,arch_db:hr_attendance.view_employee_filter_inherit_hr_attendance
+msgid "Signed In"
+msgstr ""
+
+#. module: hr_attendance
+#: model:ir.ui.view,arch_db:hr_attendance.view_employee_filter_inherit_hr_attendance
+msgid "Signed Out"
+msgstr ""
+
+#. module: hr_attendance
 #: sql_constraint:hr.employee:0
 msgid ""
 "The Badge ID must be unique, this one is already assigned to another "
@@ -707,4 +715,4 @@ msgstr "或"
 #. module: hr_attendance
 #: model:ir.model,name:hr_attendance.model_res_config_settings
 msgid "res.config.settings"
-msgstr "res.config.settings"
+msgstr "设置-基础设置"

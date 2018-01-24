@@ -4,14 +4,13 @@
 # 
 # Translators:
 # Martin Trigaux <mat@odoo.com>, 2017
-# Manuela Silva <manuela.silva@sky.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.saas~18\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-10-02 11:27+0000\n"
 "PO-Revision-Date: 2017-10-02 11:27+0000\n"
-"Last-Translator: Manuela Silva <manuela.silva@sky.com>, 2017\n"
+"Last-Translator: Martin Trigaux <mat@odoo.com>, 2017\n"
 "Language-Team: Portuguese (https://www.transifex.com/odoo/teams/41243/pt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -395,12 +394,12 @@ msgstr ""
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_goal_definition_action_id
 msgid "Action"
-msgstr "Ação"
+msgstr ""
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge_active
 msgid "Active"
-msgstr "Ativo"
+msgstr ""
 
 #. module: gamification
 #: model:ir.ui.view,arch_db:gamification.challenge_form_view
@@ -695,7 +694,7 @@ msgstr ""
 #: selection:gamification.challenge,period:0
 #: selection:gamification.challenge,report_message_frequency:0
 msgid "Daily"
-msgstr "Diariamente"
+msgstr ""
 
 #. module: gamification
 #: model:ir.ui.view,arch_db:gamification.goal_form_view
@@ -1078,7 +1077,7 @@ msgstr ""
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge_image
 msgid "Image"
-msgstr "Imagem"
+msgstr ""
 
 #. module: gamification
 #: selection:gamification.challenge,state:0
@@ -1259,7 +1258,7 @@ msgstr ""
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge_line_name
 msgid "Name"
-msgstr "Nome"
+msgstr ""
 
 #. module: gamification
 #: selection:gamification.challenge,report_message_frequency:0
@@ -1382,7 +1381,7 @@ msgstr ""
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_goal_definition_compute_code
 msgid "Python Code"
-msgstr "Código Python"
+msgstr ""
 
 #. module: gamification
 #: model:ir.model.fields,help:gamification.field_gamification_goal_definition_compute_code
@@ -1915,7 +1914,7 @@ msgstr ""
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge_user_ids
 msgid "Users"
-msgstr "Utilizadores"
+msgstr ""
 
 #. module: gamification
 #: selection:gamification.challenge,category:0
@@ -1926,7 +1925,7 @@ msgstr ""
 #: selection:gamification.challenge,period:0
 #: selection:gamification.challenge,report_message_frequency:0
 msgid "Weekly"
-msgstr "Semanalmente"
+msgstr ""
 
 #. module: gamification
 #: model:ir.model.fields,help:gamification.field_gamification_badge_rule_auth
@@ -1954,7 +1953,7 @@ msgstr ""
 #: selection:gamification.challenge,period:0
 #: selection:gamification.challenge,report_message_frequency:0
 msgid "Yearly"
-msgstr "Anualmente"
+msgstr ""
 
 #. module: gamification
 #: code:addons/gamification/models/badge.py:212

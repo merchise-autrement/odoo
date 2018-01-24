@@ -2,17 +2,12 @@
 # This file contains the translation of the following modules:
 # * event
 # 
-# Translators:
-# Bishisht Bhatta <bishisht.np.mnr@gmail.com>, 2017
-# Amit Kumar <amtkumar2053@gmail.com>, 2018
-# Laxman Bhatt <laxmanbhatt1001@gmail.com>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-11-16 08:08+0000\n"
 "PO-Revision-Date: 2017-11-16 08:08+0000\n"
-"Last-Translator: Laxman Bhatt <laxmanbhatt1001@gmail.com>, 2018\n"
 "Language-Team: Nepali (https://www.transifex.com/odoo/teams/41243/ne/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -369,12 +364,6 @@ msgid "${object.event_id.name}: ${object.get_date_range_str()}"
 msgstr ""
 
 #. module: event
-#: code:addons/event/models/event.py:297
-#, python-format
-msgid "%s (copy)"
-msgstr ""
-
-#. module: event
 #: model:event.event,description:event.event_0
 msgid ""
 "1 business room: to discuss implementation methodologies, best sales "
@@ -525,7 +514,7 @@ msgstr ""
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event_active
 msgid "Active"
-msgstr "सक्रिय"
+msgstr ""
 
 #. module: event
 #: model:ir.ui.view,arch_db:event.res_config_settings_view_form
@@ -601,7 +590,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_mail_registration_registration_id
 #: model:ir.ui.view,arch_db:event.view_event_registration_form
 msgid "Attendee"
-msgstr "सहभागी"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_registration_name
@@ -686,7 +675,7 @@ msgstr ""
 #. module: event
 #: model:ir.ui.view,arch_db:event.view_event_confirm
 msgid "Cancel"
-msgstr "रद्द गर्नुहोस्"
+msgstr ""
 
 #. module: event
 #: model:ir.ui.view,arch_db:event.view_event_form
@@ -744,7 +733,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_event_company_id
 #: model:ir.model.fields,field_description:event.field_event_registration_company_id
 msgid "Company"
-msgstr "कम्पनी"
+msgstr ""
 
 #. module: event
 #: code:addons/event/models/event.py:475
@@ -770,12 +759,12 @@ msgstr ""
 #. module: event
 #: model:ir.ui.menu,name:event.menu_event_configuration
 msgid "Configuration"
-msgstr "कन्फिगरेसन"
+msgstr ""
 
 #. module: event
 #: model:ir.ui.view,arch_db:event.view_event_registration_form
 msgid "Confirm"
-msgstr "निश्चित गर्नुहोस्"
+msgstr ""
 
 #. module: event
 #: model:ir.ui.view,arch_db:event.view_event_confirm
@@ -812,12 +801,12 @@ msgstr ""
 #: model:ir.model,name:event.model_res_partner
 #: model:ir.model.fields,field_description:event.field_event_registration_partner_id
 msgid "Contact"
-msgstr "सम्पर्क"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event_country_id
 msgid "Country"
-msgstr "देश"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_confirm_create_uid
@@ -828,7 +817,7 @@ msgstr "देश"
 #: model:ir.model.fields,field_description:event.field_event_type_create_uid
 #: model:ir.model.fields,field_description:event.field_event_type_mail_create_uid
 msgid "Created by"
-msgstr "द्वारा सिर्जना गरियो"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_confirm_create_date
@@ -839,13 +828,13 @@ msgstr "द्वारा सिर्जना गरियो"
 #: model:ir.model.fields,field_description:event.field_event_type_create_date
 #: model:ir.model.fields,field_description:event.field_event_type_mail_create_date
 msgid "Created on"
-msgstr "मा सिर्जना गरियो"
+msgstr ""
 
 #. module: event
 #: code:addons/event/models/event.py:438
 #, python-format
 msgid "Customer"
-msgstr "ग्राहक"
+msgstr ""
 
 #. module: event
 #: code:addons/event/models/event.py:440
@@ -857,7 +846,7 @@ msgstr ""
 #: selection:event.mail,interval_unit:0
 #: selection:event.type.mail,interval_unit:0
 msgid "Day(s)"
-msgstr "दिन(हरू)"
+msgstr ""
 
 #. module: event
 #: model:ir.ui.view,arch_db:event.view_event_kanban
@@ -867,7 +856,7 @@ msgstr ""
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event_description
 msgid "Description"
-msgstr "विवरण"
+msgstr ""
 
 #. module: event
 #: model:event.event,description:event.event_3
@@ -888,7 +877,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_type_display_name
 #: model:ir.model.fields,field_description:event.field_event_type_mail_display_name
 msgid "Display Name"
-msgstr "नाम प्रदर्शन "
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_mail_sequence
@@ -898,7 +887,7 @@ msgstr ""
 #. module: event
 #: selection:event.event,state:0
 msgid "Done"
-msgstr "भयो"
+msgstr ""
 
 #. module: event
 #: model:event.event,description:event.event_2
@@ -948,7 +937,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:event.event_event_view_pivot
 #: model:ir.ui.view,arch_db:event.view_registration_search
 msgid "Event"
-msgstr "घटना"
+msgstr ""
 
 #. module: event
 #: model:ir.model,name:event.model_event_mail
@@ -1076,7 +1065,7 @@ msgstr ""
 #. module: event
 #: model:ir.model.fields,help:event.field_event_type_auto_confirm
 msgid ""
-"Events and registrations will automatically be confirmed upon creation, "
+"Events and registrations will automatically be confirmedupon creation, "
 "easing the flow for simple events."
 msgstr ""
 
@@ -1492,7 +1481,7 @@ msgstr ""
 #. module: event
 #: model:ir.ui.view,arch_db:event.view_registration_search
 msgid "Partner"
-msgstr "साझेदार"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_registration_phone
@@ -1675,7 +1664,7 @@ msgstr ""
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event_date_begin
 msgid "Start Date"
-msgstr "सुरू मिति"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event_date_begin_located
@@ -1693,7 +1682,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:event.view_event_search
 #: model:ir.ui.view,arch_db:event.view_registration_search
 msgid "Status"
-msgstr "स्थिति"
+msgstr ""
 
 #. module: event
 #: model:ir.actions.act_window,name:event.act_register_event_partner
@@ -1879,7 +1868,7 @@ msgstr ""
 #. module: event
 #: model:res.groups,name:event.group_event_user
 msgid "User"
-msgstr "प्रयोगकर्ता"
+msgstr ""
 
 #. module: event
 #: model:event.event,description:event.event_1

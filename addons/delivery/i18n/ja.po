@@ -676,7 +676,7 @@ msgstr "価格設定規則"
 #. module: delivery
 #: model:ir.model,name:delivery.model_product_template
 msgid "Product Template"
-msgstr "プロダクトテンプレート"
+msgstr "製品テンプレート"
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_carrier_delivery_type
@@ -776,7 +776,7 @@ msgstr "国際出荷および商品表記の標準化コード"
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_carrier_state_ids
 msgid "States"
-msgstr "都道府県/州"
+msgstr "都道府県・州"
 
 #. module: delivery
 #: model:ir.model,name:delivery.model_stock_move

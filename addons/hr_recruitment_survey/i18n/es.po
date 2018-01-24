@@ -3,9 +3,9 @@
 # * hr_recruitment_survey
 # 
 # Translators:
+# Martin Trigaux <mat@odoo.com>, 2016
+# Carlos Eduardo Rodriguez Rossi <crodriguez@samemotion.com>, 2016
 # Luis M. Ontalba <luis.martinez@tecnativa.com>, 2017
-# Martin Trigaux <mat@odoo.com>, 2017
-# Carlos Eduardo Rodriguez Rossi <crodriguez@samemotion.com>, 2017
 # RGB Consulting <odoo@rgbconsulting.com>, 2017
 msgid ""
 msgstr ""
@@ -297,7 +297,7 @@ msgstr "Última tecnología"
 #. module: hr_recruitment_survey
 #: model:ir.model.fields,field_description:hr_recruitment_survey.field_hr_applicant_survey_id
 msgid "Survey"
-msgstr "Encuesta"
+msgstr "Planificación"
 
 #. module: hr_recruitment_survey
 #: model:survey.question,validation_error_msg:hr_recruitment_survey.recruitment_1_1

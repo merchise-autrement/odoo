@@ -3,33 +3,32 @@
 # * product
 # 
 # Translators:
-# Martin Trigaux <mat@odoo.com>, 2017
 # Murat Kaplan <muratk@projetgrup.com>, 2017
-# Ramiz Deniz Öner <deniz@denizoner.com>, 2017
-# tanerhasret <tanerhasret@gmail.com>, 2017
 # Ediz Duman <neps1192@gmail.com>, 2017
-# Fırat Kaya <firat.kaya@mechsoft.com.tr>, 2017
-# Ayhan KIZILTAN <akiziltan76@hotmail.com>, 2017
-# Levent Karakaş <levent@mektup.at>, 2017
 # Güven YILMAZ <guvenyilmaz@outlook.com.tr>, 2017
-# Alper Çiftçi <inactive+alprciftci@transifex.com>, 2017
-# cagri erarslan <cagri.erarslan@mechsoft.com.tr>, 2017
 # Gökhan Erdoğdu <gokhan.erdogdu@mechsoft.com.tr>, 2017
-# Saban Yildiz <sabany@projetgrup.com>, 2017
-# gezgin biri <gezginbiri@hotmail.com>, 2017
+# cagri erarslan <cagri.erarslan@mechsoft.com.tr>, 2017
+# Martin Trigaux <mat@odoo.com>, 2017
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 10.saas~18\n"
+"Project-Id-Version: Odoo Server saas~11.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-02 11:26+0000\n"
-"PO-Revision-Date: 2017-10-02 11:26+0000\n"
-"Last-Translator: gezgin biri <gezginbiri@hotmail.com>, 2017\n"
+"POT-Creation-Date: 2017-12-13 14:37+0000\n"
+"PO-Revision-Date: 2017-12-13 14:37+0000\n"
+"Last-Translator: Martin Trigaux <mat@odoo.com>, 2017\n"
 "Language-Team: Turkish (https://www.transifex.com/odoo/teams/41243/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: tr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. module: product
+#. openerp-web
+#: code:addons/product/static/src/js/product_template_import.js:13
+#, python-format
+msgid " Import Template for Products"
+msgstr ""
 
 #. module: product
 #: selection:product.pricelist.item,applied_on:0
@@ -64,73 +63,6 @@ msgstr "%s %% indirim ve %s ek ücret"
 #, python-format
 msgid "%s (copy)"
 msgstr "%s (kopya)"
-
-#. module: product
-#: model:product.attribute.value,name:product.product_attribute_value_1
-msgid "16 GB"
-msgstr "16 GB"
-
-#. module: product
-#: model:product.product,description_sale:product.product_product_3
-#: model:product.template,description_sale:product.product_product_3_product_template
-msgid ""
-"17\" LCD Monitor\n"
-"Processor AMD 8-Core"
-msgstr ""
-
-#. module: product
-#: model:product.product,description:product.product_product_25
-#: model:product.template,description:product.product_product_25_product_template
-msgid ""
-"17\" Monitor, 4GB RAM\n"
-"Standard-1294P Processor"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.product_attribute_value_5
-msgid "2.4 GHz"
-msgstr "2.4 GHz"
-
-#. module: product
-#: model:product.product,description_sale:product.product_product_8
-#: model:product.template,description_sale:product.product_product_8_product_template
-msgid ""
-"2.7GHz quad-core Intel Core i5\n"
-"                Turbo Boost up to 3.2GHz\n"
-"                8GB (two 4GB) memory\n"
-"                1TB hard drive\n"
-"                Intel Iris Pro graphics\n"
-"            "
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.product_attribute_value_2
-msgid "32 GB"
-msgstr "32 GB"
-
-#. module: product
-#: model:product.product,description_sale:product.product_product_4
-#: model:product.product,description_sale:product.product_product_4b
-#: model:product.product,description_sale:product.product_product_4c
-#: model:product.product,description_sale:product.product_product_4d
-#: model:product.template,description_sale:product.product_product_4_product_template
-#: model:product.template,description_sale:product.product_product_4b_product_template
-#: model:product.template,description_sale:product.product_product_4c_product_template
-#: model:product.template,description_sale:product.product_product_4d_product_template
-msgid ""
-"7.9‑inch (diagonal) LED-backlit, 128Gb\n"
-"Dual-core A5 with quad-core graphics\n"
-"FaceTime HD Camera, 1.2 MP Photos"
-msgstr ""
-"7.9‑inch (diagonal) LED-backlit, 128Gb\n"
-"Dual-core A5 with quad-core graphics\n"
-"FaceTime HD Kamera, 1.2 MP Photos"
-
-#. module: product
-#: model:product.product,website_description:product.product_product_8
-#: model:product.template,website_description:product.product_product_8_product_template
-msgid "75 percent less reflection."
-msgstr "Yüzde 75 daha az yansıma."
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_pricelist_item_form_view
@@ -216,12 +148,6 @@ msgstr ""
 "Fatura, İade ve Fiyat Farklarına getirilecektir."
 
 #. module: product
-#: model:product.product,website_description:product.product_product_9
-#: model:product.template,website_description:product.product_product_9_product_template
-msgid "A great Keyboard. Cordless."
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,help:product.field_product_product_description
 #: model:ir.model.fields,help:product.field_product_template_description
 msgid ""
@@ -234,12 +160,6 @@ msgstr "Ürünün bir özet açıklaması, yalnızca iç bilgi amacıyla kullan�
 msgid ""
 "A price list contains rules to be evaluated in order to compute\n"
 "                the sale price of the products."
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_6
-#: model:product.template,website_description:product.product_product_6_product_template
-msgid "A screen worthy of iPad."
 msgstr ""
 
 #. module: product
@@ -257,29 +177,18 @@ msgstr ""
 "Dijital içerik, çevrimiçi sattığınız maddi olmayan bir üründür. Ürünlere eklenen dosyalar e-ticarette e-kitap, müzik, resim gibi satılmaktadır ... \"Dijital Ürün\" modülü kurulmalıdır."
 
 #. module: product
-#: model:product.product,website_description:product.product_product_11
-#: model:product.product,website_description:product.product_product_11b
-#: model:product.template,website_description:product.product_product_11_product_template
-#: model:product.template,website_description:product.product_product_11b_product_template
-msgid ""
-"About the size of a credit card — and just 5.4 mm thin — iPod nano is the thinnest iPod ever made.\n"
-"                                    The 2.5-inch Multi-Touch display is nearly twice as big as the display on the previous iPod nano,\n"
-"                                    so you can see more of the music, photos, and videos you love."
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_active
 #: model:ir.model.fields,field_description:product.field_product_product_active
 #: model:ir.model.fields,field_description:product.field_product_template_active
 #: model:ir.model.fields,field_description:product.field_product_uom_active
 #: model:ir.ui.view,arch_db:product.product_supplierinfo_search_view
 msgid "Active"
-msgstr "Aktif"
+msgstr "Etkin"
 
 #. module: product
 #: model:product.category,name:product.product_category_all
 msgid "All"
-msgstr "Tümü"
+msgstr "Hepsi"
 
 #. module: product
 #: code:addons/product/models/product_pricelist.py:441
@@ -302,38 +211,6 @@ msgstr ""
 "Örnek: Perakendeciler için %10, bu ürün için 5 TL indirim gibi."
 
 #. module: product
-#: model:product.product,website_description:product.product_product_8
-#: model:product.template,website_description:product.product_product_8_product_template
-msgid ""
-"And at the Apple Online Store, you can configure your iMac with an even more"
-" powerful Intel Core i7 processor, up to 3.5GHz."
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_4
-#: model:product.product,website_description:product.product_product_4b
-#: model:product.product,website_description:product.product_product_4c
-#: model:product.product,website_description:product.product_product_4d
-#: model:product.template,website_description:product.product_product_4_product_template
-#: model:product.template,website_description:product.product_product_4b_product_template
-#: model:product.template,website_description:product.product_product_4c_product_template
-#: model:product.template,website_description:product.product_product_4d_product_template
-msgid "And because it’s so easy to use, it’s easy to love."
-msgstr ""
-
-#. module: product
-#: model:product.product,name:product.product_product_7
-#: model:product.template,name:product.product_product_7_product_template
-msgid "Apple In-Ear Headphones"
-msgstr "Apple In-Ear Headphones"
-
-#. module: product
-#: model:product.product,name:product.product_product_9
-#: model:product.template,name:product.product_product_9_product_template
-msgid "Apple Wireless Keyboard"
-msgstr "Apple Kablosuz Klavye"
-
-#. module: product
 #: model:ir.ui.view,arch_db:product.product_normal_form_view
 #: model:ir.ui.view,arch_db:product.product_pricelist_view
 msgid "Applicable On"
@@ -349,7 +226,7 @@ msgstr "Şuna Uygula"
 #: model:ir.ui.view,arch_db:product.product_supplierinfo_search_view
 #: model:ir.ui.view,arch_db:product.product_template_search_view
 msgid "Archived"
-msgstr "Arşivlendi"
+msgstr "Arşiv"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo_sequence
@@ -400,19 +277,6 @@ msgid "Attributes and Variants"
 msgstr "Nitelikler ve Varyantlar"
 
 #. module: product
-#: model:product.product,website_description:product.product_product_5b
-#: model:product.template,website_description:product.product_product_5b_product_template
-msgid "Auxiliary input for portable devices"
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_5b
-#: model:product.template,website_description:product.product_product_5b_product_template
-msgid ""
-"Auxiliary port lets you connect other audio sources, like an MP3 player"
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_packaging_barcode
 #: model:ir.model.fields,field_description:product.field_product_product_barcode
 #: model:ir.model.fields,field_description:product.field_product_template_barcode
@@ -450,30 +314,6 @@ msgid "Based on"
 msgstr "Buna göre"
 
 #. module: product
-#: model:product.product,name:product.consu_delivery_03
-#: model:product.template,name:product.consu_delivery_03_product_template
-msgid "Basic Computer"
-msgstr ""
-
-#. module: product
-#: model:product.product,name:product.membership_2
-#: model:product.template,name:product.membership_2_product_template
-msgid "Basic Membership"
-msgstr "Basit Üyelik"
-
-#. module: product
-#: model:product.product,website_description:product.product_product_6
-#: model:product.template,website_description:product.product_product_6_product_template
-msgid "Beautiful 7.9‑inch display."
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_8
-#: model:product.template,website_description:product.product_product_8_product_template
-msgid "Beautiful widescreen display."
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_image
 msgid "Big-sized image"
 msgstr "Büyük boyutlu resim"
@@ -487,52 +327,6 @@ msgstr "Daha büyük Oran"
 #: selection:product.uom,uom_type:0
 msgid "Bigger than the reference Unit of Measure"
 msgstr "Referans Ölçü Biriminden daha büyük"
-
-#. module: product
-#: model:product.attribute.value,name:product.product_attribute_value_4
-msgid "Black"
-msgstr "Siyah"
-
-#. module: product
-#: model:product.product,website_description:product.product_product_5b
-#: model:product.template,website_description:product.product_product_5b_product_template
-msgid "Bluetooth connectivity"
-msgstr ""
-
-#. module: product
-#: model:product.product,name:product.product_product_5b
-#: model:product.template,name:product.product_product_5b_product_template
-msgid "Bose Mini Bluetooth Speaker"
-msgstr "Bose Mini Bluetooth Mikrofon"
-
-#. module: product
-#: model:product.product,website_description:product.product_product_5b
-#: model:product.template,website_description:product.product_product_5b_product_template
-msgid "Bose Mini Bluetooth Speaker."
-msgstr ""
-
-#. module: product
-#: model:product.product,description_sale:product.product_product_5b
-#: model:product.template,description_sale:product.product_product_5b_product_template
-msgid "Bose's smallest portable Bluetooth speaker"
-msgstr "En küçük Bose seyyar Bluetooth mikrofon"
-
-#. module: product
-#: model:product.product,website_description:product.product_product_8
-#: model:product.template,website_description:product.product_product_8_product_template
-msgid "Brilliance onscreen. And behind it."
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_11
-#: model:product.product,website_description:product.product_product_11b
-#: model:product.template,website_description:product.product_product_11_product_template
-#: model:product.template,website_description:product.product_product_11b_product_template
-msgid ""
-"Buttons let you quickly play, pause, change songs, or adjust the volume.\n"
-"                                    The smooth anodized aluminum design makes iPod nano feel as good as it sounds.\n"
-"                                    And iPod nano wouldn’t be iPod nano without gorgeous, hard-to-choose-from color."
-msgstr ""
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.view_product_price_list
@@ -566,7 +360,6 @@ msgstr "İptal"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_uom_category_id
-#: model:ir.ui.view,arch_db:product.product_template_form_view
 msgid "Category"
 msgstr "Kategori"
 
@@ -582,26 +375,6 @@ msgid "Category: %s"
 msgstr "Kategori: %s"
 
 #. module: product
-#: model:product.product,website_description:product.product_product_5b
-#: model:product.template,website_description:product.product_product_5b_product_template
-msgid "Characteristics"
-msgstr "Karakteristik"
-
-#. module: product
-#: model:product.product,website_description:product.product_product_5b
-#: model:product.template,website_description:product.product_product_5b_product_template
-msgid "Charges iPod/iPhone"
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_5b
-#: model:product.template,website_description:product.product_product_5b_product_template
-msgid ""
-"Charging cradle recharges the battery and serves as a convenient\n"
-"                                    home base for your speaker, and it lets you play while it charges."
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,help:product.field_product_attribute_create_variant
 msgid "Check this if you want to create multiple variants for this attribute."
 msgstr ""
@@ -610,12 +383,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:product.field_product_category_child_id
 msgid "Child Categories"
 msgstr "Alt Kategoriler"
-
-#. module: product
-#: model:product.product,name:product.product_product_11c
-#: model:product.template,name:product.product_product_11c_product_template
-msgid "Cleaning"
-msgstr ""
 
 #. module: product
 #: model:ir.actions.act_window,help:product.product_uom_categ_form_action
@@ -647,29 +414,10 @@ msgid "Codes"
 msgstr "Kodlar"
 
 #. module: product
-#: model:product.attribute,name:product.product_attribute_2
-msgid "Color"
-msgstr "Renk"
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_color
 #: model:ir.model.fields,field_description:product.field_product_template_color
 msgid "Color Index"
 msgstr "Renk İndeksi"
-
-#. module: product
-#: model:product.product,description_sale:product.product_product_6
-#: model:product.template,description_sale:product.product_product_6_product_template
-msgid ""
-"Color: White\n"
-"Capacity: 16GB\n"
-"Connectivity: Wifi\n"
-"Beautiful 7.9-inch display\n"
-"Over 375,000 apps\n"
-"Ultrafast wireless\n"
-"iOS7\n"
-"            "
-msgstr ""
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.res_config_settings_view_form
@@ -679,7 +427,7 @@ msgstr ""
 #. module: product
 #: model:ir.model,name:product.model_res_company
 msgid "Companies"
-msgstr "Şirketler"
+msgstr "Firmalar"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_price_history_company_id
@@ -689,7 +437,7 @@ msgstr "Şirketler"
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo_company_id
 #: model:ir.model.fields,field_description:product.field_product_template_company_id
 msgid "Company"
-msgstr "Şirket"
+msgstr "Firma"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_category_complete_name
@@ -703,18 +451,6 @@ msgid "Compute Price"
 msgstr "Fiyat Hesaplama"
 
 #. module: product
-#: model:product.product,name:product.product_product_16
-#: model:product.template,name:product.product_product_16_product_template
-msgid "Computer Case"
-msgstr "Bilgisayar Kasası"
-
-#. module: product
-#: model:product.product,name:product.product_product_3
-#: model:product.template,name:product.product_product_3_product_template
-msgid "Computer SC234"
-msgstr "Bilgisayar SC234"
-
-#. module: product
 #: code:addons/product/models/product_template.py:50
 #: selection:product.template,type:0
 #, python-format
@@ -725,6 +461,11 @@ msgstr "Sarf Malzeme"
 #: model:ir.model,name:product.model_res_partner
 msgid "Contact"
 msgstr "Kontak"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_packaging_qty
+msgid "Contained Quantity"
+msgstr ""
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_uom_category_id
@@ -767,12 +508,6 @@ msgid ""
 "Cost used for stock valuation in standard price and as a first price to set "
 "in average/fifo. Also used as a base price for pricelists. Expressed in the "
 "default unit of measure of the product. "
-msgstr ""
-
-#. module: product
-#: model:product.product,name:product.service_delivery
-#: model:product.template,name:product.service_delivery_product_template
-msgid "Cost-plus Contract"
 msgstr ""
 
 #. module: product
@@ -826,17 +561,7 @@ msgstr "Oluşturan"
 #: model:ir.model.fields,field_description:product.field_product_uom_categ_create_date
 #: model:ir.model.fields,field_description:product.field_product_uom_create_date
 msgid "Created on"
-msgstr "Oluşturulma"
-
-#. module: product
-#: model:product.product,website_description:product.product_product_8
-#: model:product.template,website_description:product.product_product_8_product_template
-msgid ""
-"Creating such a stunningly thin design took some equally stunning feats of "
-"technological innovation. We refined,re-imagined,or re-engineered everything"
-" about iMac from the inside out. The result is an advanced, elegant all-in-"
-"one computer that’s as much a work of art as it is state of the art."
-msgstr ""
+msgstr "Oluşturulma Tarihi"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_currency_id
@@ -848,33 +573,9 @@ msgid "Currency"
 msgstr "Para Birimi"
 
 #. module: product
-#: model:product.product,name:product.product_product_5
-#: model:product.template,name:product.product_product_5_product_template
-msgid "Custom Computer (kit)"
-msgstr ""
-
-#. module: product
-#: model:product.product,description:product.product_product_27
-#: model:product.template,description:product.product_product_27_product_template
-msgid "Custom Laptop based on customer's requirement."
-msgstr "Müşteri gereksinimlerine göre Özel Dizüstü"
-
-#. module: product
-#: model:product.product,description:product.product_product_5
-#: model:product.template,description:product.product_product_5_product_template
-msgid "Custom computer shipped in kit."
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_partner_ref
 msgid "Customer Ref"
 msgstr "Müşteri Ref"
-
-#. module: product
-#: model:product.product,name:product.product_delivery_02
-#: model:product.template,name:product.product_delivery_02_product_template
-msgid "Datacard"
-msgstr "Veri kartı"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_price_history_datetime
@@ -896,7 +597,7 @@ msgstr ""
 #: model:ir.model.fields,help:product.field_product_product_uom_id
 #: model:ir.model.fields,help:product.field_product_template_uom_id
 msgid "Default Unit of Measure used for all stock operation."
-msgstr "Bütün stok hareketleri için kullanılan varsayılan ölçü birimi."
+msgstr "Bütün stok hareketleri için kullanılan varsayılan ölçü birimi"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product_uom_po_id
@@ -922,14 +623,6 @@ msgstr "Açıklama"
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_template_form_view
 msgid "Description for Customers"
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_11
-#: model:product.product,website_description:product.product_product_11b
-#: model:product.template,website_description:product.product_product_11_product_template
-#: model:product.template,website_description:product.product_product_11b_product_template
-msgid "Design. The thinnest iPod ever."
 msgstr ""
 
 #. module: product
@@ -964,25 +657,11 @@ msgid "Dozen(s)"
 msgstr "Düzine"
 
 #. module: product
-#: model:product.product,description_sale:product.consu_delivery_03
-#: model:product.template,description_sale:product.consu_delivery_03_product_template
-msgid ""
-"Dvorak keyboard\n"
-"left-handed mouse"
-msgstr ""
-
-#. module: product
 #: model:ir.actions.act_window,help:product.product_pricelist_action2
 msgid ""
 "Each rule include a set of applicability criteria (date range,\n"
 "                product category...) and a computation that easily helps to achieve\n"
 "                any kind of pricing."
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_5b
-#: model:product.template,website_description:product.product_product_5b_product_template
-msgid "Efficient, high-quality audio"
 msgstr ""
 
 #. module: product
@@ -1002,7 +681,7 @@ msgid "Ending valid for the pricelist item validation"
 msgstr ""
 
 #. module: product
-#: code:addons/product/models/product.py:53
+#: code:addons/product/models/product.py:56
 #, python-format
 msgid "Error ! You cannot create recursive categories."
 msgstr "Hata! Tekrarlayan kategoriler oluşturamazsınız."
@@ -1014,7 +693,7 @@ msgid "Error ! You cannot use this attribute with the following value."
 msgstr "Hata ! Bu niteliği aşağıdaki değerle kullanamazsınız."
 
 #. module: product
-#: code:addons/product/models/product.py:283
+#: code:addons/product/models/product.py:288
 #, python-format
 msgid ""
 "Error! It is not allowed to choose more than one value for a given "
@@ -1048,83 +727,10 @@ msgstr ""
 "olmalıdır."
 
 #. module: product
-#: model:product.product,website_description:product.product_product_6
-#: model:product.template,website_description:product.product_product_6_product_template
-msgid ""
-"Everything you love about iPad — the beautiful\n"
-"                                    screen, fast Colors are vivid and text is sharp on the iPad mini display.\n"
-"                                    But what really makes it stand out is its size. At 7.9 inches,\n"
-"                                    it’s perfectly sized to deliver an experience every bit as big as iPad."
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_4
-#: model:product.product,website_description:product.product_product_4b
-#: model:product.product,website_description:product.product_product_4c
-#: model:product.product,website_description:product.product_product_4d
-#: model:product.template,website_description:product.product_product_4_product_template
-#: model:product.template,website_description:product.product_product_4b_product_template
-#: model:product.template,website_description:product.product_product_4c_product_template
-#: model:product.template,website_description:product.product_product_4d_product_template
-msgid ""
-"Everything you love about iPad — the beautiful\n"
-"                                    screen, fast and fluid performance, FaceTime and\n"
-"                                    iSight cameras, thousands of amazing apps, 10-hour\n"
-"                                    battery life* — is everything you’ll love about\n"
-"                                    iPad mini, too. And you can hold it in one hand."
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_6
-#: model:product.template,website_description:product.product_product_6_product_template
-msgid ""
-"Everything you love about iPad — the beautiful screen,\n"
-"                                        fast and fluid performance, FaceTime and iSight cameras, \n"
-"                                        thousands of amazing apps, 10-hour battery life* — is everything\n"
-"                                        you’ll love about iPad mini, too. And you can hold it in one hand."
-msgstr ""
-
-#. module: product
-#: model:product.product,description:product.product_product_2
-#: model:product.template,description:product.product_product_2_product_template
-msgid "Example of product to invoice based on delivery."
-msgstr ""
-
-#. module: product
-#: model:product.product,description:product.service_order_01
-#: model:product.template,description:product.service_order_01_product_template
-msgid "Example of product to invoice on order."
-msgstr ""
-
-#. module: product
-#: model:product.product,description:product.service_cost_01
-#: model:product.template,description:product.service_cost_01_product_template
-msgid "Example of products to invoice based on cost."
-msgstr ""
-
-#. module: product
-#: model:product.product,description:product.product_product_1
-#: model:product.template,description:product.product_product_1_product_template
-msgid "Example of products to invoice based on delivery."
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item_name
 #: model:ir.model.fields,help:product.field_product_pricelist_item_price
 msgid "Explicit rule name for this pricelist line."
 msgstr "Bu fiyat listesi satırı için belirgin kural adı"
-
-#. module: product
-#: model:product.product,name:product.service_cost_01
-#: model:product.template,name:product.service_cost_01_product_template
-msgid "External Audit"
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_6
-#: model:product.template,website_description:product.product_product_6_product_template
-msgid "Fast connections.The world over."
-msgstr ""
 
 #. module: product
 #: selection:product.pricelist.item,compute_price:0
@@ -1149,42 +755,9 @@ msgid "Formula"
 msgstr "Formül"
 
 #. module: product
-#: model:product.product,description_sale:product.product_product_7
-#: model:product.template,description_sale:product.product_product_7_product_template
-msgid ""
-"Frequency: 5Hz to 21kHz\n"
-"Impedance: 23 ohms\n"
-"Sensitivity: 109 dB SPL/mW\n"
-"Drivers: two-way balanced armature\n"
-"Cable length: 1065 mm\n"
-"Weight: 10.2 grams\n"
-"            "
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_8
-#: model:product.template,website_description:product.product_product_8_product_template
-msgid "Friendly to the environment."
-msgstr "Çevre dostu"
-
-#. module: product
-#: model:product.product,name:product.product_product_1
-#: model:product.template,name:product.product_product_1_product_template
-msgid "GAP Analysis Service"
-msgstr ""
-
-#. module: product
 #: model:ir.ui.view,arch_db:product.product_template_form_view
 msgid "General Information"
 msgstr "Genel Bilgi"
-
-#. module: product
-#: model:product.product,website_description:product.product_product_11
-#: model:product.product,website_description:product.product_product_11b
-#: model:product.template,website_description:product.product_product_11_product_template
-#: model:product.template,website_description:product.product_product_11b_product_template
-msgid "Genius. Your own personal DJ."
-msgstr ""
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product_packaging_ids
@@ -1210,74 +783,14 @@ msgid "Go to Internal Categories"
 msgstr ""
 
 #. module: product
-#: model:product.product,name:product.membership_0
-#: model:product.template,name:product.membership_0_product_template
-msgid "Gold Membership"
-msgstr "Altın Üyelik"
-
-#. module: product
-#: model:product.product,name:product.product_product_24
-#: model:product.template,name:product.product_product_24_product_template
-msgid "Graphics Card"
-msgstr "Grafik Kartı"
-
-#. module: product
 #: model:ir.ui.view,arch_db:product.product_supplierinfo_search_view
 msgid "Group By"
 msgstr "Grupla"
 
 #. module: product
-#: model:product.product,name:product.product_product_17
-#: model:product.template,name:product.product_product_17_product_template
-msgid "HDD SH-1"
-msgstr "HDD SH-1"
-
-#. module: product
-#: model:product.product,website_description:product.product_product_11
-#: model:product.product,website_description:product.product_product_11b
-#: model:product.template,website_description:product.product_product_11_product_template
-#: model:product.template,website_description:product.product_product_11b_product_template
-msgid "Have Genius call the tunes."
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_7
-#: model:product.template,website_description:product.product_product_7_product_template
-msgid "Hear, hear."
-msgstr ""
-
-#. module: product
-#: model:product.product,description_sale:product.product_product_11
-#: model:product.product,description_sale:product.product_product_11b
-#: model:product.template,description_sale:product.product_product_11_product_template
-#: model:product.template,description_sale:product.product_product_11b_product_template
-msgid ""
-"Height: 76.5 mm\n"
-"Width:  39.6 mm\n"
-"Depth:  5.4 mm\n"
-"Weight: 31 grams"
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_8
-#: model:product.template,website_description:product.product_product_8_product_template
-msgid "Highly rated designs."
-msgstr ""
-
-#. module: product
 #: model:product.uom,name:product.product_uom_hour
 msgid "Hour(s)"
 msgstr "Saat"
-
-#. module: product
-#: model:product.product,website_description:product.product_product_8
-#: model:product.template,website_description:product.product_product_8_product_template
-msgid ""
-"How did we make an already gorgeous widescreen display even better? By "
-"making it 75 percent less reflective. And by re-architecting the LCD and "
-"moving it right up against the cover glass. So you see your photos, games, "
-"movies, and everything else in vivid, lifelike detail."
-msgstr ""
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_uom_factor_inv
@@ -1291,14 +804,6 @@ msgstr ""
 msgid ""
 "How much bigger or smaller this unit is compared to the reference Unit of "
 "Measure for this category: 1 * (reference unit) = ratio * (this unit)"
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_11
-#: model:product.product,website_description:product.product_product_11b
-#: model:product.template,website_description:product.product_product_11_product_template
-#: model:product.template,website_description:product.product_product_11b_product_template
-msgid "How to get your groove on."
 msgstr ""
 
 #. module: product
@@ -1320,12 +825,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:product.field_report_product_report_pricelist_id
 msgid "ID"
 msgstr "ID"
-
-#. module: product
-#: model:product.product,website_description:product.product_product_6
-#: model:product.template,website_description:product.product_product_6_product_template
-msgid "If it's made for iPad, it's made for iPad mini."
-msgstr ""
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo_product_id
@@ -1351,7 +850,7 @@ msgstr "İşaretlerseniz, ürünü silmeden gizlemenizi sağlar."
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_template_image
 msgid "Image"
-msgstr "Görsel"
+msgstr "Resim"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product_image
@@ -1378,35 +877,9 @@ msgid ""
 msgstr "Varyant ürün resmi (Ürün şablonunun küçük boyutlu resmi)."
 
 #. module: product
-#: model:product.product,website_description:product.product_product_8
-#: model:product.template,website_description:product.product_product_8_product_template
-msgid "Individually calibrated for true-to-life color."
-msgstr ""
-
-#. module: product
 #: model:ir.model,name:product.model_product_supplierinfo
 msgid "Information about a product vendor"
 msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_7
-#: model:product.template,website_description:product.product_product_7_product_template
-msgid ""
-"Inside each earpiece is a stainless steel mesh cap that protects the precision acoustic\n"
-"                                    components from dust and debris. You can remove the caps for cleaning or replace\n"
-"                                    them with an extra set that’s included in the box."
-msgstr ""
-
-#. module: product
-#: model:product.category,name:product.product_category_2
-msgid "Internal"
-msgstr "Dahili"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product_categ_id
-#: model:ir.model.fields,field_description:product.field_product_template_categ_id
-msgid "Internal Category"
-msgstr "İç Kategori"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_default_code
@@ -1423,31 +896,12 @@ msgstr "Uluslararası Makale numarası ürün tanımlama için kullanılır."
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_template_form_view
 msgid "Inventory"
-msgstr "Stok"
+msgstr "Envanter"
 
 #. module: product
-#: model:product.product,website_description:product.product_product_7
-#: model:product.template,website_description:product.product_product_7_product_template
-msgid "Keep it clean."
-msgstr "Temiz tut."
-
-#. module: product
-#: model:product.product,website_description:product.product_product_8
-#: model:product.template,website_description:product.product_product_8_product_template
-msgid "Key Features"
-msgstr "Temel Özellikler"
-
-#. module: product
-#: model:product.product,name:product.product_product_27
-#: model:product.template,name:product.product_product_27_product_template
-msgid "Laptop Customized"
-msgstr "Özelleştirilmiş Dizüstü"
-
-#. module: product
-#: model:product.product,name:product.product_product_25
-#: model:product.template,name:product.product_product_25_product_template
-msgid "Laptop E5023"
-msgstr "Dizüstü E5023"
+#: model:ir.ui.view,arch_db:product.product_template_form_view
+msgid "Inventory Valuation"
+msgstr "Envanter Değeri"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute___last_update
@@ -1539,12 +993,6 @@ msgid "Liter(s)"
 msgstr "Litre"
 
 #. module: product
-#: model:product.product,name:product.consu_delivery_02
-#: model:product.template,name:product.consu_delivery_02_product_template
-msgid "Little server"
-msgstr ""
-
-#. module: product
 #: model:res.groups,name:product.group_uom
 msgid "Manage Multiple Units of Measure"
 msgstr "Çoklu Ölçü Birim Yönetimi"
@@ -1578,7 +1026,7 @@ msgstr "Max. Br.Fiyat Marjı"
 #: model:ir.model.fields,field_description:product.field_product_product_image_medium
 #: model:ir.model.fields,field_description:product.field_product_template_image_medium
 msgid "Medium-sized image"
-msgstr "Orta boyutlu görsel"
+msgstr "Orta ölçekli resim"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_template_image_medium
@@ -1590,11 +1038,6 @@ msgstr ""
 "Ürünün orta boyutlu resmi. En boy oranı korunarak kendiliğinden 128x128px "
 "resim olarak yeniden boyutlandırılır, yalnızca resim bu boyutları aştığında."
 " Bu alanı form görünümlerinde ya da kanban görünümlerinde kullanın."
-
-#. module: product
-#: model:product.attribute,name:product.product_attribute_1
-msgid "Memory"
-msgstr "Bellek"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_pricelist_item_form_view
@@ -1617,44 +1060,6 @@ msgid "Minimal Quantity"
 msgstr "Min. Miktar"
 
 #. module: product
-#: model:product.product,website_description:product.product_product_8
-#: model:product.template,website_description:product.product_product_8_product_template
-msgid "More energy efficient."
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_5b
-#: model:product.template,website_description:product.product_product_5b_product_template
-msgid "More features."
-msgstr "Daha fazla özellik."
-
-#. module: product
-#: model:product.product,name:product.product_product_20
-#: model:product.template,name:product.product_product_20_product_template
-msgid "Motherboard I9P57"
-msgstr "Anakart I9P57"
-
-#. module: product
-#: model:product.product,name:product.product_product_10
-#: model:product.template,name:product.product_product_10_product_template
-msgid "Mouse, Optical"
-msgstr "Fare, Optik"
-
-#. module: product
-#: model:product.product,name:product.product_product_12
-#: model:product.template,name:product.product_product_12_product_template
-msgid "Mouse, Wireless"
-msgstr "Fare, Kablosuz"
-
-#. module: product
-#: model:product.product,website_description:product.product_product_11
-#: model:product.product,website_description:product.product_product_11b
-#: model:product.template,website_description:product.product_product_11_product_template
-#: model:product.template,website_description:product.product_product_11b_product_template
-msgid "Music. It's what beats inside."
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute_name
 #: model:ir.model.fields,field_description:product.field_product_category_name
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item_name
@@ -1662,17 +1067,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:product.field_product_template_name
 #: model:ir.model.fields,field_description:product.field_product_uom_categ_name
 msgid "Name"
-msgstr "İsim"
+msgstr "Adı"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_pricelist_item_form_view
 msgid "New Price ="
 msgstr "Yeni Fiyat ="
-
-#. module: product
-#: model:ir.ui.view,arch_db:product.product_template_form_view
-msgid "Notes"
-msgstr "Notlar"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_supplierinfo_form_view
@@ -1686,18 +1086,14 @@ msgid "Other Pricelist"
 msgstr "Diğer Fiyat Listesi"
 
 #. module: product
-#: model:product.product,website_description:product.product_product_6
-#: model:product.template,website_description:product.product_product_6_product_template
-msgid "Over 375,000 apps."
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_packaging_name
 msgid "Package Type"
 msgstr "Paket Türü"
 
 #. module: product
 #: model:ir.model,name:product.model_product_packaging
+#: model:ir.ui.view,arch_db:product.product_packaging_form_view
+#: model:ir.ui.view,arch_db:product.product_packaging_tree_view
 #: model:ir.ui.view,arch_db:product.product_template_form_view
 #: model:ir.ui.view,arch_db:product.product_variant_easy_edit_view
 msgid "Packaging"
@@ -1709,12 +1105,6 @@ msgid "Parent Category"
 msgstr "Üst Kategori"
 
 #. module: product
-#: model:product.product,name:product.product_product_5c
-#: model:product.template,name:product.product_product_5c_product_template
-msgid "Parts Replacement"
-msgstr ""
-
-#. module: product
 #: selection:product.pricelist.item,compute_price:0
 msgid "Percentage (discount)"
 msgstr "Yüzde (iskonto)"
@@ -1723,40 +1113,6 @@ msgstr "Yüzde (iskonto)"
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item_percent_price
 msgid "Percentage Price"
 msgstr "Yüzde Fiyatı"
-
-#. module: product
-#: model:product.category,name:product.product_category_5
-msgid "Physical"
-msgstr "Fiziksel"
-
-#. module: product
-#: model:product.product,website_description:product.product_product_11
-#: model:product.product,website_description:product.product_product_11b
-#: model:product.template,website_description:product.product_product_11_product_template
-#: model:product.template,website_description:product.product_product_11b_product_template
-msgid "Playlists. The perfect mix for every mood."
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_5b
-#: model:product.template,website_description:product.product_product_5b_product_template
-msgid "Plays where you play"
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_8
-#: model:product.template,website_description:product.product_product_8_product_template
-msgid ""
-"Powered by fourth-generation Intel Core processors, this iMac is the fastest"
-" yet. Every model in the lineup comes standard with a quad-core Intel Core "
-"i5 processor, starting at 2.7GHz and topping out at 3.4GHz."
-msgstr ""
-
-#. module: product
-#: model:product.product,name:product.service_order_01
-#: model:product.template,name:product.service_order_01_product_template
-msgid "Prepaid Consulting"
-msgstr ""
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item_price
@@ -1894,12 +1250,6 @@ msgid "Print"
 msgstr "Yazdır"
 
 #. module: product
-#: model:product.product,name:product.product_product_22
-#: model:product.template,name:product.product_product_22_product_template
-msgid "Processor Core i5 2.70 Ghz"
-msgstr "Core İşlemci i5 2.70 Ghz"
-
-#. module: product
 #: model:ir.model,name:product.model_product_product
 #: model:ir.model.fields,field_description:product.field_product_packaging_product_id
 #: model:ir.model.fields,field_description:product.field_product_price_history_product_id
@@ -1914,7 +1264,6 @@ msgstr "Core İşlemci i5 2.70 Ghz"
 #: model:ir.ui.view,arch_db:product.product_template_search_view
 #: model:ir.ui.view,arch_db:product.product_template_tree_view
 #: selection:product.pricelist.item,applied_on:0
-#: model:res.request.link,name:product.req_link_product
 msgid "Product"
 msgstr "Ürün"
 
@@ -1950,6 +1299,9 @@ msgstr "Ürün Kategorileri"
 #. module: product
 #: model:ir.model,name:product.model_product_category
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item_categ_id
+#: model:ir.model.fields,field_description:product.field_product_product_categ_id
+#: model:ir.model.fields,field_description:product.field_product_template_categ_id
+#: model:ir.ui.view,arch_db:product.product_template_form_view
 msgid "Product Category"
 msgstr "Ürün Kategorisi"
 
@@ -1960,17 +1312,21 @@ msgid "Product Name"
 msgstr "Ürün Adı"
 
 #. module: product
-#: model:ir.actions.act_window,name:product.action_packaging_view
 #: model:ir.model.fields,field_description:product.field_product_product_packaging_ids
 #: model:ir.model.fields,field_description:product.field_product_template_packaging_ids
-#: model:ir.model.fields,field_description:product.field_res_config_settings_group_stock_packaging
-#: model:ir.ui.view,arch_db:product.product_packaging_tree_view
 msgid "Product Packages"
 msgstr "Ürün Paketleri"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_packaging_form_view
 msgid "Product Packaging"
+msgstr ""
+
+#. module: product
+#: model:ir.actions.act_window,name:product.action_packaging_view
+#: model:ir.model.fields,field_description:product.field_res_config_settings_group_stock_packaging
+#: model:ir.ui.view,arch_db:product.product_packaging_tree_view
+msgid "Product Packagings"
 msgstr ""
 
 #. module: product
@@ -2048,7 +1404,7 @@ msgid "Products Price Search"
 msgstr "Ürün Fiyatı Ara"
 
 #. module: product
-#: code:addons/product/models/product.py:448
+#: code:addons/product/models/product.py:454
 #, python-format
 msgid "Products: "
 msgstr "Ürünler: "
@@ -2058,6 +1414,21 @@ msgstr "Ürünler: "
 #: selection:product.pricelist.item,base:0
 msgid "Public Price"
 msgstr "Genel Liste Fiyatı"
+
+#. module: product
+#: model:product.pricelist,name:product.list0
+msgid "Public Pricelist"
+msgstr "Genel Fiyat Listesi"
+
+#. module: product
+#: model:ir.ui.view,arch_db:product.product_template_form_view
+msgid "Purchase"
+msgstr "Satınalma"
+
+#. module: product
+#: model:ir.ui.view,arch_db:product.product_template_form_view
+msgid "Purchase Bills"
+msgstr "Satınalma Faturaları"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_description_purchase
@@ -2070,11 +1441,6 @@ msgstr "Satınalma Açıklaması"
 #: model:ir.model.fields,field_description:product.field_product_template_uom_po_id
 msgid "Purchase Unit of Measure"
 msgstr "Satınalma Ölçü Birimi"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_packaging_qty
-msgid "Quantity per Package"
-msgstr "Paket başına Miktar"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_price_list_qty1
@@ -2102,12 +1468,6 @@ msgid "Quantity-5"
 msgstr "Miktar-5"
 
 #. module: product
-#: model:product.product,name:product.product_product_13
-#: model:product.template,name:product.product_product_13_product_template
-msgid "RAM SR5"
-msgstr "RAM SR5"
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_uom_factor
 msgid "Ratio"
 msgstr "Oran"
@@ -2123,58 +1483,9 @@ msgid "Reference Unit of Measure for this category"
 msgstr "Bu kategori için Ölçü referans Birimi"
 
 #. module: product
-#: model:product.product,website_description:product.product_product_5b
-#: model:product.template,website_description:product.product_product_5b_product_template
-msgid "Remote control for power, volume, track seek"
-msgstr ""
-
-#. module: product
-#: model:product.product,name:product.product_product_6c
-#: model:product.template,name:product.product_product_6c_product_template
-msgid "Repair"
-msgstr "Tamir"
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_category_parent_right
 msgid "Right Parent"
 msgstr "Sağ Üst"
-
-#. module: product
-#: model:product.product,website_description:product.product_product_6
-#: model:product.template,website_description:product.product_product_6_product_template
-msgid ""
-"Right from the start, apps made for iPad also work with iPad mini.\n"
-"                                    They’re immersive, full-screen apps that let you do almost anything\n"
-"                                    you can imagine. And with automatic updates,\n"
-"                                    you're always getting the best experience possible."
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_4
-#: model:product.product,website_description:product.product_product_4b
-#: model:product.product,website_description:product.product_product_4c
-#: model:product.product,website_description:product.product_product_4d
-#: model:product.template,website_description:product.product_product_4_product_template
-#: model:product.template,website_description:product.product_product_4b_product_template
-#: model:product.template,website_description:product.product_product_4c_product_template
-#: model:product.template,website_description:product.product_product_4d_product_template
-msgid ""
-"Right from the start, there’s a lot to love about\n"
-"                                    iPad. It’s simple yet powerful. Thin and light yet\n"
-"                                    full-featured. It can do just about everything and\n"
-"                                    be just about anything."
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_6
-#: model:product.template,website_description:product.product_product_6_product_template
-msgid ""
-"Right from the start, there’s a lot to love about iPad.\n"
-"                                   It’s simple yet powerful. Thin and light yet full-\n"
-"                                   featured. It can do just about everything and be just\n"
-"                                   about anything.And because it’s so easy to use, it’s\n"
-"                                   easy to love."
-msgstr ""
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_pricelist_item_form_view
@@ -2211,7 +1522,7 @@ msgstr "Satılabilir"
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_template_form_view
 msgid "Sales"
-msgstr "Satış"
+msgstr "Satışlar"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_list_price
@@ -2223,20 +1534,6 @@ msgstr "Satış Fiyatı"
 #: model:res.groups,name:product.group_sale_pricelist
 msgid "Sales Pricelists"
 msgstr "Satış Fiyat Listeleri"
-
-#. module: product
-#: model:product.product,website_description:product.product_product_11
-#: model:product.product,website_description:product.product_product_11b
-#: model:product.template,website_description:product.product_product_11_product_template
-#: model:product.template,website_description:product.product_product_11b_product_template
-msgid ""
-"Say you’re listening to a song you love and you want to stay in the mood.\n"
-"                                        Just tap Genius. It finds other songs on iPod nano that go great together\n"
-"                                        and makes a Genius playlist for you. For more song combinations\n"
-"                                        you wouldn’t have thought of yourself, create Genius Mixes in iTunes\n"
-"                                        and sync the ones you like to iPod nano. Then tap Genius Mixes and\n"
-"                                        rediscover songs you haven’t heard in a while — or find music you forgot you even had."
-msgstr ""
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product_categ_id
@@ -2256,12 +1553,6 @@ msgid "Sequence"
 msgstr "Sıra"
 
 #. module: product
-#: model:product.product,name:product.consu_delivery_01
-#: model:product.template,name:product.consu_delivery_01_product_template
-msgid "Server"
-msgstr "Sunucu"
-
-#. module: product
 #: code:addons/product/models/product_template.py:51
 #: selection:product.template,type:0
 #, python-format
@@ -2270,7 +1561,6 @@ msgstr "Hizmet"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_template_search_view
-#: model:product.category,name:product.product_category_3
 msgid "Services"
 msgstr "Hizmetler"
 
@@ -2309,18 +1599,6 @@ msgid "Show pricelists to customers"
 msgstr "Fiyat Listelerini Müşteriye göster"
 
 #. module: product
-#: model:product.product,name:product.membership_1
-#: model:product.template,name:product.membership_1_product_template
-msgid "Silver Membership"
-msgstr "Gümüş Üyelik"
-
-#. module: product
-#: model:product.product,website_description:product.product_product_5b
-#: model:product.template,website_description:product.product_product_5b_product_template
-msgid "Sleek, compact design"
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_image_small
 #: model:ir.model.fields,field_description:product.field_product_template_image_small
 msgid "Small-sized image"
@@ -2340,19 +1618,6 @@ msgstr ""
 #: selection:product.uom,uom_type:0
 msgid "Smaller than the reference Unit of Measure"
 msgstr "Ölçü referans Biriminden daha küçük"
-
-#. module: product
-#: model:product.product,website_description:product.product_product_5b
-#: model:product.template,website_description:product.product_product_5b_product_template
-msgid ""
-"Soft covers are available separately in blue, green or orange. Pick a color "
-"to match your style."
-msgstr ""
-
-#. module: product
-#: model:product.category,name:product.product_category_4
-msgid "Software"
-msgstr "Yazılım"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item_categ_id
@@ -2428,38 +1693,6 @@ msgid "Stockable Product"
 msgstr "Stoklanabilir Ürün"
 
 #. module: product
-#: model:product.product,name:product.product_product_2
-#: model:product.template,name:product.product_product_2_product_template
-msgid "Support Contract (on timesheet)"
-msgstr ""
-
-#. module: product
-#: model:product.product,name:product.product_delivery_01
-#: model:product.template,name:product.product_delivery_01_product_template
-msgid "Switch, 24 ports"
-msgstr "Switch, 24 ports"
-
-#. module: product
-#: model:product.product,website_description:product.product_product_11
-#: model:product.product,website_description:product.product_product_11b
-#: model:product.template,website_description:product.product_product_11_product_template
-#: model:product.template,website_description:product.product_product_11b_product_template
-msgid "Sync to your heart’s content."
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_11
-#: model:product.product,website_description:product.product_product_11b
-#: model:product.template,website_description:product.product_product_11_product_template
-#: model:product.template,website_description:product.product_product_11b_product_template
-msgid ""
-"Tap to play your favorite songs. Or entire albums.\n"
-"                                    Or everything by one artist. You can even browse by genres or composers.\n"
-"                                    Flip through your music: Album art looks great on the bigger screen.\n"
-"                                    Or to keep things fresh, give iPod nano a shake and it shuffles to a different song in your music library."
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,help:product.field_product_product_pricelist_id
 #: model:ir.model.fields,help:product.field_product_template_pricelist_id
 msgid ""
@@ -2467,39 +1700,6 @@ msgid ""
 msgstr ""
 "Teknik alan. Fiyat listelerinde arama yapmak için kullanılır, veritabanında "
 "saklanmaz."
-
-#. module: product
-#: model:product.product,website_description:product.product_product_7
-#: model:product.template,website_description:product.product_product_7_product_template
-msgid ""
-"The Apple In-Ear Headphones deliver a truly immersive sound experience by drastically\n"
-"                                    reducing unwanted outside noises. The soft, silicone ear tips fit snugly and comfortably\n"
-"                                    in your ear, creating a seal that isolates your music from your surroundings.\n"
-"                                    Three different sizes of ear tips are included so you can find a perfect fit for each ear.\n"
-"                                    Also included are a convenient carrying case for the ear tips and a cable-control case\n"
-"                                    for the headphones themselves."
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_5b
-#: model:product.template,website_description:product.product_product_5b_product_template
-msgid ""
-"The Bose® SoundLink® mini is Bose's smallest portable Bluetooth speaker. Its ultra-compact size fits in the \n"
-"                                    palm of your hand, yet gives you full, natural sound wirelessly from your iPhone, iPad, or iPod. Grab it and go \n"
-"                                    full-featured. It can do just about everything and\n"
-"                                    experience music just about anywhere."
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_5b
-#: model:product.template,website_description:product.product_product_5b_product_template
-msgid ""
-"The SoundLink® Mini speaker is small and light enough\n"
-"                                        to tuck into your bag. It weighs in at just 1.5 pounds.\n"
-"                                        Its low profile lets you place it almost anywhere and\n"
-"                                        provides a low center of gravity that makes it nearly\n"
-"                                        impossible to tip over."
-msgstr ""
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_pricelist_item_form_view
@@ -2523,37 +1723,8 @@ msgid "The conversion ratio for a unit of measure cannot be 0!"
 msgstr "Ölçü birimi çevrimi için çevrim oranı 0 olamaz !"
 
 #. module: product
-#: model:product.product,website_description:product.product_product_8
-#: model:product.template,website_description:product.product_product_8_product_template
-msgid "The desktop. In its most advanced form ever"
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,help:product.field_product_packaging_sequence
 msgid "The first in the sequence is the default one."
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_4
-#: model:product.product,website_description:product.product_product_4b
-#: model:product.product,website_description:product.product_product_4c
-#: model:product.product,website_description:product.product_product_4d
-#: model:product.product,website_description:product.product_product_6
-#: model:product.template,website_description:product.product_product_4_product_template
-#: model:product.template,website_description:product.product_product_4b_product_template
-#: model:product.template,website_description:product.product_product_4c_product_template
-#: model:product.template,website_description:product.product_product_4d_product_template
-#: model:product.template,website_description:product.product_product_6_product_template
-msgid "The full iPad experience."
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_9
-#: model:product.template,website_description:product.product_product_9_product_template
-msgid ""
-"The incredibly thin Apple Wireless Keyboard uses Bluetooth technology,\n"
-"                                    which makes it compatible with iPad. And you’re free to type wherever\n"
-"                                    you like — with the keyboard in front of your iPad or on your lap."
 msgstr ""
 
 #. module: product
@@ -2606,15 +1777,6 @@ msgstr ""
 "bilgileri, teklif notları, muhasebe verileri, satın alma yöntemleri vb."
 
 #. module: product
-#: model:product.product,website_description:product.product_product_5b
-#: model:product.template,website_description:product.product_product_5b_product_template
-msgid ""
-"The rechargeable lithium-ion battery delivers up to seven hours of playtime.\n"
-"                                    And at home, you can listen even longer—the charging cradle lets\n"
-"                                    you listen while it charges."
-msgstr ""
-
-#. module: product
 #: sql_constraint:product.uom:0
 msgid "The rounding precision must be greater than 0!"
 msgstr ""
@@ -2627,27 +1789,6 @@ msgid ""
 msgstr ""
 "Satış fiyatı, ürün şablonundan yönetilir. Ek özellik fiyatlarını ayarlamak "
 "için 'Varyant Fiyatları' düğmesine tıklayın."
-
-#. module: product
-#: model:product.product,description_sale:product.product_product_9
-#: model:product.template,description_sale:product.product_product_9_product_template
-msgid ""
-"The sleek aluminium Apple Wireless Keyboard.\n"
-"            "
-msgstr ""
-"Şık alüminyum Apple Kablosuz Klavye.\n"
-"            "
-
-#. module: product
-#: model:product.product,website_description:product.product_product_5b
-#: model:product.template,website_description:product.product_product_5b_product_template
-msgid ""
-"The speaker has a range of about 30 feet, so you can enjoy\n"
-"                                    the sound you want without wires. It pairs easily with your\n"
-"                                    smartphone, iPad® or other Bluetooth device.\n"
-"                                    And it remembers the most recent six devices you've used,\n"
-"                                    so reconnecting is even simpler."
-msgstr ""
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_packaging_qty
@@ -2665,36 +1806,6 @@ msgstr "Hacim m³"
 #: model:ir.model.fields,help:product.field_product_template_weight
 msgid "The weight of the contents in Kg, not including any packaging, etc."
 msgstr "İçeriğin kg olarak ağırlığı, ambalaj vs. içermez."
-
-#. module: product
-#: model:product.product,website_description:product.product_product_4
-#: model:product.product,website_description:product.product_product_4b
-#: model:product.product,website_description:product.product_product_4c
-#: model:product.product,website_description:product.product_product_4d
-#: model:product.template,website_description:product.product_product_4_product_template
-#: model:product.template,website_description:product.product_product_4b_product_template
-#: model:product.template,website_description:product.product_product_4c_product_template
-#: model:product.template,website_description:product.product_product_4d_product_template
-msgid "There is less of it, but no less to it."
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_6
-#: model:product.template,website_description:product.product_product_6_product_template
-msgid "There's less of it, but no less to it."
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_11
-#: model:product.product,website_description:product.product_product_11b
-#: model:product.template,website_description:product.product_product_11_product_template
-#: model:product.template,website_description:product.product_product_11b_product_template
-msgid ""
-"There’s another way to get a good mix of music on iPod: Let Genius do the work.\n"
-"                                        Activate Genius in iTunes on your computer, and it automatically finds songs that sound\n"
-"                                        great together. Then it creates Genius Mixes, which you can easily sync to your iPod.\n"
-"                                        It’s the perfect way to rediscover songs you haven’t listened to in forever."
-msgstr ""
 
 #. module: product
 #: sql_constraint:product.attribute.value:0
@@ -2731,8 +1842,8 @@ msgstr "Bu, tüm özelliklerin ekstra fiyat toplamıdır"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_template_form_view
-msgid "This note will show up on sales orders."
-msgstr "Buraya yazacağınız açıklamalar satış siparişlerinde görünecektir."
+msgid "This note will show up on sales orders & invoices."
+msgstr ""
 
 #. module: product
 #: model:ir.model.fields,help:product.field_res_partner_property_product_pricelist
@@ -2759,40 +1870,9 @@ msgid ""
 msgstr ""
 
 #. module: product
-#: model:product.product,website_description:product.product_product_7
-#: model:product.template,website_description:product.product_product_7_product_template
-msgid "Two is better than one."
-msgstr "İki, birden daha iyidir."
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_uom_uom_type
 msgid "Type"
-msgstr "Tür"
-
-#. module: product
-#: model:product.product,website_description:product.product_product_5b
-#: model:product.template,website_description:product.product_product_5b_product_template
-msgid ""
-"USB port allows for software update to ensure ongoing Bluetooth device "
-"compatibility"
-msgstr ""
-
-#. module: product
-#: model:product.pricelist,name:product.list0
-msgid "USD"
-msgstr "USD"
-
-#. module: product
-#: model:product.product,website_description:product.product_product_6
-#: model:product.template,website_description:product.product_product_6_product_template
-msgid "Ultrafast wireless."
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_8
-#: model:product.template,website_description:product.product_product_8_product_template
-msgid "Ultrathin design"
-msgstr ""
+msgstr "Türü"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_uom_active
@@ -2845,27 +1925,9 @@ msgid ""
 msgstr ""
 
 #. module: product
-#: model:product.product,website_description:product.product_product_5b
-#: model:product.template,website_description:product.product_product_5b_product_template
-msgid "Universal iPod docking station fits most iPod/iPhone models"
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_7
-#: model:product.template,website_description:product.product_product_7_product_template
-msgid ""
-"Unlike many small headphones, each earpiece of the Apple In-Ear Headphones\n"
-"                                    contains two separate high-performance drivers — a woofer to handle bass and\n"
-"                                    mid-range sounds and a tweeter for high-frequency audio. These dedicated\n"
-"                                    drivers help ensure accurate, detailed sound across the entire sonic spectrum.\n"
-"                                    The result: you’re immersed in the music and hear details you never knew existed.\n"
-"                                    Even when listening to an old favorite, you may feel like you’re hearing it for the first time."
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_res_config_settings_group_sale_pricelist
 msgid "Use pricelists to adapt your price per customers"
-msgstr "Her müşteriye farklı fiyat ayarlaması için fiyat listeleri kullanma"
+msgstr "Her müşteriye farklı fiyat ayarlaması için fiyat listeleri kullanın"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_supplierinfo_form_view
@@ -2981,19 +2043,6 @@ msgid "Volume"
 msgstr "Hacim"
 
 #. module: product
-#: model:product.product,website_description:product.product_product_5b
-#: model:product.template,website_description:product.product_product_5b_product_template
-msgid "Volume control on main system"
-msgstr ""
-
-#. module: product
-#: model:product.product,website_description:product.product_product_5b
-#: model:product.template,website_description:product.product_product_5b_product_template
-msgid ""
-"Wall charger can be plugged into the cradle or directly into the speaker"
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_weight
 #: model:ir.model.fields,field_description:product.field_product_template_weight
 #: model:product.uom.categ,name:product.product_uom_categ_kgm
@@ -3004,49 +2053,6 @@ msgstr "Ağırlık"
 #: model:ir.ui.view,arch_db:product.product_variant_easy_edit_view
 msgid "Weights"
 msgstr "Hacim ve Ağırlık Bilgileri"
-
-#. module: product
-#: model:product.product,website_description:product.product_product_11
-#: model:product.product,website_description:product.product_product_11b
-#: model:product.template,website_description:product.product_product_11_product_template
-#: model:product.template,website_description:product.product_product_11b_product_template
-msgid "When one playlist isn’t enough."
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.product_attribute_value_3
-msgid "White"
-msgstr "Beyaz"
-
-#. module: product
-#: model:product.product,website_description:product.product_product_4
-#: model:product.product,website_description:product.product_product_4b
-#: model:product.product,website_description:product.product_product_4c
-#: model:product.product,website_description:product.product_product_4d
-#: model:product.product,website_description:product.product_product_6
-#: model:product.template,website_description:product.product_product_4_product_template
-#: model:product.template,website_description:product.product_product_4b_product_template
-#: model:product.template,website_description:product.product_product_4c_product_template
-#: model:product.template,website_description:product.product_product_4d_product_template
-#: model:product.template,website_description:product.product_product_6_product_template
-msgid "Why you'll love an iPad."
-msgstr ""
-
-#. module: product
-#: model:product.attribute,name:product.product_attribute_3
-msgid "Wi-Fi"
-msgstr "Wi-Fi"
-
-#. module: product
-#: model:product.product,website_description:product.product_product_6
-#: model:product.template,website_description:product.product_product_6_product_template
-msgid ""
-"With advanced Wi‑Fi that’s up to twice as fast as\n"
-"                                   any previous-generation iPad and access to fast\n"
-"                                   cellular data networks around the world, iPad mini\n"
-"                                   lets you download content, stream video,\n"
-"                                   and browse the web at amazing speeds."
-msgstr ""
 
 #. module: product
 #: model:product.uom.categ,name:product.uom_categ_wtime
@@ -3110,25 +2116,6 @@ msgid ""
 msgstr ""
 
 #. module: product
-#: model:product.product,website_description:product.product_product_11
-#: model:product.product,website_description:product.product_product_11b
-#: model:product.template,website_description:product.product_product_11_product_template
-#: model:product.template,website_description:product.product_product_11b_product_template
-msgid ""
-"You probably have multiple playlists in iTunes on your computer.\n"
-"                                        One for your commute. One for the gym. Sync those playlists\n"
-"                                        to iPod, and you can play the perfect mix for whatever\n"
-"                                        mood strikes you. VoiceOver tells you the name of each playlist,\n"
-"                                        so it’s easy to switch between them and find the one you want without looking."
-msgstr ""
-
-#. module: product
-#: model:product.product,name:product.product_order_01
-#: model:product.template,name:product.product_order_01_product_template
-msgid "Zed+ Antivirus"
-msgstr "Zed+ Antivirüs"
-
-#. module: product
 #: model:product.uom,name:product.product_uom_cm
 msgid "cm"
 msgstr "cm"
@@ -3184,49 +2171,6 @@ msgid "gal(s)"
 msgstr "gal"
 
 #. module: product
-#: model:product.product,name:product.product_product_8
-#: model:product.template,name:product.product_product_8_product_template
-msgid "iMac"
-msgstr "iMac"
-
-#. module: product
-#: model:product.product,name:product.product_product_6
-#: model:product.template,name:product.product_product_6_product_template
-msgid "iPad Mini"
-msgstr "iPad Mini"
-
-#. module: product
-#: model:product.product,name:product.product_product_4
-#: model:product.product,name:product.product_product_4b
-#: model:product.product,name:product.product_product_4c
-#: model:product.product,name:product.product_product_4d
-#: model:product.template,name:product.product_product_4_product_template
-#: model:product.template,name:product.product_product_4b_product_template
-#: model:product.template,name:product.product_product_4c_product_template
-#: model:product.template,name:product.product_product_4d_product_template
-msgid "iPad Retina Display"
-msgstr "iPad Retina Display"
-
-#. module: product
-#: model:product.product,name:product.product_product_11
-#: model:product.product,name:product.product_product_11b
-#: model:product.template,name:product.product_product_11_product_template
-#: model:product.template,name:product.product_product_11b_product_template
-msgid "iPod"
-msgstr "iPod"
-
-#. module: product
-#: model:product.product,website_description:product.product_product_11
-#: model:product.product,website_description:product.product_product_11b
-#: model:product.template,website_description:product.product_product_11_product_template
-#: model:product.template,website_description:product.product_product_11b_product_template
-msgid ""
-"iTunes on your Mac or PC makes it easy to load up\n"
-"                                        your iPod. Just choose the playlists, audiobooks,\n"
-"                                        podcasts, and other audio files you want, then sync."
-msgstr ""
-
-#. module: product
 #: model:product.uom,name:product.product_uom_inch
 msgid "inch(es)"
 msgstr "inç"
@@ -3280,18 +2224,6 @@ msgstr "product.price.history"
 #: model:product.uom,name:product.product_uom_qt
 msgid "qt"
 msgstr "mik"
-
-#. module: product
-#: model:product.product,description_sale:product.consu_delivery_02
-#: model:product.template,description_sale:product.consu_delivery_02_product_template
-msgid "raid 1, 512ECC ram"
-msgstr ""
-
-#. module: product
-#: model:product.product,description_sale:product.consu_delivery_01
-#: model:product.template,description_sale:product.consu_delivery_01_product_template
-msgid "raid 10, 2048ECC ram"
-msgstr ""
 
 #. module: product
 #: model:ir.model,name:product.model_report_product_report_pricelist

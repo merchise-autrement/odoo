@@ -3,19 +3,20 @@
 # * hr_contract
 # 
 # Translators:
-# Ediz Duman <neps1192@gmail.com>, 2017
-# Martin Trigaux <mat@odoo.com>, 2017
 # Murat Kaplan <muratk@projetgrup.com>, 2017
-# Levent Karakaş <levent@mektup.at>, 2017
+# Martin Trigaux <mat@odoo.com>, 2017
+# gezgin biri <gezginbiri@hotmail.com>, 2017
 # Gökhan Erdoğdu <gokhan.erdogdu@mechsoft.com.tr>, 2017
-# alisan alacam <alisanalacam@gmail.com>, 2017
+# Ramiz Deniz Öner <deniz@denizoner.com>, 2017
+# Ediz Duman <neps1192@gmail.com>, 2017
+# Levent Karakaş <levent@mektup.at>, 2017
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 10.saas~18\n"
+"Project-Id-Version: Odoo Server saas~11.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-20 09:53+0000\n"
-"PO-Revision-Date: 2017-09-20 09:53+0000\n"
-"Last-Translator: alisan alacam <alisanalacam@gmail.com>, 2017\n"
+"POT-Creation-Date: 2017-12-13 14:37+0000\n"
+"PO-Revision-Date: 2017-12-13 14:37+0000\n"
+"Last-Translator: Levent Karakaş <levent@mektup.at>, 2017\n"
 "Language-Team: Turkish (https://www.transifex.com/odoo/teams/41243/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -26,7 +27,7 @@ msgstr ""
 #. module: hr_contract
 #: model:ir.ui.view,arch_db:hr_contract.hr_contract_view_form
 msgid "<span class=\"text-muted\">(If fixed-term contract)</span>"
-msgstr "<span class=\"text-muted\">(belirli süreli sözleşmeyse)</span>"
+msgstr "<span class=\"text-muted\">(sınırlı süreli sözleşmeyse)</span>"
 
 #. module: hr_contract
 #: model:ir.ui.view,arch_db:hr_contract.hr_contract_view_form
@@ -36,12 +37,12 @@ msgstr "<span>/ ay</span>"
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_advantages
 msgid "Advantages"
-msgstr "Yan Haklar"
+msgstr "Avantajlar"
 
 #. module: hr_contract
 #: model:ir.ui.view,arch_db:hr_contract.hr_contract_view_form
 msgid "Advantages..."
-msgstr "Yan Haklar..."
+msgstr "Avantajlar..."
 
 #. module: hr_contract
 #: selection:hr.contract,state:0
@@ -61,7 +62,12 @@ msgstr "Şirket"
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_employee_vehicle
 msgid "Company Vehicle"
-msgstr "Şirket Aracı"
+msgstr "Firma Aracı"
+
+#. module: hr_contract
+#: model:ir.ui.view,arch_db:hr_contract.hr_contract_view_form
+msgid "Contract Details"
+msgstr ""
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_name
@@ -76,7 +82,7 @@ msgstr "Sözleşme Koşulları"
 
 #. module: hr_contract
 #: model:ir.model,name:hr_contract.model_hr_contract_type
-#: model:ir.model.fields,field_description:hr_contract.field_hr_contract_type_id_5898
+#: model:ir.model.fields,field_description:hr_contract.field_hr_contract_type_id_6036
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_type_name
 #: model:ir.ui.view,arch_db:hr_contract.hr_contract_type_view_form
 #: model:ir.ui.view,arch_db:hr_contract.hr_contract_type_view_search
@@ -205,7 +211,7 @@ msgstr "Bitiş Tarihi"
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_contract_date_end
 msgid "End date of the contract (if it's a fixed-term contract)."
-msgstr "Sözleşmenin bitiş tarihi (belirli süreli sözleşme değilse)"
+msgstr "Sözleşmenin bitiş tarihi (sınırlı süreli sözleşme değilse)"
 
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_contract_trial_date_end
@@ -302,12 +308,12 @@ msgstr "Personelin son sözleşmesi"
 #. module: hr_contract
 #: model:ir.ui.view,arch_db:hr_contract.hr_hr_employee_view_form2
 msgid "Medical Exam"
-msgstr "Sağlık Raporu"
+msgstr "Medikal Sınavı"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_employee_medic_exam
 msgid "Medical Examination Date"
-msgstr "Sağlık Raporu Tarihi"
+msgstr "Sağlık Kontrolü Tarihi"
 
 #. module: hr_contract
 #: model:ir.ui.view,arch_db:hr_contract.hr_contract_view_form
@@ -331,11 +337,6 @@ msgid "Number of Children"
 msgstr "Çocuk Sayısı"
 
 #. module: hr_contract
-#: model:ir.ui.view,arch_db:hr_contract.hr_contract_view_form
-msgid "Other Information"
-msgstr "Diğer Bilgiler"
-
-#. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_employee_place_of_birth
 msgid "Place of Birth"
 msgstr "Doğum Yeri"
@@ -343,12 +344,12 @@ msgstr "Doğum Yeri"
 #. module: hr_contract
 #: selection:hr.contract,state:0
 msgid "Running"
-msgstr "Süren"
+msgstr "Aktif"
 
 #. module: hr_contract
 #: model:ir.ui.view,arch_db:hr_contract.hr_contract_view_form
 msgid "Salary Information"
-msgstr "Ücret Bilgisi"
+msgstr "Maaş Bilgisi"
 
 #. module: hr_contract
 #: model:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
@@ -384,7 +385,7 @@ msgstr "Durum"
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_state
 msgid "Status"
-msgstr "Durumu"
+msgstr "Durum"
 
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_contract_state
@@ -421,4 +422,4 @@ msgstr "Çalışma İzin No"
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_resource_calendar_id
 msgid "Working Schedule"
-msgstr "Çalışma Saatleri"
+msgstr "Çalışma Takvimi"

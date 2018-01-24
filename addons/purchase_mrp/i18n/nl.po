@@ -3,7 +3,7 @@
 # * purchase_mrp
 # 
 # Translators:
-# Cas Vissers <casvissers@brahoo.nl>, 2017
+# Yenthe Van Ginneken <yenthespam@gmail.com>, 2016
 # Erwin van der Ploeg <erwin@odooexperts.nl>, 2017
 msgid ""
 msgstr ""

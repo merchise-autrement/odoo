@@ -926,7 +926,6 @@ more details.
 #----------------------------------------------------------
 # Controller and route registration
 #----------------------------------------------------------
-addons_module = {}
 addons_manifest = {}
 controllers_per_module = collections.defaultdict(list)
 
@@ -1279,6 +1278,7 @@ class Response(werkzeug.wrappers.Response):
     def set_default(self, template=None, qcontext=None, uid=None):
         self.template = template
         self.qcontext = qcontext or dict()
+        self.qcontext['response_template'] = self.template
         self.uid = uid
         # Support for Cross-Origin Resource Sharing
         if request.endpoint and 'cors' in request.endpoint.routing:
@@ -1424,7 +1424,7 @@ class Root(object):
         statics = {}
         for addons_path in odoo.modules.module.ad_paths:
             for module in sorted(os.listdir(str(addons_path))):
-                if module not in addons_module:
+                if module not in addons_manifest:
                     mod_path = opj(addons_path, module)
                     manifest_path = module_manifest(mod_path)
                     path_static = opj(addons_path, module, 'static')
@@ -1434,11 +1434,6 @@ class Root(object):
                             continue
                         manifest['addons_path'] = addons_path
                         _logger.debug("Loading %s", module)
-                        if 'odoo.addons' in sys.modules:
-                            m = __import__('odoo.addons.' + module)
-                        else:
-                            m = None
-                        addons_module[module] = m
                         addons_manifest[module] = manifest
                         statics['/%s/static' % module] = path_static
 

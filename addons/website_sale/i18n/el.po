@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-30 13:11+0000\n"
-"PO-Revision-Date: 2017-11-30 13:11+0000\n"
+"POT-Creation-Date: 2017-10-24 08:59+0000\n"
+"PO-Revision-Date: 2017-10-24 08:59+0000\n"
 "Last-Translator: Stefanos Nikou <stefanos.nikou@gmail.com>, 2017\n"
 "Language-Team: Greek (https://www.transifex.com/odoo/teams/41243/el/)\n"
 "MIME-Version: 1.0\n"
@@ -28,7 +28,7 @@ msgid "&amp;nbsp;"
 msgstr "&amp;nbsp;"
 
 #. module: website_sale
-#: model:ir.ui.view,arch_db:website_sale.cart_lines
+#: model:ir.ui.view,arch_db:website_sale.reduction_code
 msgid "/shop/cart"
 msgstr "/shop/cart"
 
@@ -55,7 +55,7 @@ msgstr ""
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_7
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_8
 msgid "75 percent less reflection."
-msgstr "75 τοις εκατό λιγότερη αντανάκλαση."
+msgstr ""
 
 #. module: website_sale
 #: model:mail.template,body_html:website_sale.mail_template_sale_cart_recovery
@@ -187,10 +187,6 @@ msgid ""
 "                        <p>You should send an email to the customers to encourage them!</p>\n"
 "                    "
 msgstr ""
-"<p class=\"oe_view_nocontent_create\">\n"
-"                        Εδώ θα βρείτε όλα τα εγκαταλελειμμένα καλάθια, δηλαδή τα καλάθια που δημιουργήθηκαν από τους επισκέπτες του ιστότοπου σας πριν από μία ώρα και δεν επιβεβαιώθηκαν.</p>\n"
-"                        <p>Θα πρέπει να στείλετε ένα e-mail για να τα αναβιώσετε!</p>\n"
-"                    "
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.terms
@@ -258,8 +254,6 @@ msgid ""
 "<span class=\"fa fa-lightbulb-o fa-2x\"/>\n"
 "                                Offering free delivery with a minimum amount or minimum number of items should drive up your average order value and help to compensate for the delivery costs."
 msgstr ""
-"<span class=\"fa fa-lightbulb-o fa-2x\"/>\n"
-"Προσφέροντας δωρεάν παράδοση με ελάχιστο ποσό ή ελάχιστο αριθμό ειδών πρέπει να αυξήσει τη μέση τιμή παραγγελίας σας και να σας βοηθήσει να αντισταθμίσετε τα έξοδα αποστολής."
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -267,8 +261,6 @@ msgid ""
 "<span class=\"fa fa-lightbulb-o fa-2x\"/>\n"
 "                                You can create different rates based on order amount ranges (e.g. $10 up to a $50 order, then $5 beyond)."
 msgstr ""
-"<span class=\"fa fa-lightbulb-o fa-2x\"/>\n"
-"Μπορείτε να δημιουργήσετε διαφορετικές χρεώσεις με βάση τα ποσά των παραγγελιών (π.χ. 10€ μέχρι μια παραγγελία των 50€ και στη συνέχεια 5€ και μετά)."
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.continue_shopping
@@ -753,10 +745,6 @@ msgid ""
 "This should the country in which your company is headquartered or the "
 "country from which you operate your web site and mobile app."
 msgstr ""
-"Ο <b>Κυβερνητικός νόμος</b> θα ενημερώνει τους χρήστες σχετικά με τους "
-"νόμους που διέπουν τη συμφωνία. Αυτή θα πρέπει να είναι η χώρα στην οποία "
-"εδρεύει η εταιρεία σας ή η χώρα από την οποία λειτουργεί η ιστοσελίδα σας "
-"και την εφαρμογή για κινητά."
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.terms
@@ -766,12 +754,6 @@ msgid ""
 "be part of a very long and thorough list in your Terms and Conditions "
 "agreements so as to encompass the most amount of negative uses."
 msgstr ""
-"Μια ρήτρα <b>Περιορισμός στο τι μπορούν να κάνουν οι χρήστες</b> μπορεί να "
-"ενημερώσει τους χρήστες ότι συμφωνώντας να χρησιμοποιήσουν την υπηρεσία σας,"
-" συμφωνούν επίσης να μην κάνουν κάποια πράγματα. Αυτό μπορεί να είναι μέρος "
-"μιας πολύ μακράς και εμπεριστατωμένης λίστας των συμφωνιών σας για τους "
-"Όρους και τις Προϋποθέσεις, ώστε να καλύπτει το μεγαλύτερο μέρος των "
-"αρνητικών χρήσεων."
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.terms
@@ -782,11 +764,6 @@ msgid ""
 " agreeing (or disagreeing) with the Terms and Conditions or Privacy Policies"
 " of these third parties."
 msgstr ""
-"Το <b>Σύνδεσμοι σε άλλες ιστοσελίδες</b> θα ενημερώνει τους χρήστες ότι δεν "
-"είστε υπεύθυνοι για οποιεσδήποτε ιστοσελίδες τρίτων μερών στις οποίες "
-"συνδέεστε. Αυτή η ρήτρα γενικά θα ενημερώνει τους χρήστες ότι είναι "
-"υπεύθυνοι για την ανάγνωση και τη συμφωνία (ή διαφωνία) με τους Όρους και "
-"τις Προϋποθέσεις ή τις Πολιτικές Απορρήτου αυτών των τρίτων."
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.terms
@@ -796,11 +773,6 @@ msgid ""
 "have an account with you) can be terminated in case of abuses or at your "
 "sole discretion."
 msgstr ""
-"Μια ρήτρα <b>Τερματισμός</b> θα ενημερώνει ότι οι λογαριασμοί χρηστών στον "
-"ιστότοπό και εφαρμογών για κινητά, ή η πρόσβαση των χρηστών στον ιστότοπό "
-"σας και μέσω εφαρμογών για κινητά (αν δεν μπορούν να έχουν λογαριασμό σε "
-"εσάς) θα μπορούν να τερματιστούν σε περίπτωση κατάχρησης ή κατά τη "
-"διακριτική σας ευχέρεια."
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.extra_info
@@ -813,8 +785,6 @@ msgid ""
 "A few % discount can bring you twice more customers! Here are a few kinds of"
 " discounts to boost your sales:"
 msgstr ""
-"Με λίγη έκπτωση % μπορείτε να φέρετε δύο φορές περισσότερους πελάτες! Εδώ "
-"είναι μερικά είδη εκπτώσεων για να ενισχύσετε τις πωλήσεις σας:"
 
 #. module: website_sale
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_12
@@ -885,15 +855,11 @@ msgid ""
 "sell strategy, e.g. for computers: mouse, keyboard, etc.). An algorithm "
 "figures out a list of accessories based on all the products added to cart."
 msgstr ""
-"Τα επιπλέον είδη εμφανίζονται όταν ο πελάτης εξετάζει το καλάθι πριν από την"
-" πληρωμή (στρατηγική διασταυρούμενων πωλήσεων π.χ. για υπολογιστές: ποντίκι,"
-" πληκτρολόγιο κ.λπ.). Ένας αλγόριθμος παρουσιάζει μια λίστα αξεσουάρ με βάση"
-" όλα τα είδη που προστίθενται στο καλάθι."
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Accessories: screen, mouse"
-msgstr "Επιπλέον: οθόνη, ποντίκι"
+msgstr "Αξεσουάρ: οθόνη, ποντίκι"
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_product_product_accessory_product_ids
@@ -979,7 +945,7 @@ msgstr ""
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_3
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_5
 msgid "And because it’s so easy to use, it’s easy to love."
-msgstr "Και επειδή είναι τόσο εύκολο στη χρήση, είναι εύκολο να το αγαπήσεις."
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.coupon_form
@@ -1011,12 +977,12 @@ msgstr "Αναθέσεις"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Assignation of online orders"
-msgstr "Ανάθεση ηλεκτρονικών παραγγελιών"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.menu,name:website_sale.menu_catalog_variants_action
 msgid "Attribute Values"
-msgstr "Τιμές Χαρακτηριστικών"
+msgstr "Αξίες Χαρακτηριστικών"
 
 #. module: website_sale
 #: model:ir.ui.menu,name:website_sale.menu_product_attribute_action
@@ -1110,7 +1076,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_sale_order_can_directly_mark_as_paid
 msgid "Can be directly marked as paid"
-msgstr "Μπορεί να επισημανθεί απευθείας ως πληρωμένο"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -1123,7 +1089,7 @@ msgstr ""
 #: code:addons/website_sale/static/src/xml/website_sale_dashboard.xml:12
 #, python-format
 msgid "Capture order payments when the delivery is completed."
-msgstr "Καταγραφή πληρωμών παραγγελίας όταν η αποστολή έχει ολοκληρωθεί."
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_sale_order_cart_quantity
@@ -1192,11 +1158,6 @@ msgid ""
 "Shop page, hit Customize and turn *Product Categories* on. A product can "
 "belong to several categories."
 msgstr ""
-"Μπορείτε να δημοσιεύσετε κατηγορίες στη σελίδα του καταστήματος (online "
-"πλέγμα καταλόγων) για να βοηθήσετε τους πελάτες να βρουν όλα τα είδη μιας "
-"κατηγορίας. Για να τις δημοσιεύσετε, μεταβείτε στη σελίδα του καταστήματος, "
-"πατήστε Προσαρμογή και ενεργοποιήστε τις *Κατηγορίες Ειδών*. Ένα είδος "
-"μπορεί να ανήκει σε διάφορες κατηγορίες."
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -1523,7 +1484,7 @@ msgstr ""
 #. module: website_sale
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_11
 msgid "Design. The thinnest iPod ever."
-msgstr "Σχεδίαση. Το λεπτότερο iPod που έγινε ποτέ."
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model.fields,help:website_sale.field_product_product_website_sequence
@@ -1539,7 +1500,7 @@ msgstr "Συσκευές"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Discount % or amounts, margins, roundings, periods, etc."
-msgstr "Έκπτωση % ή ποσά, περιθώρια, στρογγυλοποιήσεις, περιόδους κλπ."
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_product_image_display_name
@@ -1556,7 +1517,7 @@ msgstr "Εμφάνιση καρουσέλ εικόνων στις σελίδες
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "Display crossed-out public prices"
-msgstr "Προβολή διαβαθμισμένων δημόσιων τιμών"
+msgstr ""
 
 #. module: website_sale
 #. openerp-web
@@ -1709,7 +1670,7 @@ msgid ""
 "Find here all the abandoned carts, i.e. the carts generated by your "
 "website's visitors more than one hour ago and not confirmed."
 msgstr ""
-"Εδώ θα βρείτε όλα τα εγκαταλελειμμένα καλάθια, δηλαδή τα καλάθια που "
+"Βρείτε εδώ όλα τα εγκαταλελειμμένα καλάθια, δηλαδή τα καλάθια που "
 "δημιουργήθηκαν από τους επισκέπτες του ιστότοπου σας πριν από μία ώρα και "
 "δεν επιβεβαιώθηκαν."
 
@@ -1787,9 +1748,10 @@ msgid "Have Genius call the tunes."
 msgstr ""
 
 #. module: website_sale
+#: model:ir.ui.view,arch_db:website_sale.payment
 #: model:ir.ui.view,arch_db:website_sale.reduction_code
 msgid "Have a promo code? Fill in this field and apply."
-msgstr "Έχετε ένα κωδικό προσφοράς; Συμπληρώστε αυτό το πεδίο και εφαρμόστε."
+msgstr ""
 
 #. module: website_sale
 #: model:product.public.category,name:website_sale.Headset
@@ -1800,8 +1762,6 @@ msgstr "Headset"
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Here are <strong>some pros and cons</strong> to help you decide:<br/>"
 msgstr ""
-"Εδώ είναι <strong>μερικά πλεονεκτήματα και μειονεκτήματα</strong> για να σας"
-" βοηθήσουμε να αποφασίσετε: <br/>"
 
 #. module: website_sale
 #: model:ir.model.fields,help:website_sale.field_product_attribute_value_html_color
@@ -1927,10 +1887,6 @@ msgid ""
 " You don't want to cut into your margins, but you want to remain price-"
 "competitive."
 msgstr ""
-"Φανταστείτε ότι ένας νέος πελάτης προσθέτει ένα προϊόν στο καλάθι και "
-"εγκαταλείπει τον ιστότοπό σας εξαιτίας των εξόδων αποστολής... Ο ορισμός "
-"μιας καλής στρατηγικής παράδοσης είναι δύσκολος. Δεν θέλετε να περικόψετε τα"
-" περιθώρια σας, αλλά θέλετε να παραμείνετε ανταγωνιστικοί στις τιμές."
 
 #. module: website_sale
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_14
@@ -1944,7 +1900,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Install Optional Products (cross-selling)"
-msgstr "Εγκατάσταση προαιρετικών προϊόντων (διασταυρούμενες πωλήσεις)"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -1954,7 +1910,7 @@ msgstr "Εγκαταστήστε συνδέσμους μεταφορικών"
 #. module: website_sale
 #: model:ir.model.fields,help:website_sale.field_res_config_settings_module_website_sale_stock
 msgid "Installs *e-Commerce Inventory*"
-msgstr "Θα εγκατασταθεί το \"Αποθέματα στο Ηλεκτρονικό Εμπόριο\""
+msgstr ""
 
 #. module: website_sale
 #: code:addons/website_sale/controllers/main.py:502
@@ -1988,8 +1944,6 @@ msgstr "Έκδοση τιμολογίων στους πελάτες"
 #, python-format
 msgid "It is forbidden to modify a sales order which is not in draft status"
 msgstr ""
-"Απαγορεύεται η τροποποίηση παραγγελίας η οποία δεν είναι σε πρόχειρη "
-"κατάσταση."
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -2005,7 +1959,7 @@ msgstr ""
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_7
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_8
 msgid "Key Features"
-msgstr "Βασικά Χαρακτηριστικά"
+msgstr ""
 
 #. module: website_sale
 #: model:product.public.category,name:website_sale.Keyboard_Mouse
@@ -2052,7 +2006,7 @@ msgstr "Τελευταία Ενημέρωση στις"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.sale_report_view_search_website
 msgid "Last Week"
-msgstr "Προηγ.  Εβδομάδα"
+msgstr "Προηγούμενη Εβδομάδα"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.sale_report_view_search_website
@@ -2096,8 +2050,6 @@ msgid ""
 "Let's now take a look at your administration dashboard to get your eCommerce"
 " website ready in no time."
 msgstr ""
-"Ας ρίξουμε μια ματιά στον ταμπλό διαχείρισης για να έχετε έτοιμο τον "
-"ιστότοπο ηλεκτρονικού εμπορίου σας έτοιμο σε χρόνο μηδέν."
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -2226,7 +2178,7 @@ msgstr "Δίκτυο"
 
 #. module: website_sale
 #. openerp-web
-#: code:addons/website_sale/controllers/main.py:968
+#: code:addons/website_sale/controllers/main.py:967
 #: code:addons/website_sale/static/src/js/website_sale.editor.js:32
 #: model:ir.ui.view,arch_db:website_sale.content_new_product
 #, python-format
@@ -2379,7 +2331,7 @@ msgid "Parent Category"
 msgstr "Μητρική Κατηγορία"
 
 #. module: website_sale
-#: code:addons/website_sale/controllers/main.py:756
+#: code:addons/website_sale/controllers/main.py:755
 #, python-format
 msgid "Pay Now"
 msgstr "Εξόφληση Τώρα"
@@ -2419,14 +2371,14 @@ msgstr "Πληρωμή<span class=\"chevron\"/>"
 #. module: website_sale
 #: model:ir.actions.act_window,name:website_sale.payment_transaction_action_payments_to_capture
 msgid "Payments To Capture"
-msgstr "Πληρωμές για Καταγραφή"
+msgstr "Λήψη Πληρωμών "
 
 #. module: website_sale
 #. openerp-web
 #: code:addons/website_sale/static/src/xml/website_sale_dashboard.xml:14
 #, python-format
 msgid "Payments to Capture"
-msgstr "Πληρωμές για Καταγραφή"
+msgstr "Λήψη Πληρωμών "
 
 #. module: website_sale
 #: model:product.public.category,name:website_sale.Pen_Drive
@@ -2480,7 +2432,7 @@ msgstr "Προηγούμενος Μήνας"
 #: code:addons/website_sale/controllers/backend.py:107
 #, python-format
 msgid "Previous Week"
-msgstr "Προηγ. Εβδομάδα"
+msgstr "Προηγούμενη Εβδομάδα"
 
 #. module: website_sale
 #: code:addons/website_sale/controllers/backend.py:111
@@ -2627,6 +2579,11 @@ msgid "Products"
 msgstr "Είδη"
 
 #. module: website_sale
+#: model:ir.ui.view,arch_db:website_sale.reduction_code
+msgid "Promo Code"
+msgstr "Κωδικός Προσφοράς"
+
+#. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_sale
 msgid "Promote"
 msgstr "Προώθηση"
@@ -2707,7 +2664,7 @@ msgstr "Προσφορά"
 #. module: website_sale
 #: selection:product.attribute,type:0
 msgid "Radio"
-msgstr "Κουμπί Επιλογής"
+msgstr "Ραδιόφωνο"
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_product_product_rating_ids
@@ -2868,18 +2825,16 @@ msgstr "Οθόνη"
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "See how to configure delivery methods and shipping connectors"
 msgstr ""
-"Δείτε πώς να διαμορφώσετε τις τρόπους παράδοσης και την σύνδεση με τους "
-"παρόχους αποστολών"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "See how to configure payment acquirers"
-msgstr "Δείτε πώς να διαμορφώσετε τους αποδέκτες πληρωμής"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "See how to configure pricing &amp; discounts"
-msgstr "Δείτε πώς μπορείτε να διαμορφώσετε τις τιμές και τις εκπτώσεις"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -2899,8 +2854,6 @@ msgid ""
 "Select <b>New Product</b> to create it and manage its properties to boost "
 "your sales."
 msgstr ""
-"Επιλέξτε <b>Νέο Είδος</b> για να το δημιουργήσετε και να διαχειριστείτε τις "
-"ιδιότητές του για να αυξήσετε τις πωλήσεις σας."
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
@@ -2908,8 +2861,6 @@ msgid ""
 "Select optional products from the configuration form of your main products "
 "(in Sales tab)."
 msgstr ""
-"Επιλέξτε προαιρετικά είδη από τη φόρμα διαμόρφωσης των κύριων ειδών σας "
-"(στην καρτέλα Πωλήσεις)."
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.address_kanban
@@ -2924,7 +2875,7 @@ msgstr "Επιλέξτε τις προτιμητέες τιμές και επι�
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Select your shipping management policy"
-msgstr "Επιλέξτε την πολιτική διαχείρισης αποστολών"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_product_pricelist_selectable
@@ -2963,8 +2914,8 @@ msgstr "Αποστολή Email Ανάκτησης"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
-msgid "Send a recovery email to authenticated shoppers"
-msgstr ""
+msgid "Send a recovery email to authentified shoppers"
+msgstr "Στείλτε email ανάκτησης καλαθιού σε μη επαληθευμένους αγοραστές"
 
 #. module: website_sale
 #. openerp-web
@@ -2996,8 +2947,6 @@ msgid ""
 "Set alternatives, accessories and options in product detail form (in Sales "
 "tab)"
 msgstr ""
-"Ορίστε εναλλακτικά είδη, εξαρτήματα και επιλογές στη φόρμα λεπτομερειών του "
-"είδους (στην καρτέλα Πωλήσεις)"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
@@ -3127,8 +3076,6 @@ msgid ""
 "Some acquirers like Authorize.net and Ingenico can be used as payment "
 "gateways with your own payment processor."
 msgstr ""
-"Μερικοί αποδέκτες πληρωμής, όπως το Authorize.net και το Ingenico, μπορούν "
-"να χρησιμοποιηθούν ως πύλες πληρωμών με τον δικό σας επεξεργαστή πληρωμών."
 
 #. module: website_sale
 #: code:addons/website_sale/controllers/main.py:520
@@ -3212,8 +3159,6 @@ msgid ""
 "Suggest more expensive alternatives to your customers (upsell strategy). "
 "Those products show up on the product page."
 msgstr ""
-"Προτείνετε πιο ακριβές εναλλακτικές λύσεις για τους πελάτες σας (στρατηγική "
-"upsell). Αυτά τα είδη εμφανίζονται στη σελίδα του είδους."
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
@@ -3223,17 +3168,17 @@ msgstr "Προτείνετε προαιρετικά είδη κατά την π�
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Suggest options and accessories"
-msgstr "Προτείνετε επιλογές και επιπλέον είδη"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Suggest pricier alternatives"
-msgstr "Προτείνετε ακριβότερες εναλλακτικές λύσεις"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.suggested_products_list
 msgid "Suggested Accessories:"
-msgstr "Προτεινόμενα επιπλέον είδη:"
+msgstr ""
 
 #. module: website_sale
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_11
@@ -3277,7 +3222,7 @@ msgstr "Όροι &amp; Προϋποθέσεις"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.terms
 msgid "Terms &amp;amp; Conditions"
-msgstr "Όροι &amp;amp; Προϋποθέσεις"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.confirmation
@@ -3291,9 +3236,6 @@ msgid ""
 "contents, logo and other visual media you created is your property and is "
 "protected by copyright laws."
 msgstr ""
-"Η παράθεση <b>πνευματικής ιδιοκτησίας</b> θα ενημερώνει τους χρήστες ότι το "
-"περιεχόμενο, το λογότυπο και άλλα οπτικά μέσα που δημιουργήσατε, είναι "
-"ιδιοκτησία σας και προστατεύονται από νόμους περί πνευματικών δικαιωμάτων."
 
 #. module: website_sale
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_14
@@ -3344,8 +3286,6 @@ msgid ""
 "The mode selected here applies as invoicing policy of any new product "
 "created but not of products already existing."
 msgstr ""
-"Ο τρόπος που επιλέξατε εδώ ισχύει ως πολιτική τιμολόγησης για κάθε νέο είδος"
-" που θα δημιουργηθεί, αλλά όχι για είδη που υπάρχουν ήδη."
 
 #. module: website_sale
 #: code:addons/website_sale/models/sale_order.py:247
@@ -3354,20 +3294,18 @@ msgid ""
 "The quote should be sent and the payment acquirer type should be manual or "
 "wire transfer"
 msgstr ""
-"Η προσφορά πρέπει να αποστέλλεται και ο τύπος του αποδέκτη πληρωμής πρέπει "
-"να είναι μη αυτόματος ή έμβασμα"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "There are two strategies to sell more to a customer:"
-msgstr "Υπάρχουν δύο στρατηγικές για την πώληση περισσότερων σε έναν πελάτη:"
+msgstr ""
 
 #. module: website_sale
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_2
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_3
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_5
 msgid "There is less of it, but no less to it."
-msgstr "Υπάρχει λιγότερο από αυτό, αλλά όχι λιγότερο σε αυτό."
+msgstr ""
 
 #. module: website_sale
 #. openerp-web
@@ -3379,7 +3317,7 @@ msgstr "Δεν υπάρχει πρόσφατη επιβεβαιωμένη παρ
 #. module: website_sale
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_1
 msgid "There's less of it, but no less to it."
-msgstr "Υπάρχει λιγότερο από αυτό, αλλά όχι λιγότερο σε αυτό."
+msgstr ""
 
 #. module: website_sale
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_11
@@ -3393,12 +3331,12 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "This adds the choice of a currency on pricelists."
-msgstr "Αυτό προσθέτει την επιλογή ενός νομίσματος στους τιμοκαταλόγους."
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.product
 msgid "This combination does not exist."
-msgstr "Αυτός ο συνδυασμός δεν υπάρχει."
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model.fields,help:website_sale.field_product_public_category_image
@@ -3412,18 +3350,17 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.cart
 msgid "This is your current cart."
-msgstr "Αυτό είναι το τρέχον καλάθι σας."
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.coupon_form
 msgid "This promo code is not available"
-msgstr "Αυτός ο κωδικός προσφοράς δεν είναι διαθέσιμος"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 msgid "This tax is applied to any new product created in the catalog."
 msgstr ""
-"Αυτός ο φόρος εφαρμόζεται σε κάθε νέο είδος που δημιουργείται στον κατάλογο."
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -3431,26 +3368,17 @@ msgid ""
 "To collect payments, you can either request your customers to process it manually (wire transfer, etc.) or redirect them to payment acquirers.<br/>\n"
 "                        Using payment acquirers costs you money, so take some time to compare them."
 msgstr ""
-"Για να συλλέξετε τις πληρωμές, μπορείτε είτε να ζητήσετε από τους πελάτες σας να το επεξεργαστούν με μη αυτόματο τρόπο (μεταφορά μέσω τραπεζικού λογαριασμού κ.λπ.) είτε να τους ανακατευθύνει σε αποδέκτες πληρωμής.<br/>\n"
-"Η χρήση των αποδεκτών πληρωμών κοστίζει χρήματα, οπότε αφιερώστε λίγο χρόνο για να τα συγκρίνετε."
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid ""
 "To do so, take the most out of Odoo's <strong>pricing options</strong>:<br/>"
 msgstr ""
-"Για να το κάνετε αυτό, εκμεταλλευτείτε στο έπακρο τις <strong>επιλογές "
-"τιμολόγησης</strong> του Odoo:<br/>"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.report_shop_saleorder_document
 msgid "Total"
 msgstr "Σύνολο"
-
-#. module: website_sale
-#: model:ir.ui.view,arch_db:website_sale.cart_popover
-msgid "True"
-msgstr "Αληθές"
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_product_attribute_type
@@ -3470,7 +3398,7 @@ msgstr "USPS"
 #. module: website_sale
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_1
 msgid "Ultrafast wireless."
-msgstr "Πολύ γρήγορο ασύρματο δίκτυο"
+msgstr ""
 
 #. module: website_sale
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_14
@@ -3479,7 +3407,7 @@ msgstr "Πολύ γρήγορο ασύρματο δίκτυο"
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_7
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_8
 msgid "Ultrathin design"
-msgstr "Λεπτή σχεδίαση"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.confirmation
@@ -3507,7 +3435,7 @@ msgstr "Αφορολόγητο Σύνολο Πωληθέντων"
 #: code:addons/website_sale/static/src/js/website_sale_tour_shop.js:42
 #, python-format
 msgid "Upload an image from your local library."
-msgstr "Μεταφορτώστε μια εικόνα από την τοπική βιβλιοθήκη σας."
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -3519,7 +3447,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.cart_popover
 msgid "View Cart ("
-msgstr "Προβολή Καλαθιού ("
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_product_product_website_published
@@ -3548,7 +3476,7 @@ msgstr "Δημόσιες Κατηγορίες Ιστότοπου"
 #: model:ir.model.fields,field_description:website_sale.field_product_product_website_sequence
 #: model:ir.model.fields,field_description:website_sale.field_product_template_website_sequence
 msgid "Website Sequence"
-msgstr "Ακολουθία ιστοτόπου"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.actions.act_url,name:website_sale.action_open_website
@@ -3585,7 +3513,7 @@ msgstr "Τιμή Ιστότοπου"
 #: model:ir.model.fields,field_description:website_sale.field_product_product_website_price_difference
 #: model:ir.model.fields,field_description:website_sale.field_product_template_website_price_difference
 msgid "Website price difference"
-msgstr "Διαφορά τιμής ιστότοπου"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_product_product_website_public_price
@@ -3601,12 +3529,12 @@ msgstr "Ιστότοποι"
 #. module: website_sale
 #: model:ir.model.fields,help:website_sale.field_crm_team_website_ids
 msgid "Websites using this sales channel"
-msgstr "Οι ιστότοποι που χρησιμοποιούν αυτό το κανάλι πωλήσεων"
+msgstr ""
 
 #. module: website_sale
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_11
 msgid "When one playlist isn’t enough."
-msgstr "Όταν δεν είναι αρκετή μια λίστα αναπαραγωγής."
+msgstr ""
 
 #. module: website_sale
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_1
@@ -3614,7 +3542,7 @@ msgstr "Όταν δεν είναι αρκετή μια λίστα αναπαρα
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_3
 #: model:sale.order.line,website_description:website_sale.website_sale_order_line_5
 msgid "Why you'll love an iPad."
-msgstr "Γιατί θα αγαπήσετε ένα iPad."
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_res_config_settings_module_website_sale_wishlist
@@ -3638,15 +3566,11 @@ msgid ""
 "(from Sales tab). With the second one, you set prices and computation rules "
 "from Pricelists."
 msgstr ""
-"Με την πρώτη λειτουργία μπορείτε να ορίσετε διάφορες τιμές στη φόρμα "
-"ρύθμισης παραμέτρων του είδους (από την καρτέλα Πωλήσεις). Με τη δεύτερη, "
-"καθορίζετε τιμές και κανόνες υπολογισμού από τιμοκαταλόγους."
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "You can setup 3 types of <strong>payment acquirers in Odoo:</strong>"
 msgstr ""
-"Μπορείτε να ορίσετε 3 τύπους <strong>Αποδεκτών Πληρωμών στο Odoo:</strong>"
 
 #. module: website_sale
 #: model:ir.actions.act_window,help:website_sale.action_orders_ecommerce
@@ -3658,12 +3582,12 @@ msgstr "Δεν έχετε καμία επιβεβαιωμένη παραγγελ
 #: model:ir.actions.act_window,help:website_sale.sale_report_action_carts
 #: model:ir.actions.act_window,help:website_sale.sale_report_action_dashboard
 msgid "You don't have any order from the website."
-msgstr "Δεν έχετε καμία παραγγελία από τον ιστότοπο."
+msgstr ""
 
 #. module: website_sale
 #: model:ir.actions.act_window,help:website_sale.payment_transaction_action_payments_to_capture
 msgid "You don't have any payments to capture from the website."
-msgstr "Δεν έχετε καμία πληρωμή για καταγραφή από τον Ιστότοπο."
+msgstr ""
 
 #. module: website_sale
 #: model:ir.actions.act_window,help:website_sale.action_unpaid_orders_ecommerce
@@ -3701,8 +3625,6 @@ msgid ""
 "Your Address\n"
 "                                        <small> or </small>"
 msgstr ""
-"Η Διεύθυνσή σας\n"
-"                                        <small> ή </small>"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.extra_info
@@ -3718,7 +3640,7 @@ msgstr "Το καλάθι σας είναι άδειο"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.cart
 msgid "Your previous cart has already been completed."
-msgstr "Το προηγούμενο καλάθι σας έχει ήδη ολοκληρωθεί."
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.address
@@ -3756,7 +3678,7 @@ msgstr "Κατηγορίες eshop"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.search count
 msgid "found)"
-msgstr "βρέθηκαν)"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
@@ -3775,7 +3697,6 @@ msgstr ""
 #: model:ir.ui.view,arch_db:website_sale.cart
 msgid "if you want to merge your previous cart into current cart."
 msgstr ""
-"εάν θέλετε να συγχωνεύσετε το προηγούμενο καλάθι σας με το τρέχον καλάθι."
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.cart
@@ -3783,18 +3704,16 @@ msgid ""
 "if you want to restore your previous cart. Your current cart will be "
 "replaced with your previous cart."
 msgstr ""
-"εάν θέλετε να επαναφέρετε το προηγούμενο καλάθι σας. Το τρέχον καλάθι σας θα"
-" αντικατασταθεί από το προηγούμενο καλάθι σας."
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.cart_popover
 msgid "items)"
-msgstr "είδη)"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.model.fields,help:website_sale.field_res_config_settings_cart_abandoned_delay
 msgid "number of hours after which the cart is considered abandoned"
-msgstr "αριθμός ωρών όπου το καλάθι θα θεωρείται εγκαταλελειμμένο"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -3824,12 +3743,12 @@ msgstr "res.config.settings"
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "set company logo"
-msgstr "ορίσετε το λογότυπο της εταιρίας"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.payment_sale_note
 msgid "terms &amp; conditions"
-msgstr "όροι &amp; προϋποθέσεις"
+msgstr ""
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
