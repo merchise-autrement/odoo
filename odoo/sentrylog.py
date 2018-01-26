@@ -92,7 +92,7 @@ _sentry_client = None
 
 
 def get_client():
-    from openerp.tools import config
+    from odoo.tools import config
     global _sentry_client
     overrides = config.misc.get('sentry', {})
     conf.update(overrides)

@@ -2,7 +2,7 @@
 
 import re
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.osv import expression
 
 
@@ -71,6 +71,15 @@ class ResPartnerBank(models.Model):
     _sql_constraints = [
         ('unique_number', 'unique(sanitized_acc_number, company_id)', 'Account Number must be unique'),
     ]
+
+    @api.multi
+    def name_get(self):
+        return [
+            (bank.id, _('{name}: {number}').format(
+                name=bank.bank_name or _('BANK'),
+                number=bank.acc_number))
+            for bank in self
+        ]
 
     @api.depends('acc_number')
     def _compute_sanitized_acc_number(self):

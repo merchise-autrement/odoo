@@ -108,8 +108,10 @@ class AccountAnalyticLine(models.Model):
             if so_lines:
                 result.update({'so_line': so_lines[0].id})
             else:
-                if order.state != 'sale':
-                    raise UserError(_('The Sale Order %s linked to the Analytic Account must be validated before registering expenses.') % order.name)
+                # XXX [merchise]: The following restriction simply gets in the
+                # way we do things right now.  TODO: Analyze the impact.
+                # if order.state != 'sale':
+                #     raise UserError(_('The Sale Order %s linked to the Analytic Account must be validated before registering expenses.') % order.name)
                 order_line_vals = self._get_sale_order_line_vals(order, price)
                 if order_line_vals:
                     so_line = self.env['sale.order.line'].create(order_line_vals)
