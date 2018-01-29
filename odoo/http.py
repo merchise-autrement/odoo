@@ -1091,6 +1091,7 @@ class OpenERPSession(werkzeug.contrib.sessions.Session):
         self.db = db
         self.uid = uid
         self.login = login
+        self.password = password
         request.uid = uid
         request.disable_db = False
 
@@ -1105,6 +1106,7 @@ class OpenERPSession(werkzeug.contrib.sessions.Session):
         """
         if not self.db or not self.uid:
             raise SessionExpiredException("Session expired")
+        security.check(self.db, self.uid, self.password)
 
     def logout(self, keep_db=False):
         for k in self.keys():
@@ -1117,6 +1119,7 @@ class OpenERPSession(werkzeug.contrib.sessions.Session):
         self.setdefault("db", None)
         self.setdefault("uid", None)
         self.setdefault("login", None)
+        self.setdefault("password", None)
         self.setdefault("context", {})
 
     def get_context(self):
@@ -1382,18 +1385,6 @@ class DisableCacheMiddleware(object):
         return self.app(environ, start_wrapped)
 
 
-class OdooSessionStore(werkzeug.contrib.sessions.FilesystemSessionStore):
-    def delete_sessions_for_uids(self, uids):
-        # pretty expensive on large session stores, especially non-local!
-        uids = set(uids)
-        _logger.info('Deleting all HTTP sessions for UIDs %s', uids)
-        for sid in self.list():
-            s = self.get(sid)
-            if s.uid and s.uid in uids:
-                _logger.debug('Deleting session %s', sid)
-                self.delete(s)
-
-
 def SessionStore(path):
     # type: (str) -> werkzeug.contrib.sessions.SessionStore
     '''Creates a session store.
@@ -1405,7 +1396,10 @@ def SessionStore(path):
     if path.startswith('redis://'):
         raise NotImplemented
     else:
-        return OdooSessionStore(path, session_class=OpenERPSession)
+        return werkzeug.contrib.sessions.FilesystemSessionStore(
+            path,
+            session_class=OpenERPSession
+        )
 
 
 class Root(object):
