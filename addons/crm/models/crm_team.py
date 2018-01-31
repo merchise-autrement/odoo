@@ -51,7 +51,8 @@ class Team(models.Model):
     @api.model
     def action_your_pipeline(self):
         action = self.env.ref('crm.crm_lead_opportunities_tree_view').read()[0]
-        user_team_id = self.env.user.sale_team_id.id
+        # get the first team the user is member of.
+        user_team_id = self.env.user.sale_teams.ids[:1]
         if not user_team_id:
             user_team_id = self.search([], limit=1).id
             action['help'] = """<p class='oe_view_nocontent_create'>Click here to add new opportunities</p><p>
