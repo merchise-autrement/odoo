@@ -35,7 +35,13 @@ class CrmTeam(models.Model):
     company_id = fields.Many2one('res.company', string='Company',
                                  default=lambda self: self.env['res.company']._company_default_get('crm.team'))
     user_id = fields.Many2one('res.users', string='Team Leader')
-    member_ids = fields.One2many('res.users', 'sale_team_id', string='Team Members')
+    member_ids = fields.Many2many(
+        'res.users',
+        string='Team Members',
+        relation='sale_member_rel',
+        column1='team_id',
+        column2='user_id',
+    )
     reply_to = fields.Char(string='Reply-To',
                            help="The email address put in the 'Reply-To' of all emails sent by Odoo about cases in this sales team")
     color = fields.Integer(string='Color Index', help="The color of the team")
