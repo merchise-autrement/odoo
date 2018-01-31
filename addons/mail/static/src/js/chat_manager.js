@@ -217,7 +217,7 @@ function make_message (data) {
 
     // Compute url of attachments
     _.each(msg.attachment_ids, function(a) {
-        a.url = '/web/content/' + a.id + '?download=true';
+        a.url = '/web/content/' + a.id;
     });
 
     // format date to the local only once by message
