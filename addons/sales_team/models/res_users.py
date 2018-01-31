@@ -7,6 +7,11 @@ from odoo import fields, models
 class ResUsers(models.Model):
     _inherit = 'res.users'
 
-    sale_team_id = fields.Many2one(
-        'crm.team', 'Sales Team',
-        help='Sales Team the user is member of. Used to compute the members of a sales team through the inverse one2many')
+    sale_teams = fields.Many2many(
+        'crm.team',
+        string="Sales Teams",
+        relation='sale_member_rel',
+        column1='user_id',
+        column2='team_id',
+        help="Sales Teams the user is member of."
+    )
