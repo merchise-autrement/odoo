@@ -48,12 +48,28 @@
                                 </group>
                                 <group name="group_standard_price">
                                     <field name="list_price" string="Sales Price" widget='monetary' options="{'currency_field': 'currency_id', 'field_digits': True}"/>
+                                    <label for="standard_price" groups="base.group_user" attrs="{'invisible': [('product_variant_count', '&gt;', 1)]}"/>
+                                    <div name="standard_price_uom" groups="base.group_user" attrs="{'invisible': [('product_variant_count', '&gt;', 1)]}">
+                                        <field name="standard_price" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                    </div>
                                     <field name="company_id" groups="base.group_multi_company"
                                         options="{'no_create': True}"/>
                                     <field name="uom_id" groups="product.group_uom" options="{'no_create': True}"/>
                                     <field name="uom_po_id" groups="product.group_uom" options="{'no_create': True}"/>
                                     <field name="currency_id" invisible="1"/>
                                     <field name="product_variant_id" invisible="1"/>
+                                </group>
+                                <group name="group_lots_and_weight" attrs="{'invisible':[('type', 'not in', ['product', 'consu'])]}">
+                                    <label for="weight"/>
+                                    <div class="o_row" name="weight">
+                                        <field name="weight"/>
+                                        <span><field name="weight_uom_name"/></span>
+                                    </div>
+                                    <label for="volume"/>
+                                    <div class="o_row" name="volume">
+                                        <field name="volume" string="Volume"/>
+                                        <span>m³</span>
+                                    </div>
                                 </group>
                             </group>
                         </page>
@@ -85,14 +101,6 @@
                             </group>
                         </page>
                         <page string="Inventory" name="inventory" groups="stock.group_stock_user,product.group_stock_packaging" attrs="{'invisible':[('type', '=', 'service')]}">
-                            <group name="inventory">
-                                <group string="Inventory Valuation" name="inventory_valuation">
-                                    <label for="standard_price" groups="base.group_user" attrs="{'invisible': [('product_variant_count', '&gt;', 1)]}"/>
-                                    <div name="standard_price_uom" groups="base.group_user" attrs="{'invisible': [('product_variant_count', '&gt;', 1)]}">
-                                        <field name="standard_price" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-                                    </div>
-                                </group>
-                            </group>
                             <group name="packaging" string="Packaging"
                                 colspan="4"
                                 attrs="{'invisible':['|', ('type', 'not in', ['product', 'consu']), ('product_variant_count', '>', 1)]}"

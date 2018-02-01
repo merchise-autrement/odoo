@@ -187,17 +187,6 @@ class Message(models.Model):
         return ids
 
     @api.multi
-    def mark_as_unread(self, channel_ids=None):
-        """ Add needactions to messages for the current partner. """
-        partner_id = self.env.user.partner_id.id
-        for message in self:
-            message.write({'needaction_partner_ids': [(4, partner_id)]})
-
-        ids = [m.id for m in self]
-        notification = {'type': 'mark_as_unread', 'message_ids': ids, 'channel_ids': channel_ids}
-        self.env['bus.bus'].sendone((self._cr.dbname, 'res.partner', self.env.user.partner_id.id), notification)
-
-    @api.multi
     def set_message_done(self):
         """ Remove the needaction from messages for the current partner. """
         partner_id = self.env.user.partner_id
@@ -404,6 +393,7 @@ class Message(models.Model):
                     'id': 59,
                     'subject': False
                     'is_note': True # only if the subtype is internal
+                    'is_discussion': False # only if the message is a discussion (subtype == discussion)
                 }
         """
         message_values = self.read([
@@ -417,13 +407,15 @@ class Message(models.Model):
         message_tree = dict((m.id, m) for m in self.sudo())
         self._message_read_dict_postprocess(message_values, message_tree)
 
-        # add subtype data (is_note flag, subtype_description). Do it as sudo
+        # add subtype data (is_note flag, is_discussion flag , subtype_description). Do it as sudo
         # because portal / public may have to look for internal subtypes
         subtype_ids = [msg['subtype_id'][0] for msg in message_values if msg['subtype_id']]
-        subtypes = self.env['mail.message.subtype'].sudo().browse(subtype_ids).read(['internal', 'description'])
+        subtypes = self.env['mail.message.subtype'].sudo().browse(subtype_ids).read(['internal', 'description','id'])
         subtypes_dict = dict((subtype['id'], subtype) for subtype in subtypes)
+        xml_comment_id = self.env.ref('mail.mt_comment').id
         for message in message_values:
             message['is_note'] = message['subtype_id'] and subtypes_dict[message['subtype_id'][0]]['internal']
+            message['is_discussion'] = message['subtype_id'] and subtypes_dict[message['subtype_id'][0]]['id'] == xml_comment_id
             message['subtype_description'] = message['subtype_id'] and subtypes_dict[message['subtype_id'][0]]['description']
             if message['model'] and self.env[message['model']]._original_module:
                 message['module_icon'] = modules.module.get_module_icon(self.env[message['model']]._original_module)
@@ -699,14 +691,14 @@ class Message(models.Model):
     @api.model
     def _get_reply_to(self, values):
         """ Return a specific reply_to: alias of the document through
-        message_get_reply_to or take the email_from """
+        _notify_get_reply_to or take the email_from """
         model, res_id, email_from = values.get('model', self._context.get('default_model')), values.get('res_id', self._context.get('default_res_id')), values.get('email_from')  # ctx values / defualt_get res ?
-        if model and hasattr(self.env[model], 'message_get_reply_to'):
-            # return self.env[model].browse(res_id).message_get_reply_to([res_id], default=email_from)[res_id]
-            return self.env[model].message_get_reply_to([res_id], default=email_from)[res_id]
+        if model and hasattr(self.env[model], '_notify_get_reply_to'):
+            # return self.env[model].browse(res_id)._notify_get_reply_to([res_id], default=email_from)[res_id]
+            return self.env[model]._notify_get_reply_to([res_id], default=email_from)[res_id]
         else:
-            # return self.env['mail.thread'].message_get_reply_to(default=email_from)[None]
-            return self.env['mail.thread'].message_get_reply_to([None], default=email_from)[None]
+            # return self.env['mail.thread']._notify_get_reply_to(default=email_from)[None]
+            return self.env['mail.thread']._notify_get_reply_to([None], default=email_from)[None]
 
     @api.model
     def _get_message_id(self, values):
@@ -803,7 +795,7 @@ class Message(models.Model):
     #------------------------------------------------------
 
     @api.multi
-    def _notify(self, force_send=False, send_after_commit=True, user_signature=True):
+    def _notify(self, layout=False, force_send=False, send_after_commit=True, user_signature=True):
         """ Compute recipients to notify based on specified recipients and document
         followers. Delegate notification to partners to send emails and bus notifications
         and to channels to broadcast messages on channels """
@@ -854,7 +846,7 @@ class Message(models.Model):
                 ('id', 'in', (partners_sudo - notif_partners).ids),
                 ('channel_ids', 'in', email_channels.ids),
                 ('email', '!=', self_sudo.author_id.email or self_sudo.email_from),
-            ])._notify(self, force_send=force_send, send_after_commit=send_after_commit, user_signature=user_signature)
+            ])._notify(self, layout=layout, force_send=force_send, send_after_commit=send_after_commit, user_signature=user_signature)
 
         notif_partners._notify_by_chat(self)
 

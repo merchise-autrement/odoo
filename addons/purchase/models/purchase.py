@@ -236,7 +236,8 @@ class PurchaseOrder(models.Model):
         else:
             self.fiscal_position_id = self.env['account.fiscal.position'].with_context(company_id=self.company_id.id).get_fiscal_position(self.partner_id.id)
             self.payment_term_id = self.partner_id.property_supplier_payment_term_id.id
-            self.currency_id = self.partner_id.property_purchase_currency_id.id or self.env.user.company_id.currency_id.id
+            if not self.currency_id:
+                self.currency_id = self.partner_id.property_purchase_currency_id.id or self.env.user.company_id.currency_id.id
         return {}
 
     @api.onchange('fiscal_position_id')
@@ -306,7 +307,7 @@ class PurchaseOrder(models.Model):
             'default_use_template': bool(template_id),
             'default_template_id': template_id,
             'default_composition_mode': 'comment',
-            'custom_layout': "purchase.mail_template_data_notification_email_purchase_order",
+            'custom_layout': "mail.mail_notification_borders",
             'force_email': True,
             'mark_rfq_as_sent': True,
         })
@@ -820,12 +821,13 @@ class PurchaseOrderLine(models.Model):
     def _onchange_quantity(self):
         if not self.product_id:
             return
-
+        params = {'order_id': self.order_id}
         seller = self.product_id._select_seller(
             partner_id=self.partner_id,
             quantity=self.product_qty,
             date=self.order_id.date_order and self.order_id.date_order[:10],
-            uom_id=self.product_uom)
+            uom_id=self.product_uom,
+            params=params)
 
         if seller or not self.date_planned:
             self.date_planned = self._get_date_planned(seller).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
@@ -882,9 +884,10 @@ class ProcurementRule(models.Model):
 
         supplier = self._make_po_select_supplier(values, suppliers)
         partner = supplier.name
+        # we put `supplier_info` in values for extensibility purposes
+        values['supplier'] = supplier
 
         domain = self._make_po_get_domain(values, partner)
-
         if domain in cache:
             po = cache[domain]
         else:

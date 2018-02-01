@@ -107,7 +107,7 @@
                         <button  class="oe_stat_button" name="attachment_tree_view" type="object" icon="fa-files-o">
                             <field string="Documents" name="doc_count" widget="statinfo"/>
                         </button>
-                        <button class="oe_stat_button" type="action"
+                        <button class="oe_stat_button" type="action" attrs="{'invisible': [('task_count', '=', 0)]}"
                             name="%(act_project_project_2_project_task_all)d" icon="fa-tasks">
                             <field string="Tasks" name="task_count" widget="statinfo" options="{'label_field': 'label_tasks'}"/>
                         </button>
@@ -336,7 +336,7 @@
                                                 <a name="action_view_all_rating" type="object">Customer Ratings</a>
                                             </div>
                                         </div>
-                                        <div class="o_project_kanban_colorpicker">
+                                        <div class="o_no_padding_kanban_colorpicker">
                                             <ul class="oe_kanban_colorpicker" data-field="color"/>
                                         </div>
                                     </div>
@@ -502,12 +502,26 @@
             </field>
         </record>
 
+        <record id="quick_create_task_form" model="ir.ui.view">
+            <field name="name">project.task.form.quick_create</field>
+            <field name="model">project.task</field>
+            <field name="priority">1000</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="name"/>
+                        <field name="user_id" options="{'no_open': True}"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
         <!-- Project Task Kanban View -->
         <record model="ir.ui.view" id="view_task_kanban">
             <field name="name">project.task.kanban</field>
             <field name="model">project.task</field>
             <field name="arch" type="xml">
-                <kanban default_group_by="stage_id" class="o_kanban_small_column o_kanban_project_tasks" on_create="quick_create">
+                <kanban default_group_by="stage_id" class="o_kanban_small_column o_kanban_project_tasks" on_create="quick_create" quick_create_view="project.quick_create_task_form" examples="project">
                     <field name="color"/>
                     <field name="priority"/>
                     <field name="stage_id" options='{"group_by_tooltip": {"description": "Stage Description", "legend_priority": "Use of stars"}}'/>
