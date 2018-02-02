@@ -1,22 +1,16 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# celeryapp
-# ---------------------------------------------------------------------
-# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2015-09-26
 
 '''Odoo Celery Application.
 
 Integrates Odoo and Celery, so that jobs can be started from the Odoo HTTP
 workers and tasks can use the Odoo ORM.
-
 
 '''
 
@@ -751,6 +745,10 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs,
         job_uuid = self.request.id if self.request.id else str(uuid1())
     context = kwargs.pop('context', None)
     try:
+        logger.info(
+            'Start job (%s): db=%s, uid=%s, model=%s, ids=%r, method=%s',
+            job_uuid, dbname, uid, model, ids, methodname
+        )
         with MaybeRecords(dbname, uid, model, ids, context=context) as r:
             method = getattr(r, methodname, None)
             if method:
