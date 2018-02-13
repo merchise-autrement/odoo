@@ -23,6 +23,7 @@
             <field name="model">product.pricelist.item</field>
             <field name="arch" type="xml">
                 <form string="Pricelist Items">
+                <sheet>
                     <h1><field name="name"/></h1>
                     <group>
                         <group>
@@ -78,6 +79,7 @@
 
                         <field name="base_pricelist_id" attrs="{'invisible':[('base', '!=', 'pricelist')],'required': [('base','=', 'pricelist')], 'readonly': [('base','!=', 'pricelist')]}"/>
                     </group>
+                </sheet>
                 </form>
             </field>
         </record>

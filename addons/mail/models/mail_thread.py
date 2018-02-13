@@ -272,6 +272,11 @@ class MailThread(models.AbstractModel):
         if self._context.get('tracking_disable'):
             return super(MailThread, self).write(values)
 
+        # merchise: Ensure to have the unique index before trying to
+        # create notifications, so that those notification have the proper
+        # thread index.
+        self._ensure_index()
+
         # Track initial values of tracked fields
         if 'lang' not in self._context:
             track_self = self.with_context(lang=self.env.user.lang)

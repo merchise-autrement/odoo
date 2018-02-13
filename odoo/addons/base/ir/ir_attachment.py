@@ -228,17 +228,21 @@ class IrAttachment(models.Model):
             :param values : dict of values to create or write an ir_attachment
             :return mime : string indicating the mimetype, or application/octet-stream by default
         """
+        import requests
+        from celery.exceptions import SoftTimeLimitExceeded
         mimetype = None
         if values.get('mimetype'):
             mimetype = values['mimetype']
         if not mimetype and values.get('datas_fname'):
             mimetype = mimetypes.guess_type(values['datas_fname'])[0]
         if not mimetype and values.get('url'):
-            from urllib2 import urlopen
             try:
-                request = urlopen(values.get('url'))
-                mimetype = request.info().gettype()
-            except (ValueError, IOError):
+                session = requests.Session()
+                response = session.head(values.get('url'))
+                mimetype = response.headers.get('Content-Type', None)
+            except SoftTimeLimitExceeded:
+                raise
+            except Exception:
                 mimetype = mimetypes.guess_type(values['url'])[0]
         if values.get('datas') and (not mimetype or mimetype == 'application/octet-stream'):
             mimetype = guess_mimetype(base64.b64decode(values['datas']))
@@ -296,6 +300,15 @@ class IrAttachment(models.Model):
     checksum = fields.Char("Checksum/SHA1", size=40, index=True, readonly=True)
     mimetype = fields.Char('Mime Type', readonly=True)
     index_content = fields.Text('Indexed Content', readonly=True, prefetch=False)
+
+    # merchise: This allows to serve .less.css files (when using SPDY or
+    # HTTP/2) with a Cache-Control header properly set.
+    cache_control_header = fields.Char(
+        'Cache Control Header (as is)',
+        size=200,
+        index=False,
+        readonly=True
+    )
 
     @api.model_cr_context
     def _auto_init(self):
