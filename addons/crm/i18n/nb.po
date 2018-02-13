@@ -3,8 +3,8 @@
 # * crm
 # 
 # Translators:
-# Martin Trigaux <mat@odoo.com>, 2017
-# Jorunn D. Newth <jdn@eyenetworks.no>, 2017
+# Martin Trigaux, 2017
+# Jorunn D. Newth, 2017
 # Viktor Basso <viktor@voit.no>, 2017
 # Jan Pedro Tumusok <jpt@eyenetworks.no>, 2017
 msgid ""
@@ -780,6 +780,8 @@ msgid ""
 "A Python dictionary that will be evaluated to provide default values when "
 "creating new records for this alias."
 msgstr ""
+"Python-ordbok som vil brukes til å sette standardverdier når nye oppføringer"
+" opprettes for dette aliaset."
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -1962,7 +1964,7 @@ msgstr "Fullført"
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_stage_fold
 msgid "Folded in Pipeline"
-msgstr ""
+msgstr "Minimert i salgstrakt-oversikt"
 
 #. module: crm
 #: model:mail.activity.type,name:crm.mail_activity_demo_followup_quote
@@ -4066,6 +4068,8 @@ msgid ""
 "This stage is folded in the kanban view when there are no records in that "
 "stage to display."
 msgstr ""
+"Dette stadiet er minimert i kanban-visning når det ikke er noen oppføringer "
+"på stadiet å vise."
 
 #. module: crm
 #: code:addons/crm/models/crm_lead.py:1052

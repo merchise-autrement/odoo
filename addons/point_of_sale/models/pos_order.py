@@ -227,6 +227,12 @@ class PosOrder(models.Model):
         return InvoiceLine.sudo().create(inv_line)
 
     def _create_account_move_line(self, session=None, move=None):
+        def _flatten_tax_and_children(taxes):
+            children = self.env['account.tax']
+            for tax in taxes:
+                children |= _flatten_tax_and_children(tax.children_tax_ids)
+            return taxes + children
+
         # Tricky, via the workflow, we only have one id in the ids variable
         """Create a account move line of order grouped by products or not."""
         IrProperty = self.env['ir.property']
@@ -303,6 +309,9 @@ class PosOrder(models.Model):
                     name = name + ' (' + line.notice + ')'
 
                 # Create a move for the line for the order line
+                # Just like for invoices, a group of taxes must be present on this base line
+                # As well as its children
+                base_line_tax_ids = _flatten_tax_and_children(line.tax_ids_after_fiscal_position).filtered(lambda tax: tax.type_tax_use in ['sale', 'none'])
                 insert_data('product', {
                     'name': name,
                     'quantity': line.qty,
@@ -311,7 +320,7 @@ class PosOrder(models.Model):
                     'analytic_account_id': self._prepare_analytic_account(line),
                     'credit': ((amount > 0) and amount) or 0.0,
                     'debit': ((amount < 0) and -amount) or 0.0,
-                    'tax_ids': [(6, 0, line.tax_ids_after_fiscal_position.ids)],
+                    'tax_ids': [(6, 0, base_line_tax_ids.ids)],
                     'partner_id': partner_id
                 })
 
@@ -364,15 +373,22 @@ class PosOrder(models.Model):
         for order in self:
             aml = order.statement_ids.mapped('journal_entry_ids') | order.account_move.line_ids | order.invoice_id.move_id.line_ids
             aml = aml.filtered(lambda r: not r.reconciled and r.account_id.internal_type == 'receivable' and r.partner_id == order.partner_id.commercial_partner_id)
+
+            # Reconcile returns first
+            # to avoid mixing up the credit of a payment and the credit of a return
+            # in the receivable account
+            aml_returns = aml.filtered(lambda l: (l.journal_id.type == 'sale' and l.credit) or (l.journal_id.type != 'sale' and l.debit))
             try:
-                aml.reconcile()
+                aml_returns.reconcile()
+                (aml - aml_returns).reconcile()
             except Exception:
                 # There might be unexpected situations where the automatic reconciliation won't
                 # work. We don't want the user to be blocked because of this, since the automatic
                 # reconciliation is introduced for convenience, not for mandatory accounting
                 # reasons.
-                _logger.error('Reconciliation did not work for order %s', order.name)
-                continue
+                # It may be interesting to have the Traceback logged anyway
+                # for debugging and support purposes
+                _logger.exception('Reconciliation did not work for order %s', order.name)
 
     def _default_session(self):
         return self.env['pos.session'].search([('state', '=', 'opened'), ('user_id', '=', self.env.uid)], limit=1)
@@ -1011,7 +1027,10 @@ class ReportSaleDetails(models.AbstractModel):
                     for tax in line_taxes['taxes']:
                         taxes.setdefault(tax['id'], {'name': tax['name'], 'tax_amount':0.0, 'base_amount':0.0})
                         taxes[tax['id']]['tax_amount'] += tax['amount']
-                        taxes[tax['id']]['base_amount'] += line.price_subtotal
+                        taxes[tax['id']]['base_amount'] += tax['base']
+                else:
+                    taxes.setdefault(0, {'name': _('No Taxes'), 'tax_amount':0.0, 'base_amount':0.0})
+                    taxes[0]['base_amount'] += line.price_subtotal_incl
 
         st_line_ids = self.env["account.bank.statement.line"].search([('pos_statement_id', 'in', orders.ids)]).ids
         if st_line_ids:

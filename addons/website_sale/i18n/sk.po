@@ -3,14 +3,15 @@
 # * website_sale
 # 
 # Translators:
-# Martin Trigaux <mat@odoo.com>, 2017
+# Martin Trigaux, 2017
+# gebri <gebri@inmail.sk>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-11-30 13:11+0000\n"
 "PO-Revision-Date: 2017-11-30 13:11+0000\n"
-"Last-Translator: Martin Trigaux <mat@odoo.com>, 2017\n"
+"Last-Translator: gebri <gebri@inmail.sk>, 2018\n"
 "Language-Team: Slovak (https://www.transifex.com/odoo/teams/41243/sk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -736,7 +737,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Address"
-msgstr ""
+msgstr "Adresa"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.option_collapse_products_categories
@@ -796,7 +797,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.coupon_form
 msgid "Apply"
-msgstr ""
+msgstr "Použiť"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner
@@ -1021,7 +1022,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.address
 msgid "City"
-msgstr ""
+msgstr "Mesto"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.products
@@ -1083,7 +1084,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.address
 msgid "Company Name"
-msgstr ""
+msgstr "Názov Spoločnosti"
 
 #. module: website_sale
 #: model:product.public.category,name:website_sale.Components
@@ -1180,7 +1181,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.model,name:website_sale.model_res_partner
 msgid "Contact"
-msgstr ""
+msgstr "Kontakt"
 
 #. module: website_sale
 #. openerp-web
@@ -1194,7 +1195,7 @@ msgstr ""
 #: model:ir.model,name:website_sale.model_res_country
 #: model:ir.ui.view,arch_db:website_sale.address
 msgid "Country"
-msgstr ""
+msgstr "Štát"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.address
@@ -1237,7 +1238,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
 #: model:ir.ui.view,arch_db:website_sale.website_planner
 msgid "Currencies"
-msgstr ""
+msgstr "Meny"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
@@ -1252,7 +1253,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.menu,name:website_sale.menu_orders_customers
 msgid "Customers"
-msgstr ""
+msgstr "Zákazníci"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.website_planner

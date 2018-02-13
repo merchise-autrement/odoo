@@ -816,7 +816,8 @@ class StockMove(models.Model):
 
         # Find a candidate move line to update or create a new one.
         for reserved_quant, quantity in quants:
-            to_update = self.move_line_ids.filtered(lambda m: m.location_id.id == reserved_quant.location_id.id and m.lot_id.id == reserved_quant.lot_id.id and m.package_id.id == reserved_quant.package_id.id and m.owner_id.id == reserved_quant.owner_id.id)
+            to_update = self.move_line_ids.filtered(lambda m: m.product_id.tracking != 'serial' and
+                                                    m.location_id.id == reserved_quant.location_id.id and m.lot_id.id == reserved_quant.lot_id.id and m.package_id.id == reserved_quant.package_id.id and m.owner_id.id == reserved_quant.owner_id.id)
             if to_update:
                 to_update[0].with_context(bypass_reservation_update=True).product_uom_qty += self.product_id.uom_id._compute_quantity(quantity, self.product_uom, rounding_method='HALF-UP')
             else:
@@ -1000,22 +1001,21 @@ class StockMove(models.Model):
 
         moves = self.filtered(lambda x: x.state not in ('done', 'cancel'))
         moves_todo = self.env['stock.move']
-        # Create extra moves where necessary
+
+        # Cancel moves where necessary ; we should do it before creating the extra moves because
+        # this operation could trigger a merge of moves.
         for move in moves:
-            # Here, the `quantity_done` was already rounded to the product UOM by the `do_produce` wizard. However,
-            # it is possible that the user changed the value before posting the inventory by a value that should be
-            # rounded according to the move's UOM. In this specific case, we chose to round up the value, because it
-            # is what is expected by the user (if i consumed/produced a little more, the whole UOM unit should be
-            # consumed/produced and the moves are split correctly).
-            # FIXME: move rounding to move line
-            # rounding = move.product_uom.rounding
-            # move.quantity_done = float_round(move.quantity_done, precision_rounding=rounding, rounding_method ='UP')
             if move.quantity_done <= 0:
                 if float_compare(move.product_uom_qty, 0.0, precision_rounding=move.product_uom.rounding) == 0:
                     move._action_cancel()
+
+        # Create extra moves where necessary
+        for move in moves:
+            if move.state == 'cancel' or move.quantity_done <= 0:
                 continue
             moves_todo |= move
             moves_todo |= move._create_extra_move()
+
         # Split moves where necessary and move quants
         for move in moves_todo:
             rounding = move.product_uom.rounding

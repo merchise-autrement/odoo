@@ -3,7 +3,7 @@
 # * base
 # 
 # Translators:
-# Martin Trigaux <mat@odoo.com>, 2017
+# Martin Trigaux, 2017
 # Norimichi Sugimoto <norimichi.sugimoto@tls-ltd.co.jp>, 2017
 # Yoshi Tashiro <tashiro@roomsfor.hk>, 2017
 # 高木正勝 <masakatsu.takagi@pro-spire.co.jp>, 2017
@@ -6243,7 +6243,7 @@ msgstr "略称"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_partner_bank_acc_type
 msgid "Acc Type"
-msgstr ""
+msgstr "口座タイプ"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_company_user_ids
@@ -7236,12 +7236,12 @@ msgstr "LDAPによる認証"
 #: model:ir.model.fields,field_description:base.field_ir_module_module_author
 #: model:ir.ui.view,arch_db:base.view_module_filter
 msgid "Author"
-msgstr "作成者"
+msgstr "著作者"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.module_form
 msgid "Author Name"
-msgstr "作成者名"
+msgstr "著作者名"
 
 #. module: base
 #: model:ir.module.module,description:base.module_payment_authorize
@@ -8880,7 +8880,7 @@ msgstr "メニューの作成"
 #. module: base
 #: selection:ir.actions.server,state:0
 msgid "Create a new Record"
-msgstr ""
+msgstr "レコードを新規作成"
 
 #. module: base
 #: model:ir.actions.act_window,help:base.action_res_company_form
@@ -9340,7 +9340,7 @@ msgstr "XML変換テスト用データ"
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_server_action_form
 msgid "Data to Write"
-msgstr ""
+msgstr "書込データ"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.ir_logging_search_view
@@ -9410,7 +9410,7 @@ msgstr "日時"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_sale_order_dates
 msgid "Dates on Sales Order"
-msgstr "受注への日付項目追加"
+msgstr "販売オーダへの日付項目追加"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.ir_logging_search_view
@@ -10308,7 +10308,7 @@ msgstr "実行周期"
 #. module: base
 #: selection:ir.actions.server,state:0
 msgid "Execute Python Code"
-msgstr ""
+msgstr "Pythonコードを実行"
 
 #. module: base
 #: selection:ir.actions.server,state:0
@@ -13272,7 +13272,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_ir_act_server_link_field_id
 #: model:ir.model.fields,field_description:base.field_ir_cron_link_field_id
 msgid "Link using field"
-msgstr "フィールドを使用してリンク"
+msgstr "項目を使用してリンク"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_model_fields_modules
@@ -13648,7 +13648,7 @@ msgstr "プロダクト毎のマージン"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_sale_margin
 msgid "Margins in Sales Orders"
-msgstr "受注マージン"
+msgstr "販売オーダマージン"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_marketing
@@ -16572,7 +16572,7 @@ msgstr "少なくとも１つのSMTPサーバを定義して下さい。また�
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_server_action_form
 msgid "Please set the Model to Create before choosing values"
-msgstr ""
+msgstr "値選択の前に作成対象モデルを設定してください。"
 
 #. module: base
 #: code:addons/base/res/res_users.py:250
@@ -17034,7 +17034,7 @@ msgstr "購買管理"
 #. module: base
 #: model:ir.module.module,summary:base.module_purchase
 msgid "Purchase Orders, Receipts, Vendor Bills"
-msgstr "購買発注、入荷、仕入先請求書"
+msgstr "購買オーダ、入荷、仕入先請求書"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_purchase_mrp
@@ -17121,7 +17121,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,summary:base.module_sale_management
 msgid "Quotations, Sales Orders, Invoicing"
-msgstr "見積、受注、請求"
+msgstr "見積、販売オーダ、請求"
 
 #. module: base
 #: code:addons/base/ir/ir_ui_view.py:336
@@ -20151,7 +20151,7 @@ msgstr "規約の更新"
 #. module: base
 #: selection:ir.actions.server,state:0
 msgid "Update the Record"
-msgstr ""
+msgstr "レコードを更新"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_company_report_form

@@ -6831,14 +6831,14 @@ msgstr "Eksi Borç Hesapları"
 #: model:ir.ui.view,arch_db:account.view_account_journal_form
 #: model:ir.ui.view,arch_db:account.view_account_journal_search
 msgid "Miscellaneous"
-msgstr "Muhtelif"
+msgstr "Diğer"
 
 #. module: account
 #: code:addons/account/models/chart_template.py:190
 #: model:ir.ui.view,arch_db:account.view_account_move_filter
 #, python-format
 msgid "Miscellaneous Operations"
-msgstr "Muhtelif İşlemler"
+msgstr "Diğer İşlemler"
 
 #. module: account
 #. openerp-web
@@ -8004,6 +8004,14 @@ msgstr "Yevmiye için lütfen bir seri no tanımlayın."
 #, python-format
 msgid "Please define sequence on the journal related to this invoice."
 msgstr "Bu faturayla ilgili yevmiyeye lütfen bir sıra tanımlayın."
+
+#. module: account
+#: code:addons/account/models/company.py:273
+#, python-format
+msgid ""
+"Please install a chart of accounts or create a miscellaneous journal before "
+"proceeding."
+msgstr ""
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.view_account_form
@@ -9201,7 +9209,7 @@ msgstr "Nakit Para Kasasını Başlatma"
 #. module: account
 #: model:ir.ui.view,arch_db:account.view_account_payment_search
 msgid "State"
-msgstr "İl/Eyalet"
+msgstr "Durum"
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_move_line_parent_state

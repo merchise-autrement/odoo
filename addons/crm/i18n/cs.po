@@ -3,7 +3,7 @@
 # * crm
 # 
 # Translators:
-# Martin Trigaux <mat@odoo.com>, 2017
+# Martin Trigaux, 2017
 # Jan Horzinka <jan.horzinka@centrum.cz>, 2018
 msgid ""
 msgstr ""
@@ -961,7 +961,7 @@ msgstr "Aplikovat deduplikaci"
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
 msgid "Apply multi-currencies"
-msgstr ""
+msgstr "Použít multi-měny"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_case_kanban_view_leads
@@ -1026,7 +1026,7 @@ msgstr ""
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
 msgid "Attach a qualification form to every house opportunity"
-msgstr ""
+msgstr "Přidat formulář pro zájemce pro každou  příležitost"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.base_partner_merge_automatic_wizard_form
@@ -1318,7 +1318,7 @@ msgstr "Zákazníci, prodejci"
 #. module: crm
 #: model:ir.model,name:crm.model_res_partner
 msgid "Contact"
-msgstr ""
+msgstr "Kontakt"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_case_form_view_oppor
@@ -2209,6 +2209,9 @@ msgid ""
 "mailing and marketing campaign. Filter 'Available for Mass Mailing' allows "
 "users to filter the leads when performing mass mailing."
 msgstr ""
+"V případě, že je vybrána možnost opt-out, tento kontakt si nepřeje dostávat "
+"hromadné emaily a maketingové kampaně. Filtr 'Dostupní pro hromadné emaily' "
+"vám umožní nalézt zájemce při provádění hromadných emailů. "
 
 #. module: crm
 #: model:ir.model.fields,help:crm.field_crm_lead2opportunity_partner_mass_force_assignation
@@ -3840,7 +3843,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:crm.view_crm_case_leads_filter
 #: model:ir.ui.view,arch_db:crm.view_crm_case_opportunities_filter
 msgid "Tag"
-msgstr ""
+msgstr "Štítek"
 
 #. module: crm
 #: sql_constraint:crm.lead.tag:0
@@ -3850,7 +3853,7 @@ msgstr ""
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead_tag_ids
 msgid "Tags"
-msgstr ""
+msgstr "Štítky"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_stage_team_id

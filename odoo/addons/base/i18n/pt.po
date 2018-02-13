@@ -3,7 +3,7 @@
 # * base
 # 
 # Translators:
-# Martin Trigaux <mat@odoo.com>, 2017
+# Martin Trigaux, 2017
 # Manuela Silva <manuela.silva@sky.com>, 2017
 msgid ""
 msgstr ""
@@ -33,6 +33,12 @@ msgid ""
 "\n"
 "    "
 msgstr ""
+"\n"
+"Account Type \\\\ chart of accounts templates \\\\ VAT \\\\ auxiliary accounting category \\\\ management accounting documents book \\\\ book financial accounting documents\n"
+"\n"
+"Add Chinese Provincial Data\n"
+"\n"
+"Increase small business chart of accounts"
 
 #. module: base
 #: model:ir.module.module,description:base.module_pos_reprint
@@ -4383,7 +4389,7 @@ msgstr ""
 #: code:addons/base/res/res_users.py:401
 #, python-format
 msgid "%s (copy)"
-msgstr ""
+msgstr "%s (cópia)"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.res_lang_form
@@ -5019,7 +5025,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_partner_bank_acc_number
 msgid "Account Number"
-msgstr ""
+msgstr "Número da Conta"
 
 #. module: base
 #: sql_constraint:res.partner.bank:0
@@ -5783,12 +5789,12 @@ msgstr ""
 #. module: base
 #: model:ir.module.category,name:base.module_category_hr_attendance
 msgid "Attendance"
-msgstr ""
+msgstr "Presença"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_hr_attendance
 msgid "Attendances"
-msgstr ""
+msgstr "Presenças"
 
 #. module: base
 #: model:res.country,name:base.au
@@ -10010,7 +10016,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_helpdesk_timesheet
 msgid "Helpdesk Timesheet"
-msgstr ""
+msgstr "Registo de Horas do Centro de Apoio"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_helpdesk_forum
@@ -10045,7 +10051,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.category,description:base.module_category_hr_attendance
 msgid "Helps you manage the attendances."
-msgstr ""
+msgstr "Ajuda-o a gerir as presenças."
 
 #. module: base
 #: model:ir.module.category,description:base.module_category_hr_gamification
@@ -10055,7 +10061,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.category,description:base.module_category_hr_timesheet
 msgid "Helps you manage the timesheets."
-msgstr ""
+msgstr "Ajuda-o a gerir e os registos de horas."
 
 #. module: base
 #: model:ir.module.category,description:base.module_category_event_management
@@ -11762,7 +11768,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_project_forecast_sale
 msgid "Link module between project_forecast and sale(_timesheet)"
-msgstr ""
+msgstr "Interligar módulo entre project_forecast e sale(_timesheet)"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_act_server_link_field_id
@@ -13389,6 +13395,15 @@ msgid ""
 "Compare revenues with forecasts and budgets in real time.\n"
 "\n"
 msgstr ""
+"Odoo - Recursos Humanos\n"
+"-------------------- \n"
+" \n"
+"Com Odoo - Recursos Humanos 1, \n"
+"controle o ativo mais importante na sua empresa: Pessoas \n"
+" \n"
+"Obtenha todas as suas operações de RH geridas facilmente: partilha de conhecimento, recrutamentos, \n"
+"avaliações, registos de horas, contratos, assiduidades, folha de pagamentos, etc. \n"
+"\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_mrp
@@ -14657,7 +14672,7 @@ msgstr ""
 #. module: base
 #: selection:ir.actions.report,report_type:0
 msgid "PDF"
-msgstr ""
+msgstr "PDF"
 
 #. module: base
 #: selection:base.language.export,format:0
@@ -15390,12 +15405,12 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,summary:base.module_helpdesk_sale_timesheet
 msgid "Project, Helpdesk, Timesheet and Sale Orders"
-msgstr ""
+msgstr "Projeto, Centro de Apoio, Registo de Horas e Encomendas de Vendas"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_helpdesk_timesheet
 msgid "Project, Tasks, Timesheet"
-msgstr ""
+msgstr "Projeto, Tarefas, Registo de Horas"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_project
@@ -16209,12 +16224,12 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_sale_timesheet
 msgid "Sales Timesheet"
-msgstr ""
+msgstr "Registo de Horas de Vendas"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_timesheet_grid_sale
 msgid "Sales Timesheet: Grid Support"
-msgstr ""
+msgstr "Registo de Horas de Vendas: Suporte de Grelha"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_sale_mrp
@@ -16438,7 +16453,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,summary:base.module_sale_timesheet
 msgid "Sell based on timesheets"
-msgstr ""
+msgstr "Vendas baseadas nos registos de horas"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_account
@@ -17207,7 +17222,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_project_timesheet_synchro
 msgid "Synchronization with the external timesheet application"
-msgstr ""
+msgstr "Sincronização com a aplicação de registo de horas externa"
 
 #. module: base
 #: model:res.country,name:base.sy
@@ -17955,7 +17970,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,summary:base.module_timesheet_grid
 msgid "Timesheet Validation and Grid View"
-msgstr ""
+msgstr "Validação de Registo de Horas e Visualização em Grelha"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_project_timesheet_holidays
@@ -17966,17 +17981,17 @@ msgstr ""
 #: model:ir.module.category,name:base.module_category_hr_timesheet
 #: model:ir.module.module,shortdesc:base.module_hr_timesheet
 msgid "Timesheets"
-msgstr ""
+msgstr "Registos de Horas"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_timesheet_grid
 msgid "Timesheets Validation"
-msgstr ""
+msgstr "Validação do Registos de Horas"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_hr_timesheet_attendance
 msgid "Timesheets/attendances reporting"
-msgstr ""
+msgstr "Relatório de registos de horas/assiduidades"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_partner_tz

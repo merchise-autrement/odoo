@@ -3,7 +3,7 @@
 # * website_slides
 # 
 # Translators:
-# Martin Trigaux <mat@odoo.com>, 2017
+# Martin Trigaux, 2017
 # Jan Horzinka <jan.horzinka@centrum.cz>, 2018
 msgid ""
 msgstr ""
@@ -608,7 +608,7 @@ msgstr ""
 #. module: website_slides
 #: selection:slide.slide,download_security:0
 msgid "Everyone"
-msgstr ""
+msgstr "Kdokoli"
 
 #. module: website_slides
 #: selection:slide.channel,promote_strategy:0
@@ -1140,7 +1140,7 @@ msgstr ""
 #. module: website_slides
 #: model:ir.ui.view,arch_db:website_slides.view_slide_tag_form
 msgid "Tag"
-msgstr ""
+msgstr "Štítek"
 
 #. module: website_slides
 #. openerp-web
@@ -1152,7 +1152,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:website_slides.view_slide_tag_tree
 #, python-format
 msgid "Tags"
-msgstr ""
+msgstr "Štítky"
 
 #. module: website_slides
 #: model:ir.ui.view,arch_db:website_slides.view_slide_slide_form
