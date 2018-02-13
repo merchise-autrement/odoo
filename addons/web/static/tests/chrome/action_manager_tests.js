@@ -1327,12 +1327,13 @@ QUnit.module('ActionManager', {
     QUnit.module('Report actions');
 
     QUnit.test('can execute report actions from db ID', function (assert) {
-        assert.expect(5);
+        assert.expect(6);
 
         var actionManager = createActionManager({
             actions: this.actions,
             archs: this.archs,
             data: this.data,
+            services: [ReportService],
             mockRPC: function (route, args) {
                 assert.step(args.method || route);
                 if (route === '/report/check_wkhtmltopdf') {
@@ -1340,7 +1341,6 @@ QUnit.module('ActionManager', {
                 }
                 return this._super.apply(this, arguments);
             },
-            services: [ReportService],
             session: {
                 get_file: function (params) {
                     assert.step(params.url);
@@ -1358,6 +1358,7 @@ QUnit.module('ActionManager', {
         assert.verifySteps([
             '/web/action/load',
             '/report/check_wkhtmltopdf',
+            '/web/static/src/img/spin.png', // block UI image
             '/report/download',
             'on_close',
         ]);
@@ -1366,12 +1367,13 @@ QUnit.module('ActionManager', {
     });
 
     QUnit.test('should trigger a notification if wkhtmltopdf is to upgrade', function (assert) {
-        assert.expect(5);
+        assert.expect(6);
 
         var actionManager = createActionManager({
             actions: this.actions,
             archs: this.archs,
             data: this.data,
+            services: [ReportService],
             mockRPC: function (route, args) {
                 assert.step(args.method || route);
                 if (route === '/report/check_wkhtmltopdf') {
@@ -1379,7 +1381,6 @@ QUnit.module('ActionManager', {
                 }
                 return this._super.apply(this, arguments);
             },
-            services: [ReportService],
             session: {
                 get_file: function (params) {
                     assert.step(params.url);
@@ -1398,6 +1399,7 @@ QUnit.module('ActionManager', {
             '/web/action/load',
             '/report/check_wkhtmltopdf',
             'notification',
+            '/web/static/src/img/spin.png', // block UI image
             '/report/download',
         ]);
 
@@ -1425,6 +1427,7 @@ QUnit.module('ActionManager', {
             actions: this.actions,
             archs: this.archs,
             data: this.data,
+            services: [ReportService],
             mockRPC: function (route, args) {
                 assert.step(args.method || route);
                 if (route === '/report/check_wkhtmltopdf') {
@@ -1435,7 +1438,6 @@ QUnit.module('ActionManager', {
                 }
                 return this._super.apply(this, arguments);
             },
-            services: [ReportService],
             session: {
                 get_file: function (params) {
                     assert.step(params.url); // should not be called
@@ -2266,6 +2268,47 @@ QUnit.module('ActionManager', {
             "should still be grouped");
         assert.strictEqual(actionManager.$('.o_group_header').length, 2,
             "should be grouped by 'bar' (two groups) at reload");
+
+        actionManager.destroy();
+    });
+
+    QUnit.test('switch request to unknown view type', function (assert) {
+        assert.expect(7);
+
+        this.actions.push({
+            id: 33,
+            name: 'Partners',
+            res_model: 'partner',
+            type: 'ir.actions.act_window',
+            views: [[false, 'list'], [1, 'kanban']], // no form view
+        });
+
+        var actionManager = createActionManager({
+            actions: this.actions,
+            archs: this.archs,
+            data: this.data,
+            mockRPC: function (route, args) {
+                assert.step(args.method || route);
+                return this._super.apply(this, arguments);
+            },
+        });
+        actionManager.doAction(33);
+
+        assert.strictEqual(actionManager.$('.o_list_view').length, 1,
+            "should display the list view");
+
+        // try to open a record in a form view
+        actionManager.$('.o_list_view .o_data_row:first').click();
+        assert.strictEqual(actionManager.$('.o_list_view').length, 1,
+            "should still display the list view");
+        assert.strictEqual(actionManager.$('.o_form_view').length, 0,
+            "should not display the form view");
+
+        assert.verifySteps([
+            '/web/action/load',
+            'load_views',
+            '/web/dataset/search_read',
+        ]);
 
         actionManager.destroy();
     });

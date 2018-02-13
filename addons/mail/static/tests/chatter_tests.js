@@ -21,7 +21,7 @@ QUnit.module('mail', {}, function () {
 
 QUnit.module('Chatter', {
     beforeEach: function () {
-        this.BusService = createBusService();
+        this.services = [ChatManager, createBusService()];
         this.data = {
             partner: {
                 fields: {
@@ -98,6 +98,7 @@ QUnit.test('basic rendering', function (assert) {
         View: FormView,
         model: 'partner',
         data: this.data,
+        services: this.services,
         arch: '<form string="Partners">' +
                 '<sheet>' +
                     '<field name="foo"/>' +
@@ -121,7 +122,6 @@ QUnit.test('basic rendering', function (assert) {
             }
             return this._super(route, args);
         },
-        services: [ChatManager, this.BusService],
         res_id: 2,
     });
 
@@ -150,6 +150,7 @@ QUnit.test('chatter in create mode', function (assert) {
         View: FormView,
         model: 'partner',
         data: this.data,
+        services: this.services,
         arch: '<form string="Partners">' +
                 '<sheet>' +
                     '<field name="foo"/>' +
@@ -165,7 +166,6 @@ QUnit.test('chatter in create mode', function (assert) {
             }
             return this._super(route, args);
         },
-        services: [ChatManager, this.BusService],
     });
 
     assert.strictEqual(form.$('.o_chatter').length, 1,
@@ -213,6 +213,7 @@ QUnit.test('chatter rendering inside the sheet', function (assert) {
         View: FormView,
         model: 'partner',
         data: this.data,
+        services: this.services,
         arch: '<form string="Partners">' +
                 '<sheet>' +
                     '<field name="foo"/>' +
@@ -232,7 +233,6 @@ QUnit.test('chatter rendering inside the sheet', function (assert) {
             }
             return this._super(route, args);
         },
-        services: [ChatManager, this.BusService],
     });
 
     assert.strictEqual(form.$('.o_chatter').length, 1,
@@ -241,7 +241,7 @@ QUnit.test('chatter rendering inside the sheet', function (assert) {
     form.$buttons.find('.o_form_button_create').click();
     assert.ok(form.$el.find('.o_form_view').hasClass('o_form_editable'),
         "we should be in create mode");
-    
+
     assert.strictEqual(form.$('.o_chatter').length, 1,
         "chatter should be displayed");
 
@@ -396,6 +396,7 @@ QUnit.test('chatter: post, receive and star messages', function (assert) {
         View: FormView,
         model: 'partner',
         data: this.data,
+        services: [ChatManager, BusService],
         arch: '<form string="Partners">' +
                 '<sheet>' +
                     '<field name="foo"/>' +
@@ -455,7 +456,6 @@ QUnit.test('chatter: post, receive and star messages', function (assert) {
             return this._super(route, args);
         },
         session: {},
-        services: [ChatManager, BusService],
     });
 
     assert.ok(form.$('.o_chatter_topbar .o_chatter_button_log_note').length,
@@ -546,6 +546,7 @@ QUnit.test('chatter: post a message and switch in edit mode', function (assert) 
         View: FormView,
         model: 'partner',
         data: this.data,
+        services: this.services,
         arch: '<form string="Partners">' +
                 '<sheet>' +
                     '<field name="foo"/>' +
@@ -582,10 +583,9 @@ QUnit.test('chatter: post a message and switch in edit mode', function (assert) 
                 });
                 return $.when(42);
             }
-            
+
             return this._super(route, args);
         },
-        services: [ChatManager, this.BusService],
     });
 
     assert.strictEqual(form.$('.o_thread_message').length, 0, "thread should not contain messages");
@@ -652,6 +652,7 @@ QUnit.test('chatter: Attachment viewer', function (assert) {
         View: FormView,
         model: 'partner',
         data: this.data,
+        services: this.services,
         arch: '<form string="Partners">' +
                 '<sheet>' +
                     '<field name="foo"/>' +
@@ -675,7 +676,6 @@ QUnit.test('chatter: Attachment viewer', function (assert) {
             }
             return this._super.apply(this, arguments);
         },
-        services: [ChatManager, this.BusService],
     });
     assert.strictEqual(form.$('.o_thread_message .o_attachment').length, 4,
         "there should be three attachment on message");
@@ -683,11 +683,11 @@ QUnit.test('chatter: Attachment viewer', function (assert) {
         "image caption should have correct download link");
     // click on first image attachement
     form.$('.o_thread_message .o_attachment .o_image_box .o_image_overlay').first().click();
-    assert.strictEqual($('.o_modal_fullscreen img.o_viewer_img[src*="/web/image/1?unique=1"]').length, 1,
+    assert.strictEqual($('.o_modal_fullscreen img.o_viewer_img[data-src="/web/image/1?unique=1"]').length, 1,
         "Modal popup should open with first image src");
     //  click on next button
     $('.modal .arrow.arrow-right.move_next span').click();
-    assert.strictEqual($('.o_modal_fullscreen img.o_viewer_img[src*="/web/image/2?unique=1"]').length, 1,
+    assert.strictEqual($('.o_modal_fullscreen img.o_viewer_img[data-src="/web/image/2?unique=1"]').length, 1,
         "Modal popup should have now second image src");
     assert.strictEqual($('.o_modal_fullscreen .o_viewer_toolbar .o_download_btn').length, 1,
         "Modal popup should have download button");
@@ -695,7 +695,7 @@ QUnit.test('chatter: Attachment viewer', function (assert) {
     $('.o_modal_fullscreen .o_viewer-header .o_close_btn').click();
     // click on pdf attachement
     form.$('.o_thread_message .o_attachment .o_image_box .o_image_overlay').eq(3).click();
-    assert.strictEqual($('.o_modal_fullscreen iframe[src*="/web/content/4"]').length, 1,
+    assert.strictEqual($('.o_modal_fullscreen iframe[data-src*="/web/content/4"]').length, 1,
         "Modal popup should open with the pdf preview");
     // close attachment popup
     $('.o_modal_fullscreen .o_viewer-header .o_close_btn').click();
@@ -720,6 +720,7 @@ QUnit.test('form activity widget: schedule next activity', function (assert) {
         View: FormView,
         model: 'partner',
         data: this.data,
+        services: this.services,
         arch: '<form string="Partners">' +
                 '<sheet>' +
                     '<field name="foo"/>' +
@@ -746,7 +747,6 @@ QUnit.test('form activity widget: schedule next activity', function (assert) {
             }
             return this._super.apply(this, arguments);
         },
-        services: [ChatManager, this.BusService],
         intercepts: {
             do_action: function (event) {
                 assert.deepEqual(event.data.action, {
@@ -784,6 +784,7 @@ QUnit.test('form activity widget: schedule activity does not discard changes', f
         View: FormView,
         model: 'partner',
         data: this.data,
+        services: this.services,
         arch: '<form string="Partners">' +
                 '<sheet>' +
                     '<field name="foo"/>' +
@@ -800,7 +801,6 @@ QUnit.test('form activity widget: schedule activity does not discard changes', f
             }
             return this._super.apply(this, arguments);
         },
-        services: [ChatManager, this.BusService],
         intercepts: {
             do_action: function (event) {
                 event.data.options.on_close();
@@ -852,6 +852,7 @@ QUnit.test('form activity widget: mark as done and remove', function (assert) {
         View: FormView,
         model: 'partner',
         data: this.data,
+        services: this.services,
         arch: '<form string="Partners">' +
                 '<sheet>' +
                     '<field name="foo"/>' +
@@ -903,7 +904,6 @@ QUnit.test('form activity widget: mark as done and remove', function (assert) {
             }
             return this._super.apply(this, arguments);
         },
-        services: [ChatManager, this.BusService],
     });
 
     assert.strictEqual(form.$('.o_mail_activity .o_thread_message').length, 2,
@@ -951,6 +951,7 @@ QUnit.test('followers widget: follow/unfollow, edit subtypes', function (assert)
         View: FormView,
         model: 'partner',
         data: this.data,
+        services: this.services,
         arch: '<form string="Partners">' +
                 '<sheet>' +
                     '<field name="foo"/>' +
@@ -1071,6 +1072,7 @@ QUnit.test('followers widget: do not display follower duplications', function (a
         View: FormView,
         model: 'partner',
         data: this.data,
+        services: this.services,
         arch: '<form>' +
                 '<sheet></sheet>' +
                 '<div class="oe_chatter">' +
@@ -1129,6 +1131,7 @@ QUnit.test('does not render and crash when destroyed before chat system is ready
         View: FormView,
         model: 'partner',
         data: this.data,
+        services: this.services,
         arch: '<form string="Partners">' +
                 '<sheet>' +
                     '<field name="foo"/>' +
@@ -1159,7 +1162,6 @@ QUnit.test('does not render and crash when destroyed before chat system is ready
             }
             return this._super(route, args);
         },
-        services: [ChatManager, this.BusService],
         intercepts: {
             get_session: function (event) {
                 event.stopPropagation();

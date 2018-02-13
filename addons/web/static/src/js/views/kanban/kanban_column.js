@@ -102,7 +102,7 @@ var KanbanColumn = Widget.extend({
             // should find a way to use the touch events to make sortable work.
             this.$el.sortable({
                 connectWith: '.o_kanban_group',
-                containment: this.draggable ? '.o_kanban_view' : 'parent',
+                containment: this.draggable ? false : 'parent',
                 revert: 0,
                 delay: 0,
                 items: '> .o_kanban_record:not(.o_updating)',
@@ -187,10 +187,12 @@ var KanbanColumn = Widget.extend({
             });
             return;
         }
+
         if (this.quickCreateWidget) {
             return $.Deferred().reject();
         }
         this.trigger_up('close_quick_create'); // close other quick create widgets
+        this.trigger_up('start_quick_create');
         var context = this.data.getContext();
         context['default_' + this.groupedBy] = this.id;
         this.quickCreateWidget = new RecordQuickCreate(this, {

@@ -1,13 +1,14 @@
 odoo.define('web.form_tests', function (require) {
 "use strict";
 
+var BasicModel = require('web.BasicModel');
 var concurrency = require('web.concurrency');
 var config = require('web.config');
 var core = require('web.core');
 var fieldRegistry = require('web.field_registry');
 var FormView = require('web.FormView');
+var mixins = require('web.mixins');
 var pyeval = require('web.pyeval');
-var RainbowMan = require('web.RainbowMan');
 var testUtils = require('web.test_utils');
 var widgetRegistry = require('web.widget_registry');
 var Widget = require('web.Widget');
@@ -629,7 +630,7 @@ QUnit.module('Views', {
     });
 
     QUnit.test('readonly attrs on fields are re-evaluated on field change', function (assert) {
-        assert.expect(3);
+        assert.expect(4);
 
         var form = createView({
             View: FormView,
@@ -655,6 +656,9 @@ QUnit.module('Views', {
         form.$('.o_field_boolean input').click();
         assert.strictEqual(form.$('span[name="foo"]').length, 1,
             "the foo field widget should have been rerendered to now be readonly again");
+        form.$('.o_field_boolean input').click();
+        assert.strictEqual(form.$('input[name="foo"]').length, 1,
+            "the foo field widget should have been rerendered to now be editable again");
 
         form.destroy();
     });
@@ -6227,6 +6231,63 @@ QUnit.module('Views', {
         delete widgetRegistry.map.test;
     });
 
+    QUnit.test('support header button as widgets on form statusbar', function (assert) {
+        assert.expect(2);
+
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form string="Partners">' +
+                    '<header>' +
+                        '<widget name="attach_document" string="Attach document"/>' +
+                    '</header>' +
+                '</form>',
+        });
+
+        assert.strictEqual(form.$('button.o_attachment_button').length, 1,
+            "should have 1 attach_document widget in the statusbar");
+        assert.strictEqual(form.$('span.o_attach_document').text().trim(), 'Attach document',
+            "widget should have been instantiated");
+
+        form.destroy();
+    });
+
+    QUnit.test('basic support for widgets', function (assert) {
+        assert.expect(1);
+
+        var MyWidget = Widget.extend({
+            init: function (parent, dataPoint) {
+                this.data = dataPoint.data;
+            },
+            start: function () {
+                this.$el.text(this.data.foo + "!");
+            },
+            updateState: function (dataPoint) {
+                this.$el.text(dataPoint.data.foo + "!");
+            },
+        });
+        widgetRegistry.add('test', MyWidget);
+
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form string="Partners">' +
+                    '<field name="foo"/>' +
+                    '<widget name="test"/>' +
+                '</form>',
+        });
+
+        form.$('input[name="foo"]').val("I am alive").trigger('input');
+        assert.strictEqual(form.$('.o_widget').text(), 'I am alive!',
+            "widget should have been updated");
+
+        form.destroy();
+        delete widgetRegistry.map.test;
+    });
+
+
     QUnit.test('bounce edit button in readonly mode', function (assert) {
         assert.expect(3);
 
@@ -6338,5 +6399,192 @@ QUnit.module('Views', {
         form.destroy();
     });
 
+    QUnit.test('check if the view destroys all widgets and instances', function (assert) {
+        assert.expect(1);
+
+        var instanceNumber = 0;
+        testUtils.patch(mixins.ParentedMixin, {
+            init: function () {
+                instanceNumber++;
+                return this._super.apply(this, arguments);
+            },
+            destroy: function () {
+                if (!this.isDestroyed()) {
+                    instanceNumber--;
+                }
+                return this._super.apply(this, arguments);
+            }
+        });
+
+        var params = {
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form string="Partners">' +
+                    '<sheet>' +
+                        '<field name="display_name"/>' +
+                        '<field name="foo"/>' +
+                        '<field name="bar"/>' +
+                        '<field name="int_field"/>' +
+                        '<field name="qux"/>' +
+                        '<field name="trululu"/>' +
+                        '<field name="timmy"/>' +
+                        '<field name="product_id"/>' +
+                        '<field name="priority"/>' +
+                        '<field name="state"/>' +
+                        '<field name="date"/>' +
+                        '<field name="datetime"/>' +
+                        '<field name="product_ids"/>' +
+                        '<field name="p">' +
+                            '<tree default_order="foo desc">' +
+                                '<field name="display_name"/>' +
+                                '<field name="foo"/>' +
+                            '</tree>' +
+                        '</field>' +
+                    '</sheet>' +
+                '</form>',
+            archs: {
+                'partner,false,form':
+                    '<form string="Partner">' +
+                        '<sheet>' +
+                            '<group>' +
+                                '<field name="foo"/>' +
+                            '</group>' +
+                        '</sheet>' +
+                    '</form>',
+                "partner_type,false,list": '<tree><field name="name"/></tree>',
+                'product,false,list': '<tree><field name="display_name"/></tree>',
+
+            },
+            res_id: 1,
+        };
+
+        var form = createView(params);
+        form.destroy();
+
+        var initialInstanceNumber = instanceNumber;
+        instanceNumber = 0;
+
+        form = createView(params);
+
+        // call destroy function of controller to ensure that it correctly destroys everything
+        form.__destroy();
+
+        assert.strictEqual(instanceNumber, initialInstanceNumber + 3, "every widget must be destroyed exept the parent");
+
+        form.destroy();
+
+        testUtils.unpatch(mixins.ParentedMixin);
+    });
+
+    QUnit.test('edition in form view on a "noCache" model', function (assert) {
+        assert.expect(4);
+
+        testUtils.patch(BasicModel, {
+            noCacheModels: BasicModel.prototype.noCacheModels.concat(['partner']),
+        });
+
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form>' +
+                    '<sheet>' +
+                        '<field name="display_name"/>' +
+                    '</sheet>' +
+                '</form>',
+            res_id: 1,
+            viewOptions: {
+                mode: 'edit',
+            },
+            mockRPC: function (route, args) {
+                if (args.method === 'write') {
+                    assert.step('write');
+                }
+                return this._super.apply(this, arguments);
+            },
+        });
+        core.bus.on('clear_cache', form, assert.step.bind(assert, 'clear_cache'));
+
+        form.$('.o_field_widget[name=display_name]').val('new value').trigger('input');
+        form.$buttons.find('.o_form_button_save').click();
+
+        assert.verifySteps(['write', 'clear_cache']);
+
+        form.destroy();
+        testUtils.unpatch(BasicModel);
+    });
+
+    QUnit.test('creation in form view on a "noCache" model', function (assert) {
+        assert.expect(4);
+
+        testUtils.patch(BasicModel, {
+            noCacheModels: BasicModel.prototype.noCacheModels.concat(['partner']),
+        });
+
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form>' +
+                    '<sheet>' +
+                        '<field name="display_name"/>' +
+                    '</sheet>' +
+                '</form>',
+            mockRPC: function (route, args) {
+                if (args.method === 'create') {
+                    assert.step('create');
+                }
+                return this._super.apply(this, arguments);
+            },
+        });
+        core.bus.on('clear_cache', form, assert.step.bind(assert, 'clear_cache'));
+
+        form.$('.o_field_widget[name=display_name]').val('value').trigger('input');
+        form.$buttons.find('.o_form_button_save').click();
+
+        assert.verifySteps(['create', 'clear_cache']);
+
+        form.destroy();
+        testUtils.unpatch(BasicModel);
+    });
+
+    QUnit.test('deletion in form view on a "noCache" model', function (assert) {
+        assert.expect(4);
+
+        testUtils.patch(BasicModel, {
+            noCacheModels: BasicModel.prototype.noCacheModels.concat(['partner']),
+        });
+
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form>' +
+                    '<sheet>' +
+                        '<field name="display_name"/>' +
+                    '</sheet>' +
+                '</form>',
+            mockRPC: function (route, args) {
+                if (args.method === 'unlink') {
+                    assert.step('unlink');
+                }
+                return this._super.apply(this, arguments);
+            },
+            viewOptions: {
+                hasSidebar: true,
+            },
+        });
+        core.bus.on('clear_cache', form, assert.step.bind(assert, 'clear_cache'));
+
+        form.sidebar.$('a:contains(Delete)').click();
+        $('.modal .modal-footer .btn-primary').click(); // confirm
+
+        assert.verifySteps(['unlink', 'clear_cache']);
+
+        form.destroy();
+        testUtils.unpatch(BasicModel);
+    });
 });
+
 });

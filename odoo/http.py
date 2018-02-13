@@ -693,8 +693,9 @@ class JsonRequest(WebRequest):
             body = json.dumps(response, default=ustr)
 
         return Response(
-                    body, headers=[('Content-Type', mime),
-                                   ('Content-Length', len(body))])
+            body, status=error and error.pop('http_status', 200) or 200,
+            headers=[('Content-Type', mime), ('Content-Length', len(body))]
+        )
 
     def _handle_exception(self, exception):
         """Called within an except block to allow converting exceptions
@@ -703,13 +704,18 @@ class JsonRequest(WebRequest):
         try:
             return super(JsonRequest, self)._handle_exception(exception)
         except Exception:
-            if not isinstance(exception, (odoo.exceptions.Warning, SessionExpiredException, odoo.exceptions.except_orm)):
+            if not isinstance(exception, (odoo.exceptions.Warning, SessionExpiredException,
+                                          odoo.exceptions.except_orm, werkzeug.exceptions.NotFound)):
                 _logger.exception("Exception during JSON request handling.")
             error = {
                     'code': 200,
                     'message': "Odoo Server Error",
                     'data': serialize_exception(exception)
             }
+            if isinstance(exception, werkzeug.exceptions.NotFound):
+                error['http_status'] = 404
+                error['code'] = 404
+                error['message'] = "404: Not Found"
             if isinstance(exception, AuthenticationError):
                 error['code'] = 100
                 error['message'] = "Odoo Session Invalid"
@@ -1082,6 +1088,7 @@ class OpenERPSession(werkzeug.contrib.sessions.Session):
         self.db = db
         self.uid = uid
         self.login = login
+        self.password = password
         request.uid = uid
         request.disable_db = False
 
@@ -1096,6 +1103,7 @@ class OpenERPSession(werkzeug.contrib.sessions.Session):
         """
         if not self.db or not self.uid:
             raise SessionExpiredException("Session expired")
+        security.check(self.db, self.uid, self.password)
 
     def logout(self, keep_db=False):
         for k in list(self):
@@ -1108,6 +1116,7 @@ class OpenERPSession(werkzeug.contrib.sessions.Session):
         self.setdefault("db", None)
         self.setdefault("uid", None)
         self.setdefault("login", None)
+        self.setdefault("password", None)
         self.setdefault("context", {})
 
     def get_context(self):
@@ -1372,17 +1381,6 @@ class DisableCacheMiddleware(object):
             start_response(status, new_headers)
         return self.app(environ, start_wrapped)
 
-class OdooSessionStore(werkzeug.contrib.sessions.FilesystemSessionStore):
-    def delete_sessions_for_uids(self, uids):
-        # pretty expensive on large session stores, especially non-local!
-        uids = set(uids)
-        _logger.info('Deleting all HTTP sessions for UIDs %s', uids)
-        for sid in self.list():
-            s = self.get(sid)
-            if s.uid and s.uid in uids:
-                _logger.debug('Deleting session %s', sid)
-                self.delete(s)
-
 
 def SessionStore(path):
     # type: (str) -> werkzeug.contrib.sessions.SessionStore
@@ -1395,7 +1393,10 @@ def SessionStore(path):
     if path.startswith('redis://'):
         raise NotImplemented
     else:
-        return OdooSessionStore(path, session_class=OpenERPSession)
+        return werkzeug.contrib.sessions.FilesystemSessionStore(
+            path,
+            session_class=OpenERPSession
+        )
 
 
 class Root(object):

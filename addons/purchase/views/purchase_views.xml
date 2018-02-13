@@ -93,7 +93,7 @@
         </record>
 
         <menuitem id="product_product_menu" name="Product Variants" action="product_product_action"
-            parent="menu_procurement_management" sequence="21" groups="product.group_product_variant"/>
+            parent="menu_procurement_management" sequence="21" groups="base.group_no_one"/>
 
         <record model="ir.ui.view" id="purchase_order_calendar">
             <field name="name">purchase.order.calendar</field>
@@ -213,7 +213,7 @@
                                     <field name="qty_invoiced" attrs="{'column_invisible': [('parent.state', 'not in', ('purchase', 'done'))]}"/>
                                     <field name="product_uom" groups="product.group_uom" attrs="{'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}" force_save="1"/>
                                     <field name="price_unit"/>
-                                    <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use','=','purchase')]" context="{'default_type_tax_use': 'purchase'}" options="{'no_create': True}"/>
+                                    <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use','=','purchase')]" context="{'default_type_tax_use': 'purchase', 'search_view_ref': 'account.account_tax_view_search'}" options="{'no_create': True}"/>
                                     <field name="price_subtotal" widget="monetary"/>
                                 </tree>
                                 <form string="Purchase Order Line">

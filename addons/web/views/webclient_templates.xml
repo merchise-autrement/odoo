@@ -165,6 +165,7 @@
         <script type="text/javascript" src="/web/static/src/js/chrome/control_panel.js"></script>
         <script type="text/javascript" src="/web/static/src/js/chrome/abstract_web_client.js"></script>
         <script type="text/javascript" src="/web/static/src/js/chrome/web_client.js"></script>
+        <script type="text/javascript" src="/web/static/src/js/chrome/root_widget.js"></script>
         <script type="text/javascript" src="/web/static/src/js/_deprecated/data.js"></script>
         <script type="text/javascript" src="/web/static/src/js/core/context.js"></script>
         <script type="text/javascript" src="/web/static/src/js/core/misc.js"></script>
@@ -250,6 +251,7 @@
         <script type="text/javascript" src="/web/static/src/js/views/calendar/calendar_quick_create.js"></script>
         <script type="text/javascript" src="/web/static/src/js/views/calendar/calendar_renderer.js"></script>
         <script type="text/javascript" src="/web/static/src/js/views/calendar/calendar_view.js"></script>
+        <script type="text/javascript" src="/web/static/src/js/widgets/attach_document.js"></script>
 
         <script type="text/javascript" src="/web/static/src/js/report/utils.js"/>
         <script type="text/javascript" src="/web/static/src/js/report/client_action.js"/>

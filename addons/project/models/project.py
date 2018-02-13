@@ -52,6 +52,18 @@ class ProjectTaskType(models.Model):
             " * A good feedback from the customer will update the kanban state to 'ready for the new stage' (green bullet).\n"
             " * A medium or a bad feedback will set the kanban state to 'blocked' (red bullet).\n")
 
+    @api.multi
+    def unlink(self):
+        stages = self
+        default_project_id = self.env.context.get('default_project_id')
+        if default_project_id:
+            shared_stages = self.filtered(lambda x: len(x.project_ids) > 1 and default_project_id in x.project_ids.ids)
+            tasks = self.env['project.task'].with_context(active_test=False).search([('project_id', '=', default_project_id), ('stage_id', 'in', self.ids)])
+            if shared_stages and not tasks:
+                shared_stages.write({'project_ids': [(3, default_project_id)]})
+                stages = self.filtered(lambda x: x not in shared_stages)
+        return super(ProjectTaskType, stages).unlink()
+
 
 class Project(models.Model):
     _name = "project.project"
@@ -281,6 +293,7 @@ class Project(models.Model):
         return self.browse(new_project_id).write({'tasks': [(6, 0, tasks.ids)]})
 
     @api.multi
+    @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
         if default is None:
             default = {}
@@ -391,17 +404,8 @@ class Project(models.Model):
     def open_tasks(self):
         ctx = dict(self._context)
         ctx.update({'search_default_project_id': self.id})
-        kanban_view_id = self.env.ref('project.view_task_kanban')
-        return {
-            'name': _('Tasks'),
-            'res_model': 'project.task',
-            'type': 'ir.actions.act_window',
-            'view_id': kanban_view_id.id,
-            'views': [(kanban_view_id.id, 'kanban'), (False, 'form')],
-            'view_mode': 'kanban,tree,form',
-            'view_type': 'form',
-            'context': ctx
-        }
+        action = self.env['ir.actions.act_window'].for_xml_id('project', 'act_project_project_2_project_task_all')
+        return dict(action, context=ctx)
 
     @api.multi
     def action_view_all_rating(self):
@@ -470,7 +474,7 @@ class Task(models.Model):
         return stages.browse(stage_ids)
 
     active = fields.Boolean(default=True)
-    name = fields.Char(string='Task Title', track_visibility='always', required=True, index=True)
+    name = fields.Char(string='Title', track_visibility='always', required=True, index=True)
     description = fields.Html(string='Description')
     priority = fields.Selection([
         ('0', 'Low'),
@@ -478,7 +482,7 @@ class Task(models.Model):
         ], default='0', index=True, string="Priority")
     sequence = fields.Integer(string='Sequence', index=True, default=10,
         help="Gives the sequence order when displaying a list of tasks.")
-    stage_id = fields.Many2one('project.task.type', string='Stage', track_visibility='onchange', index=True,
+    stage_id = fields.Many2one('project.task.type', string='Stage', ondelete='restrict', track_visibility='onchange', index=True,
         default=_get_default_stage_id, group_expand='_read_group_stage_ids',
         domain="[('project_ids', '=', project_id)]", copy=False)
     tag_ids = fields.Many2many('project.tags', string='Tags', oldname='categ_ids')
@@ -639,6 +643,7 @@ class Task(models.Model):
                 raise ValidationError(_('Task %s can not have a parent task and subtasks. Only one subtask level is allowed.' % (task.name,)))
 
     @api.multi
+    @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
         if default is None:
             default = {}
@@ -691,10 +696,16 @@ class Task(models.Model):
 
     @api.model
     def get_empty_list_help(self, help):
+        tname = _("task")
+        project_id = self.env.context.get('default_project_id', False)
+        if project_id:
+            name = self.env['project.project'].browse(project_id).label_tasks
+            if name: tname = name.lower()
+
         self = self.with_context(
             empty_list_help_id=self.env.context.get('default_project_id'),
             empty_list_help_model='project.project',
-            empty_list_help_document_name=_("task"),
+            empty_list_help_document_name=tname,
         )
         return super(Task, self).get_empty_list_help(help)
 

@@ -21,8 +21,7 @@ var ThreadField = AbstractField.extend({
         this.msgIDs = this.value.res_ids;
     },
     willStart: function () {
-        var chatReady = this.call('chat_manager', 'isReady');
-        return this.alive(chatReady);
+        return this.alive(this.call('chat_manager', 'isReady'));
     },
     start: function () {
         var self = this;
@@ -78,7 +77,7 @@ var ThreadField = AbstractField.extend({
     /**
      * @param  {Object} message
      * @param  {integer[]} message.partner_ids
-     * @return {Deferred}
+     * @return {$.Promise}
      */
     postMessage: function (message) {
         var self = this;
@@ -168,13 +167,9 @@ var ThreadField = AbstractField.extend({
         });
     },
     _onRedirect: function (res_model, res_id) {
-        this.do_action({
-            type:'ir.actions.act_window',
-            view_type: 'form',
-            view_mode: 'form',
-            res_model: res_model,
-            views: [[false, 'form']],
+        this.trigger_up('redirect', {
             res_id: res_id,
+            res_model: res_model,
         });
     },
     _onUpdateMessage: function (message) {

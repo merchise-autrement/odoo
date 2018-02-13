@@ -823,7 +823,8 @@ class StockMove(models.Model):
 
         # Find a candidate move line to update or create a new one.
         for reserved_quant, quantity in quants:
-            to_update = self.move_line_ids.filtered(lambda m: m.location_id.id == reserved_quant.location_id.id and m.lot_id.id == reserved_quant.lot_id.id and m.package_id.id == reserved_quant.package_id.id and m.owner_id.id == reserved_quant.owner_id.id)
+            to_update = self.move_line_ids.filtered(lambda m: m.product_id.tracking != 'serial' and
+                                                    m.location_id.id == reserved_quant.location_id.id and m.lot_id.id == reserved_quant.lot_id.id and m.package_id.id == reserved_quant.package_id.id and m.owner_id.id == reserved_quant.owner_id.id)
             if to_update:
                 to_update[0].with_context(bypass_reservation_update=True).product_uom_qty += self.product_id.uom_id._compute_quantity(quantity, self.product_uom, rounding_method='HALF-UP')
             else:
@@ -1146,3 +1147,15 @@ class StockMove(models.Model):
                     move.state = 'waiting'
                 else:
                     move.state = 'confirmed'
+
+    def _get_upstream_documents_and_responsibles(self, visited):
+        if self.move_orig_ids and any(m.state not in ('done', 'cancel') for m in self.move_orig_ids):
+            result = set()
+            visited |= self
+            for move in self.move_orig_ids:
+                if move.state not in ('done', 'cancel'):
+                    for document, responsible, visited in move._get_upstream_documents_and_responsibles(visited):
+                        result.add((document, responsible, visited))
+            return result
+        else:
+            return [(self.picking_id, self.product_id.responsible_id, visited)]

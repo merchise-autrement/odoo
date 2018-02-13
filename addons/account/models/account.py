@@ -203,7 +203,7 @@ class AccountAccount(models.Model):
             result.append((account.id, name))
         return result
 
-    @api.one
+    @api.multi
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
         default = dict(default or {})
@@ -510,7 +510,7 @@ class AccountJournal(models.Model):
         bank_accounts.unlink()
         return ret
 
-    @api.one
+    @api.multi
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
         default = dict(default or {})
@@ -539,7 +539,7 @@ class AccountJournal(models.Model):
                 if not 'default_credit_account_id' in vals and self.default_credit_account_id:
                     self.default_credit_account_id.currency_id = vals['currency_id']
             if 'bank_account_id' in vals and not vals.get('bank_account_id'):
-                raise UserError(_('You cannot empty the bank account once set.'))
+                raise UserError(_('You cannot remove the bank account from the journal once set.'))
         result = super(AccountJournal, self).write(vals)
 
         # Create the bank_account_id if necessary
@@ -811,7 +811,7 @@ class AccountTax(models.Model):
         if not all(child.type_tax_use in ('none', self.type_tax_use) for child in self.children_tax_ids):
             raise ValidationError(_('The application scope of taxes in a group must be either the same as the group or "None".'))
 
-    @api.one
+    @api.multi
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
         default = dict(default or {}, name=_("%s (Copy)") % self.name)

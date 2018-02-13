@@ -253,6 +253,13 @@
                                 <field name="partner_id" domain="[('customer', '=', True)]" context="{'search_default_customer': 1}"/>
                                 <field name="email_from" invisible="1"/>
                                 <field name="phone" invisible="1"/>
+                                <field name="partner_name" invisible="1"/>
+                                <field name="street" invisible="1"/>
+                                <field name="street2" invisible="1"/>
+                                <field name="city" invisible="1"/>
+                                <field name="state_id" invisible="1"/>
+                                <field name="zip" invisible="1"/>
+                                <field name="country_id" invisible="1"/>
                                 <field name="company_id" invisible="1"/>
                                 <field name="company_currency" invisible="1"/>
                                 <label for="planned_revenue"/>
@@ -290,7 +297,9 @@
                     <group>
                         <field name="name"/>
                         <field name="partner_id" domain="[('customer', '=', True)]" context="{'search_default_customer': 1}"/>
-                        <field name="planned_revenue"/>
+                        <field name="planned_revenue" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                        <field name="company_currency" invisible="1"/>
+                        <field name="company_id" invisible="1"/>
                         <field name="priority" nolabel="1" widget="priority"/>
                     </group>
                 </form>
@@ -497,8 +506,22 @@
                                         'default_phone': phone, 'default_mobile': mobile,
                                         'default_email': email_from,
                                         'default_user_id': user_id, 'default_team_id': team_id, 'default_website': website}"/>
-                                <field name="email_from" string="Email" widget="email"/>
-                                <field name="phone" widget="phone"/>
+                                <field name="partner_address_email"
+                                       attrs="{'invisible': [('partner_address_email', '==', False)]}"
+                                       widget="email"
+                                       string="Email"/>
+                                <field name="email_from"
+                                       attrs="{'invisible': [('partner_address_email', '!=', False)]}"
+                                       string="Email"
+                                       widget="email"/>
+                                <field name="partner_address_phone"
+                                       attrs="{'invisible': [('partner_address_phone', '==', False)]}"
+                                       readonly="1"
+                                       widget="phone"
+                                       string="Phone"/>
+                                <field name="phone"
+                                       attrs="{'invisible': [('partner_address_phone', '!=', False)]}"
+                                       widget="phone"/>
                             </group>
 
                             <group>
@@ -521,9 +544,9 @@
                         <page string="Internal Notes">
                             <field name="description"/>
                         </page>
-                        <page name="lead" string="Contact Information">
+                        <page name="lead" string="Followup">
                             <group>
-                                <group>
+                                <group string="Initial Contact Information">
                                     <field name="partner_name"/>
                                     <label for="street" string="Address"/>
                                     <div class="o_address_format">
@@ -537,7 +560,7 @@
                                     <field name="website" widget="url" placeholder="e.g. www.odoo.com"/>
                                 </group>
 
-                                <group>
+                                <group class="mt48">
                                     <label for="contact_name"/>
                                     <div class="o_row">
                                         <field name="contact_name"/>
@@ -658,13 +681,6 @@
                             domain="[('date_deadline', '&lt;', context_today().strftime('%Y-%m-%d')), ('date_closed', '=', False)]"
                             help="Opportunities with a date of Expected Closing which is in the past"/>
 
-                    <filter string="To Close Today" name="close_today"
-                            domain="[('date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
-                    <filter string="To Close This Week" name="close_this_week" domain="[
-                                '&amp;',
-                                ('date_deadline', '&gt;=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
-                                ('date_deadline', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
-                            ]"/>
                     <filter string="To Close This Month" name="close_this_month" domain="[
                                 '&amp;',
                                 ('date_deadline', '&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')),
@@ -819,16 +835,6 @@ for rec in records:
                     'search_default_to_process':1,
                 }
             </field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Create a new lead
-                </p><p>
-                    Use leads if you need a qualification step before creating an
-                    opportunity or a customer. It can be a business card you received,
-                    a contact form filled in your website, or a file of unqualified
-                    prospects you import, etc.
-                </p>
-            </field>
         </record>
 
         <menuitem
@@ -851,18 +857,6 @@ for rec in records:
                 }
             </field>
             <field name="search_view_id" ref="crm.view_crm_case_opportunities_filter"/>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Create a new opportunity
-                </p><p>
-                    Odoo helps you keep track of your sales pipeline to follow
-                    up potential sales and better forecast your future revenues.
-                </p><p>
-                    You will be able to plan meetings and phone calls from
-                    opportunities, convert them into quotations, attach related
-                    documents, track all discussions, and much more.
-                </p>
-            </field>
         </record>
 
         <record model="ir.actions.act_window.view" id="action_crm_tag_kanban_view_oppor11">
@@ -912,18 +906,6 @@ for rec in records:
                           (0, 0, {'view_mode': 'pivot'}),
                           (0, 0, {'view_mode': 'graph'})]"/>
             <field name="search_view_id" ref="crm.view_crm_case_opportunities_filter"/>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Create a new opportunity
-                </p><p>
-                    Odoo helps you keep track of your sales pipeline to follow
-                    up potential sales and better forecast your future revenues.
-                </p><p>
-                    You will be able to plan meetings and phone calls from
-                    opportunities, convert them into quotations, attach related
-                    documents, track all discussions, and much more.
-                </p>
-            </field>
         </record>
 
         <menuitem

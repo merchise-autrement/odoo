@@ -151,7 +151,7 @@ class StockMove(models.Model):
         # all grouped in the same picking.
         if not self.picking_type_id:
             return self
-        bom = self.env['mrp.bom'].sudo()._bom_find(product=self.product_id)
+        bom = self.env['mrp.bom'].sudo()._bom_find(product=self.product_id, company_id=self.company_id.id)
         if not bom or bom.type != 'phantom':
             return self
         phantom_moves = self.env['stock.move']
@@ -248,6 +248,12 @@ class StockMove(models.Model):
             if lot:
                 vals.update({'lot_id': lot.id})
             self.env['stock.move.line'].create(vals)
+
+    def _get_upstream_documents_and_responsibles(self, visited):
+            if self.created_production_id and self.created_production_id.state not in ('done', 'cancel'):
+                return [(self.created_production_id, self.created_production_id.user_id, visited)]
+            else:
+                return super(StockMove, self)._get_upstream_documents_and_responsibles(visited)
 
 
 class PushedFlow(models.Model):

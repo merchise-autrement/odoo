@@ -1111,7 +1111,7 @@ QUnit.module('basic_fields', {
     QUnit.module('UrlWidget');
 
     QUnit.test('url widget in form view', function (assert) {
-        assert.expect(8);
+        assert.expect(9);
 
         var form = createView({
             View: FormView,
@@ -1131,6 +1131,8 @@ QUnit.module('basic_fields', {
             "should have a anchor with correct classes");
         assert.strictEqual(form.$('a.o_form_uri.o_field_widget.o_text_overflow').attr('href'), 'yop',
             "should have proper href link");
+        assert.strictEqual(form.$('a.o_form_uri.o_field_widget.o_text_overflow').attr('target'), '_blank',
+            "should have target attribute set to _blank");
         assert.strictEqual(form.$('a.o_form_uri.o_field_widget.o_text_overflow').text(), 'yop',
             "the value should be displayed properly");
 
@@ -1519,6 +1521,64 @@ QUnit.module('basic_fields', {
         session.get_file = oldGetFile;
     });
 
+    QUnit.module('FieldPdfViewer');
+
+    QUnit.test("pdf_viewer without data", function (assert) {
+        assert.expect(4);
+
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch:
+                '<form>' +
+                    '<field name="document" widget="pdf_viewer"/>' +
+                '</form>',
+        });
+
+        assert.ok(form.$('.o_field_widget').hasClass('o_field_pdfviewer'));
+        assert.strictEqual(form.$('.o_select_file_button:not(.o_hidden)').length, 1,
+            "there should be a visible 'Upload' button");
+        assert.ok(form.$('.o_field_widget iframe.o_pdfview_iframe').hasClass('o_hidden'),
+            "there should be an invisible iframe");
+        assert.strictEqual(form.$('input[type="file"]').length, 1,
+            "there should be one input");
+
+        form.destroy();
+    });
+
+    QUnit.test("pdf_viewer: basic rendering", function (assert) {
+        assert.expect(4);
+
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            res_id: 1,
+            arch:
+                '<form>' +
+                    '<field name="document" widget="pdf_viewer"/>' +
+                '</form>',
+            mockRPC: function (route) {
+                if (route.indexOf('/web/static/lib/pdfjs/web/viewer.html') !== -1) {
+                    return $.when();
+                }
+                return this._super.apply(this, arguments);
+            }
+        });
+
+        assert.ok(form.$('.o_field_widget').hasClass('o_field_pdfviewer'));
+        assert.strictEqual(form.$('.o_select_file_button:not(.o_hidden)').length, 0,
+            "there should not be a any visible 'Upload' button");
+        assert.notOk(form.$('.o_field_widget iframe.o_pdfview_iframe').hasClass('o_hidden'),
+            "there should be an visible iframe");
+        assert.strictEqual(form.$('.o_field_widget iframe.o_pdfview_iframe').attr('data-src'),
+            '/web/static/lib/pdfjs/web/viewer.html?file=%2Fweb%2Fimage%3Fmodel%3Dpartner%26field%3Ddocument%26id%3D1#page=1',
+            "the src attribute should be correctly set on the iframe");
+
+        form.destroy();
+    });
+
     QUnit.test('text field rendering in list view', function (assert) {
         assert.expect(1);
 
@@ -1664,7 +1724,7 @@ QUnit.module('basic_fields', {
     });
 
     QUnit.test('image fields in subviews are loaded correctly', function (assert) {
-        assert.expect(5);
+        assert.expect(6);
 
         this.data.partner.records[0].__last_update = '2017-02-08 10:00:00';
         this.data.partner.records[0].document = 'myimage';
@@ -1693,6 +1753,10 @@ QUnit.module('basic_fields', {
                     assert.step("The view's image should have been fetched");
                     return $.when('wow');
                 }
+                if (route === 'data:image/png;base64,product_image') {
+                    assert.step("The dialog's image should have been fetched");
+                    return $.when();
+                }
                 return this._super.apply(this, arguments);
             },
         });
@@ -1705,9 +1769,10 @@ QUnit.module('basic_fields', {
         form.$('tbody td:contains(gold)').click();
         assert.strictEqual($('.modal-dialog').length, 1,
             'The modal should have opened');
-        assert.strictEqual($('.modal-dialog').find('.o_field_image > img')[0].src,
-            'data:image/png;base64,product_image',
-            'The image of the many2many in its form view should be present');
+        assert.verifySteps([
+            "The view's image should have been fetched",
+            "The dialog's image should have been fetched",
+        ]);
 
         form.destroy();
     });

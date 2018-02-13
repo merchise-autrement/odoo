@@ -137,7 +137,7 @@ class TestAdvMailPerformance(TransactionCase):
     def test_adv_activity(self):
         model = self.env['mail.test.activity']
 
-        with self.assertQueryCount(admin=15, emp=15):  # test_mail only: 13 - 13
+        with self.assertQueryCount(admin=12, emp=12):  # test_mail only: 10 - 10
             model.create({'name': 'Test'})
 
     @users('admin', 'emp')
@@ -149,7 +149,7 @@ class TestAdvMailPerformance(TransactionCase):
             'default_res_model': 'mail.test.activity',
         })
 
-        with self.assertQueryCount(admin=47, emp=53):  # com runbot 46 - 52 // test_mail only: 35 - 41
+        with self.assertQueryCount(admin=26, emp=32):  # test_mail only: 26 - 32
             model.create({
                 'summary': 'Test Activity',
                 'res_id': record.id,
@@ -276,7 +276,7 @@ class TestHeavyMailPerformance(TransactionCase):
         customer_id = self.customer.id
         user_id = self.user_portal.id
 
-        with self.assertQueryCount(admin=325, emp=388):  # test_mail only: 308 - 368
+        with self.assertQueryCount(admin=325, emp=389):  # test_mail only: 308 - 368
             rec = self.env['mail.test.full'].create({
                 'name': 'Test',
                 'umbrella_id': umbrella_id,
