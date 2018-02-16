@@ -757,7 +757,7 @@ class ProjectTags(models.Model):
     _name = "project.tags"
     _description = "Tags of project's tasks, issues..."
 
-    name = fields.Char(required=True)
+    name = fields.Char(required=True, translate=True)
     color = fields.Integer(string='Color Index')
 
     _sql_constraints = [
