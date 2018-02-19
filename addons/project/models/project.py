@@ -68,7 +68,7 @@ class ProjectTaskType(models.Model):
 class Project(models.Model):
     _name = "project.project"
     _description = "Project"
-    _inherit = ['mail.alias.mixin', 'mail.thread', 'portal.mixin']
+    _inherit = ['portal.mixin', 'mail.alias.mixin', 'mail.thread']
     _inherits = {'account.analytic.account': "analytic_account_id"}
     _order = "sequence, name, id"
     _period_number = 5
@@ -318,7 +318,11 @@ class Project(models.Model):
 
     @api.multi
     def write(self, vals):
-        res = super(Project, self).write(vals)
+        # directly compute is_favorite to dodge allow write access right
+        if 'is_favorite' in vals:
+            vals.pop('is_favorite')
+            self._fields['is_favorite'].determine_inverse(self)
+        res = super(Project, self).write(vals) if vals else True
         if 'active' in vals:
             # archiving/unarchiving a project does it on its tasks, too
             self.with_context(active_test=False).mapped('tasks').write({'active': vals['active']})
@@ -440,7 +444,7 @@ class Task(models.Model):
     _name = "project.task"
     _description = "Task"
     _date_name = "date_start"
-    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin', 'rating.mixin']
+    _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin', 'rating.mixin']
     _mail_post_access = 'read'
     _order = "priority desc, sequence, date_start, name, id"
 
