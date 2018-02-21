@@ -729,7 +729,7 @@ action = model.activate_sample_project()
               </p>
             </field>
         </record>
-        <menuitem action="project_tags_action" id="menu_project_tags_act" parent="menu_project_config" groups="base.group_no_one"/>
+        <menuitem action="project_tags_action" id="menu_project_tags_act" parent="menu_project_config" groups="project.group_project_manager"/>
 
         <!-- Reporting menus -->
         <menuitem id="menu_project_report" name="Reports"
