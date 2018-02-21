@@ -116,7 +116,7 @@ def publish(o, type, extensions):
 
     published = []
     for extension in extensions:
-        release = glob("%s/odoo_*.%s" % (o.build_dir, extension))
+        release = glob("%s/odoo-merchise_*.%s" % (o.build_dir, extension))
         if release:
             published.append(_publish(o, release[0]))
     return published
@@ -248,7 +248,7 @@ class KVMWinTestExe(KVM):
 # Stage: building
 #----------------------------------------------------------
 def _prepare_build_dir(o, win32=False):
-    
+
     cmd = ['rsync', '-a', '--exclude', '.git', '--exclude', '*.pyc', '--exclude', '*.pyo']
     if not win32:
         cmd += ['--exclude', 'setup/win32']
@@ -269,9 +269,9 @@ def _prepare_build_dir(o, win32=False):
                         logging.warning("Cannot remove '{}': {}".format(addon_path, rm_error))
 
 def build_tgz(o):
-    system(['python3', 'setup.py', 'sdist', '--quiet', '--formats=gztar,zip'], o.build_dir)
-    system(['mv', glob('%s/dist/odoo-*.tar.gz' % o.build_dir)[0], '%s/odoo_%s.%s.tar.gz' % (o.build_dir, version, timestamp)])
-    system(['mv', glob('%s/dist/odoo-*.zip' % o.build_dir)[0], '%s/odoo_%s.%s.zip' % (o.build_dir, version, timestamp)])
+    system(['python3', 'setup.py', 'sdist', '--quiet', '--formats=gztar'], o.build_dir)
+    system(['mv', glob('%s/dist/odoo-*.tar.gz' % o.build_dir)[0], '%s/odoo-merchise_%s.tar.gz' % (o.build_dir, version)])
+    # system(['mv', glob('%s/dist/odoo-*.zip' % o.build_dir)[0], '%s/odoo_%s.%s.zip' % (o.build_dir, version, timestamp)])
 
 def build_deb(o):
     # Append timestamp to version for the .dsc to refer the right .tar.gz
@@ -327,7 +327,7 @@ def _prepare_testing(o):
         subprocess.call(["docker", "build", "-t", "odoo-%s-debian-nightly-tests" % docker_version, "."],
                         cwd=os.path.join(o.build_dir, "docker_debian"))
     if not o.no_rpm:
-        logging.info('Preparing docker container instance for RPM') 
+        logging.info('Preparing docker container instance for RPM')
         subprocess.call(["mkdir", "docker_fedora"], cwd=o.build_dir)
         subprocess.call(["cp", "package.dffedora", os.path.join(o.build_dir, "docker_fedora", "Dockerfile")],
                         cwd=os.path.join(o.odoo_dir, "setup"))
@@ -458,7 +458,7 @@ def options():
     op.add_option("", "--vm-winxp-ssh-key", default='/home/odoo/vm/win1036/id_rsa', help="%default")
     op.add_option("", "--vm-winxp-login", default='Naresh', help="Windows login (%default)")
     op.add_option("", "--vm-winxp-python-version", default='3.6', help="Windows Python version installed in the VM (default: %default)")
-    
+
     op.add_option("", "--no-remove", action="store_true", help="don't remove build dir")
     op.add_option("", "--logging", action="store", type="choice", choices=list(log_levels.keys()), default="info", help="Logging level")
 
@@ -483,7 +483,7 @@ def main():
             try:
                 if not o.no_testing:
                     test_tgz(o)
-                published_files = publish(o, 'tarball', ['tar.gz', 'zip'])
+                published_files = publish(o, 'tarball', ['tar.gz'])
             except Exception as e:
                 logging.error("Won't publish the tgz release.\n Exception: %s" % str(e))
         if not o.no_debian:
