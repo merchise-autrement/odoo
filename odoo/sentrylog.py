@@ -1,16 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# sentrylog
-# ---------------------------------------------------------------------
-# Copyright (c) 2015-2017 Merchise Autrement and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2015-04-09
 
 '''Extends/Overrides the OpenERP's logging system to Sentry-based approach.
 
@@ -58,7 +53,7 @@ conf = {
     # be string like 'http://12345abc:091bacfe@sentry.example.com/0'.
     'dsn': Bail,
 
-    # The release to be reported to Sentry.  If Unset, the openerp.release
+    # The release to be reported to Sentry.  If Unset, the odoo.release
     # version will be used.
     'release': Unset,
 
@@ -129,7 +124,7 @@ def patch_logging(override=True, force=False):
     def _require_httprequest(func):
         def inner(self, record):
             try:
-                from openerp.http import request
+                from odoo.http import request
                 httprequest = getattr(request, 'httprequest', None)
                 if httprequest:
                     return func(self, record, httprequest)
@@ -230,8 +225,8 @@ def patch_logging(override=True, force=False):
                     record.fingerprint = fingerprint
 
         def _get_http_request_data(self, request):
-            from openerp.http import JsonRequest, HttpRequest
-            from openerp.http import request  # Let it raise
+            from odoo.http import JsonRequest, HttpRequest
+            from odoo.http import request  # Let it raise
             # We can't simply use `isinstance` cause request is actual a
             # 'werkzeug.local.LocalProxy' instance.
             if request._request_type == JsonRequest._request_type:
@@ -284,6 +279,6 @@ def patch_logging(override=True, force=False):
         else:
             logger.handlers.append(handler)
 
-    for name in (None, 'openerp'):
+    for name in (None, 'odoo'):
         logger = logging.getLogger(name)
         sethandler(logger)
