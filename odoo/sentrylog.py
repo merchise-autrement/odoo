@@ -30,9 +30,6 @@ import raven
 from raven.transport.http import HTTPTransport
 from raven.transport.threaded import ThreadedHTTPTransport
 from raven.transport.gevent import GeventedHTTPTransport
-
-from raven.utils.serializer.manager import manager as _manager, transform
-from raven.utils.serializer import Serializer
 from raven.utils.wsgi import get_headers, get_environ
 
 try:
@@ -290,41 +287,3 @@ def patch_logging(override=True, force=False):
     for name in (None, 'openerp'):
         logger = logging.getLogger(name)
         sethandler(logger)
-
-
-class OdooRecordSerializer(Serializer):
-    """Expose Odoos local context variables from stacktraces.
-
-    """
-    types = (models.Model, )
-
-    def serialize(self, value, **kwargs):
-        from openerp.osv import fields
-        try:
-            if len(value) == 0:
-                return transform((None, 'record with 0 items'))
-            elif len(value) == 1:
-                return transform({
-                    attr: safe_getattr(value, attr)
-                    for attr, val in value._columns.items()
-                    # NOTE: Avoid function, they could be costly.
-                    if not isinstance(val, fields.function)
-                })
-            else:
-                return transform(
-                    [self.serialize(record) for record in value]
-                )
-        except:
-            return repr(value)
-
-
-def safe_getattr(which, attr):
-    from xoutil.symbols import Undefined
-    try:
-        return repr(getattr(which, attr, None))
-    except:
-        return Undefined
-
-
-# _manager.register(OdooRecordSerializer)
-del Serializer, _manager,
