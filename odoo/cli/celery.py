@@ -21,14 +21,22 @@ from . import Command
 
 
 class Celery(Command):
-    def run(self, cmdargs):
+    def run(self, argv):
         import odoo
         # We need to bootstrap the Odoo logging and addons, so we must parse
         # the args.  Otherwise errors won't get logged to Sentry even if it's
-        # configured.  TODO: Actually pass odoo's arguments to Odoo so that
-        # --log-level and --addons are taken into account.
-        odoo.tools.config.parse_config(args=[])
-
+        # configured.
+        #
+        # Use the '--' to separate Odoo arguments from Celery's:
+        #
+        #     odoo celery [odoo arguments --] ...
+        try:
+            pos = argv.index('--')
+        except ValueError:
+            args, cmdargs = [], argv
+        else:
+            args, cmdargs = argv[:pos], argv[pos + 1:]
+        odoo.tools.config.parse_config(args=args)
         from odoo.jobs import app  # noqa: discover the app
         from celery.bin.celery import main as _main
         odoo.evented = False
