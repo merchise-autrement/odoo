@@ -546,7 +546,10 @@ class Configuration(object):
 
     # Maximum number of tasks a pool worker process can execute before it’s
     # replaced with a new one. Default is no limit.
-    worker_max_tasks_per_child = CELERYD_MAX_TASKS_PER_CHILD = 2000
+    worker_max_tasks_per_child = CELERYD_MAX_TASKS_PER_CHILD = max(
+        int(config.get('celery.max_tasks_per_child', 2000)),
+        10
+    )
 
     # Maximum amount of resident memory, in kilobytes, that may be consumed by
     # a worker before it will be replaced by a new worker. If a single task
