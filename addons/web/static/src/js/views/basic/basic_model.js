@@ -219,6 +219,10 @@ var BasicModel = AbstractModel.extend({
         var fieldName;
         record._changes = record._changes || {};
 
+        // ignore values for non requested fields (for instance, fields that are
+        // not in the view)
+        values = _.pick(values, fieldNames);
+
         // fill default values for missing fields
         for (var i = 0; i < fieldNames.length; i++) {
             fieldName = fieldNames[i];
@@ -240,9 +244,6 @@ var BasicModel = AbstractModel.extend({
         var defs = [];
         for (fieldName in values) {
             field = record.fields[fieldName];
-            if (!field) {
-                continue; // ignore values for unknown fields
-            }
             record.data[fieldName] = null;
             var dp;
             if (field.type === 'many2one' && values[fieldName]) {
@@ -808,6 +809,7 @@ var BasicModel = AbstractModel.extend({
                 this.discardChanges(id, {rollback: false});
             }
         } else if (element._changes) {
+            delete element.tempLimitIncrement;
             _.each(element._changes, function (change) {
                 delete change.isNew;
             });
@@ -1682,6 +1684,10 @@ var BasicModel = AbstractModel.extend({
             case 'CREATE':
                 var options = {position: command.position};
                 def = this._addX2ManyDefaultRecord(list, options).then(function (id) {
+                    if (command.position === 'bottom' && list.orderedResIDs.length >= list.limit) {
+                        list.tempLimitIncrement = (list.tempLimitIncrement || 0) + 1;
+                        list.limit += 1;
+                    }
                     // FIXME: hack for lunch widget, which does useless default_get and onchange
                     if (command.data) {
                         return self._applyChange(id, command.data);
@@ -3046,7 +3052,7 @@ var BasicModel = AbstractModel.extend({
             if (field.type === 'one2many' || field.type === 'many2many') {
                 var ids;
                 if (!context[fieldName] || _.isArray(context[fieldName])) { // no dataPoint created yet
-                    ids = context[fieldName] || [];
+                    ids = context[fieldName] ? context[fieldName].slice(0) : [];
                 } else {
                     relDataPoint = this._applyX2ManyOperations(this.localData[context[fieldName]]);
                     ids = relDataPoint.res_ids.slice(0);
@@ -3804,21 +3810,22 @@ var BasicModel = AbstractModel.extend({
 
         // for multi-pages list datapoints, we might need to read the
         // order field first to apply the order on all pages
-        if (list.res_ids.length > list.limit) {
-            if (!list.orderedResIDs && list.orderedBy.length) {
+        if (list.res_ids.length > list.limit && list.orderedBy.length) {
+            if (!list.orderedResIDs) {
                 var fieldNames = _.pluck(list.orderedBy, 'name');
                 def = this._readMissingFields(list, _.filter(list.res_ids, _.isNumber), fieldNames);
-                def.then(function () {
-                    self._sortList(list);
-                });
             }
+            def.then(function () {
+                self._sortList(list);
+            });
         }
         return def.then(function () {
             var resIDs = [];
             // generate the current count and res_ids list by applying the changes
             var currentCount = list.count;
             var currentResIDs = list.res_ids;
-            var upperBound = list.limit ? Math.min(list.offset + list.limit, currentCount) : currentCount;
+            var effectiveLimit = (list.limit || 0) - (list.tempLimitIncrement || 0);
+            var upperBound = effectiveLimit ? Math.min(list.offset + effectiveLimit, currentCount) : currentCount;
             var fieldNames = list.getFieldNames();
             for (var i = list.offset; i < upperBound; i++) {
                 var resId = currentResIDs[i];

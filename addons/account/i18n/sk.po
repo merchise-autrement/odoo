@@ -4819,7 +4819,7 @@ msgstr ""
 #: code:addons/account/models/account_invoice.py:636
 #, python-format
 msgid "Go to the configuration panel"
-msgstr ""
+msgstr "Ísť na panel konfigurácie"
 
 #. module: account
 #: selection:res.partner,trust:0
@@ -11005,6 +11005,13 @@ msgstr ""
 #: code:addons/account/models/account.py:508
 #, python-format
 msgid "You cannot empty the bank account once set."
+msgstr ""
+
+#. module: account
+#: code:addons/account/models/account.py:522
+#, python-format
+msgid ""
+"The partners of the journal's company and the related bank account mismatch."
 msgstr ""
 
 #. module: account

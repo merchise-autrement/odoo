@@ -3038,15 +3038,28 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                 self._write(old_vals)
 
             if new_vals:
-                # put the values of pure new-style fields into cache, and inverse them
                 self.modified(set(new_vals) - set(old_vals))
-                for record in self:
-                    record._cache.update(record._convert_to_cache(new_vals, update=True))
+
+                # put the values of fields into cache, and inverse them
                 for key in new_vals:
-                    self._fields[key].determine_inverse(self)
+                    field = self._fields[key]
+                    # If a field is not stored, its inverse method will probably
+                    # write on its dependencies, which will invalidate the field
+                    # on all records. We therefore inverse the field one record
+                    # at a time.
+                    batches = [self] if field.store else list(self)
+                    for records in batches:
+                        for record in records:
+                            record._cache.update(
+                                record._convert_to_cache(new_vals, update=True)
+                            )
+                        field.determine_inverse(records)
+
                 self.modified(set(new_vals) - set(old_vals))
+
                 # check Python constraints for inversed fields
                 self._validate_fields(set(new_vals) - set(old_vals))
+
                 # recompute new-style fields
                 if self.env.recompute and self._context.get('recompute', True):
                     self.recompute()
@@ -4999,15 +5012,16 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         done = set()
 
         # dummy assignment: trigger invalidations on the record
-        for name in todo:
-            if name == 'id':
-                continue
-            value = record[name]
-            field = self._fields[name]
-            if field.type == 'many2one' and field.delegate and not value:
-                # do not nullify all fields of parent record for new records
-                continue
-            record[name] = value
+        with env.do_in_onchange():
+            for name in todo:
+                if name == 'id':
+                    continue
+                value = record[name]
+                field = self._fields[name]
+                if field.type == 'many2one' and field.delegate and not value:
+                    # do not nullify all fields of parent record for new records
+                    continue
+                record[name] = value
 
         result = {}
         dirty = set()

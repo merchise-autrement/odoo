@@ -9805,13 +9805,13 @@ msgstr ""
 #. module: account
 #: model:ir.ui.view,arch_db:account.view_account_invoice_report_search
 msgid "This Month"
-msgstr ""
+msgstr "이번 달"
 
 #. module: account
 #: code:addons/account/models/account_journal_dashboard.py:111
 #, python-format
 msgid "This Week"
-msgstr ""
+msgstr "이번 주"
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.view_account_invoice_report_search
@@ -11008,6 +11008,13 @@ msgid "You cannot empty the bank account once set."
 msgstr ""
 
 #. module: account
+#: code:addons/account/models/account.py:522
+#, python-format
+msgid ""
+"The partners of the journal's company and the related bank account mismatch."
+msgstr ""
+
+#. module: account
 #: code:addons/account/models/account.py:55
 #, python-format
 msgid ""
@@ -11178,7 +11185,7 @@ msgstr ""
 #. module: account
 #: model:ir.ui.view,arch_db:account.account_planner
 msgid "Your Company"
-msgstr ""
+msgstr "귀하의 회사"
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.account_planner

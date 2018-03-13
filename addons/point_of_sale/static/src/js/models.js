@@ -193,7 +193,7 @@ exports.PosModel = Backbone.Model.extend({
         },
     },{
         model:  'res.country',
-        fields: ['name'],
+        fields: ['name', 'vat_label'],
         loaded: function(self,countries){
             self.countries = countries;
             self.company.country = null;
@@ -2118,6 +2118,7 @@ exports.Order = Backbone.Model.extend({
                 company_registry: company.company_registry,
                 contact_address: company.partner_id[1],
                 vat: company.vat,
+                vat_label: company.country.vat_label,
                 name: company.name,
                 phone: company.phone,
                 logo:  this.pos.company_logo_base64,
@@ -2262,7 +2263,9 @@ exports.Order = Backbone.Model.extend({
                 }
             })
 
-            unit_price = line.compute_all(mapped_included_taxes, unit_price, 1, this.pos.currency.rounding, true).total_excluded;
+            if (mapped_included_taxes.length > 0) {
+                unit_price = line.compute_all(mapped_included_taxes, unit_price, 1, this.pos.currency.rounding, true).total_excluded;
+            }
 
             line.set_unit_price(unit_price);
         }
@@ -2360,7 +2363,7 @@ exports.Order = Backbone.Model.extend({
         this.assert_editable();
         var newPaymentline = new exports.Paymentline({},{order: this, cashregister:cashregister, pos: this.pos});
         if(cashregister.journal.type !== 'cash' || this.pos.config.iface_precompute_cash){
-            newPaymentline.set_amount( Math.max(this.get_due(),0) );
+            newPaymentline.set_amount( this.get_due() );
         }
         this.paymentlines.add(newPaymentline);
         this.select_paymentline(newPaymentline);
@@ -2524,10 +2527,10 @@ exports.Order = Backbone.Model.extend({
                 }
             }
         }
-        return round_pr(Math.max(0,due), this.pos.currency.rounding);
+        return round_pr(due, this.pos.currency.rounding);
     },
     is_paid: function(){
-        return this.get_due() === 0;
+        return this.get_due() <= 0;
     },
     is_paid_with_cash: function(){
         return !!this.paymentlines.find( function(pl){
