@@ -92,7 +92,7 @@ msgstr "${object.company_id.name} Validazione forum"
 #. module: website_forum
 #: model:ir.ui.view,arch_db:website_forum.tag
 msgid "&amp;nbsp;&amp;nbsp;<i class=\"fa fa-times\"/>&amp;nbsp;&amp;nbsp;"
-msgstr ""
+msgstr "&amp;nbsp;&amp;nbsp;<i class=\"fa fa-times\"/>&amp;nbsp;&amp;nbsp;"
 
 #. module: website_forum
 #: model:ir.ui.view,arch_db:website_forum.header
@@ -1279,7 +1279,7 @@ msgstr "Domande Favorite"
 #. module: website_forum
 #: model:ir.ui.view,arch_db:website_forum.forum_index
 msgid "Filter on"
-msgstr ""
+msgstr "Filtro su"
 
 #. module: website_forum
 #: model:ir.model.fields,field_description:website_forum.field_forum_forum_relevancy_post_vote

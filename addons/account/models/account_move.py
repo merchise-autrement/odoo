@@ -101,7 +101,7 @@ class AccountMove(models.Model):
     matched_percentage = fields.Float('Percentage Matched', compute='_compute_matched_percentage', digits=0, store=True, readonly=True, help="Technical field used in cash basis method")
     statement_line_id = fields.Many2one('account.bank.statement.line', index=True, string='Bank statement line reconciled with this entry', copy=False, readonly=True)
     # Dummy Account field to search on account.move by account_id
-    dummy_account_id = fields.Many2one('account.account', related='line_ids.account_id', string='Account', store=False)
+    dummy_account_id = fields.Many2one('account.account', related='line_ids.account_id', string='Account', store=False, readonly=True)
 
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
@@ -219,6 +219,15 @@ class AccountMove(models.Model):
             raise UserError(_("Cannot create unbalanced journal entry."))
         return True
 
+    # Do not forward port in >= saas-14
+    def _reconcile_reversed_pair(self, move, reversed_move):
+        amls_to_reconcile = move.line_ids + reversed_move.line_ids
+        accounts_reconcilable = amls_to_reconcile.mapped('account_id').filtered(lambda a: a.reconcile)
+        for account in accounts_reconcilable:
+            amls_for_account = amls_to_reconcile.filtered(lambda l: l.account_id.id == account.id)
+            amls_for_account.reconcile()
+            amls_to_reconcile = amls_to_reconcile - amls_for_account
+
     @api.multi
     def _reverse_move(self, date=None, journal_id=None):
         self.ensure_one()
@@ -232,6 +241,7 @@ class AccountMove(models.Model):
                 'credit': acm_line.debit,
                 'amount_currency': -acm_line.amount_currency
             })
+        self._reconcile_reversed_pair(self, reversed_move)
         return reversed_move
 
     @api.multi
@@ -270,7 +280,7 @@ class AccountMoveLine(models.Model):
         if not cr.fetchone():
             cr.execute('CREATE INDEX account_move_line_partner_id_ref_idx ON account_move_line (partner_id, ref)')
 
-    @api.depends('debit', 'credit', 'amount_currency', 'currency_id', 'matched_debit_ids', 'matched_credit_ids', 'matched_debit_ids.amount', 'matched_credit_ids.amount', 'account_id.currency_id', 'move_id.state')
+    @api.depends('debit', 'credit', 'amount_currency', 'currency_id', 'matched_debit_ids', 'matched_credit_ids', 'matched_debit_ids.amount', 'matched_credit_ids.amount', 'move_id.state')
     def _amount_residual(self):
         """ Computes the residual amount of a move line from a reconciliable account in the company currency and the line's currency.
             This amount will be 0 for fully reconciled lines or lines from a non-reconciliable account, the original line amount
