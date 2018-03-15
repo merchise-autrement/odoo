@@ -1,16 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# sentrylog
-# ---------------------------------------------------------------------
-# Copyright (c) 2015-2017 Merchise Autrement and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2015-04-09
 
 '''Extends/Overrides the OpenERP's logging system to Sentry-based approach.
 
@@ -30,9 +25,6 @@ import raven
 from raven.transport.http import HTTPTransport
 from raven.transport.threaded import ThreadedHTTPTransport
 from raven.transport.gevent import GeventedHTTPTransport
-
-from raven.utils.serializer.manager import manager as _manager, transform
-from raven.utils.serializer import Serializer
 from raven.utils.wsgi import get_headers, get_environ
 
 try:
@@ -61,7 +53,7 @@ conf = {
     # be string like 'http://12345abc:091bacfe@sentry.example.com/0'.
     'dsn': Bail,
 
-    # The release to be reported to Sentry.  If Unset, the openerp.release
+    # The release to be reported to Sentry.  If Unset, the odoo.release
     # version will be used.
     'release': Unset,
 
@@ -132,7 +124,7 @@ def patch_logging(override=True, force=False):
     def _require_httprequest(func):
         def inner(self, record):
             try:
-                from openerp.http import request
+                from odoo.http import request
                 httprequest = getattr(request, 'httprequest', None)
                 if httprequest:
                     return func(self, record, httprequest)
@@ -233,8 +225,8 @@ def patch_logging(override=True, force=False):
                     record.fingerprint = fingerprint
 
         def _get_http_request_data(self, request):
-            from openerp.http import JsonRequest, HttpRequest
-            from openerp.http import request  # Let it raise
+            from odoo.http import JsonRequest, HttpRequest
+            from odoo.http import request  # Let it raise
             # We can't simply use `isinstance` cause request is actual a
             # 'werkzeug.local.LocalProxy' instance.
             if request._request_type == JsonRequest._request_type:
@@ -287,44 +279,6 @@ def patch_logging(override=True, force=False):
         else:
             logger.handlers.append(handler)
 
-    for name in (None, 'openerp'):
+    for name in (None, 'odoo'):
         logger = logging.getLogger(name)
         sethandler(logger)
-
-
-class OdooRecordSerializer(Serializer):
-    """Expose Odoos local context variables from stacktraces.
-
-    """
-    types = (models.Model, )
-
-    def serialize(self, value, **kwargs):
-        from openerp.osv import fields
-        try:
-            if len(value) == 0:
-                return transform((None, 'record with 0 items'))
-            elif len(value) == 1:
-                return transform({
-                    attr: safe_getattr(value, attr)
-                    for attr, val in value._columns.items()
-                    # NOTE: Avoid function, they could be costly.
-                    if not isinstance(val, fields.function)
-                })
-            else:
-                return transform(
-                    [self.serialize(record) for record in value]
-                )
-        except:
-            return repr(value)
-
-
-def safe_getattr(which, attr):
-    from xoutil.symbols import Undefined
-    try:
-        return repr(getattr(which, attr, None))
-    except:
-        return Undefined
-
-
-# _manager.register(OdooRecordSerializer)
-del Serializer, _manager,
