@@ -1,7 +1,7 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # * website_slides
-# 
+#
 # Translators:
 # Jeffery CHEN Fan <jeffery9@gmail.com>, 2017
 # Siyuan Gu <siyuancn@hotmail.com>, 2017
@@ -29,10 +29,10 @@ msgstr ""
 "PO-Revision-Date: 2017-10-02 11:27+0000\n"
 "Last-Translator: e2f <projects@e2f.com>, 2018\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/odoo/teams/41243/zh_CN/)\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: zh_CN\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: website_slides
@@ -92,7 +92,7 @@ msgstr ""
 "\n"
 "<p>您好：</p>\n"
 "<p>\n"
-"    新的 ${object.slide_type} <strong>${object.name}</strong> 已于 ${format_tz(object.write_date, tz=user.tz)} 发布到 ${object.channel_id.name} 中\n"
+"    新的 ${object.slide_type} <strong>${object.name}</strong> 已于 ${format_tz(object.write_date, tz=user.tz)} 发布到 ${object.channel_id.name}\n"
 "</p>\n"
 "<p style=\"text-align: center; margin-top: 10px;\">\n"
 "    <a href=\"${object.website_url}\">\n"
@@ -472,7 +472,7 @@ msgid ""
 "Here is the received response: %s"
 msgstr ""
 "无法从url 中获取数据。文档或访问权限不可用。\n"
-" 这是已收到的回复：%"
+" 这是已收到的回复：%s"
 
 #. module: website_slides
 #: code:addons/website_slides/models/slides.py:322
@@ -629,7 +629,7 @@ msgid ""
 "Chrome: http://bit.ly/2613LcY\n"
 "iOS: http://bit.ly/1ZUZsZD"
 msgstr ""
-"下载 Odoo 超棒的时间表，了解时间跟踪和员工管理可以变得多么轻松！\n"
+"下载 Odoo Awesome Timesheet，了解时间跟踪和员工管理可以变得多么轻松！\n"
 "\n"
 "Chrome: http://bit.ly/2613LcY\n"
 "iOS: http://bit.ly/1ZUZsZD"

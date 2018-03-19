@@ -2077,7 +2077,7 @@ QUnit.module('relational_fields', {
             data: this.data,
             arch: '<form>' +
                     '<field name="p">' +
-                        '<tree editable="bttom">' +
+                        '<tree editable="bottom">' +
                             '<field name="trululu"/>' +
                         '</tree>' +
                     '</field>' +
@@ -2168,6 +2168,92 @@ QUnit.module('relational_fields', {
             "the modal should be closed");
         assert.equal(form.$('.o_data_cell:contains(test)').text(), 'test',
             "the partner name should have been updated to 'test'");
+
+        form.destroy();
+    });
+
+    QUnit.test('many2many list add *many* records, remove, re-add', function (assert) {
+        assert.expect(5);
+
+        this.data.partner.fields.timmy.domain = [['color', '=', 2]];
+        this.data.partner.fields.timmy.onChange = true;
+        this.data.partner_type.fields.product_ids = {string: "Product", type: "many2many", relation: 'product'};
+
+        for (var i=0; i<50; i++) {
+            var new_record_partner_type = {id: 100+i, display_name: "batch" + i, color: 2};
+            this.data.partner_type.records.push(new_record_partner_type);
+        }
+
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form string="Partners">' +
+                    '<field name="timmy" widget="many2many">' +
+                        '<tree>' +
+                            '<field name="display_name"/>' +
+                            '<field name="product_ids" widget="many2many_tags"/>' +
+                        '</tree>' +
+                    '</field>' +
+                '</form>',
+            res_id: 1,
+            archs: {
+                'partner_type,false,list': '<tree><field name="display_name"/></tree>',
+                'partner_type,false,search': '<search><field name="display_name"/><field name="color"/></search>',
+            },
+            mockRPC: function (route, args) {
+                if (args.method === 'get_formview_id') {
+                    assert.deepEqual(args.args[0], [1], "should call get_formview_id with correct id");
+                    return $.when(false);
+                }
+                return this._super(route, args);
+            },
+        });
+
+        // First round: add 51 records in batch
+        form.$buttons.find('.btn.btn-primary.btn-sm.o_form_button_edit').click();
+        form.$('.o_field_x2many_list_row_add a').click();
+
+        var $modal = $('.modal-dialog.modal-lg');
+
+        assert.equal($modal.length, 1,
+            'There should be one modal');
+
+        $modal.find('thead input[type=checkbox]').click(); //select all the records we created in batch + 'gold'
+
+        $modal.find('.btn.btn-sm.btn-primary.o_select_button').click();
+
+        var m2m_records = form.$('.o_field_many2many.o_field_widget.o_field_x2many.o_field_x2many_list .o_data_cell:not(.o_many2many_tags_cell)');
+        assert.equal(m2m_records.length, 51,
+            'We should have added all the records present in the search view to the m2m field'); // the 50 in batch + 'gold'
+
+        form.$buttons.find('.btn.btn-primary.btn-sm.o_form_button_save').click();
+
+        // Secound round: remove one record
+        form.$buttons.find('.btn.btn-primary.btn-sm.o_form_button_edit').click();
+        var trash_buttons = form.$('.o_field_many2many.o_field_widget.o_field_x2many.o_field_x2many_list .o_list_record_delete');
+
+        trash_buttons.first().click();
+
+        var pager_limit = form.$('.o_field_many2many.o_field_widget.o_field_x2many.o_field_x2many_list .o_pager_limit');
+        assert.equal(pager_limit.text(), '50',
+            'We should have 50 records in the m2m field');
+
+        // Third round: re-add 1 records
+        form.$('.o_field_x2many_list_row_add a').click();
+
+        $modal = $('.modal-dialog.modal-lg');
+
+        assert.equal($modal.length, 1,
+            'There should be one modal');
+
+        $modal.find('thead input[type=checkbox]').click();
+
+        $modal.find('.btn.btn-sm.btn-primary.o_select_button').click();
+        
+        pager_limit = form.$('.o_field_many2many.o_field_widget.o_field_x2many.o_field_x2many_list .o_pager_limit');
+        assert.equal(pager_limit.text(), '51',
+            'We should have 51 records in the m2m field');
 
         form.destroy();
     });
@@ -3994,6 +4080,37 @@ QUnit.module('relational_fields', {
         form.destroy();
     });
 
+    QUnit.test('editable one2many list, pager is updated', function (assert) {
+        assert.expect(1);
+
+        this.data.turtle.records.push({id:4, turtle_foo: 'stephen hawking'});
+        this.data.partner.records[0].turtles = [1,2,3,4];
+
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form string="Partners">' +
+                    '<field name="turtles">' +
+                        '<tree editable="bottom" limit="3">' +
+                            '<field name="turtle_foo"/>' +
+                        '</tree>' +
+                    '</field>' +
+                '</form>',
+            res_id: 1,
+        });
+
+        // add a record, then click in form view to confirm it
+        form.$buttons.find('.o_form_button_edit').click();
+        form.$('.o_field_x2many_list_row_add a').click();
+        form.$el.click();
+
+        assert.strictEqual(form.$('.o_cp_pager').text().trim(), '1-3 / 5',
+            "pager should display the correct total");
+        form.destroy();
+    });
+
+
     QUnit.test('one2many list (non editable): edition', function (assert) {
         assert.expect(12);
 
@@ -4299,6 +4416,185 @@ QUnit.module('relational_fields', {
             "should still have 0 data rows");
 
         assert.verifySteps(['read', 'default_get', 'default_get']);
+        form.destroy();
+    });
+
+    QUnit.test('editable one2many list, adding line when only one page', function (assert) {
+        assert.expect(1);
+
+        this.data.partner.records[0].turtles=[1,2,3];
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form string="Partners">' +
+                    '<field name="turtles">' +
+                        '<tree editable="bottom" limit="3">' +
+                            '<field name="turtle_foo"/>' +
+                        '</tree>' +
+                    '</field>' +
+                '</form>',
+            res_id: 1,
+        });
+
+        // add a record, to reach the page size limit
+        form.$buttons.find('.o_form_button_edit').click();
+        form.$('.o_field_x2many_list_row_add a').click();
+
+        // the record currently being added should not count in the pager
+        assert.ok(!form.$('.o_cp_pager').is(':visible'),
+            "pager should not be visible");
+        form.destroy();
+    });
+
+    QUnit.test('editable one2many list, adding line, then discarding', function (assert) {
+        assert.expect(1);
+
+        this.data.turtle.records.push({id:4, turtle_foo: 'stephen hawking'});
+        this.data.partner.records[0].turtles = [1,2,3,4];
+
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form string="Partners">' +
+                    '<field name="turtles">' +
+                        '<tree editable="bottom" limit="3">' +
+                            '<field name="turtle_foo"/>' +
+                        '</tree>' +
+                    '</field>' +
+                '</form>',
+            res_id: 1,
+        });
+
+        // add a record, then discard
+        form.$buttons.find('.o_form_button_edit').click();
+        form.$('.o_field_x2many_list_row_add a').click();
+        form.$buttons.find('.o_form_button_cancel').click();
+
+        // confirm the discard operation
+        $('.modal .modal-footer .btn-primary').click(); // click on confirm
+
+        assert.strictEqual(form.$('.o_cp_pager').text().trim(), '1-3 / 4',
+            "pager should still be visible");
+        form.destroy();
+    });
+
+    QUnit.test('editable one2many list, required field and pager', function (assert) {
+        assert.expect(1);
+
+        this.data.turtle.records.push({id:4, turtle_foo: 'stephen hawking'});
+        this.data.turtle.fields.turtle_foo.required = true;
+        this.data.partner.records[0].turtles = [1,2,3,4];
+
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form string="Partners">' +
+                    '<field name="turtles">' +
+                        '<tree editable="bottom" limit="3">' +
+                            '<field name="turtle_foo"/>' +
+                        '</tree>' +
+                    '</field>' +
+                '</form>',
+            res_id: 1,
+        });
+
+        // add a (empty) record
+        form.$buttons.find('.o_form_button_edit').click();
+        form.$('.o_field_x2many_list_row_add a').click();
+
+        // go on next page. The new record is not valid and should be discarded
+        form.$('.o_pager_next').click();
+        assert.strictEqual(form.$('tr.o_data_row').length, 1,
+            "should have 1 data rows");
+
+        form.destroy();
+    });
+
+    QUnit.test('editable one2many list, required field, pager and confirm discard', function (assert) {
+        assert.expect(3);
+
+        this.data.turtle.records.push({id:4, turtle_foo: 'stephen hawking'});
+        this.data.turtle.fields.turtle_foo.required = true;
+        this.data.partner.records[0].turtles = [1,2,3,4];
+
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form string="Partners">' +
+                    '<field name="turtles">' +
+                        '<tree editable="bottom" limit="3">' +
+                            '<field name="turtle_foo"/>' +
+                            '<field name="turtle_int"/>' +
+                        '</tree>' +
+                    '</field>' +
+                '</form>',
+            res_id: 1,
+        });
+
+        // add a record with a dirty state, but not valid
+        form.$buttons.find('.o_form_button_edit').click();
+        form.$('.o_field_x2many_list_row_add a').click();
+        form.$('input[name="turtle_int"]').val(4321).trigger('input');
+
+        // go to next page. The new record is not valid, but dirty. we should
+        // see a confirm dialog
+        form.$('.o_pager_next').click();
+
+        assert.strictEqual(form.$('.o_cp_pager').text().trim(), '1-3 / 4',
+            "pager should still display the correct total");
+
+        // click on cancel
+        $('.modal .modal-footer .btn-default').click(); // click on cancel
+
+        assert.strictEqual(form.$('.o_cp_pager').text().trim(), '1-3 / 4',
+            "pager should again display the correct total");
+        assert.strictEqual(form.$('.o_field_one2many input.o_field_invalid').length, 1,
+            "there should be an invalid input in the one2many");
+        form.destroy();
+    });
+
+    QUnit.test('editable one2many list, adding, discarding, and pager', function (assert) {
+        assert.expect(2);
+
+        this.data.partner.records[0].turtles = [1];
+
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form string="Partners">' +
+                    '<field name="turtles">' +
+                        '<tree editable="bottom" limit="3">' +
+                            '<field name="turtle_foo"/>' +
+                        '</tree>' +
+                    '</field>' +
+                '</form>',
+            res_id: 1,
+        });
+
+        // add a 4 records record (to make the pager appear)
+        form.$buttons.find('.o_form_button_edit').click();
+        form.$('.o_field_x2many_list_row_add a').click();
+        form.$('.o_field_x2many_list_row_add a').click();
+        form.$('.o_field_x2many_list_row_add a').click();
+        form.$('.o_field_x2many_list_row_add a').click();
+
+        // go on next page
+        form.$('.o_pager_next').click();
+
+        // discard
+        form.$buttons.find('.o_form_button_cancel').click();
+        $('.modal .modal-footer .btn-primary').click();
+
+        assert.strictEqual(form.$('tr.o_data_row').length, 1,
+            "should have 1 data row");
+        assert.ok(!form.$('.o_cp_pager').is(':visible'),
+            "pager should not be visible");
+
         form.destroy();
     });
 
