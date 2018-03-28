@@ -2639,7 +2639,7 @@ msgstr "Müügimees"
 #: code:addons/point_of_sale/static/src/js/chrome.js:385
 #, python-format
 msgid "Scale"
-msgstr ""
+msgstr "Skaala"
 
 #. module: point_of_sale
 #. openerp-web
@@ -3010,7 +3010,7 @@ msgstr "Maksud:"
 #: code:addons/point_of_sale/static/src/xml/pos.xml:707
 #, python-format
 msgid "Tel:"
-msgstr ""
+msgstr "Tel:"
 
 #. module: point_of_sale
 #. openerp-web

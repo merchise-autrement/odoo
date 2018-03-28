@@ -123,10 +123,6 @@ msgid ""
 "object.parent_id.subject) or (object.parent_id and "
 "object.parent_id.record_name and 'Re: %s' % object.parent_id.record_name)}"
 msgstr ""
-"${object.subject 或 (object.record_name 和 'Re: %s' % object.record_name) 或 "
-"(object.parent_id and object.parent_id.subject 和 'Re: %s' % "
-"object.parent_id.subject) 或 (object.parent_id 和 object.parent_id.record_name"
-" 和 'Re: %s' % object.parent_id.record_name)}"
 
 #. module: mail
 #. openerp-web
@@ -183,7 +179,16 @@ msgid ""
 "            You can mention a channel by typing <b>#channel</b>.<br>\n"
 "            You can execute a command by typing <b>/command</b>.<br>\n"
 "            You can insert canned responses in your message by typing <b>:shortcut</b>.<br>"
-msgstr "<br><br><b></b><br><b></b><br><b></b><br><b></b><br>"
+msgstr ""
+
+#. module: mail
+#: code:addons/mail/models/mail_channel.py:475
+#, python-format
+msgid ""
+"<div class=\"o_mail_notification\">%(author)s invited %(new_partner)s to <a "
+"href=\"#\" class=\"o_channel_redirect\" data-oe-"
+"id=\"%(channel_id)s\">#%(channel_name)s</a></div>"
+msgstr ""
 
 #. module: mail
 #: code:addons/mail/models/mail_channel.py:550
@@ -238,7 +243,7 @@ msgid ""
 "<p><b>Chat with coworkers</b> in real-time using direct "
 "messages.</p><p><i>You might need to invite users from the Settings app "
 "first.</i></p>"
-msgstr "<p><b/></p><p><i/></p>"
+msgstr ""
 
 #. module: mail
 #. openerp-web
@@ -248,7 +253,7 @@ msgid ""
 "<p><b>Write a message</b> to the members of the channel here.</p> <p>You can"
 " notify someone with <i>'@'</i> or link another channel with <i>'#'</i>. "
 "Start your message with <i>'/'</i> to get the list of possible commands.</p>"
-msgstr "<p><b/></p><p><i/><i/><i/></p>"
+msgstr ""
 
 #. module: mail
 #. openerp-web
@@ -258,7 +263,7 @@ msgid ""
 "<p>Channels make it easy to organize information across different topics and"
 " groups.</p> <p>Try to <b>create your first channel</b> (e.g. sales, "
 "marketing, product XYZ, after work party, etc).</p>"
-msgstr "<p/><p><b/></p>"
+msgstr ""
 
 #. module: mail
 #: model:ir.ui.view,arch_db:mail.email_compose_message_wizard_form
@@ -4651,20 +4656,20 @@ msgstr "标记为已读"
 #: code:addons/mail/models/mail_thread.py:943
 #, python-format
 msgid "model %s does not accept document creation"
-msgstr "模型 % 不接受文档创建"
+msgstr "模型 %s 不接受文档创建"
 
 #. module: mail
 #: code:addons/mail/models/mail_thread.py:938
 #, python-format
 msgid "model %s does not accept document update"
-msgstr "模型 % 不接受文档更新"
+msgstr "模型 %s 不接受文档更新"
 
 #. module: mail
 #: code:addons/mail/models/mail_thread.py:931
 #, python-format
 msgid ""
 "model %s does not accept document update, fall back on document creation"
-msgstr "模型 % 不接受文档更新，将在文档创建中退回"
+msgstr "模型 %s 不接受文档更新，将在文档创建中退回"
 
 #. module: mail
 #: model:ir.ui.view,arch_db:mail.message_origin_link
@@ -4697,7 +4702,7 @@ msgstr "在"
 msgid ""
 "posting a message without model should be with a null res_id (private "
 "message), received %s"
-msgstr "发布无模型消息应使用无效 res_id（私人信息），收到 %"
+msgstr "发布无模型消息应使用无效 res_id（私人信息），收到%s"
 
 #. module: mail
 #: code:addons/mail/models/mail_thread.py:917
@@ -4739,13 +4744,13 @@ msgstr "记录："
 #: code:addons/mail/models/mail_thread.py:935
 #, python-format
 msgid "reply to missing document (%s,%s)"
-msgstr "对缺失文档的回复 (%,%)"
+msgstr "对缺失文档的回复 (%s,%s)"
 
 #. module: mail
 #: code:addons/mail/models/mail_thread.py:928
 #, python-format
 msgid "reply to missing document (%s,%s), fall back on new document creation"
-msgstr "对丢失文档的回复 (%,%)，在新文档创建中退回"
+msgstr "对丢失文档的回复  (%s,%s), 在新文档创建中退回"
 
 #. module: mail
 #: code:addons/mail/models/mail_thread.py:913

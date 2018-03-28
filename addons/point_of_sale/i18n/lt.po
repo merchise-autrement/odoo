@@ -3,13 +3,13 @@
 # * point_of_sale
 # 
 # Translators:
-# Martin Trigaux <mat@odoo.com>, 2016
+# Martin Trigaux, 2016
 # Audrius Palenskis <audrius.palenskis@gmail.com>, 2016
 # UAB "Draugiški sprendimai" <transifex@draugiskisprendimai.lt>, 2016
 # Rolandas <info@paninfo.lt>, 2016
 # Šarūnas Ažna <sarunas.azna@gmail.com>, 2016
 # Arminas Grigonis <arminas@versada.lt>, 2016
-# Valdemar St <vaalds@gmail.com>, 2016
+# vaalds <vaalds@gmail.com>, 2016
 # digitouch UAB <digitouchagencyeur@gmail.com>, 2017
 # Aleksandr Jadov <a.jadov@tata.lt>, 2017
 msgid ""
@@ -2219,7 +2219,7 @@ msgstr ""
 #: code:addons/point_of_sale/models/pos_order.py:266
 #, python-format
 msgid "Please define income account for this product: \"%s\" (id:%d)."
-msgstr "Prašome nustatyti pajamų sąskaitą šiam produktui: \"% s\" (ID:% d)."
+msgstr "Prašome nustatyti pajamų sąskaitą šiam produktui: \"%s\" (ID:% d)."
 
 #. module: point_of_sale
 #: code:addons/point_of_sale/models/pos_order.py:446

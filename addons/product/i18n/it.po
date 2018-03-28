@@ -43,7 +43,7 @@ msgstr "# Varianti Prodotto"
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_category_product_count
 msgid "# Products"
-msgstr ""
+msgstr "# Prodotti"
 
 #. module: product
 #: code:addons/product/models/product_pricelist.py:438
@@ -2000,7 +2000,7 @@ msgstr "Unità di Misura Prodotto"
 #. module: product
 #: model:ir.model,name:product.model_product_uom_categ
 msgid "Product UoM Categories"
-msgstr ""
+msgstr "Categorie UdM Prodotto"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo_product_id

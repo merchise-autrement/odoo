@@ -54,7 +54,7 @@ msgstr ""
 #: code:addons/stock/models/stock_move.py:217
 #, python-format
 msgid " (%s reserved)"
-msgstr "(%rezervováno)"
+msgstr "(%srezervováno)"
 
 #. module: stock
 #: code:addons/stock/models/stock_move.py:220

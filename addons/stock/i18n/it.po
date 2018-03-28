@@ -1233,7 +1233,7 @@ msgstr "Controlla se il movimento ha della disponibilità riservata"
 #: model:ir.actions.act_window,help:stock.action_picking_tree_waiting
 #: model:ir.actions.act_window,help:stock.stock_picking_action_picking_type
 msgid "Click here to create a new transfer."
-msgstr ""
+msgstr "Clicca qui per creare un nuovo movimento."
 
 #. module: stock
 #: model:ir.actions.act_window,help:stock.action_deliver_move
@@ -2563,7 +2563,7 @@ msgstr "INV: %s"
 #. module: stock
 #: model:stock.location,name:stock.stock_location_3
 msgid "IT Vendors"
-msgstr ""
+msgstr "Fornitori IT"
 
 #. module: stock
 #: model:product.product,name:stock.product_icecream
@@ -5348,7 +5348,7 @@ msgstr ""
 #. module: stock
 #: model:ir.ui.view,arch_db:stock.view_move_picking_form
 msgid "Reserved"
-msgstr ""
+msgstr "Riservato"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_move_operation_link_reserved_quant_id
@@ -6713,7 +6713,7 @@ msgstr "Lotti / Numeri di Serie univoci"
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_quant_cost
 msgid "Unit Cost"
-msgstr ""
+msgstr "Costo unitario"
 
 #. module: stock
 #: model:ir.ui.view,arch_db:stock.view_move_picking_form
@@ -6757,7 +6757,7 @@ msgstr "Unità di Misura"
 #. module: stock
 #: model:ir.ui.view,arch_db:stock.inventory_planner
 msgid "Units of Measures"
-msgstr ""
+msgstr "Unità di Misure"
 
 #. module: stock
 #: code:addons/stock/models/stock_quant.py:569
@@ -7070,7 +7070,7 @@ msgstr ""
 #: code:addons/stock/models/barcode.py:11
 #, python-format
 msgid "Weighted Product"
-msgstr ""
+msgstr "Prodotto pesato"
 
 #. module: stock
 #: model:ir.ui.view,arch_db:stock.inventory_planner
@@ -7426,7 +7426,7 @@ msgstr "I tuoi Fornitori"
 #. module: stock
 #: model:ir.ui.view,arch_db:stock.inventory_planner
 msgid "Your Warehouse"
-msgstr ""
+msgstr "Il tuo Magazzino"
 
 #. module: stock
 #: model:ir.ui.view,arch_db:stock.view_change_product_quantity
@@ -7597,7 +7597,7 @@ msgstr "Lista dei prodotti "
 #. module: stock
 #: model:ir.ui.view,arch_db:stock.inventory_planner
 msgid "the list of vendors"
-msgstr ""
+msgstr "la lista dei fornitori"
 
 #. module: stock
 #: model:ir.ui.view,arch_db:stock.view_picking_form

@@ -12818,7 +12818,7 @@ msgstr "O modelo %s não existe!"
 #: code:addons/base/ir/ir_model.py:132
 #, python-format
 msgid "Model '%s' contains module data and cannot be removed!"
-msgstr "Esta coluna contém dados do módulo e não pode ser removida!"
+msgstr "Esta coluna '%s' contém dados do módulo e não pode ser removida!"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_values_model_id
@@ -16911,7 +16911,7 @@ msgid ""
 msgstr ""
 "A operação solicitada não pode ser concluída devido a restrições de segurança. Entre em contato com o administrador do sistema. \n"
 "\n"
-"(Tipo de documento:% s, Operação:% s)"
+"(Tipo de documento: %s, Operação: %s)"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_base_language_install

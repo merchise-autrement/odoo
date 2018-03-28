@@ -183,6 +183,15 @@ msgid ""
 msgstr ""
 
 #. module: mail
+#: code:addons/mail/models/mail_channel.py:475
+#, python-format
+msgid ""
+"<div class=\"o_mail_notification\">%(author)s invited %(new_partner)s to <a "
+"href=\"#\" class=\"o_channel_redirect\" data-oe-"
+"id=\"%(channel_id)s\">#%(channel_name)s</a></div>"
+msgstr ""
+
+#. module: mail
 #: code:addons/mail/models/mail_channel.py:550
 #, python-format
 msgid ""
@@ -4797,7 +4806,7 @@ msgid ""
 "message), received %s"
 msgstr ""
 "objavljivanje poruka bez modela bi trebao biti sa null res_id (privatna "
-"poruka), primljena"
+"poruka), primljena %s"
 
 #. module: mail
 #: code:addons/mail/models/mail_thread.py:917

@@ -5490,7 +5490,7 @@ msgstr "Stratégia odstránenia"
 #: code:addons/stock/models/stock_quant.py:467
 #, python-format
 msgid "Removal strategy %s not implemented."
-msgstr "Stratégia odstránenia % neimplementovaná."
+msgstr "Stratégia odstránenia %s neimplementovaná."
 
 #. module: stock
 #: model:ir.actions.act_window,name:stock.act_stock_warehouse_2_stock_warehouse_orderpoint
