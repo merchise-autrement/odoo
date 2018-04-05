@@ -101,6 +101,9 @@ class WerkzeugOdooRequest(werkzeug.wrappers.Request, _AccelMixin):
     pass
 
 
+# To remove when corrected in Babel
+babel.core.LOCALE_ALIASES['nb'] = 'nb_NO'
+
 #----------------------------------------------------------
 # RequestHandler
 #----------------------------------------------------------
