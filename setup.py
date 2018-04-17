@@ -130,7 +130,7 @@ def py2exe_options():
 
 
 setup(
-    name='odoo-merchise',
+    name='odoo',
     version=version,
     description=description,
     long_description=long_desc,
