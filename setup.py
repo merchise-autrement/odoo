@@ -183,7 +183,7 @@ setup(
         'celery',
         'flower',
         'redis',
-        'xoutil>=1.8.5,<2.0',
+        'xoutil>=2.0.0',
         'raven>=5.31.0',
         'raven-sanitize-openerp',
         'rjsmin>=1.0.12,<1.1',
