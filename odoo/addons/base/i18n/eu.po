@@ -5240,7 +5240,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:base.view_window_action_search
 #: selection:ir.values,key:0
 msgid "Action"
-msgstr ""
+msgstr "Ekintza"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_values_action_id
@@ -6316,7 +6316,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_blog
 msgid "Blogs"
-msgstr ""
+msgstr "Blog-ak"
 
 #. module: base
 #: model:res.country,name:base.bo
@@ -6402,7 +6402,7 @@ msgstr ""
 #. module: base
 #: model:res.partner.category,name:base.res_partner_category_6
 msgid "Bronze"
-msgstr ""
+msgstr "Brontze "
 
 #. module: base
 #: model:res.country,name:base.bn
@@ -6879,7 +6879,7 @@ msgstr ""
 #. module: base
 #: model:ir.actions.act_window,help:base.action_partner_category_form
 msgid "Click to create a new partner tag."
-msgstr ""
+msgstr "Egin klik kide etiketa berria sortzeko."
 
 #. module: base
 #: selection:ir.logging,type:0
@@ -7002,7 +7002,7 @@ msgstr "Iruzkin"
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_translation_form
 msgid "Comments"
-msgstr ""
+msgstr "Iruzkinak "
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_partner_commercial_partner_id
@@ -8428,7 +8428,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_ir_rule_domain
 #: model:ir.model.fields,field_description:base.field_ir_rule_domain_force
 msgid "Domain"
-msgstr ""
+msgstr "Domeinua"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_act_window_domain
@@ -9433,7 +9433,7 @@ msgstr ""
 #: selection:ir.actions.act_window,target:0
 #: selection:ir.actions.client,target:0
 msgid "Full Screen"
-msgstr ""
+msgstr "Pantaila osoa"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_logging_func
@@ -10597,7 +10597,7 @@ msgstr "Instalatu"
 #. module: base
 #: model:ir.ui.view,arch_db:base.res_config_installer
 msgid "Install Apps"
-msgstr ""
+msgstr "Instalatu aplikazioak "
 
 #. module: base
 #: model:ir.model,name:base.model_base_language_install
@@ -10985,7 +10985,7 @@ msgstr ""
 #: selection:ir.actions.act_window.view,view_mode:0
 #: model:ir.ui.view,arch_db:base.view_view_search selection:ir.ui.view,type:0
 msgid "Kanban"
-msgstr ""
+msgstr "Kanban"
 
 #. module: base
 #: model:res.country,name:base.kz
@@ -12137,7 +12137,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_ir_model_data_model
 #: model:ir.model.fields,field_description:base.field_ir_values_model
 msgid "Model Name"
-msgstr ""
+msgstr "Ereduaren izena"
 
 #. module: base
 #: model:ir.actions.report.xml,name:base.report_ir_model_overview
@@ -12190,7 +12190,7 @@ msgstr ""
 #: model:ir.model,name:base.model_ir_model
 #: model:ir.ui.menu,name:base.ir_model_model_menu
 msgid "Models"
-msgstr ""
+msgstr "Ereduak"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_module_module
@@ -13145,7 +13145,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_ir_ui_menu_parent_id
 #: model:ir.model.fields,field_description:base.field_wizard_ir_model_menu_create_menu_id
 msgid "Parent Menu"
-msgstr ""
+msgstr "Gurasoen menua"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_ui_menu_parent_left
@@ -13381,7 +13381,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_web_planner
 msgid "Planner"
-msgstr ""
+msgstr "Planifikatzaile "
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_pt
@@ -14234,7 +14234,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_ir_model_fields_required
 #: model:ir.ui.view,arch_db:base.view_model_fields_search
 msgid "Required"
-msgstr ""
+msgstr "Beharrezkoa "
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_crm_partner_assign
@@ -14734,7 +14734,7 @@ msgstr ""
 #. module: base
 #: selection:ir.property,type:0 selection:ir.translation,type:0
 msgid "Selection"
-msgstr ""
+msgstr "Aukeraketa "
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_model_fields_selection
@@ -15040,7 +15040,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_model_fields_size
 msgid "Size"
-msgstr ""
+msgstr "Tamaina"
 
 #. module: base
 #: sql_constraint:ir.model.fields:0
@@ -16234,6 +16234,7 @@ msgstr ""
 #: model:ir.model.fields,help:base.field_res_lang_code
 msgid "This field is used to set/get locales for user"
 msgstr ""
+"Eremu hau erabiltzailearentzako tokia ezartzeko/eskuratzeko erabiltzen da"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.wizard_lang_export
@@ -16516,7 +16517,7 @@ msgstr ""
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_model_fields_search
 msgid "Translate"
-msgstr ""
+msgstr "Itzuli"
 
 #. module: base
 #: selection:ir.translation,state:0
@@ -16681,7 +16682,7 @@ msgstr ""
 #. module: base
 #: model:ir.ui.view,arch_db:base.report_irmodeloverview
 msgid "Type:"
-msgstr ""
+msgstr "Mota:"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_ae
@@ -17236,7 +17237,7 @@ msgstr ""
 #: selection:ir.translation,type:0
 #: model:ir.ui.view,arch_db:base.view_view_search
 msgid "View"
-msgstr ""
+msgstr "Ikusi"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_ui_view_arch
@@ -18226,7 +18227,7 @@ msgstr ""
 #. module: base
 #: model:ir.ui.view,arch_db:base.action_view_company_form_link_2_currencies
 msgid "here"
-msgstr ""
+msgstr "hemen"
 
 #. module: base
 #: selection:base.language.install,state:0

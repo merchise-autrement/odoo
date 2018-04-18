@@ -2187,7 +2187,7 @@ msgstr ""
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
 msgid "Import using the top left button in"
-msgstr ""
+msgstr "Impordi ülemise parema nupuga"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -2202,7 +2202,7 @@ msgstr ""
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_lost_reason_view_search
 msgid "Include archived"
-msgstr ""
+msgstr "K.a arhiveeritud"
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -2882,7 +2882,7 @@ msgstr "Järgmise tegevuse kuupäev"
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead_title_action
 msgid "Next Activity Summary"
-msgstr ""
+msgstr "Järgmise tegevuse kokkuvõte"
 
 #. module: crm
 #: code:addons/crm/wizard/crm_activity_log.py:61
@@ -3867,7 +3867,7 @@ msgstr "Etapi nimi"
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_lead_stage_search
 msgid "Stage Search"
-msgstr ""
+msgstr "Etapi otsing"
 
 #. module: crm
 #: model:mail.message.subtype,description:crm.mt_lead_stage

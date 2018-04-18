@@ -221,7 +221,7 @@ class AccountMove(models.Model):
 
     # Do not forward port in >= saas-14
     def _reconcile_reversed_pair(self, move, reversed_move):
-        amls_to_reconcile = move.line_ids + reversed_move.line_ids
+        amls_to_reconcile = (move.line_ids + reversed_move.line_ids).filtered(lambda l: not l.reconciled)
         accounts_reconcilable = amls_to_reconcile.mapped('account_id').filtered(lambda a: a.reconcile)
         for account in accounts_reconcilable:
             amls_for_account = amls_to_reconcile.filtered(lambda l: l.account_id.id == account.id)
@@ -1241,7 +1241,7 @@ class AccountMoveLine(models.Model):
                 raise UserError(_('You cannot do this modification on a reconciled entry. You can just change some non legal fields or you must unreconcile first.\n%s.') % err_msg)
             if line.move_id.id not in move_ids:
                 move_ids.add(line.move_id.id)
-            self.env['account.move'].browse(list(move_ids))._check_lock_date()
+        self.env['account.move'].browse(list(move_ids))._check_lock_date()
         return True
 
     ####################################################
