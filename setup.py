@@ -111,11 +111,11 @@ def py2exe_options():
                         'yaml',
 
                         # Merchise
-                        'celery>=3.1.19,<5.0.0',
+                        'celery>=4.1.0,<5.0.0',
                         'flower',
                         'hiredis',
                         'redis',
-                        'xoutil>=1.8.5,<2.0',
+                        'xoutil>=2.0.0',
                         'raven>=5.31.0,<6.1.0',
                         'raven-sanitize-openerp',
                         'rjsmin>=1.0.12,<1.1',
@@ -130,7 +130,7 @@ def py2exe_options():
 
 
 setup(
-    name='odoo-merchise',
+    name='odoo',
     version=version,
     description=description,
     long_description=long_desc,
@@ -183,7 +183,7 @@ setup(
         'celery',
         'flower',
         'redis',
-        'xoutil>=1.8.5,<2.0',
+        'xoutil>=2.0.0',
         'raven>=5.31.0',
         'raven-sanitize-openerp',
         'rjsmin>=1.0.12,<1.1',

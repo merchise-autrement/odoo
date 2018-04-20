@@ -228,22 +228,13 @@ class IrAttachment(models.Model):
             :param values : dict of values to create or write an ir_attachment
             :return mime : string indicating the mimetype, or application/octet-stream by default
         """
-        import requests
-        from celery.exceptions import SoftTimeLimitExceeded
         mimetype = None
         if values.get('mimetype'):
             mimetype = values['mimetype']
         if not mimetype and values.get('datas_fname'):
             mimetype = mimetypes.guess_type(values['datas_fname'])[0]
         if not mimetype and values.get('url'):
-            try:
-                session = requests.Session()
-                response = session.head(values.get('url'))
-                mimetype = response.headers.get('Content-Type', None)
-            except SoftTimeLimitExceeded:
-                raise
-            except Exception:
-                mimetype = mimetypes.guess_type(values['url'])[0]
+            mimetype = mimetypes.guess_type(values['url'])[0]
         if values.get('datas') and (not mimetype or mimetype == 'application/octet-stream'):
             mimetype = guess_mimetype(base64.b64decode(values['datas']))
         return mimetype or 'application/octet-stream'

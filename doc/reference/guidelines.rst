@@ -890,7 +890,34 @@ Symbols and Conventions
 
 Javascript and CSS
 ==================
-**For javascript :**
+
+Static files organization
+--------------------------
+
+Odoo addons have some conventions on how to structure various files. We explain
+here in more details how web assets are supposed to be organized.
+
+The first thing to know is that the Odoo server will serve (statically) all files
+located in a *static/* folder, but prefixed with the addon name. So, for example,
+if a file is located in *addons/web/static/src/js/some_file.js*, then it will be
+statically available at the url *your-odoo-server.com/web/static/src/js/some_file.js*
+
+The convention is to organize the code according to the following structure:
+
+- *static*: all static files in general
+- *static/lib*: this is the place where js libs should be located, in a sub folder.
+  So, for example, all files from the *jquery* library are in *addons/web/static/lib/jquery*
+- *static/src*: the generic static source code folder
+- *static/src/css*: all css files
+- *static/src/fonts*
+- *static/src/img*
+- *static/src/js*
+- *static/src/less*: less files
+- *static/src/xml*: all qweb templates that will be rendered in JS
+- *static/tests*: this is where we put all test related files.
+
+Javascript coding guidelines
+----------------------------
 
 - ``use strict;`` is recommended for all javascript files
 - Use a linter (jshint, ...)
@@ -908,7 +935,8 @@ Javascript and CSS
     });
 
 
-**For CSS :**
+CSS coding guidelines
+---------------------
 
 - Prefix all your classes with *o_<module_name>* where *module_name* is the
   technical name of the module ('sale', 'im_chat', ...) or the main route
@@ -958,8 +986,8 @@ description. Try to follow the preferred structure for your commit messages
   End the message with references, such as task or bug numbers, PR numbers, and
   OPW tickets, following the suggested format:
   Related to task #taskId
-  #Fixes #12345  (link and close issue on Github)
-  #Closes #7865  (link and close PR on Github)
+  Fixes #12345  (link and close issue on Github)
+  Closes #7865  (link and close PR on Github)
   OPW-112233
 
 Tag and module name
@@ -984,6 +1012,7 @@ Tags are used to prefix your commit. They should be one of the following
 - **[MERGE]** for merge commits: used in forward port of bug fixes but also as
   main commit for feature involving several separated commits;
 - **[CLA]** for signing the Odoo Individual Contributor License;
+- **[I18N]** for changes in translation files;
 
 After tag comes the modified module name. Use the technical name as functional
 name may change with time. If several modules are modified, list them or use
@@ -1056,3 +1085,6 @@ Finally here are some examples of correct commit messages :
   element being the first/last child of its parent.
   This was not the case because of the invisible
   and useless alert.
+
+.. note:: Use the long description to explain the *why* not the
+          *what*, the *what* can be seen in the diff
