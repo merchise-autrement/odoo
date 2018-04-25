@@ -133,6 +133,10 @@ class HookDefinition(object):
         to the given sender.  Framework-level hooks are always live.
 
         """
+        from xoutil.context import context
+        if context[_SIGNALS_DISCONNECTED]:
+            return []
+
         if isinstance(sender, models.Model):
             registry_ready = sender.pool.ready
         else:
@@ -467,6 +471,34 @@ def _make_model_id(sender):
         return sender._name
     else:
         return sender
+
+
+def signals_disconnected(f=None):
+    '''Temporarily disconnect signals.
+
+    This may be used both as a decorator or a context manager.  In fact, the
+    decorator does it by wrapping the function in the context manager.
+
+    The coding running within the scope of the manager, does not dispatch any
+    signals.  It doesn't even test whether the receiver is live in the current
+    DB.
+
+    '''
+    if f:
+        from functools import wraps
+
+        @wraps(f)
+        def inner(*args, **kwargs):
+            with signals_disconnected():
+                return f(*args, **kwargs)
+
+        return inner
+    else:
+        from xoutil.context import context
+        return context(_SIGNALS_DISCONNECTED)
+
+
+_SIGNALS_DISCONNECTED = object()
 
 
 # **************SIGNALS DECLARATION****************
