@@ -14,6 +14,7 @@ import datetime
 import dateutil
 import logging
 import time
+import textwrap
 
 from pytz import timezone
 
@@ -379,10 +380,14 @@ class IrActionsServer(models.Model):
                                          "on the record on used by the server action.")
     fields_lines = fields.One2many('ir.server.object.lines', 'server_id', string='Value Mapping', copy=True)
 
+    @property
+    def _code(self):
+        return textwrap.dedent(self.code.strip('\r\n'))
+
     @api.constrains('code')
     def _check_python_code(self):
         for action in self.sudo().filtered('code'):
-            msg = test_python_expr(expr=action.code.strip(), mode="exec")
+            msg = test_python_expr(expr=action._code, mode="exec")
             if msg:
                 raise ValidationError(msg)
 
@@ -417,7 +422,7 @@ class IrActionsServer(models.Model):
 
     @api.model
     def run_action_code_multi(self, action, eval_context=None):
-        safe_eval(action.sudo().code.strip(), eval_context, mode="exec", nocopy=True)  # nocopy allows to return 'action'
+        safe_eval(action.sudo()._code, eval_context, mode="exec", nocopy=True)  # nocopy allows to return 'action'
         if 'action' in eval_context:
             return eval_context['action']
 
