@@ -208,8 +208,6 @@ var BasicModel = AbstractModel.extend({
      *   assume main viewType from the record
      * @param {Array} [options.fieldNames] list of field names for which a
      *   default value must be generated (used to complete the values dict)
-     * @param {record} [options.parentRecord] The parent record of the current one
-     *   usefull to get all the fields from all the views the model can be displayed on.
      * @returns {Deferred}
      */
     applyDefaultValues: function (recordID, values, options) {
@@ -221,20 +219,6 @@ var BasicModel = AbstractModel.extend({
         var fieldName;
         record._changes = record._changes || {};
 
-        /* Get the field's definition in the parent record if it is
-         * not present in the current one.
-         *
-         * @param {string} fieldName The name of the field we try to get the definition for
-         *    in the parent record
-         * @returns {Object} the field's definition
-         */
-        function getFieldsFromOtherViews(fieldName) {
-            return options.parentRecord
-                        && options.parentRecord.mergedViewsFields[viewType]
-                        && options.parentRecord.mergedViewsFields[viewType][fieldName]
-                        || {};
-        }
-
         // ignore values for non requested fields (for instance, fields that are
         // not in the view)
         values = _.pick(values, fieldNames);
@@ -243,7 +227,7 @@ var BasicModel = AbstractModel.extend({
         for (var i = 0; i < fieldNames.length; i++) {
             fieldName = fieldNames[i];
             if (!(fieldName in values) && !(fieldName in record._changes)) {
-                field = record.fields[fieldName] || getFieldsFromOtherViews(fieldName);
+                field = record.fields[fieldName];
                 if (field.type === 'float' ||
                     field.type === 'integer' ||
                     field.type === 'monetary') {
@@ -259,7 +243,7 @@ var BasicModel = AbstractModel.extend({
         // parse each value and create dataPoints for relational fields
         var defs = [];
         for (fieldName in values) {
-            field = record.fields[fieldName] || getFieldsFromOtherViews(fieldName);
+            field = record.fields[fieldName];
             record.data[fieldName] = null;
             var dp;
             if (field.type === 'many2one' && values[fieldName]) {
@@ -1070,7 +1054,13 @@ var BasicModel = AbstractModel.extend({
     addFieldsInfo: function (recordID, viewInfo) {
         var record = this.localData[recordID];
         record.fields = _.extend({}, record.fields, viewInfo.fields);
-        record.fieldsInfo = _.extend({}, record.fieldsInfo, viewInfo.fieldsInfo);
+        // complete the given fieldsInfo with the fields of the main view, so
+        // that those field will be reloaded if a reload is triggered by the
+        // secondary view
+        var fieldsInfo = _.mapObject(viewInfo.fieldsInfo, function (fieldsInfo) {
+            return _.defaults({}, fieldsInfo, record.fieldsInfo[record.viewType]);
+        });
+        record.fieldsInfo = _.extend({}, record.fieldsInfo, fieldsInfo);
     },
     /**
      * For list resources, this freezes the current records order.
@@ -2008,7 +1998,8 @@ var BasicModel = AbstractModel.extend({
      */
     _fetchRecord: function (record, options) {
         var self = this;
-        var fieldNames = options && options.fieldNames || record.getFieldNames();
+        options = options || {};
+        var fieldNames = options.fieldNames || record.getFieldNames(options);
         fieldNames = _.uniq(fieldNames.concat(['display_name']));
         return this._rpc({
                 model: record.model,
@@ -2508,10 +2499,10 @@ var BasicModel = AbstractModel.extend({
     _fetchX2Manys: function (record, options) {
         var self = this;
         var defs = [];
-        var fieldNames = options && options.fieldNames || record.getFieldNames();
-        var viewType = options && options.viewType || record.viewType;
+        options = options || {};
+        var fieldNames = options.fieldNames || record.getFieldNames(options);
+        var viewType = options.viewType || record.viewType;
         _.each(fieldNames, function (fieldName) {
-            var mergedViewsFields = record.fieldsInfo[viewType] && record.fieldsInfo[viewType][fieldName].mergeViewsFields || {};
             var field = record.fields[fieldName];
             if (field.type === 'one2many' || field.type === 'many2many') {
                 var fieldInfo = record.fieldsInfo[viewType][fieldName];
@@ -2534,7 +2525,6 @@ var BasicModel = AbstractModel.extend({
                     rawContext: rawContext,
                     relationField: field.relation_field,
                     viewType: view ? view.type : fieldInfo.viewType,
-                    mergedViewsFields: mergedViewsFields,
                 });
                 record.data[fieldName] = list.id;
                 if (!fieldInfo.__no_fetch) {
@@ -3034,11 +3024,15 @@ var BasicModel = AbstractModel.extend({
      * default view type.
      *
      * @param {Object} element an element from the localData
+     * @param {Object} [options]
+     * @param {Object} [options.viewType] current viewType. If not set, we will
+     *   assume main viewType from the record
      * @returns {string[]} the list of field names
      */
-    _getFieldNames: function (element) {
+    _getFieldNames: function (element, options) {
         var fieldsInfo = element.fieldsInfo;
-        return Object.keys(fieldsInfo && fieldsInfo[element.viewType] || {});
+        var viewType = options && options.viewType || element.viewType;
+        return Object.keys(fieldsInfo && fieldsInfo[viewType] || {});
     },
     /**
      * Evaluate the record evaluation context.  This method is supposed to be
@@ -3239,8 +3233,6 @@ var BasicModel = AbstractModel.extend({
      * @param {string} [params.type='record'|'list']
      * @param {[type]} [params.value]
      * @param {string} [params.viewType] the type of the view, e.g. 'list' or 'form'
-     * @param {Object} [params.mergedViewsFields] Contains for each viewType
-     *    all the other viewTypes' fields plus its own to allow switching views more smoothly
      * @returns {Object} the resource created
      */
     _makeDataPoint: function (params) {
@@ -3300,7 +3292,6 @@ var BasicModel = AbstractModel.extend({
             type: type,  // 'record' | 'list'
             value: value,
             viewType: params.viewType,
-            mergedViewsFields: params.mergedViewsFields || {},
         };
 
         // _editionViewType is a dict whose keys are field names and which is populated when a field
@@ -3344,15 +3335,22 @@ var BasicModel = AbstractModel.extend({
      */
     _makeDefaultRecord: function (modelName, params) {
         var self = this;
-        var parentRecord = self.localData[params.parentID];
+
         var determineExtraFields = function() {
             // Fields that are present in the originating view, that need to be initialized
             // Hence preventing their value to crash when getting back to the originating view
+            var parentRecord = self.localData[params.parentID];
+
             var originView =  parentRecord && parentRecord.fieldsInfo;
             if (!originView || !originView[parentRecord.viewType])
                 return [];
 
-            return Object.keys(originView[parentRecord.viewType]);
+            var fieldsFromOrigin = _.filter(Object.keys(originView[parentRecord.viewType]),
+                function(fieldname) {
+                    return params.fields[fieldname] !== undefined;
+                });
+
+            return fieldsFromOrigin;
         }
 
         var fieldNames = Object.keys(params.fieldsInfo[params.viewType]);
@@ -3377,7 +3375,7 @@ var BasicModel = AbstractModel.extend({
                     viewType: params.viewType,
                 });
 
-                return self.applyDefaultValues(record.id, result, {fieldNames: _.union(fieldNames, extraFields), parentRecord: parentRecord})
+                return self.applyDefaultValues(record.id, result, {fieldNames: _.union(fieldNames, extraFields)})
                     .then(function () {
                         var def = $.Deferred();
                         self._performOnChange(record, fields_key).always(function () {
@@ -3514,13 +3512,16 @@ var BasicModel = AbstractModel.extend({
      * @see _fetchRecord @see _makeDefaultRecord
      *
      * @param {Object} record
-     * @param {Object} record
+     * @param {Object} [options]
+     * @param {Object} [options.viewType] current viewType. If not set, we will
+     *   assume main viewType from the record
      * @returns {Deferred<Object>} resolves to the finished resource
      */
     _postprocess: function (record, options) {
         var self = this;
         var defs = [];
-        _.each(record.getFieldNames(), function (name) {
+
+        _.each(record.getFieldNames(options), function (name) {
             var field = record.fields[name];
             var fieldInfo = record.fieldsInfo[record.viewType][name] || {};
             var options = fieldInfo.options || {};
