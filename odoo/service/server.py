@@ -151,7 +151,8 @@ class FSWatcher(object):
         if isinstance(event, (FileCreatedEvent, FileModifiedEvent, FileMovedEvent)):
             if not event.is_directory:
                 path = getattr(event, 'dest_path', event.src_path)
-                if path.endswith('.py'):
+                fname = os.path.basename(path)
+                if path.endswith('.py') and not fname.startswith('.#'):
                     try:
                         source = open(path, 'rb').read() + b'\n'
                         compile(source, path, 'exec')

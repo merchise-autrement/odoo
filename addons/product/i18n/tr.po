@@ -18,13 +18,14 @@
 # Saban Yildiz <sabany@projetgrup.com>, 2017
 # gezgin biri <gezginbiri@hotmail.com>, 2017
 # Umur Akın <umura@projetgrup.com>, 2018
+# Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-02-19 13:43+0000\n"
 "PO-Revision-Date: 2018-02-19 13:43+0000\n"
-"Last-Translator: Umur Akın <umura@projetgrup.com>, 2018\n"
+"Last-Translator: Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2018\n"
 "Language-Team: Turkish (https://www.transifex.com/odoo/teams/41243/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -79,7 +80,7 @@ msgid ""
 "Processor AMD 8-Core"
 msgstr ""
 "17\" LCD Monitor\n"
-"İşlemci AMD 8-Core"
+"AMD 8-Çekirdek İşlemci "
 
 #. module: product
 #: model:product.product,description:product.product_product_25
@@ -88,7 +89,7 @@ msgid ""
 "17\" Monitor, 4GB RAM\n"
 "Standard-1294P Processor"
 msgstr ""
-"17\" Monitör\n"
+"17\" Monitör, 4GB Ram\n"
 "Standart-1294P İşlemci"
 
 #. module: product
@@ -229,7 +230,7 @@ msgstr ""
 #: model:product.product,website_description:product.product_product_9
 #: model:product.template,website_description:product.product_product_9_product_template
 msgid "A great Keyboard. Cordless."
-msgstr ""
+msgstr "Güzel bir klavye. Kablosuz."
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product_description
@@ -543,7 +544,7 @@ msgstr "En küçük Bose seyyar Bluetooth mikrofon"
 #: model:product.product,website_description:product.product_product_8
 #: model:product.template,website_description:product.product_product_8_product_template
 msgid "Brilliance onscreen. And behind it."
-msgstr ""
+msgstr "Ekranın önünde ve arkasında parlaklık."
 
 #. module: product
 #: model:product.product,website_description:product.product_product_11
@@ -2908,6 +2909,8 @@ msgid ""
 "This vendor's product code will be used when printing a request for "
 "quotation. Keep empty to use the internal one."
 msgstr ""
+"Bu tedarikçi ürün kodu bir teklif ihtiyacı için yazdırılırken "
+"kullanılacaktır. İçini kullanmak için boş tutunuz."
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo_product_name
@@ -2915,6 +2918,8 @@ msgid ""
 "This vendor's product name will be used when printing a request for "
 "quotation. Keep empty to use the internal one."
 msgstr ""
+"Bu tedarikçi ürün adı, bir teklif ihtiyacı için yazdırılırken "
+"kullanılacaktır. İçini kullanmak için boş tutunuz."
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_template_search_view
@@ -2939,24 +2944,28 @@ msgid ""
 "USB port allows for software update to ensure ongoing Bluetooth device "
 "compatibility"
 msgstr ""
+"USB portu, devam eden Bluetooth cihaz uyumluluğunu sağlamak için yazılım "
+"güncellemesine izin verir"
 
 #. module: product
 #: model:product.product,website_description:product.product_product_6
 #: model:product.template,website_description:product.product_product_6_product_template
 msgid "Ultrafast wireless."
-msgstr ""
+msgstr "Ultra hızlı wireless."
 
 #. module: product
 #: model:product.product,website_description:product.product_product_8
 #: model:product.template,website_description:product.product_product_8_product_template
 msgid "Ultrathin design"
-msgstr ""
+msgstr "Ultra ince tasarım"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_uom_active
 msgid ""
 "Uncheck the active field to disable a unit of measure without deleting it."
 msgstr ""
+"Bir ölçü birimini silmeden devre dışı bırakmak için etkin alanın işaretini "
+"kaldırın."
 
 #. module: product
 #: model:product.uom.categ,name:product.product_uom_categ_unit
@@ -3007,6 +3016,7 @@ msgstr ""
 #: model:product.template,website_description:product.product_product_5b_product_template
 msgid "Universal iPod docking station fits most iPod/iPhone models"
 msgstr ""
+"Evrensel iPod yerleştirme istasyonu birçok iPod/iPhone modeli ile uyar."
 
 #. module: product
 #: model:product.product,website_description:product.product_product_7
@@ -3019,6 +3029,9 @@ msgid ""
 "                                    The result: you’re immersed in the music and hear details you never knew existed.\n"
 "                                    Even when listening to an old favorite, you may feel like you’re hearing it for the first time."
 msgstr ""
+"Diğer bir çok küçük kulaklıkta olmayan bir şekilde, Apple In-Ear Kulaklıkları, 2 ayrı yüksek performanslı sürücü içerir- ki bunlar bas seslerle, orta uzunluktaki sesler yüksek frekanslı seslerle başa çıkabilir. Bu hizmet için ayrılmış sürücüler, tüm ses spektrumunda doğru, ayrıntılı ses sağlamaya yardımcı olur.\n"
+"Sonuç: Müziğin derinliklerine dalacak ve hiç duymadığınız kadar detaylı müzik dinleceyksiniz.\n"
+"Eski bir favorinizi bile dinlerken, onu ilk kez dinliyormuş hissine kapılacaksınız."
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_res_config_settings_group_sale_pricelist
@@ -3071,7 +3084,7 @@ msgstr "Varyant Fiyatları"
 #: model:ir.model.fields,field_description:product.field_product_product_variant_seller_ids
 #: model:ir.model.fields,field_description:product.field_product_template_variant_seller_ids
 msgid "Variant Seller"
-msgstr ""
+msgstr "Satıcı Varyantı"
 
 #. module: product
 #: model:ir.actions.act_window,name:product.product_attribute_value_action
@@ -3142,14 +3155,14 @@ msgstr "Hacim"
 #: model:product.product,website_description:product.product_product_5b
 #: model:product.template,website_description:product.product_product_5b_product_template
 msgid "Volume control on main system"
-msgstr ""
+msgstr "Ana sistem üzerinden ses kontrolü."
 
 #. module: product
 #: model:product.product,website_description:product.product_product_5b
 #: model:product.template,website_description:product.product_product_5b_product_template
 msgid ""
 "Wall charger can be plugged into the cradle or directly into the speaker"
-msgstr ""
+msgstr "Duvar şarj cihazı kızağa veya doğrudan hoparlöre takılabilir"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product_weight
@@ -3169,7 +3182,7 @@ msgstr "Hacim ve Ağırlık Bilgileri"
 #: model:product.template,website_description:product.product_product_11_product_template
 #: model:product.template,website_description:product.product_product_11b_product_template
 msgid "When one playlist isn’t enough."
-msgstr ""
+msgstr "Bir oynatma listesi yeterli olmadığında."
 
 #. module: product
 #: model:product.attribute.value,name:product.product_attribute_value_3
@@ -3188,7 +3201,7 @@ msgstr "Beyaz"
 #: model:product.template,website_description:product.product_product_4d_product_template
 #: model:product.template,website_description:product.product_product_6_product_template
 msgid "Why you'll love an iPad."
-msgstr ""
+msgstr "Neden bir iPad'i seveceksiniz."
 
 #. module: product
 #: model:product.attribute,name:product.product_attribute_3
@@ -3205,6 +3218,10 @@ msgid ""
 "                                   lets you download content, stream video,\n"
 "                                   and browse the web at amazing speeds."
 msgstr ""
+"Gelişmiş Wi-Fi ile, daha önceki nesil herhangi bir iPad'den iki kat daha "
+"hızlı ve dünya etrafında  hızlı hücresel veri ağına erişen iPad mini, "
+"içerikleri ve videoları indirmenize ve web üzerinde inanılmaz hızlarda "
+"tarama yapmanıza izin verir."
 
 #. module: product
 #: model:product.uom.categ,name:product.uom_categ_wtime
@@ -3218,6 +3235,8 @@ msgid ""
 "You cannot define the decimal precision of 'Account' as greater than the "
 "rounding factor of the company's main currency"
 msgstr ""
+"'Hesabın' ondalık kesinliğini, şirketin ana para biriminin yuvarlama "
+"faktöründen büyük olarak tanımlayamazsınız."
 
 #. module: product
 #: code:addons/product/wizard/product_price_list.py:26
@@ -3230,6 +3249,8 @@ msgstr "Şirketiniz için bir logo ya da bir layout ayarlamalısınız."
 #, python-format
 msgid "You have to set your reports's header and footer layout."
 msgstr ""
+"Raporlarınız için üst bilgi ve alt bilgi satırlarını ayalamanız "
+"gerekmektedir."
 
 #. module: product
 #: model:ir.actions.act_window,help:product.product_uom_form_action
@@ -3237,6 +3258,8 @@ msgid ""
 "You must define a conversion rate between several Units of\n"
 "            Measure within the same category."
 msgstr ""
+"Aynı kategori dahilinde bazı Ölçü Birimleri arasında değişim oranı "
+"tanımlanmalı."
 
 #. module: product
 #: model:ir.actions.act_window,help:product.product_normal_action
@@ -3266,6 +3289,8 @@ msgid ""
 "You must define at least one product category in order to be able to create "
 "products."
 msgstr ""
+"Ürünleri oluşturabilmek için en az bir ürün kategorisi tanımlamanız "
+"gerekmektedir."
 
 #. module: product
 #: model:product.product,website_description:product.product_product_11
@@ -3279,6 +3304,12 @@ msgid ""
 "                                        mood strikes you. VoiceOver tells you the name of each playlist,\n"
 "                                        so it’s easy to switch between them and find the one you want without looking."
 msgstr ""
+"Muhtemelen bilgisayarınızdaki iTunes'da birden fazla çalma listeniz vardır. "
+"Bir tanesi evden işe giderken dinlemek için. Bir tanesi spor salonunda "
+"dinlemek için. Bu çalma listelerini iPod'da senkronize edin ve ruh halinize "
+"göre istediğiniz mükemmel karışımı çalın. VoiceOver size her çalma "
+"listesinin adını söyler, bu da bakmadan istediğiniz şarkıyı bulmanız ya da "
+"değişiklik yapmanız için kolaylık sağlar."
 
 #. module: product
 #: model:product.product,name:product.product_order_01
@@ -3304,17 +3335,17 @@ msgstr "decimal.precision"
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_category_form_view
 msgid "e.g. Lamps"
-msgstr ""
+msgstr "Örn. Aydınlatma"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_variant_easy_edit_view
 msgid "e.g. Odoo Enterprise Subscription"
-msgstr ""
+msgstr "Örn. Odoo Kurumsal Abonelik"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_pricelist_view
 msgid "e.g. USD Retailers"
-msgstr ""
+msgstr "Örn. Dolar Perakendeceliği"
 
 #. module: product
 #: model:ir.ui.view,arch_db:product.product_uom_form_view
@@ -3383,6 +3414,8 @@ msgid ""
 "                                        your iPod. Just choose the playlists, audiobooks,\n"
 "                                        podcasts, and other audio files you want, then sync."
 msgstr ""
+"Mac ya da PC'nizdeki  iTunes, iPodunuza yüklemenizi kolaylaştırır. \n"
+"Sadece istediğiniz çalma listelerini, sesli kitapları, podcastleri ve diğer ses dosyalarını seçin ve senkronize edin."
 
 #. module: product
 #: model:product.uom,name:product.product_uom_inch
@@ -3443,13 +3476,13 @@ msgstr "mik"
 #: model:product.product,description_sale:product.consu_delivery_02
 #: model:product.template,description_sale:product.consu_delivery_02_product_template
 msgid "raid 1, 512ECC ram"
-msgstr ""
+msgstr "raid 1, 512ECC ram"
 
 #. module: product
 #: model:product.product,description_sale:product.consu_delivery_01
 #: model:product.template,description_sale:product.consu_delivery_01_product_template
 msgid "raid 10, 2048ECC ram"
-msgstr ""
+msgstr "raid 10, 2048ECC ram"
 
 #. module: product
 #: model:ir.model,name:product.model_report_product_report_pricelist

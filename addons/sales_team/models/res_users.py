@@ -20,7 +20,7 @@ class ResUsers(models.Model):
     def create(self, vals):
         # Assign the new user in the sales team if there's only one sales team of type `Sales`
         user = super(ResUsers, self).create(vals)
-        if user.has_group('sales_team.group_sale_salesman') and not user.sale_team_id:
+        if user.has_group('sales_team.group_sale_salesman') and not user.sale_teams:
             teams = self.env['crm.team'].search([('team_type', '=', 'sales')])
             if len(teams.ids) == 1:
                 user.sale_teams |= teams
