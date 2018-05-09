@@ -4,17 +4,18 @@
 # 
 # Translators:
 # Martin Trigaux, 2017
-# Nuno Silva <nuno.silva@arxi.pt>, 2017
 # Manuela Silva <manuela.silva@sky.com>, 2017
+# Nuno Silva <nuno.silva@arxi.pt>, 2017
 # Joao Felix <jrmfelix@gmail.com>, 2018
 # Nelson Costa <nelson.costa@isangola.com>, 2018
+# Ricardo Martins <ricardo.nbs.martins@gmail.com>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-19 13:43+0000\n"
-"PO-Revision-Date: 2018-02-19 13:43+0000\n"
-"Last-Translator: Nelson Costa <nelson.costa@isangola.com>, 2018\n"
+"POT-Creation-Date: 2018-04-27 14:48+0000\n"
+"PO-Revision-Date: 2018-04-27 14:48+0000\n"
+"Last-Translator: Ricardo Martins <ricardo.nbs.martins@gmail.com>, 2018\n"
 "Language-Team: Portuguese (https://www.transifex.com/odoo/teams/41243/pt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -48,7 +49,7 @@ msgid ""
 "% if object.origin:\n"
 "(with reference: ${object.origin} )\n"
 "% endif\n"
-"amounting in <strong>${object.amount_total} ${object.pricelist_id.currency_id.name}</strong>\n"
+"amounting in <strong>${format_amount(object.amount_total, object.currency_id)}</strong>\n"
 "from ${object.company_id.name}.\n"
 "</p>\n"
 "\n"
@@ -71,51 +72,6 @@ msgid ""
 "% endif\n"
 "</p>\n"
 msgstr ""
-"\n"
-"<p>Car@ ${object.partner_id.name}\n"
-"% set access_action = object.with_context(force_website=True).get_access_action()\n"
-"% set is_online = access_action and access_action['type'] == 'ir.actions.act_url'\n"
-"% set doc_name = 'quotation' if object.state in ('draft', 'sent') else 'order confirmation'\n"
-"% set pay_sign_name =  object.get_portal_confirmation_action()\n"
-"% set access_name = is_online and object.state in ('draft', 'sent') and pay_sign_name in ('pay', 'sign') and 'Accept and %s online' % pay_sign_name or 'View %s' % doc_name\n"
-"% set access_url = is_online and object.get_mail_url() or ''\n"
-"\n"
-"% if object.partner_id.parent_id:\n"
-"    (<i>${object.partner_id.parent_id.name}</i>)\n"
-"% endif\n"
-",</p>\n"
-"<p>\n"
-"Enviamos\n"
-"% if ctx.get('proforma')\n"
-"em anexo, a sua fatura pró-forma\n"
-"% else\n"
-"a ${doc_name} <strong>${object.name}</strong>\n"
-"% endif\n"
-"% if object.origin:\n"
-"(with reference: ${object.origin} )\n"
-"% endif\n"
-"no valor de <strong>${object.amount_total} ${object.pricelist_id.currency_id.name}</strong>\n"
-"da ${object.company_id.name}.\n"
-"</p>\n"
-"\n"
-"% if is_online and not ctx.get('proforma'):\n"
-"    <br/><br/>\n"
-"    <center>\n"
-"        <a href=\"${access_url}\" style=\"background-color: #1abc9c; padding: 20px; text-decoration: none; color: #fff; border-radius: 5px; font-size: 16px;\" class=\"o_default_snippet_text\">${access_name}</a>\n"
-"        <br/><br/><br/>\n"
-"        <span style=\"color:#888888\">(ou ver PDF em anexo)</span>\n"
-"    </center>\n"
-"    <br/>\n"
-"% endif\n"
-"\n"
-"<p>Pode responder a este email se tiver alguma questão.</p>\n"
-"<p>Obrigado,</p>\n"
-"\n"
-"<p style=\"color:#888888;\">\n"
-"% if object.user_id and object.user_id.signature:\n"
-"    ${object.user_id.signature | safe}\n"
-"% endif\n"
-"</p>\n"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_product_product_sales_count
@@ -186,7 +142,7 @@ msgid ""
 "<html>\n"
 "                <head></head>\n"
 "                % set record = ctx.get('record')\n"
-"                % set company = record and record.company_id or user.company_id\n"
+"                % set company = record and record.company_id or ctx.get('company')\n"
 "                <body style=\"margin: 0; padding: 0;\">\n"
 "                <table border=\"0\" width=\"100%\" cellpadding=\"0\" bgcolor=\"#ededed\" style=\"padding: 20px; background-color: #ededed; border-collapse:separate;\" summary=\"o_mail_notification\">\n"
 "                    <tbody>\n"
@@ -297,15 +253,6 @@ msgstr ""
 "class=\"hidden-xs\"> Problema</span></span>"
 
 #. module: sale
-#: model:ir.ui.view,arch_db:sale.portal_my_orders
-msgid ""
-"<span class=\"label label-default hidden-xs\"><i class=\"fa fa-fw fa-"
-"check\"/><span class=\"hidden-xs\"> Done</span></span>"
-msgstr ""
-"<span class=\"label label-default hidden-xs\"><i class=\"fa fa-fw fa-"
-"check\"/><span class=\"hidden-xs\"> Feito</span></span>"
-
-#. module: sale
 #: model:ir.ui.view,arch_db:sale.portal_my_quotations
 msgid ""
 "<span class=\"label label-default\"><i class=\"fa fa-fw fa-clock-o\"/> "
@@ -327,15 +274,6 @@ msgstr ""
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.portal_order_page
 msgid ""
-"<span class=\"label label-default\"><i class=\"fa fa-fw fa-remove\"/> "
-"Done</span>"
-msgstr ""
-"<span class=\"label label-default\"><i class=\"fa fa-fw fa-remove\"/> "
-"Feito</span>"
-
-#. module: sale
-#: model:ir.ui.view,arch_db:sale.portal_order_page
-msgid ""
 "<span class=\"label label-info orders_label_text_align\"><i class=\"fa fa-fw"
 " fa-clock-o\"/> Waiting</span>"
 msgstr ""
@@ -352,6 +290,13 @@ msgstr ""
 "class=\"hidden-xs\"> Faturado</span></span>"
 
 #. module: sale
+#: model:ir.ui.view,arch_db:sale.portal_my_orders
+msgid ""
+"<span class=\"label label-success hidden-xs\"><i class=\"fa fa-fw fa-"
+"check\"/><span class=\"hidden-xs\"> Done</span></span>"
+msgstr ""
+
+#. module: sale
 #: model:ir.ui.view,arch_db:sale.portal_order_page
 msgid ""
 "<span class=\"label label-success orders_label_text_align\"><i class=\"fa "
@@ -359,6 +304,13 @@ msgid ""
 msgstr ""
 "<span class=\"label label-success orders_label_text_align\"><i class=\"fa "
 "fa-fw fa-check\"/> Pago</span>"
+
+#. module: sale
+#: model:ir.ui.view,arch_db:sale.portal_order_page
+msgid ""
+"<span class=\"label label-success\"><i class=\"fa fa-fw fa-check\"/> "
+"Done</span>"
+msgstr ""
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.report_saleorder_document
@@ -382,6 +334,7 @@ msgstr "<strong>Data:</strong>"
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.portal_order_page
+#: model:ir.ui.view,arch_db:sale.report_saleorder_document
 msgid "<strong>Expiration Date:</strong>"
 msgstr "<strong>Data de Validade:</strong>"
 
@@ -480,8 +433,8 @@ msgid ""
 "Ability to select a package type in sales orders and to force a quantity "
 "that is a multiple of the number of units per package."
 msgstr ""
-"Capacidade de selecionar um tipo de embalagem em ordens de venda e de forçar"
-" uma quantidade múltipla do número de unidades por embalagem."
+"Capacidade de selecionar um tipo de embalagem nas ordens de vendas e de "
+"forçar uma quantidade que é múltipla do número de unidades por embalagem."
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.portal_order_page
@@ -578,7 +531,7 @@ msgstr "Conta Analítica"
 #. module: sale
 #: model:res.groups,name:sale.group_analytic_accounting
 msgid "Analytic Accounting for Sales"
-msgstr "Conta analítica para vendas"
+msgstr "Contabilidade Analítica para Vendas"
 
 #. module: sale
 #: model:ir.model,name:sale.model_account_analytic_line
@@ -779,7 +732,7 @@ msgstr "Criar Faturas"
 #: model:ir.actions.act_window,help:sale.action_quotations
 #: model:ir.actions.act_window,help:sale.action_quotations_salesteams
 msgid "Create a Quotation, the first step of a new sale."
-msgstr "Crie um orçamento, o primeiro passo de uma nova venda"
+msgstr "Crie um Orçamento, o primeiro passo de uma nova venda"
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.view_sale_advance_payment_inv
@@ -815,7 +768,7 @@ msgstr "Moeda"
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.report_all_channels_sales_view_search
 msgid "Current Year Sales"
-msgstr "Vendas do Ano Corrente"
+msgstr "Vendas do Corrente Ano"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line_order_partner_id
@@ -902,7 +855,7 @@ msgstr "Endereço de entrega"
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line_customer_lead
 msgid "Delivery Lead Time"
-msgstr "Prazo de entrega da lead"
+msgstr ""
 
 #. module: sale
 #: model:ir.model.fields,help:sale.field_account_invoice_partner_shipping_id
@@ -1365,7 +1318,7 @@ msgstr "Última Modificação em"
 #: model:ir.model.fields,field_description:sale.field_sale_order_line_write_uid
 #: model:ir.model.fields,field_description:sale.field_sale_order_write_uid
 msgid "Last Updated by"
-msgstr "Última Actualização por"
+msgstr "Última Atualização por"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_advance_payment_inv_write_date
@@ -1373,7 +1326,7 @@ msgstr "Última Actualização por"
 #: model:ir.model.fields,field_description:sale.field_sale_order_line_write_date
 #: model:ir.model.fields,field_description:sale.field_sale_order_write_date
 msgid "Last Updated on"
-msgstr "Última Actualização em"
+msgstr "Última Atualização em"
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.view_sales_order_filter
@@ -1390,7 +1343,7 @@ msgstr "Sequência de Layout"
 #: model:ir.ui.view,arch_db:sale.res_config_settings_view_form
 msgid "Let your customers log in to see their documents"
 msgstr ""
-"Permita que os seus clientes se conectem para verem os seus documentos"
+"Permita que os seus clientes iniciem a sessão para verem os seus documentos"
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.res_config_settings_view_form
@@ -1533,6 +1486,7 @@ msgid "No longer edit orders once confirmed"
 msgstr "Impossível editar ordens depois de confirmadas"
 
 #. module: sale
+#: model:ir.actions.act_window,help:sale.action_quotations
 #: model:ir.actions.act_window,help:sale.action_quotations_salesteams
 msgid ""
 "Note that once a Quotation becomes a Sales Order, it will be moved\n"
@@ -1540,15 +1494,6 @@ msgid ""
 msgstr ""
 "Note que quando um Orçamento se torna numa Ordem de Venda, será movido\n"
 "                da lista de Orçamentos para a lista de Ordens de Venda."
-
-#. module: sale
-#: model:ir.actions.act_window,help:sale.action_quotations
-msgid ""
-"Note that once a Quotation becomes a Sales Order, it will be moved\n"
-"            from the Quotations list to the Sales Order list."
-msgstr ""
-"Note que quando um Orçamento se torna numa Ordem de Venda, será movido\n"
-"da lista de Orçamentos para a lista de Ordens de Venda."
 
 #. module: sale
 #: model:ir.actions.act_window,help:sale.act_res_partner_2_sale_order
@@ -1593,10 +1538,10 @@ msgid ""
 "                    From the <i>Sales Orders</i> menu, you can track delivery\n"
 "                    orders or services."
 msgstr ""
-"Assim que o orçamento for confirmado, passa a ser uma ordem de venda.\n"
-"                    Passará a ser capaz de a faturar e receber pagamentos.\n"
+"Assim que a cotação for confirmada, esta passa a ordem de venda.\n"
+"                    Irá poder faturá-la e receber os pagamentos.\n"
 "                    A partir do menu de <i>Ordens de Venda</i> pode monitorizar\n"
-"                    ordens ou serviços de entrega."
+"                    as ordens ou serviços de entrega."
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_res_config_settings_module_sale_payment
@@ -1792,11 +1737,6 @@ msgid "Payment"
 msgstr "Pagamento"
 
 #. module: sale
-#: model:ir.ui.view,arch_db:sale.res_config_settings_view_form
-msgid "Payment Acquirers"
-msgstr "Intermediários de Pagamento"
-
-#. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_payment_term_id
 msgid "Payment Terms"
 msgstr "Condições de Pagamento"
@@ -1882,7 +1822,7 @@ msgstr ""
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.res_config_settings_view_form
 msgid "Pricing"
-msgstr "Definição de preços"
+msgstr "Preços"
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.view_order_form
@@ -2322,6 +2262,12 @@ msgid "Sell and purchase products in different units of measure"
 msgstr "Vender e comprar artigos em unidades de medida diferentes"
 
 #. module: sale
+#: model:ir.model.fields,field_description:sale.field_res_config_settings_module_website_sale_digital
+msgid ""
+"Sell digital products - provide downloadable content on your customer portal"
+msgstr "Permite vender conteúdo possível de baixar do portal"
+
+#. module: sale
 #: model:ir.ui.view,arch_db:sale.res_config_settings_view_form
 msgid "Sell products by multiple of unit # per package"
 msgstr "Vender artigos em múltiplos de # de unidade por embalagem"
@@ -2605,8 +2551,8 @@ msgid ""
 "The product used to invoice a down payment should be of type 'Service'. "
 "Please use another product or update this product."
 msgstr ""
-"O produto usado para faturar uma entrada inicial deve ser do tipo "
-"\"serviço\". Por favor, use outro produto ou actualize este. "
+"O artigo utilizado para faturar um adiantamento deverá ser do tipo "
+"\"Serviço\". Por favor, utilize outro artigo ou atualize este artigo. "
 
 #. module: sale
 #: code:addons/sale/wizard/sale_make_invoice_advance.py:147
@@ -2616,8 +2562,9 @@ msgid ""
 " to \"Ordered quantities\". Please update your deposit product to be able to"
 " create a deposit invoice."
 msgstr ""
-"O produto usado para faturar uma entrada inicial deve ser do tipo "
-"\"serviço\". Por favor, use outro produto ou actualize este. "
+"O artigo utilizado para faturar um adiantamento deverá ter uma política de "
+"faturamento definida para \"Quantidades encomendadas\". Por favor, atualize "
+"o seu artigo de depósito para poder criar uma de depósito."
 
 #. module: sale
 #: code:addons/sale/wizard/sale_make_invoice_advance.py:78
@@ -2781,6 +2728,22 @@ msgid "Track Service"
 msgstr "Gerir Serviço"
 
 #. module: sale
+#: model:ir.model.fields,field_description:sale.field_res_config_settings_module_delivery_ups
+msgid "UPS"
+msgstr "UPS"
+
+#. module: sale
+#: model:ir.model.fields,field_description:sale.field_res_config_settings_module_delivery_usps
+msgid "USPS"
+msgstr "USPS"
+
+#. module: sale
+#: code:addons/sale/models/sale.py:570
+#, python-format
+msgid "Uncategorized"
+msgstr "Sem categoria"
+
+#. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line_price_unit
 #: model:ir.ui.view,arch_db:sale.report_invoice_layouted
 #: model:ir.ui.view,arch_db:sale.report_saleorder_document
@@ -2840,7 +2803,7 @@ msgstr "Upselling"
 #: selection:sale.order,invoice_status:0
 #: selection:sale.order.line,invoice_status:0
 msgid "Upselling Opportunity"
-msgstr "Oportunidade de Upselling"
+msgstr "Oportunidade de \"Upselling\""
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.portal_my_quotations
@@ -2933,6 +2896,7 @@ msgid "Your Order has been confirmed."
 msgstr "A sua Encomenda foi confirmada."
 
 #. module: sale
+#: model:ir.actions.act_window,help:sale.action_quotations
 #: model:ir.actions.act_window,help:sale.action_quotations_salesteams
 msgid ""
 "Your next actions should flow efficiently: confirm the Quotation\n"
@@ -2940,15 +2904,6 @@ msgid ""
 msgstr ""
 "As suas próximas ações devem fluir eficientemente: confirme o Orçamento\n"
 "                como Ordem de Vendas, depois crie a Fatura e receba o Pagamento."
-
-#. module: sale
-#: model:ir.actions.act_window,help:sale.action_quotations
-msgid ""
-"Your next actions should flow efficiently: confirm the Quotation\n"
-"            to a Sales Order, then create the Invoice and collect the Payment."
-msgstr ""
-"As suas próximas ações devem fluir eficientemente: confirme o Orçamento\n"
-"            como Ordem de Vendas, depois crie a Fatura e receba o Pagamento."
 
 #. module: sale
 #: model:ir.actions.act_window,help:sale.act_res_partner_2_sale_order
@@ -2959,6 +2914,11 @@ msgid ""
 msgstr ""
 "As suas próximas ações devem fluir eficientemente: confirme o Orçamento como"
 " Ordem de Vendas, depois crie a Fatura e receba o Pagamento."
+
+#. module: sale
+#: model:ir.model.fields,field_description:sale.field_res_config_settings_module_delivery_bpost
+msgid "bpost"
+msgstr ""
 
 #. module: sale
 #: model:ir.ui.view,arch_db:sale.portal_order_error
