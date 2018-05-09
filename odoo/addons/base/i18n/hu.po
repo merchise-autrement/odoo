@@ -7151,7 +7151,7 @@ msgstr "'%s' úgy tűnik nem egész szám ehhez a mezőhöz '%%(field)s'"
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_partner_form
 msgid "(edit)"
-msgstr "(szerkeszt)"
+msgstr "(szerkesztés)"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.wizard_lang_export
@@ -10905,7 +10905,7 @@ msgid ""
 "Disabling this option will also uninstall the following modules \n"
 "%s"
 msgstr ""
-"Ennek a lehetőségnek a kikapcsolásával, törölni fogja a következő modulokat \n"
+"Ezen lehetőség kikapcsolásával továbbá eltávolításra fognak kerülni a következő modulok: \n"
 "%s"
 
 #. module: base
