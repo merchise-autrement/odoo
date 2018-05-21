@@ -1974,13 +1974,16 @@ var BasicModel = AbstractModel.extend({
         return this._rpc({
                 model: model,
                 method: 'name_get',
-                args: [ids],
+                args: [_.uniq(ids)],
                 context: list.context,
             })
             .then(function (name_gets) {
-                for (var i = 0; i < name_gets.length; i++) {
-                    records[i].data.display_name = name_gets[i][1];
-                }
+                _.each(records, function (record) {
+                    var nameGet = _.find(name_gets, function (nameGet) {
+                        return nameGet[0] === record.data.id;
+                    });
+                    record.data.display_name = nameGet[1];
+                });
             });
     },
     /**
@@ -2466,7 +2469,16 @@ var BasicModel = AbstractModel.extend({
         var self = this;
         var def;
         if (list.static) {
-            def = this._readUngroupedList(list);
+            def = this._readUngroupedList(list).then(function () {
+                if (list.parentID && self.isNew(list.parentID)) {
+                    // list from a default_get, so fetch display_name for many2one fields
+                    var many2ones = self._getMany2OneFieldNames(list);
+                    var defs = _.map(many2ones, function (name) {
+                        return self._fetchNameGets(list, name);
+                    });
+                    return $.when.apply($, defs);
+                }
+            });
         } else {
             def = this._searchReadUngroupedList(list);
         }
@@ -3033,6 +3045,23 @@ var BasicModel = AbstractModel.extend({
         var fieldsInfo = element.fieldsInfo;
         var viewType = options && options.viewType || element.viewType;
         return Object.keys(fieldsInfo && fieldsInfo[viewType] || {});
+    },
+    /**
+     * Get many2one fields names in a datapoint. This is useful in order to
+     * fetch their names in the case of a default_get.
+     *
+     * @private
+     * @param {Object} datapoint a valid resource object
+     * @returns {string[]} list of field names that are many2one
+     */
+    _getMany2OneFieldNames: function (datapoint) {
+        var many2ones = [];
+        _.each(datapoint.fields, function (field, name) {
+            if (field.type === 'many2one') {
+                many2ones.push(name);
+            }
+        });
+        return many2ones;
     },
     /**
      * Evaluate the record evaluation context.  This method is supposed to be
@@ -4100,10 +4129,20 @@ var BasicModel = AbstractModel.extend({
                 var r2 = self.localData[record2ID];
                 var data1 = _.extend({}, r1.data, r1._changes);
                 var data2 = _.extend({}, r2.data, r2._changes);
-                if (data1[order.name] < data2[order.name]) {
+
+                // Default value to sort against: the value of the field
+                var orderData1 = data1[order.name];
+                var orderData2 = data2[order.name];
+
+                // If the field is a relation, sort on the display_name of those records
+                if (list.fields[order.name].type === 'many2one') {
+                    orderData1 = orderData1 ? self.localData[orderData1].data.display_name : "";
+                    orderData2 = orderData2 ? self.localData[orderData2].data.display_name : "";
+                }
+                if (orderData1 < orderData2) {
                     return order.asc ? -1 : 1;
                 }
-                if (data1[order.name] > data2[order.name]) {
+                if (orderData1 > orderData2) {
                     return order.asc ? 1 : -1;
                 }
                 return compareRecords(record1ID, record2ID, level + 1);

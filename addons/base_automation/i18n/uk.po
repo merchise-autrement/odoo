@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: uk\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n % 10 == 1 && n % 100 != 11 ? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || (n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
 
 #. module: base_automation
 #: model:ir.model.fields,field_description:base_automation.field_base_automation_help
@@ -75,12 +75,12 @@ msgstr "Подати заявку на"
 #. module: base_automation
 #: model:ir.model.fields,field_description:base_automation.field_base_automation_lead_test_is_assigned_to_admin
 msgid "Assigned to admin user"
-msgstr ""
+msgstr "Призначено адміністратору"
 
 #. module: base_automation
 #: model:ir.model,name:base_automation.model_base_automation
 msgid "Automated Action"
-msgstr ""
+msgstr "Автоматизована дія"
 
 #. module: base_automation
 #: model:ir.actions.act_window,name:base_automation.base_automation_act
@@ -139,17 +139,17 @@ msgstr ""
 #. module: base_automation
 #: selection:base.automation,trigger:0
 msgid "Based on Form Modification"
-msgstr ""
+msgstr "На підставі модифікації форми"
 
 #. module: base_automation
 #: selection:base.automation,trigger:0
 msgid "Based on Timed Condition"
-msgstr ""
+msgstr "На основі умовного часу"
 
 #. module: base_automation
 #: model:ir.model.fields,field_description:base_automation.field_base_automation_filter_pre_domain
 msgid "Before Update Domain"
-msgstr ""
+msgstr "Перед оновленням домену"
 
 #. module: base_automation
 #: model:ir.model.fields,field_description:base_automation.field_base_automation_binding_model_id
@@ -169,7 +169,7 @@ msgstr "Скасовано"
 #. module: base_automation
 #: model:ir.model.fields,help:base_automation.field_base_automation_lead_test_customer
 msgid "Check this box if this contact is a customer."
-msgstr ""
+msgstr "Позначте це, якщо цей контакт є клієнтом."
 
 #. module: base_automation
 #: model:ir.model.fields,field_description:base_automation.field_base_automation_child_ids
@@ -196,7 +196,7 @@ msgstr "Завершено"
 #. module: base_automation
 #: model:ir.model.fields,help:base_automation.field_base_automation_on_change_fields
 msgid "Comma-separated list of field names that triggers the onchange."
-msgstr ""
+msgstr "Список назв полів, розділених комами, який ініціює обмін."
 
 #. module: base_automation
 #: model:ir.model.fields,field_description:base_automation.field_base_automation_crud_model_id
@@ -234,16 +234,19 @@ msgid ""
 "                                    You can put a negative number if you need a delay before the\n"
 "                                    trigger date, like sending a reminder 15 minutes before a meeting."
 msgstr ""
+"Затримка після дати запуску.\n"
+"Ви можете поставити негативне число, якщо вам потрібна затримка до\n"
+"тригерної дата, наприклад, надсилання нагадування за 15 хвилин до зустрічі."
 
 #. module: base_automation
 #: model:ir.model.fields,field_description:base_automation.field_base_automation_trg_date_range
 msgid "Delay after trigger date"
-msgstr ""
+msgstr "Затримка після тригерної дати"
 
 #. module: base_automation
 #: model:ir.model.fields,field_description:base_automation.field_base_automation_trg_date_range_type
 msgid "Delay type"
-msgstr ""
+msgstr "Тип затримки"
 
 #. module: base_automation
 #: model:ir.model.fields,field_description:base_automation.field_base_automation_display_name
@@ -272,21 +275,21 @@ msgstr "Години"
 #: model:ir.model.fields,field_description:base_automation.field_base_automation_lead_test_id
 #: model:ir.model.fields,field_description:base_automation.field_base_automation_line_test_id
 msgid "ID"
-msgstr "ІД"
+msgstr "ID"
 
 #. module: base_automation
 #: model:ir.model.fields,help:base_automation.field_base_automation_filter_domain
 msgid ""
 "If present, this condition must be satisfied before executing the action "
 "rule."
-msgstr ""
+msgstr "Якщо є, ця умова повинна бути виконана до виконання правила дій."
 
 #. module: base_automation
 #: model:ir.model.fields,help:base_automation.field_base_automation_filter_pre_domain
 msgid ""
 "If present, this condition must be satisfied before the update of the "
 "record."
-msgstr ""
+msgstr "Якщо є, ця умова повинна бути виконана до оновлення запису."
 
 #. module: base_automation
 #: selection:base.automation.lead.test,state:0
@@ -332,12 +335,12 @@ msgstr "Останнє оновлення"
 #. module: base_automation
 #: model:ir.model.fields,field_description:base_automation.field_base_automation_line_test_lead_id
 msgid "Lead"
-msgstr "Привід"
+msgstr "Лід"
 
 #. module: base_automation
 #: model:ir.model.fields,field_description:base_automation.field_base_automation_lead_test_line_ids
 msgid "Line"
-msgstr "Лінія"
+msgstr "Рядок"
 
 #. module: base_automation
 #: model:ir.model.fields,field_description:base_automation.field_base_automation_link_field_id
@@ -358,7 +361,7 @@ msgstr "Модель"
 #. module: base_automation
 #: model:ir.model.fields,field_description:base_automation.field_base_automation_crud_model_name
 msgid "Model Description"
-msgstr "Опис"
+msgstr "Опис моделі"
 
 #. module: base_automation
 #: model:ir.model.fields,help:base_automation.field_base_automation_crud_model_id
@@ -392,27 +395,27 @@ msgstr "Нова"
 #. module: base_automation
 #: model:ir.model.fields,field_description:base_automation.field_base_automation_on_change_fields
 msgid "On Change Fields Trigger"
-msgstr ""
+msgstr "Тригер полів для зміни"
 
 #. module: base_automation
 #: selection:base.automation,trigger:0
 msgid "On Creation"
-msgstr ""
+msgstr "На створення"
 
 #. module: base_automation
 #: selection:base.automation,trigger:0
 msgid "On Creation & Update"
-msgstr ""
+msgstr "На створення та оновлення"
 
 #. module: base_automation
 #: selection:base.automation,trigger:0
 msgid "On Deletion"
-msgstr ""
+msgstr "При видаленні"
 
 #. module: base_automation
 #: selection:base.automation,trigger:0
 msgid "On Update"
-msgstr ""
+msgstr "На оновлення"
 
 #. module: base_automation
 #: model:ir.model.fields,help:base_automation.field_base_automation_help
@@ -434,7 +437,7 @@ msgstr "В очікуванні"
 #. module: base_automation
 #: model:ir.model.fields,field_description:base_automation.field_base_automation_lead_test_priority
 msgid "Priority"
-msgstr "Приорітет"
+msgstr "Пріоритет"
 
 #. module: base_automation
 #: model:ir.model.fields,help:base_automation.field_base_automation_link_field_id
@@ -520,7 +523,7 @@ msgstr "Застосування"
 #. module: base_automation
 #: model:ir.model.fields,field_description:base_automation.field_base_automation_trg_date_calendar_id
 msgid "Use Calendar"
-msgstr ""
+msgstr "Використовувати календар"
 
 #. module: base_automation
 #: model:ir.actions.act_window,help:base_automation.base_automation_act
@@ -548,6 +551,8 @@ msgid ""
 "When calculating a day-based timed condition, it is possible to use a "
 "calendar to compute the date based on working days."
 msgstr ""
+"Під час обчислення умовного часу на основі дня можна скористатись календарем"
+" для обчислення дати за робочими днями."
 
 #. module: base_automation
 #: model:ir.model.fields,help:base_automation.field_base_automation_sequence
@@ -562,11 +567,13 @@ msgid ""
 "When should the condition be triggered.\n"
 "                                  If present, will be checked by the scheduler. If empty, will be checked at creation and update."
 msgstr ""
+"Коли спрацює стан.\n"
+"Якщо є, буде перевірено планувальником. Якщо порожньо, буде перевірено при створенні та оновленні."
 
 #. module: base_automation
 #: model:ir.model.fields,help:base_automation.field_base_automation_active
 msgid "When unchecked, the rule is hidden and will not be executed."
-msgstr ""
+msgstr "Якщо цей прапорець не позначено, правило сховане і не буде виконано."
 
 #. module: base_automation
 #: model:ir.model.fields,help:base_automation.field_base_automation_code

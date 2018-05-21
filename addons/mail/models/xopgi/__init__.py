@@ -2,32 +2,17 @@ from . import index  # noqa
 from . import takeover  # noqa
 
 from odoo.models import AbstractModel
-from odoo import api, signals
+from odoo import api
 
 # The index of the root message in a thread.  It seems the "last" message in
 # the list is the parent message.
 THREAD_ROOT = -1
 
 
-unlink_thread = signals.Signal('unlink_thread', '''
-Signal sent when a thread object is being unlinked.
-
-The signal is sent before the unlink happens to allow logging and auditing.
-
-Errors raised by receivers are propagated.
-
-''')
-
-
 # Changes the name of the message when the record name changes.
 class MailThreadName(AbstractModel):
     _name = 'mail.thread'
     _inherit = _name
-
-    @api.multi
-    def unlink(self):
-        unlink_thread.send(sender=self)
-        return super(MailThreadName, self).unlink()
 
     @api.multi
     def write(self, vals):
