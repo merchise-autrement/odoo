@@ -11,6 +11,12 @@ import odoo
 from odoo import api, fields, models, SUPERUSER_ID
 from odoo.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
 
+try:
+    from kombu.asynchronous.hub import Hub  # kombu 4.2.0+
+except ImportError:
+    from kombu.async.hub import Hub
+
+
 _logger = logging.getLogger(__name__)
 
 # longpolling timeout connection
@@ -171,8 +177,6 @@ class ImDispatch(object):
             return callback
 
         _logger.info("Bus.loop listen imbus on db postgres")
-        from kombu.async.hub import Hub
-
         with odoo.sql_db.db_connect('postgres').cursor() as cr:
             conn = cr._cnx
             cr.execute("listen imbus")
