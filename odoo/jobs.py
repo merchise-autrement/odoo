@@ -18,6 +18,7 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
+import os
 import contextlib
 import threading
 
@@ -510,7 +511,10 @@ def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
 
 
 class Configuration(object):
-    broker_url = BROKER_URL = config.get('celery.broker', 'redis://localhost/9')
+    broker_url = BROKER_URL = config.get(
+        'celery.broker',
+        os.environ.get('odoo_celery_broker', 'redis://localhost/9')
+    )
 
     # We don't use the backend to **store** results, but send results via
     # another message.
@@ -527,8 +531,11 @@ class Configuration(object):
     # This is rare in our case because even setting up the Odoo registry
     # in our main `task`:func: takes longer than the expected round-trip from
     # the browser to the server.
-    result_backend = CELERY_RESULT_BACKEND = config.get('celery.backend',
-                                                        broker_url)
+    result_backend = CELERY_RESULT_BACKEND = config.get(
+        'celery.backend',
+        os.environ.get('odoo_celery_backend', broker_url)
+    )
+
     task_ignore_result = CELERY_IGNORE_RESULT = True
 
     task_default_queue = CELERY_DEFAULT_QUEUE = DEFAULT_QUEUE_NAME
