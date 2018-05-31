@@ -18,6 +18,7 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
+import os
 import contextlib
 import threading
 
@@ -510,7 +511,10 @@ def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
 
 
 class Configuration(object):
-    broker_url = BROKER_URL = config.get('celery.broker', 'redis://localhost/9')
+    broker_url = BROKER_URL = config.get(
+        'celery.broker',
+        os.environ.get('odoo_celery_broker', 'redis://localhost/9')
+    )
 
     # We don't use the backend to **store** results, but send results via
     # another message.
@@ -527,8 +531,11 @@ class Configuration(object):
     # This is rare in our case because even setting up the Odoo registry
     # in our main `task`:func: takes longer than the expected round-trip from
     # the browser to the server.
-    result_backend = CELERY_RESULT_BACKEND = config.get('celery.backend',
-                                                        broker_url)
+    result_backend = CELERY_RESULT_BACKEND = config.get(
+        'celery.backend',
+        os.environ.get('odoo_celery_backend', broker_url)
+    )
+
     task_ignore_result = CELERY_IGNORE_RESULT = True
 
     task_default_queue = CELERY_DEFAULT_QUEUE = DEFAULT_QUEUE_NAME
@@ -810,10 +817,9 @@ def OdooEnvironment(dbname, uid, cr=None, context=None):
     from xoutil.objects import temp_attributes
     __traceback_hide__ = True  # noqa: hide from Celery Tracebacks
     with Environment.manage():
-        Registry(dbname).check_signaling()
-        registry = Registry(dbname)
-        # Several pieces of OpenERP code expect this attributes to be set in the
-        # current thread.
+        registry = Registry(dbname).check_signaling()
+        # Several pieces of OpenERP code expect this attributes to be set in
+        # the current thread.
         thread = threading.currentThread()
         with temp_attributes(thread, dict(uid=uid, dbname=dbname)):
             if cr is None:
@@ -910,7 +916,7 @@ def _send(channel, message, env=None):
         _context = ExecutionContext[CELERY_JOB]
         env = _context['env']
     cr, uid, context = env.args
-    with RegistryManager.get(cr.dbname).cursor() as newcr:
+    with Registry.get(cr.dbname).cursor() as newcr:
         newenv = Environment(newcr, uid, context=context)
         # The bus waits until the COMMIT to actually NOTIFY listening clients,
         # this means that all progress reports, would not be visible to clients
