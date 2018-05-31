@@ -817,10 +817,9 @@ def OdooEnvironment(dbname, uid, cr=None, context=None):
     from xoutil.objects import temp_attributes
     __traceback_hide__ = True  # noqa: hide from Celery Tracebacks
     with Environment.manage():
-        Registry(dbname).check_signaling()
-        registry = Registry(dbname)
-        # Several pieces of OpenERP code expect this attributes to be set in the
-        # current thread.
+        registry = Registry(dbname).check_signaling()
+        # Several pieces of OpenERP code expect this attributes to be set in
+        # the current thread.
         thread = threading.currentThread()
         with temp_attributes(thread, dict(uid=uid, dbname=dbname)):
             if cr is None:
@@ -917,7 +916,7 @@ def _send(channel, message, env=None):
         _context = ExecutionContext[CELERY_JOB]
         env = _context['env']
     cr, uid, context = env.args
-    with RegistryManager.get(cr.dbname).cursor() as newcr:
+    with Registry.get(cr.dbname).cursor() as newcr:
         newenv = Environment(newcr, uid, context=context)
         # The bus waits until the COMMIT to actually NOTIFY listening clients,
         # this means that all progress reports, would not be visible to clients
