@@ -21,6 +21,7 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
+import os
 import raven
 from raven.transport.http import HTTPTransport
 from raven.transport.threaded import ThreadedHTTPTransport
@@ -37,8 +38,6 @@ except ImportError:
 
 from xoutil.objects import setdefaultattr
 
-from odoo import models
-
 from xoutil.symbols import Unset
 from xoutil.symbols import boolean as Logical
 
@@ -51,14 +50,14 @@ del Logical
 conf = {
     # The Sentry DSN.  If Bail no logging will be done to Sentry.  This should
     # be string like 'http://12345abc:091bacfe@sentry.example.com/0'.
-    'dsn': Bail,
+    'dsn': os.environ.get('odoo_sentry_dsn', Bail),
 
     # The release to be reported to Sentry.  If Unset, the odoo.release
     # version will be used.
-    'release': Unset,
+    'release': os.environ.get('odoo_sentry_release', Unset),
 
     # A tag that will be appended to the release.  Only if 'release' is Unset.
-    'release-tag': '',
+    'release-tag': os.environ.get('odoo_sentry_release_tag', ''),
 
     # The Raven transport to use to connect to Sentry. One of 'sync',
     # 'gevent', or 'threaded'.  If set to None, default to 'threaded'.  In
