@@ -916,7 +916,7 @@ def _send(channel, message, env=None):
         _context = ExecutionContext[CELERY_JOB]
         env = _context['env']
     cr, uid, context = env.args
-    with Registry.get(cr.dbname).cursor() as newcr:
+    with Registry(cr.dbname).cursor() as newcr:
         newenv = Environment(newcr, uid, context=context)
         # The bus waits until the COMMIT to actually NOTIFY listening clients,
         # this means that all progress reports, would not be visible to clients
