@@ -111,7 +111,7 @@ def py2exe_options():
                         'yaml',
 
                         # Merchise
-                        'celery>=4.1.0,<5.0.0',
+                        'celery>=4,<5',
                         'flower',
                         'hiredis',
                         'redis',
@@ -180,7 +180,7 @@ setup(
         'xlwt',
 
         # Merchise
-        'celery',
+        'celery>=4,<5',
         'flower',
         'redis',
         'xoutil>=1.9.3',

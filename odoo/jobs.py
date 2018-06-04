@@ -511,7 +511,7 @@ def report_progress(message=None, progress=None, valuemin=None, valuemax=None,
 
 
 class Configuration(object):
-    broker_url = BROKER_URL = config.get(
+    broker_url = config.get(
         'celery.broker',
         os.environ.get('odoo_celery_broker', 'redis://localhost/9')
     )
@@ -531,29 +531,29 @@ class Configuration(object):
     # This is rare in our case because even setting up the Odoo registry
     # in our main `task`:func: takes longer than the expected round-trip from
     # the browser to the server.
-    result_backend = CELERY_RESULT_BACKEND = config.get(
+    result_backend = config.get(
         'celery.backend',
         os.environ.get('odoo_celery_backend', broker_url)
     )
 
-    task_ignore_result = CELERY_IGNORE_RESULT = True
+    task_ignore_result = True
 
-    task_default_queue = CELERY_DEFAULT_QUEUE = DEFAULT_QUEUE_NAME
-    task_default_exchange_type = CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
-    task_default_routing_key = CELERY_DEFAULT_ROUTING_KEY = DEFAULT_QUEUE_NAME
+    task_default_queue = DEFAULT_QUEUE_NAME
+    task_default_exchange_type = 'direct'
+    task_default_routing_key = DEFAULT_QUEUE_NAME
 
-    task_queues = CELERY_QUEUES = [
+    task_queues = [
         Queue(task_default_queue, Exchange(task_default_queue),
               routing_key=task_default_routing_key),
         Queue(queue('notifications'), Exchange(queue('notifications')),
               routing_key=queue(queue('notifications'))),
     ]
 
-    worker_send_task_events = CELERYD_SEND_EVENTS = True
+    worker_send_task_events = True
 
     # Maximum number of tasks a pool worker process can execute before it’s
-    # replaced with a new one. Default is no limit.
-    worker_max_tasks_per_child = CELERYD_MAX_TASKS_PER_CHILD = max(
+    # replaced with a new one. Default is 2000 and the min is 10.
+    worker_max_tasks_per_child = max(
         int(config.get('celery.max_tasks_per_child', 2000)),
         10
     )
@@ -567,35 +567,30 @@ class Configuration(object):
         worker_max_memory_per_child = _worker_max_memory_per_child
     del _worker_max_memory_per_child
 
-    # TODO: Take queues from configuration.
-    task_queues = CELERY_QUEUES = (
-        Queue(DEFAULT_QUEUE_NAME, Exchange(DEFAULT_QUEUE_NAME),
-              routing_key=DEFAULT_QUEUE_NAME),
-    )
-    task_create_missing_queues = CELERY_CREATE_MISSING_QUEUES = config.get(
+    task_create_missing_queues = config.get(
         'celery.create_missing_queues',
         True
     )
 
-    task_time_limit = CELERYD_TASK_TIME_LIMIT = config.get('celery.task_time_limit', 600)  # 10 minutes
+    task_time_limit = config.get('celery.task_time_limit', 600)  # 10 minutes
     _softtime = config.get('celery.task_soft_time_limit', None)
     if _softtime is not None:
-        task_soft_time_limit = CELERYD_TASK_SOFT_TIME_LIMIT = int(_softtime)
+        task_soft_time_limit = int(_softtime)
     del _softtime
 
-    worker_enable_remote_control = CELERY_ENABLE_REMOTE_CONTROL = True
+    worker_enable_remote_control = True
 
-    enable_utc = CELERY_ENABLE_UTC = True
-    task_always_eager = CELERY_ALWAYS_EAGER = False
+    enable_utc = True
+    task_always_eager = False
 
-    task_acks_late = CELERY_ACKS_LATE = config.get('celery.acks_late', True)
+    task_acks_late = config.get('celery.acks_late', True)
 
     _CELERYD_PREFETCH_MULTIPLIER = config.get('celery.prefetch_multiplier', 0)
     if not _CELERYD_PREFETCH_MULTIPLIER:
         # Avoid infinite prefetching
         pass
     else:
-        worker_prefetch_multiplier = CELERYD_PREFETCH_MULTIPLIER = int(_CELERYD_PREFETCH_MULTIPLIER)  # noqa
+        worker_prefetch_multiplier = int(_CELERYD_PREFETCH_MULTIPLIER)
     del _CELERYD_PREFETCH_MULTIPLIER
 
     _CELERYBEAT_SCHEDULE_FILENAME = config.get(
@@ -603,7 +598,7 @@ class Configuration(object):
         None
     )
     if _CELERYBEAT_SCHEDULE_FILENAME is not None:
-        beat_schedule_filename = CELERYBEAT_SCHEDULE_FILENAME = _CELERYBEAT_SCHEDULE_FILENAME  # noqa
+        beat_schedule_filename = _CELERYBEAT_SCHEDULE_FILENAME
     del _CELERYBEAT_SCHEDULE_FILENAME
 
 
