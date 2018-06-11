@@ -80,6 +80,7 @@ def py2exe_options():
                     'dist_dir': 'dist',
                     'packages': [
                         'asynchat', 'asyncore',
+                        'BeautifulSoup',
                         'commands',
                         'dateutil',
                         'decimal',

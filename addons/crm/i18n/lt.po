@@ -149,6 +149,13 @@ msgid ""
 "%endif\n"
 "</p><p>Thank you!</p>\n"
 msgstr ""
+"\n"
+"<p>Sveiki ${object.user_id and object.user_id.name or ''},</p>\n"
+"<p>Su šia galimybe <strong>${object.name}</strong> nebuvo atlikta jokių veiksmų mažiausiai 5 dienas.</p>\n"
+"%if object.description:\n"
+"<p>Štai galimybės aprašymas : </p><p><i>${object.description}</i>\n"
+"%endif\n"
+"</p><p>Ačiū!</p>\n"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead_meeting_count
@@ -185,6 +192,8 @@ msgid ""
 "<b>Drag &amp; drop opportunities</b> between columns as you progress in your"
 " sales cycle."
 msgstr ""
+"<b>Permeskite galimybes</b> tarp stulpelių kai jos progresuoja Jūsų "
+"pardavimo cikle."
 
 #. module: crm
 #. openerp-web
@@ -220,6 +229,9 @@ msgid ""
 "attached to this opportunity.</p><p class=\"mb0\">Type <i>'@'</i> to mention"
 " people - it's like cc-ing on emails.</p>"
 msgstr ""
+"<p><b>Siųskite žinutes</b> galimam klientui ir jo atsakymai automatiškai bus"
+" prikabinti prie šios galimybės.Spauskite <i>'@'</i> norėdami prijungti "
+"žmones - tai tarsi cc funkcija el. laiškuose.</p>"
 
 #. module: crm
 #: model:ir.actions.server,body_html:crm.action_email_reminder_lead
@@ -1284,7 +1296,7 @@ msgstr ""
 #: code:addons/crm/static/src/js/tour.js:71
 #, python-format
 msgid "Configuration options are available in the Settings app."
-msgstr ""
+msgstr "Konfigūracijos pasirinktys pasiekiamos per nustatymų programėlę."
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
@@ -1674,6 +1686,8 @@ msgid ""
 "Description that will be added in the message posted for this subtype. If "
 "void, the name will be added instead."
 msgstr ""
+"Aprašymas, kuris bus pridėtas žinutėje, paskelbtoje šiam potipiui. Jei "
+"tuščia, bus pridedamas vardas."
 
 #. module: crm
 #: model:crm.lead.tag,name:crm.categ_oppor5
@@ -1933,6 +1947,9 @@ msgid ""
 "automatic subscription on a related document. The field is used to compute "
 "getattr(related_document.relation_field)."
 msgstr ""
+"Laukas, kuris naudojamas susieti susijusį modelį su potipio modeliu, kai "
+"susijusiam dokumentui naudojama automatinė prenumerata. Šis laukas taip pat "
+"naudojamas suskaičiuoti getattr(related_document.relation_field)."
 
 #. module: crm
 #. openerp-web
@@ -2765,6 +2782,11 @@ msgid ""
 "subtypes allow to precisely tune the notifications the user want to receive "
 "on its wall."
 msgstr ""
+"Žinutės potipis žinutei suteikia tikslesnį tipą, ypatingai sistemos "
+"pranešimams. Pavyzdžiui, tai gali būti pranešimas, susijęs su nauju įrašu "
+"(Naujas) ar su stadijos pasikeitimu procese (Stadijos pasikeitimas). Žinučių"
+" potipiai leidžia tiksliai nustatyti, kokius pranešimus vartotojas nori "
+"matyti savo sienoje."
 
 #. module: crm
 #: model:ir.model.fields,help:crm.field_crm_activity_internal
@@ -2772,6 +2794,8 @@ msgid ""
 "Messages with internal subtypes will be visible only by employees, aka "
 "members of base_user group"
 msgstr ""
+"Žinutės su vidiniais potipiais bus matomi tik darbuotoju, t.y., base_user "
+"grupės nariams"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_base_partner_merge_line_min_id
@@ -2798,6 +2822,8 @@ msgstr "Modelis"
 msgid ""
 "Model the subtype applies to. If False, this subtype applies to all models."
 msgstr ""
+"Modelis, kuriam taikomas šis potipis. Jei False, šis potipis taikomas "
+"visiems modeliams."
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_activity_report_view_search
@@ -4083,6 +4109,10 @@ msgid ""
 "the sender (From) address, or will use the Administrator account if no "
 "system user is found for that address."
 msgstr ""
+"Įrašų, sukuriamų gaunant laiškus šiuo vardu, šeimininkas. Jei šis laukas "
+"nėra nustatytas, sistema bandys surasti tikrąjį šeimininką pagal siuntėjo "
+"(nuo) adresą arba naudos administratoriaus paskyrą, jei tam adresui "
+"sistemoje nerandamas vartotojas."
 
 #. module: crm
 #: model:ir.ui.view,arch_db:crm.crm_planner
