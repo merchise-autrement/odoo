@@ -249,7 +249,7 @@ msgstr "Email:"
 #: code:addons/report/models/report_paperformat.py:68
 #, python-format
 msgid "Error ! You cannot select a format AND specific page width/height."
-msgstr ""
+msgstr "Hata! Spesifik bir sayfa genişliği/yüksekliği formatı seçemezsiniz."
 
 #. module: report
 #: selection:report.paperformat,format:0
@@ -494,6 +494,9 @@ msgid ""
 "change the report filename. You can use a python expression with the object "
 "and time variables."
 msgstr ""
+"Bu, raporun indirileceği dosya adıdır. Rapor dosya adını değiştirmemek için "
+"boş tutun. Nesne ve zaman değişkenleri ile bir python ifadesi "
+"kullanabilirsiniz."
 
 #. module: report
 #: code:addons/report/models/report.py:273
@@ -523,7 +526,7 @@ msgstr ""
 #: code:addons/report/models/report.py:164
 #, python-format
 msgid "Unable to find Wkhtmltopdf on this system. The PDF can not be created."
-msgstr ""
+msgstr "Wkhtmltopdf bu sistemde bulunamadı. PDF oluşturulamıyor."
 
 #. module: report
 #: model:ir.ui.view,arch_db:report.external_layout_footer
