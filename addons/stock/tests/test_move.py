@@ -925,6 +925,31 @@ class StockMove(TransactionCase):
         self.assertEqual(self.env['stock.quant']._get_available_quantity(self.product2, self.customer_location), 12.0)
         self.assertEqual(len(self.env['stock.quant']._gather(self.product2, self.customer_location)), 12)
 
+    def test_availability_8(self):
+        """ Test the assignment mechanism when the product quantity is decreased on a partially
+            reserved stock move.
+        """
+        # make some stock
+        self.env['stock.quant']._update_available_quantity(self.product1, self.stock_location, 3.0)
+        self.assertAlmostEqual(self.product1.qty_available, 3.0)
+
+        move_partial = self.env['stock.move'].create({
+            'name': 'test_partial',
+            'location_id': self.stock_location.id,
+            'location_dest_id': self.customer_location.id,
+            'product_id': self.product1.id,
+            'product_uom': self.uom_unit.id,
+            'product_uom_qty': 5.0,
+        })
+
+        move_partial._action_confirm()
+        move_partial._action_assign()
+        self.assertAlmostEqual(self.product1.virtual_available, -2.0)
+        self.assertEqual(move_partial.state, 'partially_available')
+        move_partial.product_uom_qty = 3.0
+        move_partial._action_assign()
+        self.assertEqual(move_partial.state, 'assigned')
+
     def test_unreserve_1(self):
         """ Check that unreserving a stock move sets the products reserved as available and
         set the state back to confirmed.
@@ -1728,16 +1753,27 @@ class StockMove(TransactionCase):
         backorder_wizard = self.env[(res_dict_for_back_order.get('res_model'))].browse(res_dict_for_back_order.get('res_id'))
         backorder_wizard.with_context(debug=True).process()
         backorder = self.env['stock.picking'].search([('backorder_id', '=', picking_pack_cust.id)])
-        backordered_ml = backorder.move_line_ids
-        quant_lot3 = self.env['stock.quant'].search([('lot_id', '=', backordered_ml.lot_id.id)])
+        backordered_move = backorder.move_lines
 
         # due to the rounding, the backordered quantity is 0.999 ; we shoudln't be able to reserve
         # 0.999 on a tracked by serial number quant
-        self.assertEqual(backordered_ml.product_uom_qty, 0)
-        self.assertTrue(backordered_ml.lot_id)
+        backordered_move._action_assign()
+        self.assertEqual(backordered_move.reserved_availability, 0)
 
         # force the serial number and validate
-        backordered_ml.qty_done = 1
+        lot3 = self.env['stock.production.lot'].search([('name', '=', "lot3")])
+        backorder.write({'move_line_ids': [(0, 0, {
+            'product_id': self.product2.id,
+            'product_uom_id': self.uom_unit.id,
+            'qty_done': 1,
+            'product_uom_qty': 0,
+            'lot_id': lot3.id,
+            'package_id': False,
+            'result_package_id': False,
+            'location_id': backordered_move.location_id.id,
+            'location_dest_id': backordered_move.location_dest_id.id,
+            'move_id': backordered_move.id,
+        })]})
 
         overprocessed_wizard = backorder.button_validate()
         overprocessed_wizard = self.env['stock.overprocessed.transfer'].browse(overprocessed_wizard['res_id'])
@@ -3767,4 +3803,3 @@ class StockMove(TransactionCase):
         picking.button_validate()
         self.assertEqual(self.env['stock.quant']._get_available_quantity(self.product1, self.stock_location), 0)
         self.assertEqual(self.env['stock.quant']._get_available_quantity(self.product1, self.customer_location), 2)
-
