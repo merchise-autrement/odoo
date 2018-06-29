@@ -301,7 +301,10 @@ class IrQWeb(models.AbstractModel, QWeb):
         files, remains = self._get_asset_content(xmlid, options)
         asset = self.get_asset_bundle(xmlid, files, env=self.env)
         remains = [node for node in remains if (css and node[0] == 'link') or (js and node[0] != 'link')]
-        spdy = request.httprequest.is_spdy or request.httprequest.is_http2
+        try:
+            spdy = request.httprequest.is_spdy or request.httprequest.is_http2
+        except RuntimeError:
+            spdy = False
         return remains + asset.to_node(css=css, js=js, debug=debug, async=async, spdy=spdy)
 
     @tools.ormcache_context('xmlid', 'options.get("lang", "en_US")', keys=("website_id",))
