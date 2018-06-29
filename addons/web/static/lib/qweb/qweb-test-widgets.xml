@@ -9,7 +9,7 @@
 
     <t t-name="datetime-widget-datetime"><t t-esc='value' t-options="{'widget': 'datetime'}" /></t>
     <params id="datetime-widget-datetime">{"value": "1988-09-16 14:00:00"}</params>
-    <result id="datetime-widget-datetime">09/16/1988 16:00:00</result>
+    <result id="datetime-widget-datetime">09/16/1988 16:00</result>
 
     <t t-name="datetime-widget-date"><t t-esc='value' t-options="{'widget': 'date'}" /></t>
     <params id="datetime-widget-date">{"value": "1988-09-16 14:00:00"}</params>
