@@ -1795,6 +1795,8 @@ msgid ""
 "For the Odoo Team,<br/>\n"
 "                            Fabien Pinckaers, Founder"
 msgstr ""
+"За Odoo Team,<br/>\n"
+"                            Фабиен Пинкерс, основател"
 
 #. module: project
 #: model:ir.ui.view,arch_db:project.project_planner
@@ -2308,7 +2310,7 @@ msgstr "Повече <i class=\"fa fa-caret-down\"/>"
 #. module: project
 #: model:ir.ui.view,arch_db:project.view_config_settings
 msgid "More Info"
-msgstr ""
+msgstr "Повече информация"
 
 #. module: project
 #: model:ir.ui.view,arch_db:project.project_planner
