@@ -19,8 +19,14 @@ check signature:
 run all Odoo tests:
   variables:
     PYTHON: python3
+    ODOO_WORKTREE: odoo11
+    GIT_STRATEGY: none
   stage: test
   script:
+    - cd ~/src/$ODOO_WORKTREE
+    - git fetch --all
+    - git clean -fdx
+    - git checkout $CI_COMMIT_REF_NAME
     - mkdir -p ~/virtualenvs
     - rm -rf ~/virtualenvs/$CI_PROJECT_NAME-$ODOO_WORKTREE || true
     - virtualenv -p `which $PYTHON` ~/virtualenvs/$CI_PROJECT_NAME-$ODOO_WORKTREE
