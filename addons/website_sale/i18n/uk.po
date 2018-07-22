@@ -1184,7 +1184,7 @@ msgstr ""
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.cart
 msgid "Click here"
-msgstr ""
+msgstr "Натисніть тут"
 
 #. module: website_sale
 #. openerp-web
@@ -3172,7 +3172,7 @@ msgstr "Область..."
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.address
 msgid "Street 2"
-msgstr ""
+msgstr "Вулиця 2"
 
 #. module: website_sale
 #: model:ir.ui.view,arch_db:website_sale.address
