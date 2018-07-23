@@ -16,13 +16,33 @@ check signature:
     - /^merchise-.*/
 
 
-update github fork:
-  stage: publish
+run all Odoo tests:
+  variables:
+    PYTHON: python3
+    ODOO_WORKTREE: odoo11
+    GIT_STRATEGY: none
+  stage: test
   script:
-    - git push git@github.com:merchise-autrement/odoo.git HEAD:$CI_COMMIT_REF_NAME
+    - cd ~/src/$ODOO_WORKTREE
+    - git fetch --all
+    - git clean -fdx
+    - git pull
+    - git checkout $CI_COMMIT_SHA
+    - mkdir -p ~/virtualenvs
+    - rm -rf ~/virtualenvs/$CI_PROJECT_NAME-$ODOO_WORKTREE || true
+    - virtualenv -p `which $PYTHON` ~/virtualenvs/$CI_PROJECT_NAME-$ODOO_WORKTREE
+    - source ~/virtualenvs/$CI_PROJECT_NAME-$ODOO_WORKTREE/bin/activate
+    - pip install -r requirements.txt
+    - pip install -U "six>=1.9.0" "decorator>=4.0,<4.2" "hypothesis>=3.24"
+    - pip install -e .
+    - export ADDONS=`find -L addons/ -type f -name '__manifest__.py' | xargs dirname | while read d; do basename $d; done | egrep -v '^(hw_|l10n_|theme_|auth_ldap$|document_ftp$|base_gengo$|website_gengo$|website_instantclick$|pad$|pad_project$|note_pad$|pos_cache$|pos_blackbox_be$|test_performance$|google_calendar$)' | sort -u | xargs | tr " " ","`
+    - runtests-odoo.sh -i $ADDONS
+    - export RES=$?
+    - git clean -fdx
+    - git checkout merchise-develop-11.0
+    - exit $RES
   tags:
-    - git
-    - github account
+    - virtualenv
+    - xoeuf-tester
   only:
-    - /^merchise-.*/
-  allow_failure: true
+    - branches
