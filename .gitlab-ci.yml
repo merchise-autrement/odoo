@@ -34,8 +34,12 @@ run all Odoo tests:
     - pip install -r requirements.txt
     - pip install -U "six>=1.9.0" "decorator>=4.0,<4.2" "hypothesis>=3.24"
     - pip install -e .
-    - export ADDONS=`find -L sources/ -type f -name '__manifest__.py' | xargs dirname | while read d; do basename $d; done | egrep -v '^(hw_|l10n_|theme_|auth_ldap$|document_ftp$|base_gengo$|website_gengo$|website_instantclick$|pad$|pad_project$|note_pad$|pos_cache$|pos_blackbox_be$|test_performance$|google_calendar$)' | sort -u | xargs | tr " " ","`
+    - export ADDONS=`find -L addons/ -type f -name '__manifest__.py' | xargs dirname | while read d; do basename $d; done | egrep -v '^(hw_|l10n_|theme_|auth_ldap$|document_ftp$|base_gengo$|website_gengo$|website_instantclick$|pad$|pad_project$|note_pad$|pos_cache$|pos_blackbox_be$|test_performance$|google_calendar$)' | sort -u | xargs | tr " " ","`
     - runtests-odoo.sh -i $ADDONS
+    - export RES=$?
+    - git clean -fdx
+    - git checkout merchise-develop-11.0
+    - exit $RES
   tags:
     - virtualenv
     - xoeuf-tester
