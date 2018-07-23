@@ -310,7 +310,6 @@ class IrQWeb(models.AbstractModel, QWeb):
             spdy = request.httprequest.is_spdy or request.httprequest.is_http2
         except RuntimeError:
             spdy = False
-        return remains + asset.to_node(css=css, js=js, debug=debug, async=async, spdy=spdy)
         return remains + asset.to_node(css=css, js=js, debug=debug, async_load=async_load, spdy=spdy)
 
     @tools.ormcache_context('xmlid', 'options.get("lang", "en_US")', keys=("website_id",))
