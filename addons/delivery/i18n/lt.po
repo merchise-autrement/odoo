@@ -408,6 +408,10 @@ msgid ""
 "stored in the Stock Location of the Warehouse of this Shop, or any of its children.\n"
 "Otherwise, this includes goods stored in any Stock Location with 'internal' type."
 msgstr ""
+"Esamas produktų skaičius.\n"
+"Jei naudojama viena atsargų lokacija, tai apima prekes saugomas šioje lokacijoje arba jos dukterinėse lokacijose.\n"
+"Jei naudojamas vienas sandėlis, tai apima prekes saugomas šio sandėlio atsargų lokacijoje arba jos dukterinėse lokacijose.\n"
+"Kitu atveju, tai apima prekes laikomas bet kurioje atsargų lokacijoje su vidiniu tipu."
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_carrier_sale_delay
@@ -653,6 +657,10 @@ msgid ""
 "In a context with a single Warehouse, this includes goods stored in the Stock Location of this Warehouse, or any of its children.\n"
 "Otherwise, this includes goods stored in any Stock Location with 'internal' type."
 msgstr ""
+"Prognozuojamas kiekis (skaičiuojamas kaip turimas kiekis - išeinantis + įeinantis).\n"
+"Jei naudojama viena atsargų lokacija, tai apima prekes saugomas šioje lokacijoje arba jos dukterinėse lokacijose.\n"
+"Jei naudojamas vienas sandėlis, tai apima prekes saugomas šio sandėlio atsargų lokacijoje arba jos dukterinėse lokacijose.\n"
+"Kitu atveju, tai apima prekes laikomas bet kurioje atsargų lokacijoje su vidiniu tipu."
 
 #. module: delivery
 #: model:delivery.carrier,name:delivery.free_delivery_carrier
@@ -1078,6 +1086,8 @@ msgid ""
 "Ordered Quantity: Invoice based on the quantity the customer ordered.\n"
 "Delivered Quantity: Invoiced based on the quantity the vendor delivered (time or deliveries)."
 msgstr ""
+"Užsakytas kiekis: sąskaita pagal kiekį, kurį klientas užsakė.\n"
+"Pristatytas kiekis: sąskaita pagal kiekį, kurį pardavėjas pristatė (laikas arba pristatymai)."
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_carrier_outgoing_qty
@@ -1301,7 +1311,7 @@ msgstr ""
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_carrier_expense_policy
 msgid "Re-Invoice Expenses"
-msgstr ""
+msgstr "Pakartotinio sąskaitos pateikimo išlaidos"
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_carrier_reception_count

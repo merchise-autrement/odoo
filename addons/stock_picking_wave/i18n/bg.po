@@ -6,6 +6,7 @@
 # kalatchev, 2016
 # Martin Trigaux, 2016
 # Kaloyan Naumov <kaloyan@lumnus.net>, 2016
+# Maria Boyadjieva <marabo2000@gmail.com>, 2016
 # Albena Mincheva <albena_vicheva@abv.bg>, 2018
 msgid ""
 msgstr ""
@@ -96,7 +97,7 @@ msgstr "Готов"
 #. module: stock_picking_wave
 #: selection:stock.picking.wave,state:0
 msgid "Draft"
-msgstr "Проект"
+msgstr "Чернова"
 
 #. module: stock_picking_wave
 #: model:ir.ui.view,arch_db:stock_picking_wave.view_picking_wave_form
@@ -286,6 +287,10 @@ msgid ""
 "                It may also be useful to assign jobs (one person = one wave) or\n"
 "                help the timing management of operations (tasks to be done at 1pm)."
 msgstr ""
+"Целта на вълните за изваждане е да се групират операции, които могат\n"
+"                (нуждаят се) да бъдат осъществени заедно с оглед повишаване на тяхната ефективност.\n"
+"                Също така може да е полезно да определите задачите (едно лице = една вълна) или\n"
+"                да облекчите синхронизиращото управление на операции (задачи, които трябва да се пизвършат в 1 часа следобяд)."
 
 #. module: stock_picking_wave
 #: model:ir.model,name:stock_picking_wave.model_stock_picking

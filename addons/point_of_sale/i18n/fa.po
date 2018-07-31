@@ -3,8 +3,8 @@
 # * point_of_sale
 # 
 # Translators:
-# Martin Trigaux <mat@odoo.com>, 2016
-# Hamid Darabi <hamid.darabi@gmail.com>, 2016
+# Martin Trigaux, 2016
+# Hamid Darabi, 2016
 # Zahed Alfak <tamass4116@gmail.com>, 2016
 # ifaraz ir <ifarazir@gmail.com>, 2016
 # Sepehr Khoshnood <sepehr.kho@gmail.com>, 2016
@@ -27,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: fa\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #. module: point_of_sale
 #: code:addons/point_of_sale/models/pos_order.py:679
@@ -432,7 +432,7 @@ msgstr "قیمت میانگین"
 #: code:addons/point_of_sale/static/src/xml/pos.xml:605
 #, python-format
 msgid "Back"
-msgstr ""
+msgstr "بازگشت"
 
 #. module: point_of_sale
 #: model:ir.model,name:point_of_sale.model_account_bank_statement
@@ -443,7 +443,7 @@ msgstr "صورت حساب بانک"
 #. module: point_of_sale
 #: model:ir.model,name:point_of_sale.model_account_bank_statement_line
 msgid "Bank Statement Line"
-msgstr ""
+msgstr "سطر صورتحساب بانک"
 
 #. module: point_of_sale
 #. openerp-web
@@ -717,7 +717,7 @@ msgstr ""
 #: code:addons/point_of_sale/models/barcode_rule.py:15
 #, python-format
 msgid "Client"
-msgstr ""
+msgstr "کلاینت"
 
 #. module: point_of_sale
 #. openerp-web
@@ -1197,7 +1197,7 @@ msgstr "تراز پایانی"
 #: code:addons/point_of_sale/models/pos_category.py:13
 #, python-format
 msgid "Error ! You cannot create recursive categories."
-msgstr ""
+msgstr "خطا! شما نمی‌توانید طبقه بندی بازگشتی ایجاد کنید."
 
 #. module: point_of_sale
 #. openerp-web
@@ -1267,7 +1267,7 @@ msgstr "موقعیت های مالی"
 #. module: point_of_sale
 #: model:ir.ui.view,arch_db:point_of_sale.view_pos_config_form
 msgid "Footer"
-msgstr ""
+msgstr "پاورقی"
 
 #. module: point_of_sale
 #: model:ir.model.fields,help:point_of_sale.field_pos_config_iface_big_scrollbars
@@ -1916,7 +1916,7 @@ msgstr ""
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_session_start_at
 msgid "Opening Date"
-msgstr ""
+msgstr "تاریخ ابتدای دوره"
 
 #. module: point_of_sale
 #: model:product.product,name:point_of_sale.papillon_orange
@@ -2582,7 +2582,7 @@ msgstr "پاسخگو"
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_config_settings_module_pos_restaurant
 msgid "Restaurant"
-msgstr ""
+msgstr "رستوران"
 
 #. module: point_of_sale
 #: selection:pos.config.settings,module_pos_restaurant:0
@@ -2884,12 +2884,12 @@ msgstr "توضیحات"
 #. module: point_of_sale
 #: model:ir.ui.view,arch_db:point_of_sale.view_pos_pos_form
 msgid "Statement lines"
-msgstr ""
+msgstr "سطرهای صورتحساب"
 
 #. module: point_of_sale
 #: model:ir.ui.view,arch_db:point_of_sale.view_pos_session_form
 msgid "Statements"
-msgstr ""
+msgstr "صورتحسابها"
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_order_state
@@ -3014,7 +3014,7 @@ msgstr "مالیات ها"
 #: code:addons/point_of_sale/static/src/xml/pos.xml:1274
 #, python-format
 msgid "Taxes:"
-msgstr ""
+msgstr "مالیاتها:"
 
 #. module: point_of_sale
 #. openerp-web

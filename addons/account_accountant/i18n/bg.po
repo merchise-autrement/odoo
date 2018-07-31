@@ -24,7 +24,7 @@ msgstr ""
 #: code:addons/account_accountant/static/src/js/tour.js:18
 #, python-format
 msgid "Let's start with a new customer invoice."
-msgstr "Нека стартираме с нова клиентска фактура."
+msgstr "Нека стартираме с нова фактура за продажба."
 
 #. module: account_accountant
 #. openerp-web
@@ -57,4 +57,4 @@ msgid ""
 "to get a Profit &amp; Loss statement or view the Balance Sheet.</i>"
 msgstr ""
 "  &; 1\n"
-"Вашите отчети са налични в реално време. <i>Не е необходимо да приключвате фискалната година, за да имате предтава за печалбата &amp; извлечението за загубите или за да прегледате диаграмата с баланса.</i>"
+"Вашите отчети са налични в реално време. <i>Не е необходимо да приключвате фискалната година, за да имате представа за печалбата &amp; извлечението за загубите или за да прегледате диаграмата с баланса.</i>"
