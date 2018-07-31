@@ -9993,7 +9993,7 @@ msgstr "Droit de création"
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_rule_search
 msgid "Create Access Right"
-msgstr "Créer un droit d'accès"
+msgstr "Droit d'accès pour la création"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_website_issue
@@ -20785,7 +20785,7 @@ msgstr "Grossiste"
 #: model:ir.actions.act_window,name:base.ir_action_window
 #: model:ir.ui.menu,name:base.menu_ir_action_window
 msgid "Window Actions"
-msgstr "Actions de la fenêtre"
+msgstr "Actions de l'interface"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_change_password_user_wizard_id
