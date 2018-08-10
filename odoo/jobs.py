@@ -266,8 +266,14 @@ def until_timeout(iterator, on_timeout=None):
     try:
         with context(_UNTIL_TIMEOUT_CONTEXT, counter=timed_out):
             i = iter(iterator)
-            while not timed_out:
-                yield next(i)  # StopIteration possible, but that's ok
+            try:
+                while not timed_out:
+                    yield next(i)
+            except StopIteration:
+                # Python 3.7+ (PEP 479) does not bubbles the StopIteration,
+                # but converts it to RuntimeError.  Using `return` restores
+                # the <3.7 behavior.
+                return
     except SoftTimeLimitExceeded:
         # At this point the local value of `timed_out` is `parent | me`, I
         # must signal both my parent and myself.
