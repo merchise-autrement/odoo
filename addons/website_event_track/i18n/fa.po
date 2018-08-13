@@ -5,7 +5,7 @@
 # Translators:
 # Martin Trigaux, 2016
 # Hamid Darabi, 2016
-# ifaraz ir <ifarazir@gmail.com>, 2016
+# Faraz Sadri Alamdari <ifarazir@gmail.com>, 2016
 # Sepehr Khoshnood <sepehr.kho@gmail.com>, 2017
 # Hamed Mohammadi <hamed@dehongi.com>, 2018
 msgid ""
@@ -413,7 +413,7 @@ msgstr "تصویر"
 #. module: website_event_track
 #: model:ir.ui.view,arch_db:website_event_track.event_track_proposal
 msgid "Introduction"
-msgstr ""
+msgstr "مقدمه"
 
 #. module: website_event_track
 #: model:event.track,name:website_event_track.event_track23
@@ -599,7 +599,7 @@ msgstr "اولویت"
 #. module: website_event_track
 #: selection:event.track,state:0
 msgid "Proposal"
-msgstr ""
+msgstr "پروپوزال"
 
 #. module: website_event_track
 #: model:ir.ui.view,arch_db:website_event_track.event_track_proposal
@@ -944,7 +944,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:website_event_track.view_event_track_form
 #: model:ir.ui.view,arch_db:website_event_track.view_event_track_kanban
 msgid "hours"
-msgstr ""
+msgstr "ساعت"
 
 #. module: website_event_track
 #: model:ir.ui.view,arch_db:website_event_track.agenda
@@ -954,4 +954,4 @@ msgstr ""
 #. module: website_event_track
 #: model:ir.ui.view,arch_db:website_event_track.tracks
 msgid "unpublished"
-msgstr ""
+msgstr "منتشر نشده"

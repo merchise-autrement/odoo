@@ -1502,7 +1502,7 @@ msgstr "Производствен срок за доставка"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_config_settings_manufacturing_lead
 msgid "Manufacturing Lead Time *"
-msgstr ""
+msgstr "Manufacturing Lead Time *"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_change_production_qty_mo_id
@@ -1552,7 +1552,7 @@ msgstr "Поръчки за производство в потвърдено с�
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_stock_warehouse_manu_type_id
 msgid "Manufacturing Picking Type"
-msgstr ""
+msgstr "Производствен пикинг вид"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_bom_ready_to_produce
@@ -1715,6 +1715,8 @@ msgstr ""
 msgid ""
 "No need for Master Production Schedule as products have short lead times"
 msgstr ""
+"Няма нужда от Главен производствен трафик, тъй като продуктите са с кратки "
+"срокове на лийдовете"
 
 #. module: mrp
 #: selection:mrp.config.settings,module_mrp_plm:0
@@ -1930,7 +1932,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp.field_mrp_bom_picking_type_id
 #: model:ir.model.fields,field_description:mrp.field_mrp_production_picking_type_id
 msgid "Picking Type"
-msgstr ""
+msgstr "Вид пикинг"
 
 #. module: mrp
 #: model:ir.actions.server,name:mrp.production_order_server_action
@@ -2771,7 +2773,7 @@ msgstr ""
 #. module: mrp
 #: model:ir.model,name:mrp.model_stock_picking_type
 msgid "The picking type determines the picking view"
-msgstr ""
+msgstr "Видът пикинг определя пикинг изгледа"
 
 #. module: mrp
 #: sql_constraint:mrp.production:0
@@ -2806,10 +2808,11 @@ msgid ""
 "show a load of 100% for this phase by default, but if we put a efficiency of"
 " 200%, then his load will only be 50%."
 msgstr ""
-"Това поле показва ефикасността на ресурса при извършване на задачи. Например"
-" ресурсът е разпределен на фаза от 5 дни с 5 задачи зачислени на нея. е "
-"покаже натоварване 100% за тази фаза, но е сложи ефикасност 200%, когато "
-"натоварването му е само 50%."
+"Това поле показва ефикасността на източника при извършване на задачи. "
+"Например източник, поставен самостоятелно във фаза от 5 дни с 5 разпределени"
+" към него задачи, ще покаже по подразбиране натоварване от 100% за тази "
+"фаза, но ние залагаме ефикасност 200% и тогава натоварването му ще бъде само"
+" 50%."
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workcenter_time_ids
@@ -3129,6 +3132,11 @@ msgid ""
 " picking type. That allows to define procurement rules which trigger "
 "different manufacturing orders with different BoMs. "
 msgstr ""
+"Когато дадена доставка има маршрут ‘продукция’ с набор от пикинг видове, тя "
+"ще се опита да създаде поръчка за производството на този продукт, "
+"използвайки фактура за покупка на материали на същия вид пикинг. Това "
+"позволява да се определят правила за доставки, които задействат различни "
+"поръчки за производство с различни фактури за покупки на материали."
 
 #. module: mrp
 #: model:ir.ui.view,arch_db:mrp.mrp_bom_form_view
