@@ -96,10 +96,11 @@ class Module(models.Model):
     @api.multi
     def button_immediate_install(self):
         import time
+        import odoo
         import odoo.tools.config as config
         from odoo.jobs import CELERY_JOB, report_progress, Deferred
         from xoutil.context import context
-        if CELERY_JOB in context or not config.get('dev_mode'):
+        if CELERY_JOB in context or not config.get('dev_mode') or not odoo.multi_process:
             report_progress(
                 message=_('Installing has begun, wait for a minute '
                           'or two to finish.'),
