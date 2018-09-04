@@ -12,9 +12,13 @@ var qweb = core.qweb;
 
 return AbstractRenderer.extend({
     className: 'o_gantt_container',
+
     /**
      * @override
+     * @constructor
      * @param {Widget} parent
+     * @param {Object} state
+     * @param {Object} params
      */
     init: function (parent, state, params) {
         this._super.apply(this, arguments);
@@ -22,11 +26,19 @@ return AbstractRenderer.extend({
         this.ganttConfig = params.config;
     },
 
+    /**
+     * @override
+     */
     _render: function () {
         this._renderGantt();
         return this._super.apply(this, arguments);
     },
 
+    /**
+     * @private
+     *
+     * Initialize the gantt
+     */
     _renderGantt: function(){
         this.$el.empty();
         var self = this;
@@ -40,6 +52,11 @@ return AbstractRenderer.extend({
         },100);
     },
 
+    /**
+     * @public
+     *
+     * Set configurations and events to gantt chart.
+     */
     configGantt: function(){
         this._configGantt();
         gantt.showLightbox = function(id){
@@ -53,6 +70,11 @@ return AbstractRenderer.extend({
         this._configEvents();
     },
 
+    /**
+     * @private
+     *
+     * Set configurations to gantt chart.
+     */
     _configGantt: function(){
         var self = this;
         _.each(this.ganttConfig, function(value, key){
@@ -61,6 +83,11 @@ return AbstractRenderer.extend({
         gantt.templates.tooltip_text = this.tooltipTask;
     },
 
+    /**
+     * @private
+     *
+     * Set events to gantt chart.
+     */
     _configEvents: function(){
         var self = this;
         var events = {
@@ -95,6 +122,9 @@ return AbstractRenderer.extend({
 
     },
 
+    /**
+     * Open selected task in a form view.
+     */
     openTask: function (task) {
         this.trigger_up('gantt_open_task', {
             id: task.id,
@@ -102,30 +132,51 @@ return AbstractRenderer.extend({
         });
     },
 
+    /**
+     * Open a form view to create new task.
+     */
     newTask: function(task){
         this.trigger_up('gantt_new_task', {});
     },
 
+    /**
+     * Update task values.
+     */
     updateTask: function(task){
         this.trigger_up('gantt_update_task', {task: task});
     },
 
+    /**
+     * Unlink task.
+     */
     deleteTask: function(task){
         this.trigger_up('gantt_delete_task', {task: task});
     },
 
+    /**
+     * Create new link.
+     */
     newLink: function(link){
         this.trigger_up('gantt_new_link', {link:link});
     },
 
+    /**
+     * Update link values.
+     */
     updateLink: function(link){
         this.trigger_up('gantt_update_link', {link: link});
     },
 
+    /**
+     * Unlink link.
+     */
     deleteLink: function(link){
         this.trigger_up('gantt_delete_link', {link: link});
     },
 
+    /**
+     * This method render gantt with select scale.
+     */
     setScale: function(scale){
         switch (scale) {
             case "hour":
