@@ -10,7 +10,6 @@ var core = require('web.core');
 var qweb = core.qweb;
 
 return AbstractController.extend({
-//    className: 'oe_gantt',
     custom_events: _.extend({}, AbstractController.prototype.custom_events, {
         gantt_new_task:'_onGanttNewTask',
         gantt_open_task:'_onGanttOpenTask',
@@ -28,6 +27,10 @@ return AbstractController.extend({
         this._super.apply(this, arguments);
     },
 
+    /**
+     * @override
+     * Render gantt buttons
+     */
     renderButtons: function ($node) {
         var self = this;
         this.$buttons = $(qweb.render("GanttView.buttons", {'widget': this}));
@@ -40,11 +43,21 @@ return AbstractController.extend({
         }
     },
 
+    /**
+     * @event
+     *
+     * Create new task.
+     */
     _onGanttNewTask: function(event){
         event.stopPropagation();
         this.trigger_up('switch_view', {view_type: 'form', res_id: undefined});
     },
 
+    /**
+     * @event
+     *
+     * Open task.
+     */
     _onGanttOpenTask: function(event){
         event.stopPropagation();
         var record = this.model.get(event.data.id, {raw: true});
@@ -56,22 +69,47 @@ return AbstractController.extend({
         });
     },
 
+    /**
+     * @event
+     *
+     * Update task.
+     */
     _onGanttUpdateTask: function(event){
         this.model.saveTask(event.data.task);
     },
 
+    /**
+     * @event
+     *
+     * Update link.
+     */
     _onGanttUpdateLink: function(event){
         this.model.saveLink(event.data.link);
     },
 
+    /**
+     * @event
+     *
+     * Create new link.
+     */
     _onGanttNewLink: function(event){
         this.model.saveLink(event.data.link);
     },
 
+    /**
+     * @event
+     *
+     * Delete link.
+     */
     _onGanttDeleteLink: function(event){
         this.model.deleteLink(event.data.link);
     },
 
+    /**
+     * @event
+     *
+     * Set gantt scale.
+     */
     _onClickScaleButton: function (e) {
         var scale = e.target.value;
         this.renderer.setScale(scale);

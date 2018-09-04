@@ -94,6 +94,10 @@ return AbstractModel.extend({
         });
     },
 
+    /**
+     * @private
+     * Process all tasks for gantt use
+     */
     on_data_loaded: function (data) {
         var preload_def = $.Deferred();
         var self = this;
@@ -108,6 +112,11 @@ return AbstractModel.extend({
         return preload_def.resolve(records);
     },
 
+    /**
+     * @private
+     *
+     * @returns {Deferred} Links of all tasks
+     */
     get_links: function(data){
         if (this.links_field){
             var self = this;
@@ -128,6 +137,11 @@ return AbstractModel.extend({
         }
     },
 
+    /**
+     * @private
+     *
+     * Process all links for gantt use.
+     */
     on_links_loaded: function(records){
         var self = this;
         var links = _.map(records, function(record){
@@ -135,6 +149,7 @@ return AbstractModel.extend({
         });
         self.gantt.data['links'] = links;
     },
+
     /**
      * @override
      * @param {any} id
@@ -148,6 +163,9 @@ return AbstractModel.extend({
         return this._loadGantt();
     },
 
+    /**
+     * Convert a gantt task to an odoo record.
+     */
     taskToRecord: function(task){
         var self = this;
         var record = {};
@@ -161,6 +179,9 @@ return AbstractModel.extend({
         return record;
     },
 
+    /**
+     * Convert an odoo record to a gantt task.
+     */
     recordToTask: function(record){
         var self = this;
         var task = {};
@@ -174,6 +195,9 @@ return AbstractModel.extend({
         return task;
     },
 
+    /**
+     * Convert a gantt link to an odoo record.
+     */
     linkToRecord: function(link){
         var self = this;
         var record = {};
@@ -185,6 +209,9 @@ return AbstractModel.extend({
         return record;
     },
 
+    /**
+     * Convert an odoo record to a gantt link.
+     */
     recordToLink: function(record){
         var self = this;
         var link = {};
@@ -196,6 +223,9 @@ return AbstractModel.extend({
         return link;
     },
 
+    /**
+     * Update task values on server.
+     */
     saveTask: function(task){
         var record = this.taskToRecord(task);
         var values = _.omit(record, ['id', 'duration','display_name']);
@@ -209,16 +239,25 @@ return AbstractModel.extend({
         });
     },
 
+    /**
+     * Convert Date in utc to a string date in utc, useful on server operations.
+     */
     dateToStr: function (value) {
         var val = moment.utc(value);
         return val.format(OdooDateFormat);
     },
 
+    /**
+     * If a link type is a valid type.
+     */
     isValidType: function(value){
         var values = _.values(gantt.config.links);
         return (value in values);
     },
 
+    /**
+     * Update link values on server.
+     */
     saveLink: function(link){
         var args = [];
         if (link.$new){
@@ -243,6 +282,9 @@ return AbstractModel.extend({
         });
     },
 
+    /**
+     * Delete link on server.
+     */
     deleteLink: function(link){
         var self = this;
         if(!link.$new){
