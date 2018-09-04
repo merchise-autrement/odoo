@@ -4,9 +4,9 @@
 # 
 # Translators:
 # Kaloyan Naumov <kaloyan@lumnus.net>, 2016
+# Maria Boyadjieva <marabo2000@gmail.com>, 2016
 # kalatchev, 2016
 # Martin Trigaux, 2016
-# Maria Boyadjieva <marabo2000@gmail.com>, 2016
 # preslav <hackerz99999@gmail.com>, 2016
 # Vladimir Petrov <vladimir.petrov@gmail.com>, 2017
 msgid ""
@@ -65,6 +65,10 @@ msgid ""
 "                    take another look at the value they are providing to ensure\n"
 "                    that their 'solutions' can still compete.\""
 msgstr ""
+"\"Това е сруг интелигентен и крайно подривен ход на\n"
+"                    Odoo, който ще принуди доставчици на технологии да\n"
+"                   разгледат още веднъж стойността, която предоставят, за да са сигурни,\n"
+"                    че 'решенията' им са все още конкурентоспособни.\""
 
 #. module: website_blog
 #: model:ir.ui.view,arch_db:website_blog.blog_post_short
@@ -241,7 +245,7 @@ msgstr "Блог статията <b>%s</b> изглежда води към т�
 #: model:ir.ui.view,arch_db:website_blog.opt_blog_post_complete_read_next
 #: model:ir.ui.view,arch_db:website_blog.view_blog_post_form
 msgid "Blog Post Title"
-msgstr "Заглавие на Блог Статия"
+msgstr "Заглавие на блог публикация"
 
 #. module: website_blog
 #: model:ir.actions.act_window,name:website_blog.action_blog_post
@@ -254,7 +258,7 @@ msgstr "Блог Статии"
 #: model:ir.model.fields,field_description:website_blog.field_blog_blog_subtitle
 #: model:ir.ui.view,arch_db:website_blog.view_blog_post_form
 msgid "Blog Subtitle"
-msgstr "Подзаглавие на Блога"
+msgstr "Подзаглавие на блог"
 
 #. module: website_blog
 #: model:ir.model,name:website_blog.model_blog_tag
@@ -284,8 +288,8 @@ msgstr "Синьо"
 #: model:blog.post,subtitle:website_blog.blog_post_2
 msgid "Building your company's website and selling your products online easy."
 msgstr ""
-"Създаването на сайт за компанията ви и лесното продаване на продукти он-"
-"лайн."
+"Улеснете изграждането на уебсайта на компанията Ви и онлайн продажбите на "
+"продуктите си."
 
 #. module: website_blog
 #. openerp-web
@@ -472,7 +476,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:website_blog.field_blog_post_id
 #: model:ir.model.fields,field_description:website_blog.field_blog_tag_id
 msgid "ID"
-msgstr "ID"
+msgstr "ИН"
 
 #. module: website_blog
 #: model:blog.post,subtitle:website_blog.blog_post_1
@@ -679,6 +683,10 @@ msgid ""
 "                        to read a thread. Reading a full thread, replying,\n"
 "                        attaching documents is super fast."
 msgstr ""
+"Продуктивността е ключ: нашият интелигентен потребителски\n"
+"                        интерфейс не изисква от Вас да отваряте всяка поща,\n"
+"                        за да прочетете дадена поредица. Прочитането на пълна поредица, отговарянето,\n"
+"                        прикачването на документи е изключително бързо."
 
 #. module: website_blog
 #: code:addons/website_blog/controllers/main.py:263
@@ -796,13 +804,13 @@ msgstr ""
 #. module: website_blog
 #: model:ir.model.fields,field_description:website_blog.field_blog_post_subtitle
 msgid "Sub Title"
-msgstr "Под-заглавие"
+msgstr "Подзаглавие"
 
 #. module: website_blog
 #: model:ir.ui.view,arch_db:website_blog.blog_post_complete
 #: model:ir.ui.view,arch_db:website_blog.opt_blog_post_complete_read_next
 msgid "Subtitle"
-msgstr "Под-заглавие"
+msgstr "Подзаглавие"
 
 #. module: website_blog
 #: model:ir.ui.view,arch_db:website_blog.blog_tag_form
@@ -857,8 +865,8 @@ msgid ""
 "This page is great to improve your <strong>Search Engine Optimization</strong>;\n"
 "                   You can review titles, keywords and descriptions of all blogs at once."
 msgstr ""
-"Тази страница е чудесна за подобряване на вашата <strong>Search Engine Optimization</strong>;\n"
-"                   Можете да прегледате заглавия, ключови думи и описания за всички статии едновременно."
+"Тази страница е чудесна за подобряване на <strong>оптимизацията Ви за търсачки</strong>;\n"
+"                   Можете да преглеждате заглавия, ключови думи и описания за всички блогове едновременно."
 
 #. module: website_blog
 #: model:blog.post,content:website_blog.blog_post_2
@@ -896,7 +904,7 @@ msgstr ""
 #. module: website_blog
 #: model:ir.ui.view,arch_db:website_blog.blog_post_short
 msgid "Untitled Post"
-msgstr "Неозаглавена Статия"
+msgstr "Неозаглавена публикация"
 
 #. module: website_blog
 #. openerp-web
@@ -960,7 +968,7 @@ msgstr ""
 #: code:addons/website_blog/static/src/js/website.tour.blog.js:20
 #, python-format
 msgid "Write a title, the subtitle is optional."
-msgstr "Напишете заглавие, под-заглавието не е задължително."
+msgstr "Напишете заглавие, подзаглавието не е задължително."
 
 #. module: website_blog
 #: model:ir.ui.view,arch_db:website_blog.website_blog

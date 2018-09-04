@@ -6,6 +6,7 @@
 # Martin Trigaux, 2016
 # kalatchev, 2016
 # Kaloyan Naumov <kaloyan@lumnus.net>, 2016
+# Maria Boyadjieva <marabo2000@gmail.com>, 2016
 # Vladimir Petrov <vladimir.petrov@gmail.com>, 2017
 # Albena Mincheva <albena_vicheva@abv.bg>, 2018
 msgid ""
@@ -32,6 +33,12 @@ msgid ""
 "                                - If you don't select \"Share with all users\", link of google document in \"More\" options will not appear for other users in opportunities of Sales Department.<br/>\n"
 "                                - If filter is not specified, link of google document will appear in \"More\" option for all users for all opportunities."
 msgstr ""
+"<b>За да създадете нов филтър:</b><br/>\n"
+"                                - Отидете на Odoo документа, който искате да филтрирате. Например, отидете на 'Възможности' и потърсете 'Търговски отдел'.<br/>\n"
+"                                - В този изглед \"Потърсете\" изберете опцията \"Запазете настоящия филтър\", въведете името (напр.: Търговски отдел)<br/>\n"
+"                                - Ако изберете \"Споделете с всички потребители\", в опциите \"Повече\" ще се появи линк на google документ за всички потребители във 'Възможности' на Търговския отдел.<br/>\n"
+"                                - Ако не изберете \"Споделет с всички потребители\", няма да се появи линк на google документ за други потребители във 'Възможности' на Търговския отдел.<br/>\n"
+"                                - Ако филтърът не е уточнен, линк на google документ ще се появи в опцията \"Повече\" за всички потребители на всички възможности."
 
 #. module: google_drive
 #: model:ir.model.fields,field_description:google_drive.field_google_drive_config_active
@@ -146,7 +153,7 @@ msgstr "Google Drive конфигурация на шаблони"
 #. module: google_drive
 #: model:ir.model.fields,field_description:google_drive.field_google_drive_config_id
 msgid "ID"
-msgstr "ID"
+msgstr "ИН"
 
 #. module: google_drive
 #: model:ir.model.fields,field_description:google_drive.field_google_drive_config___last_update
@@ -172,6 +179,12 @@ msgid ""
 "checklist for each order in a foreign country, ... Its very easy to manage "
 "them, link them to Odoo and use them to collaborate with your employees."
 msgstr ""
+"Свържете шаблоните си в google drive с всеки запис на Odoo. Ако имате "
+"наистина конкретни документи, които искате да попълни вашият сътрудник, "
+"напр. използвайте електронни таблици, за да контролирате качеството на "
+"продукта си или за да преглеждате контролния списък за доставки за всяка "
+"поръчка в чужда страна, ... е много лесно да ги управлявате, да ги свържете "
+"с Odoo и да ги използвате, за да си сътрудничите със служителите си."
 
 #. module: google_drive
 #: model:ir.model.fields,field_description:google_drive.field_google_drive_config_model_id
@@ -182,7 +195,7 @@ msgstr "Модел"
 #: code:addons/google_drive/models/google_drive.py:201
 #, python-format
 msgid "Please enter a valid Google Document URL."
-msgstr "Моля, въведете валиден Google Document URL."
+msgstr "Моля, въведете валиден URL документ в Google."
 
 #. module: google_drive
 #: model:ir.model.fields,field_description:google_drive.field_google_drive_config_model
@@ -192,7 +205,7 @@ msgstr "Свързан модел"
 #. module: google_drive
 #: model:ir.model.fields,field_description:google_drive.field_google_drive_config_google_drive_resource_id
 msgid "Resource Id"
-msgstr "Resource Id"
+msgstr "ИН на ресурс"
 
 #. module: google_drive
 #: code:addons/google_drive/models/google_drive.py:79

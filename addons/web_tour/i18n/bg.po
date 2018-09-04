@@ -4,6 +4,7 @@
 # 
 # Translators:
 # kalatchev, 2016
+# Maria Boyadjieva <marabo2000@gmail.com>, 2016
 # Kaloyan Naumov <kaloyan@lumnus.net>, 2016
 # Vladimir Petrov <vladimir.petrov@gmail.com>, 2017
 # Albena Mincheva <albena_vicheva@abv.bg>, 2018
@@ -53,7 +54,7 @@ msgstr "HTTP Маршрутизиране"
 #. module: web_tour
 #: model:ir.model.fields,field_description:web_tour.field_web_tour_tour_id
 msgid "ID"
-msgstr "ID"
+msgstr "ИН"
 
 #. module: web_tour
 #: model:ir.model.fields,field_description:web_tour.field_web_tour_tour___last_update
@@ -113,9 +114,9 @@ msgstr "Име на обиколката"
 #: model:ir.model,name:web_tour.model_web_tour_tour
 #: model:ir.ui.menu,name:web_tour.menu_tour_action
 msgid "Tours"
-msgstr ""
+msgstr "Екскурзии"
 
 #. module: web_tour
 #: model:ir.model,name:web_tour.model_ir_ui_menu
 msgid "ir.ui.menu"
-msgstr ""
+msgstr "ir.ui.menu"

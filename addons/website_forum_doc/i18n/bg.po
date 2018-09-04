@@ -66,7 +66,7 @@ msgstr ""
 #. module: website_forum_doc
 #: model:ir.model.fields,field_description:website_forum_doc.field_forum_documentation_toc_child_ids
 msgid "Children Table Of Content"
-msgstr ""
+msgstr "Второстепенно съдържание"
 
 #. module: website_forum_doc
 #: model:forum.documentation.toc,name:website_forum_doc.toc_crm_claim
@@ -201,7 +201,7 @@ msgstr ""
 #. module: website_forum_doc
 #: model:ir.ui.view,arch_db:website_forum_doc.promote_question
 msgid "Good question titles"
-msgstr ""
+msgstr "Заглавия на добри въпроси"
 
 #. module: website_forum_doc
 #: model:ir.ui.view,arch_db:website_forum_doc.promote_question
@@ -222,7 +222,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:website_forum_doc.field_forum_documentation_stage_id
 #: model:ir.model.fields,field_description:website_forum_doc.field_forum_documentation_toc_id
 msgid "ID"
-msgstr "ID"
+msgstr "ИН"
 
 #. module: website_forum_doc
 #: model:forum.documentation.stage,name:website_forum_doc.stage_ideas
@@ -398,7 +398,7 @@ msgstr ""
 #. module: website_forum_doc
 #: model:ir.ui.view,arch_db:website_forum_doc.promote_question
 msgid "The question title is short and descriptive"
-msgstr ""
+msgstr "Заглавието на въпроса е кратко и описателно"
 
 #. module: website_forum_doc
 #: model:forum.documentation.toc,introduction:website_forum_doc.toc_functional_doc

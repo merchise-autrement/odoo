@@ -185,7 +185,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:project_issue.view_project_issue_filter
 #: model:ir.ui.view,arch_db:project_issue.view_project_issue_report_filter
 msgid "Company"
-msgstr "Фирма"
+msgstr "Компания"
 
 #. module: project_issue
 #: model:ir.model.fields,field_description:project_issue.field_project_issue_partner_id
@@ -237,6 +237,7 @@ msgstr "Имейл на потребителя"
 #: model:ir.model.fields,help:project_issue.field_project_project_label_issues
 msgid "Customize the issues label, for example to call them cases."
 msgstr ""
+"Персонализирайте етикета на грешките, например, за да ги наричате случаи."
 
 #. module: project_issue
 #: model:ir.model.fields,field_description:project_issue.field_project_issue_date
@@ -371,7 +372,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:project_issue.field_project_issue_id
 #: model:ir.model.fields,field_description:project_issue.field_project_issue_report_id
 msgid "ID"
-msgstr "ID"
+msgstr "ИН"
 
 #. module: project_issue
 #: model:ir.model.fields,field_description:project_issue.field_project_issue_name
@@ -550,7 +551,7 @@ msgstr "Следващо действие"
 #: code:addons/project_issue/models/project_issue.py:322
 #, python-format
 msgid "No Subject"
-msgstr ""
+msgstr "Без тема"
 
 #. module: project_issue
 #: selection:project.config.settings,module_rating_project_issue:0
@@ -587,6 +588,8 @@ msgid ""
 "Override the default value displayed for the blocked state for kanban "
 "selection, when the task or issue is in that stage."
 msgstr ""
+"Отменете стойността по подразбиране, показана за блокираното състояние на "
+"канбан подбора, когато задачата или грешката са в този етап."
 
 #. module: project_issue
 #: model:ir.model.fields,help:project_issue.field_project_issue_legend_done
@@ -594,6 +597,8 @@ msgid ""
 "Override the default value displayed for the done state for kanban "
 "selection, when the task or issue is in that stage."
 msgstr ""
+"Отменете стойността по подразбиране, показана за готовото състояние на "
+"канбан подбора, когато задачата или грешката са в този етап."
 
 #. module: project_issue
 #: model:ir.model.fields,help:project_issue.field_project_issue_legend_normal
@@ -601,11 +606,13 @@ msgid ""
 "Override the default value displayed for the normal state for kanban "
 "selection, when the task or issue is in that stage."
 msgstr ""
+"Отменете стойността по подразбиране, показана за нормалното състояние на "
+"канбан подбора, когато задачата или грешката са в този етап."
 
 #. module: project_issue
 #: model:ir.model,name:project_issue.model_res_partner
 msgid "Partner"
-msgstr "Партньор"
+msgstr "Контрагент "
 
 #. module: project_issue
 #: code:addons/project_issue/models/account_analytic_account.py:16
@@ -690,13 +697,13 @@ msgstr "Етап"
 #. module: project_issue
 #: model:mail.message.subtype,name:project_issue.mt_issue_stage
 msgid "Stage Changed"
-msgstr ""
+msgstr "Променен етап"
 
 #. module: project_issue
 #: model:mail.message.subtype,description:project_issue.mt_issue_stage
 #: model:mail.message.subtype,description:project_issue.mt_project_issue_stage
 msgid "Stage changed"
-msgstr ""
+msgstr "Променен етап"
 
 #. module: project_issue
 #: model:ir.model.fields,field_description:project_issue.field_project_issue_tag_ids
@@ -730,6 +737,8 @@ msgid ""
 "These email addresses will be added to the CC field of all inbound\n"
 "        and outbound emails for this record before being sent. Separate multiple email addresses with a comma"
 msgstr ""
+"Тези имейл адреси ще бъдат добавени към CC полето на всички входящи\n"
+"        и изходящи имейли за този запис приди да бъде изпратен. Разделяйте имейл адресите със запетая"
 
 #. module: project_issue
 #: model:ir.model.fields,help:project_issue.field_project_issue_email_from
@@ -792,7 +801,7 @@ msgstr ""
 #. module: project_issue
 #: model:ir.model.fields,field_description:project_issue.field_project_issue_user_email
 msgid "User Email"
-msgstr ""
+msgstr "Потребителски имейлл"
 
 #. module: project_issue
 #: model:ir.model.fields,field_description:project_issue.field_project_issue_email_cc
@@ -815,6 +824,8 @@ msgid ""
 "You can link this issue to an existing task or directly create a new one "
 "from here"
 msgstr ""
+"Можете да свържете тази грешка със съществуваща задача или направо да "
+"регистрирате нова оттук"
 
 #. module: project_issue
 #: code:addons/project_issue/models/project_issue.py:191

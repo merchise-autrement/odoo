@@ -5,9 +5,9 @@
 # Translators:
 # Radina <radis.choice@gmail.com>, 2016
 # Kaloyan Naumov <kaloyan@lumnus.net>, 2016
+# Maria Boyadjieva <marabo2000@gmail.com>, 2016
 # Martin Trigaux, 2016
 # kalatchev, 2016
-# Maria Boyadjieva <marabo2000@gmail.com>, 2016
 # Anton Vassilev, 2016
 # Vladimir Dachev <v.dachev@dalkomotors.com>, 2016
 # B Dochev, 2017
@@ -110,7 +110,7 @@ msgstr "1с"
 #: code:addons/website/static/src/xml/website.seo.xml:45
 #, python-format
 msgid "2. Reference Your Page"
-msgstr "2. Препоръчай Своята Страница"
+msgstr "2. Реферирайте Вашата страница"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_comparisons
@@ -239,6 +239,8 @@ msgid ""
 "<br/>\n"
 "                                    Make sure the Advanced Options are set to your country and language."
 msgstr ""
+"<br/>\n"
+"                                    Уверете се, че разширените опции са настроени за Вашата държава и език."
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.snippet_options
@@ -303,7 +305,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.snippet_options
 msgid "<i class=\"fa fa-magnet\"/>Float"
-msgstr ""
+msgstr "<i class=\"fa fa-magnet\"/>Плаваща запетая"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.snippet_options
@@ -528,6 +530,9 @@ msgid ""
 "                                Millions of people use Google Maps everyday. Whether you are a restaurant\n"
 "                                or a huge business, you have no excuse not to register your location in"
 msgstr ""
+"<strong>... а също и всяко Ваше местоположение!</strong><br/>\n"
+"                                Милиони хора използват ежедневно Google Maps. Независимо дали управлявате заведение\n"
+"                                или огромно бизнес предприятие, нямате причина да не се регистрирате според локацията си"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -539,6 +544,8 @@ msgstr ""
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "<strong>3. Your footer titles</strong> and 4. Your footer links"
 msgstr ""
+"<strong>3. Заглавията на долния Ви колонтитул</strong> и 4. Линковете на "
+"долния Ви колонтитул"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_button
@@ -590,6 +597,11 @@ msgid ""
 "                                It's good practice to try to engage with your visitors on the homepage:\n"
 "                                Contact Us, Subscribe to Get More Information, Check the Catalog, etc."
 msgstr ""
+"<strong>'От разговор към действие'</strong><br/>\n"
+"                                Добавете един, само един 'от разговор към действие' към началната си страница. Вачалната Ви страница е\n"
+"                                е страницата, която посреща най-много посетители.<br/>\n"
+"                                Добра практика е да се опитате да се ангажирате с посетителите си в началната страница:\n"
+"                                Свържете се с нас, абонирайте се за 'Получавайте повече информация', разгледайте каталога и т.н."
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -609,6 +621,10 @@ msgid ""
 "                                social proofs about your products or services; customer quotes, videos,\n"
 "                                photos of your products in actions, twitter quotes, etc."
 msgstr ""
+"<strong>Показвайте обществено одобрение</strong><br/>\n"
+"                                Добра практика е под основния Ви банер или 'от разговор към действие' да поставяте\n"
+"                                коментари - израз на обществено одобрение относно Вашите продукти или услуги; цитати от клиенти, видея,\n"
+"                                снимки на продуктите Ви в действие, цитати от twitter и т.н."
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.http_error_debug
@@ -667,7 +683,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "<strong>Next actions:</strong>"
-msgstr ""
+msgstr "<strong>Следващи действия:</strong>"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -709,7 +725,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "<strong>Subscriptions</strong>"
-msgstr ""
+msgstr "<strong>Абонаменти</strong>"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -772,7 +788,7 @@ msgstr "Динамично Заглавие"
 #: model:ir.ui.view,arch_db:website.s_image_text
 #: model:ir.ui.view,arch_db:website.s_text_image
 msgid "A Section Subtitle"
-msgstr "Подзаглавие на Секция"
+msgstr "Подзаглавие на раздел"
 
 #. module: website
 #: model:ir.model.fields,help:website.field_ir_act_server_website_published
@@ -895,7 +911,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.view_website_config_settings
 msgid "Advanced"
-msgstr "Разширени"
+msgstr "Разширен"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -936,7 +952,7 @@ msgstr ""
 #. module: website
 #: selection:website.config.settings,module_website_version:0
 msgid "Allow multiple versions of the same page (advanced)"
-msgstr ""
+msgstr "Позволете множество варианти на една и съща страница (разширени)"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -947,12 +963,12 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.500
 msgid "An error occured while rendering the template"
-msgstr "Възникна грешка при оказване на шаблона "
+msgstr "При предоставянето на шаблона възникна грешка "
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_title
 msgid "And a great subtitle too"
-msgstr ""
+msgstr "А също и страхотно заглавие"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -1129,7 +1145,7 @@ msgstr ""
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_menu_child_id
 msgid "Child Menus"
-msgstr "Под Менюта"
+msgstr "Подменюта"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_big_picture
@@ -1193,7 +1209,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "Community &amp; Enterprise users:"
-msgstr ""
+msgstr "Общност &amp; Предприятие - потребители:"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -1205,17 +1221,17 @@ msgstr ""
 #. module: website
 #: model:ir.model,name:website.model_res_company
 msgid "Companies"
-msgstr "Предприятия"
+msgstr "Компании"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_company_id
 msgid "Company"
-msgstr "Фирма"
+msgstr "Компания"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.layout_footer_copyright
 msgid "Company name"
-msgstr "Име на фирмата"
+msgstr "Име на компанията"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_comparisons
@@ -1230,7 +1246,7 @@ msgstr ""
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_config_settings_compress_html
 msgid "Compress rendered HTML"
-msgstr ""
+msgstr "Компресирайте предоставен HTML"
 
 #. module: website
 #: model:ir.ui.menu,name:website.menu_website_global_configuration
@@ -1284,7 +1300,8 @@ msgstr "За контакти"
 #. module: website
 #: model:ir.ui.view,arch_db:website.contactus
 msgid "Contact us about anything related to our company or services."
-msgstr "Моля свържете се с нас за всичко, свързано с фирмата и услугите ни."
+msgstr ""
+"Моля обърнете се към нас за всичко, свързано с компанията и услугите ни."
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_big_picture
@@ -1332,9 +1349,9 @@ msgid ""
 "Create and customize forms to generate emails, leads, issues and extra "
 "information in the checkout process (new snippet available)"
 msgstr ""
-"Създайте и персонализирайте бланки, за да можете да създавате имейли, "
-"лийдове, грешки и допълнителна информация в хода на процеса по отписване "
-"(наличен е нов фрагмент)"
+"Създавайте и персонализирайте форми, за да създавате имейли, лийдове, грешки"
+" и допълнителна информация в хода на процеса по отписване (наличен е нов "
+"фрагмент)"
 
 #. module: website
 #. openerp-web
@@ -1594,7 +1611,7 @@ msgstr ""
 #: code:addons/website/static/src/xml/website.backend.xml:21
 #, python-format
 msgid "Edit my Analytics Client ID"
-msgstr ""
+msgstr "Редактирайте ИН на Моя Analytics Client "
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.page_404
@@ -1686,7 +1703,7 @@ msgstr "Възможност Три"
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_panel
 msgid "Feature Title"
-msgstr "Заглавие на Възможност"
+msgstr "Заглавие на статия"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_three_columns
@@ -1753,6 +1770,8 @@ msgid ""
 "For example, use pictures to help break up large areas of text by altering\n"
 "                                    Text-Image and Image-Text blocks. If you prefer icons, use the Features or Feature Grid blocks."
 msgstr ""
+"Например, използвайте снимки, за да улесните разбиването на големи части от текста, като променяте\n"
+"                                    блоковете Text-Image и Image-Text. Ако предпочитате икони, използвайте Характеристиките или Матричните блокове на характеристиките."
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -1874,12 +1893,12 @@ msgstr "Google Business"
 #: model:ir.ui.view,arch_db:website.company_description
 #: model:ir.ui.view,arch_db:website.view_website_config_settings
 msgid "Google Maps"
-msgstr ""
+msgstr "Google карти"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_config_settings_google_maps_api_key
 msgid "Google Maps API Key"
-msgstr ""
+msgstr "Google карти - ключ за приложен програмен интерфейс - API"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -1895,7 +1914,7 @@ msgstr " Google+ Акаунт "
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_feature_grid
 msgid "Great Value"
-msgstr ""
+msgstr "Страхотна стойност"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.aboutus
@@ -1981,7 +2000,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:website.field_website_published_mixin_id
 #: model:ir.model.fields,field_description:website.field_website_seo_metadata_id
 msgid "ID"
-msgstr "ID"
+msgstr "ИН"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.500
@@ -1990,6 +2009,9 @@ msgid ""
 "possibility to reset one or more templates to their <strong>factory "
 "settings</strong>."
 msgstr ""
+"Ако тази грешка е причинена поради промяна на шаблоните от Ваша страна, "
+"имате възможност да пренастроите един или повече шаблони според "
+"<strong>фабричните им настройки</strong>."
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -2020,7 +2042,7 @@ msgstr ""
 #: code:addons/website/static/src/js/website.backendDashboard.js:96
 #, python-format
 msgid "Incorrect Client ID"
-msgstr ""
+msgstr "ИН на некоректен клиент"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.show_website_info
@@ -2456,12 +2478,12 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "Online users:"
-msgstr ""
+msgstr "Онлайн потребители:"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "Online users: when installing Website"
-msgstr ""
+msgstr "Онлайн потребители: при инсталиране на уебсайт"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.show_website_info
@@ -2487,11 +2509,13 @@ msgstr ""
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "Organize and publish events to meet your prospects and customers"
 msgstr ""
+"Организирайте и публикувайте събития, за да се срещнете с евентуалните си "
+"кандидати и клиенти"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "Organize events and sell tickets online."
-msgstr ""
+msgstr "Организирайте събития и продавайте билети онлайн."
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.view_website_form
@@ -2511,7 +2535,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_references
 msgid "Our References"
-msgstr "Нашите Препоръки"
+msgstr "Нашите референции"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.aboutus
@@ -2551,7 +2575,7 @@ msgstr ""
 #: code:addons/website/static/src/js/website.contentMenu.js:65
 #, python-format
 msgid "Page Title"
-msgstr "Заглавие на страницата"
+msgstr "Заглавие на страница"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.snippet_options
@@ -2583,22 +2607,22 @@ msgstr ""
 #. module: website
 #: model:ir.model,name:website.model_res_partner
 msgid "Partner"
-msgstr "Партньор"
+msgstr "Контрагент"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.template_partner_post
 msgid "Partner Detail"
-msgstr ""
+msgstr "Подробности за контрагента"
 
 #. module: website
 #: model:ir.model.fields,help:website.field_website_partner_id
 msgid "Partner-related data of the user"
-msgstr "Партньорски данни на потребителя"
+msgstr "Свързани с контрагента данни на потребителя"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.template_partner_comment
 msgid "Partners"
-msgstr "Партньори"
+msgstr "Контрагенти"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -2719,7 +2743,7 @@ msgstr ""
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_partner_id
 msgid "Public Partner"
-msgstr "Публичен Партньор"
+msgstr "Публичен контрагент"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_user_id
@@ -2762,7 +2786,7 @@ msgstr "Публикуван"
 #. module: website
 #: model:ir.ui.view,arch_db:website.http_error_debug
 msgid "QWeb"
-msgstr ""
+msgstr "QWeb"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -2774,6 +2798,8 @@ msgstr ""
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "Reach your customers and prospects on a recurring basis"
 msgstr ""
+"Свързвайте с клиентите и евентуалните си кандидати въз основа на "
+"повторяемост"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -2824,12 +2850,12 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.500
 msgid "Reset selected templates"
-msgstr "Нулирай избраните шаблони"
+msgstr "Пренастройте избраните шаблони"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.500
 msgid "Reset templates"
-msgstr "Нулирай шаблони"
+msgstr "Пренастройте шаблони"
 
 #. module: website
 #: model:res.groups,name:website.group_website_publisher
@@ -2914,12 +2940,12 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_big_message
 msgid "Sell Online. Easily."
-msgstr ""
+msgstr "Продавайте онлайн. Лесно."
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "Sell more online"
-msgstr ""
+msgstr "Продавайте повече онлайн"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -2934,7 +2960,7 @@ msgstr "Изпрати <span class=\"fa fa-long-arrow-right\"/>"
 #. module: website
 #: model:ir.ui.view,arch_db:website.template_partner_comment
 msgid "Send a Message to our Partners"
-msgstr "Изпратете Съобщение то нашите Партньори"
+msgstr "Изпратете съобщение на нашите контрагенти"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -3040,17 +3066,17 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.footer_custom
 msgid "Subtitle"
-msgstr "Под-заглавие"
+msgstr "Подзаглавие"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.footer_custom
 msgid "Subtitle 2"
-msgstr "Под-заглавие 2"
+msgstr "Подзаглавие 2"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.footer_custom
 msgid "Subtitle 3"
-msgstr "Под-заглавие 3"
+msgstr "Подзаглавие 3"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.user_navbar
@@ -3071,13 +3097,13 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_features
 msgid "Tell what's the value for the<br/>customer for this feature."
-msgstr ""
+msgstr "Кажете каква е стойността за<br/>клиента по тази характеристика."
 
 #. module: website
 #: code:addons/website/models/website.py:312
 #, python-format
 msgid "Template <b>%s (id:%s)</b> contains a link to this page"
-msgstr ""
+msgstr "Шаблонът <b>%s (ИН:%s)</b> съдържа линк към тази страница"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.500
@@ -3100,6 +3126,7 @@ msgstr ""
 #, python-format
 msgid "The Google Analytics Client ID you have entered seems incorrect."
 msgstr ""
+"Изглежда, че ИН на Google Analytics Client, който сте въвели, не е верен"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_faq_collapse
@@ -3115,7 +3142,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.http_error_debug
 msgid "The error occured while rendering the template"
-msgstr ""
+msgstr "При предоставянето на шаблона възникна грешка"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.http_error_debug
@@ -3163,6 +3190,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:website.500
 msgid "The selected templates will be reset to their factory settings."
 msgstr ""
+"Избраните шаблони ще бъдат пренастроени според фабричните им настройки."
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -3202,6 +3230,9 @@ msgid ""
 "                        prospects that it's sometimes difficult to know what to put your energy into. Here are\n"
 "                        some advices on what to focus on next."
 msgstr ""
+"Има твърде много начини да абщувате с клиентите, посетителите и\n"
+"                        евентуалните кандидати, така че повякога е трудно да прецените в какво е най-добре да вложите енергията си. Ето\n"
+"                        няколко съвета върху какво да се фокусирате по текста."
 
 #. module: website
 #. openerp-web
@@ -3292,6 +3323,7 @@ msgstr "Проследи назад"
 #, python-format
 msgid "Transform the picture (click twice to reset transformation)"
 msgstr ""
+"Трансформирайте картината (натиснете два пъти, за да пренастроите данните)"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -3436,6 +3468,8 @@ msgid ""
 "User-agent: *\n"
 "Sitemap:"
 msgstr ""
+"Потребител-посредник: *\n"
+"Карта на сайта:"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.snippet_options
@@ -3455,7 +3489,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "View our Odoo Online themes (free!)"
-msgstr ""
+msgstr "Вижте онлайн темите ни в Odoo (безплатно!)"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_blog_post_website_published
@@ -3584,12 +3618,12 @@ msgstr "Име на Сайта"
 #. module: website
 #: model:ir.actions.server,name:website.action_partner_post
 msgid "Website Partner Post and Thanks Demo"
-msgstr ""
+msgstr "Поща по уебсайт на контрагента и демо с благодарности"
 
 #. module: website
 #: model:ir.actions.server,name:website.action_partner_comment
 msgid "Website Partners Comment Form"
-msgstr ""
+msgstr "Форма за коментари на контрагенти по уебсайт"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_ir_act_server_website_path
@@ -3697,7 +3731,7 @@ msgstr "Уебсайт Мета ключови думи"
 #: model:ir.model.fields,field_description:website.field_slide_slide_website_meta_title
 #: model:ir.model.fields,field_description:website.field_website_seo_metadata_website_meta_title
 msgid "Website meta title"
-msgstr "Уебсайт Мета заглавие"
+msgstr "Мета заглавие на уебсайт"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.view_website_tree
@@ -3762,7 +3796,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_cover
 msgid "With a great subtitle"
-msgstr ""
+msgstr "Със страхотно подзаглавие"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -3887,7 +3921,7 @@ msgstr "Пробвайте с друг критерий за търсене."
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_banner
 msgid "Your Banner Title"
-msgstr "Заглавие на Банера"
+msgstr "Заглавие на Вашия банер"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -3904,7 +3938,7 @@ msgstr ""
 #: code:addons/website/static/src/xml/website.backend.xml:43
 #, python-format
 msgid "Your Google Analytic Client ID:"
-msgstr ""
+msgstr "ИН на Вашия Google Analytic Client:"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -3924,7 +3958,7 @@ msgstr "Вашите Цели"
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_title
 msgid "Your Website Title"
-msgstr "Уебсайт Име"
+msgstr "Име на Вашия уебсайт"
 
 #. module: website
 #. openerp-web
@@ -4079,7 +4113,7 @@ msgstr ""
 #: model:ir.ui.view,arch_db:website.view_website_config_settings
 #: model:ir.ui.view,arch_db:website.view_website_form
 msgid "https://www.youtube.com/user/OpenERPonline"
-msgstr ""
+msgstr "https://www.youtube.com/user/OpenERPonline"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.view_website_config_settings
@@ -4091,6 +4125,8 @@ msgstr ""
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "in their SEO metadata, including tags, title and description."
 msgstr ""
+"в техните метаданни за оптимизация на търсачки - SEO, включително маркери, "
+"заглавие и описание."
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.show_website_info

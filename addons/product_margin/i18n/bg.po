@@ -48,12 +48,12 @@ msgstr "Критерии за анализ"
 #. module: product_margin
 #: model:ir.model.fields,help:product_margin.field_product_product_sale_avg_price
 msgid "Avg. Price in Customer Invoices."
-msgstr "Осреднена цена във фактури за продажба."
+msgstr "Средна цена във фактури за продажба."
 
 #. module: product_margin
 #: model:ir.model.fields,help:product_margin.field_product_product_purchase_avg_price
 msgid "Avg. Price in Vendor Bills "
-msgstr "Осреднена цена във фактурите за покупка"
+msgstr "Средна цена във фактурите за покупка"
 
 #. module: product_margin
 #: model:ir.model.fields,field_description:product_margin.field_product_product_purchase_avg_price
@@ -160,7 +160,7 @@ msgstr "Обща информация"
 #. module: product_margin
 #: model:ir.model.fields,field_description:product_margin.field_product_margin_id
 msgid "ID"
-msgstr "ID"
+msgstr "ИН"
 
 #. module: product_margin
 #: model:ir.model.fields,field_description:product_margin.field_product_product_property_account_income_id
@@ -279,7 +279,7 @@ msgstr "Свойства на категориите"
 #. module: product_margin
 #: model:ir.model.fields,field_description:product_margin.field_product_product_purchase_gap
 msgid "Purchase Gap"
-msgstr "Дупка в Снабдяването"
+msgstr "Пропуск в покупките"
 
 #. module: product_margin
 #: model:ir.ui.view,arch_db:product_margin.view_product_margin_form
@@ -295,7 +295,7 @@ msgstr "Продажби"
 #: model:ir.model.fields,field_description:product_margin.field_product_product_sales_gap
 #: model:ir.ui.view,arch_db:product_margin.view_product_margin_tree
 msgid "Sales Gap"
-msgstr "Дупка в Продажбите"
+msgstr "Пропуск в продажбите"
 
 #. module: product_margin
 #: model:ir.ui.view,arch_db:product_margin.view_product_margin_form
@@ -306,8 +306,8 @@ msgstr "Стандартна цена"
 #: model:ir.model.fields,help:product_margin.field_product_product_normal_cost
 msgid "Sum of Multiplication of Cost price and quantity of Vendor Bills"
 msgstr ""
-"Сума от произведението на доставна цена и количеството във фактурите за "
-"покупка"
+"Сума от умножението на цената на придобиване и количеството във фактурите за"
+" покупка"
 
 #. module: product_margin
 #: model:ir.model.fields,help:product_margin.field_product_product_turnover
@@ -320,8 +320,8 @@ msgstr ""
 #: model:ir.model.fields,help:product_margin.field_product_product_total_cost
 msgid "Sum of Multiplication of Invoice price and quantity of Vendor Bills "
 msgstr ""
-"Сума на умножението на цена от фактурите и количество от сметките на "
-"доставчика"
+"Сума на умножението на цена от фактурите и количество от фактурите за "
+"покупка"
 
 #. module: product_margin
 #: model:ir.model.fields,help:product_margin.field_product_product_sale_expected
@@ -340,7 +340,7 @@ msgstr "Сумата на количеството във фактурите з�
 #. module: product_margin
 #: model:ir.model.fields,help:product_margin.field_product_product_purchase_num_invoiced
 msgid "Sum of Quantity in Vendor Bills"
-msgstr "Сума от количеството във фактурите за покупка"
+msgstr "Количествена сума във фактурите за покупка"
 
 #. module: product_margin
 #: model:ir.model.fields,help:product_margin.field_product_product_property_account_expense_id
@@ -348,8 +348,8 @@ msgid ""
 "This account will be used for invoices instead of the default one to value "
 "expenses for the current product."
 msgstr ""
-"Тази Фирма ще бъде използвана за Фактури вместо тази по подразбиране за "
-"остойностяване на разходите по текущият продукт.."
+"Тази сметка ще бъде използвана за фактури вместо сметката по подразбиране за"
+" остойностяване на разходите по настоящия продукт."
 
 #. module: product_margin
 #: model:ir.model.fields,help:product_margin.field_product_product_property_account_income_id
@@ -357,8 +357,8 @@ msgid ""
 "This account will be used for invoices instead of the default one to value "
 "sales for the current product."
 msgstr ""
-"Тази Фирма ще бъде използвана за Фактури вместо тази по подразбиране за "
-"остойностяване на продажбите на текущият продукт.."
+"Тази сметка ще бъде използвана за фактури вместо сметката по подразбиране за"
+" остойностяване продажбите на настоящия продукт."
 
 #. module: product_margin
 #: model:ir.model.fields,field_description:product_margin.field_product_margin_to_date
@@ -400,7 +400,7 @@ msgstr "Оборот - Стандартна цена"
 #. module: product_margin
 #: model:ir.model.fields,field_description:product_margin.field_product_product_supplier_taxes_id
 msgid "Vendor Taxes"
-msgstr "Доставни Такси"
+msgstr "Данъци на доставчик"
 
 #. module: product_margin
 #: model:ir.model.fields,help:product_margin.field_product_product_email_template_id

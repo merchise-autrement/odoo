@@ -32,6 +32,9 @@ msgid ""
 "* The 'Waiting Approval' status is used to confirm the timesheet by user. \n"
 "* The 'Approved' status is used when the users timesheet is accepted by his/her senior."
 msgstr ""
+" * Статусът 'Отворен' се използва, когато даден потребител кодира нов и непотвърден график. \n"
+"* Статусът 'Чакащо одобрение' се използва, за да потвърди графика от потребител. \n"
+"* Статусът 'Одобрен' се използва, когато графикът на потребителя е приет от неговия началник."
 
 #. module: hr_timesheet_sheet
 #. openerp-web
@@ -77,12 +80,12 @@ msgstr ""
 #. module: hr_timesheet_sheet
 #: model:ir.model,name:hr_timesheet_sheet.model_res_company
 msgid "Companies"
-msgstr "Предприятия"
+msgstr "Компании"
 
 #. module: hr_timesheet_sheet
 #: model:ir.model.fields,field_description:hr_timesheet_sheet.field_hr_timesheet_sheet_sheet_company_id
 msgid "Company"
-msgstr "Фирма"
+msgstr "Компания"
 
 #. module: hr_timesheet_sheet
 #: model:ir.ui.view,arch_db:hr_timesheet_sheet.view_hr_timesheet_sheet_filter
@@ -170,7 +173,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_timesheet_sheet.field_hr_timesheet_sheet_sheet_account_id
 #: model:ir.model.fields,field_description:hr_timesheet_sheet.field_hr_timesheet_sheet_sheet_id
 msgid "ID"
-msgstr "ID"
+msgstr "ИН"
 
 #. module: hr_timesheet_sheet
 #: model:ir.ui.view,arch_db:hr_timesheet_sheet.view_hr_timesheet_sheet_filter
@@ -258,6 +261,8 @@ msgstr ""
 msgid ""
 "Only an HR Officer or Manager can refuse timesheets or reset them to draft."
 msgstr ""
+"Само служител или мениджър човешки ресурси може да отхвърля графици или да "
+"ги пренастойва за чернова."
 
 #. module: hr_timesheet_sheet
 #: selection:hr_timesheet_sheet.sheet,state:0

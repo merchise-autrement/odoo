@@ -6,8 +6,8 @@
 # Kaloyan Naumov <kaloyan@lumnus.net>, 2016
 # Martin Trigaux, 2016
 # Anton Vassilev, 2016
-# kalatchev, 2016
 # Maria Boyadjieva <marabo2000@gmail.com>, 2016
+# kalatchev, 2016
 # preslav <hackerz99999@gmail.com>, 2016
 # Albena Mincheva <albena_vicheva@abv.bg>, 2018
 # Boris Stefanov <borkata@gmail.com>, 2018
@@ -236,6 +236,8 @@ msgid ""
 "Add list of email of recipients (will not converted in partner), separated "
 "by commas, semicolons or newline..."
 msgstr ""
+"Добавете списък с имейли на получатели (няма да се превърне в контрагент), "
+"разделен от запетаи, точки и запетаи или нов ред..."
 
 #. module: survey
 #: model:ir.ui.view,arch_db:survey.survey_email_compose_message
@@ -321,7 +323,7 @@ msgstr ""
 #. module: survey
 #: model:survey.label,value:survey.choice_1_2_4
 msgid "CRM"
-msgstr ""
+msgstr "Управление на взаимоотношенията с клиенти - CRM"
 
 #. module: survey
 #: model:ir.ui.view,arch_db:survey.survey_email_compose_message
@@ -733,7 +735,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:survey.field_survey_user_input_id
 #: model:ir.model.fields,field_description:survey.field_survey_user_input_line_id
 msgid "ID"
-msgstr "ID"
+msgstr "ИН"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_user_input_token
@@ -953,7 +955,7 @@ msgstr ""
 #. module: survey
 #: sql_constraint:survey.question:0
 msgid "Max value cannot be smaller than min value!"
-msgstr ""
+msgstr "Максималната стойност не може да е по-малка от минималната стойност!"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_question_validation_max_date
@@ -968,7 +970,7 @@ msgstr ""
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_question_validation_max_float_value
 msgid "Maximum value"
-msgstr ""
+msgstr "Максимална стойност"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_question_validation_min_date
@@ -983,7 +985,7 @@ msgstr ""
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_question_validation_min_float_value
 msgid "Minimum value"
-msgstr ""
+msgstr "Минимална стойност"
 
 #. module: survey
 #: selection:survey.question,type:0
@@ -1079,7 +1081,7 @@ msgstr ""
 #. module: survey
 #: selection:survey.question,type:0
 msgid "Numerical Value"
-msgstr ""
+msgstr "Цифрова стойност"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_user_input_line_value_number
@@ -1114,7 +1116,7 @@ msgstr "Страница"
 #: model:ir.model.fields,field_description:survey.field_survey_page_title
 #: model:ir.ui.view,arch_db:survey.survey_page_form
 msgid "Page Title"
-msgstr "Заглавие на страницата"
+msgstr "Заглавие на страница"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_page_sequence
@@ -1139,12 +1141,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:survey.field_survey_user_input_partner_id
 #: model:ir.ui.view,arch_db:survey.survey_user_input_search
 msgid "Partner"
-msgstr "Партньор"
+msgstr "Контрагент"
 
 #. module: survey
 #: model:ir.actions.act_window,name:survey.action_partner_survey_mail
 msgid "Partner Survey Mailing"
-msgstr ""
+msgstr "Проучване на контрагент по пощата"
 
 #. module: survey
 #: model:survey.stage,name:survey.stage_permanent
@@ -1486,7 +1488,7 @@ msgstr ""
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_label_value
 msgid "Suggested value"
-msgstr ""
+msgstr "Предложена стойност"
 
 #. module: survey
 #: selection:survey.user_input_line,answer_type:0
@@ -1543,7 +1545,7 @@ msgstr ""
 #. module: survey
 #: model:ir.ui.view,arch_db:survey.survey_form
 msgid "Survey Title"
-msgstr "Заглавие на анкета"
+msgstr "Заглавие на проучване"
 
 #. module: survey
 #: model:ir.model,name:survey.model_survey_user_input
@@ -2043,7 +2045,7 @@ msgstr ""
 #. module: survey
 #: model:ir.model,name:survey.model_ir_autovacuum
 msgid "ir.autovacuum"
-msgstr ""
+msgstr "ir.autovacuum"
 
 #. module: survey
 #: model:ir.ui.view,arch_db:survey.auth_required
