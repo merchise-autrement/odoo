@@ -57,6 +57,7 @@ return AbstractRenderer.extend({
         _.each(this.ganttConfig, function(value, key){
             gantt.config[key] = value;
         });
+        gantt.templates.tooltip_text = this.tooltipTask;
     },
 
     _configEvents: function(){
@@ -158,6 +159,14 @@ return AbstractRenderer.extend({
         }
         gantt.render();
     },
+
+    /**
+     * This method ensure translatable tooltips message for tasks.
+     */
+    tooltipTask : function (start, end, event) {
+        return "<b>" + _t("Task:") + "</b> " + event.text + "<br/><b>" + _t("Start date:") + "</b> " + this.tooltip_date_format(start) + "<br/><b>" + _t("End date:") + "</b> " + this.tooltip_date_format(end);
+    },
+
 });
 
 });
