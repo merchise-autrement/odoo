@@ -5,7 +5,8 @@ var AbstractRenderer = require('web.AbstractRenderer');
 var config = require('web.config');
 var core = require('web.core');
 var field_utils = require('web.field_utils');
-
+var ajax = require('web.ajax');
+var session = require('web.session');
 var _t = core._t;
 var qweb = core.qweb;
 
@@ -158,6 +159,46 @@ return AbstractRenderer.extend({
                 break;
         }
         gantt.render();
+    },
+
+    /**
+     * @override
+     * Set locale and then call super.
+     */
+    willStart: function () {
+        var self = this;
+        var defs = [];
+        defs.push(this._super());
+        defs.push(this.setLocale());
+        return $.when.apply($, defs);
+    },
+
+    /**
+     * Load the correct locale
+     */
+    setLocale: function(){
+        var gantt_path = '/web_gantt/static/lib/dhtmlxGantt';
+        var locales_mapping = {
+            'ar_SY': 'ar', 'ca_ES': 'ca', 'zh_CN': 'cn', 'cs_CZ': 'cs', 'da_DK': 'da',
+            'de_DE': 'de', 'el_GR': 'el', 'es_ES': 'es', 'fi_FI': 'fi', 'fr_FR': 'fr',
+            'he_IL': 'he', 'hu_HU': 'hu', 'id_ID': 'id', 'it_IT': 'it', 'ja_JP': 'jp',
+            'ko_KR': 'kr', 'nl_NL': 'nl', 'nb_NO': 'no', 'pl_PL': 'pl', 'pt_PT': 'pt',
+            'ro_RO': 'ro', 'ru_RU': 'ru', 'sl_SI': 'si', 'sk_SK': 'sk', 'sv_SE': 'sv',
+            'tr_TR': 'tr', 'uk_UA': 'ua',
+            'ar': 'ar', 'ca': 'ca', 'zh': 'cn', 'cs': 'cs', 'da': 'da', 'de': 'de',
+            'el': 'el', 'es': 'es', 'fi': 'fi', 'fr': 'fr', 'he': 'he', 'hu': 'hu',
+            'id': 'id', 'it': 'it', 'ja': 'jp', 'ko': 'kr', 'nl': 'nl', 'nb': 'no',
+            'pl': 'pl', 'pt': 'pt', 'ro': 'ro', 'ru': 'ru', 'sl': 'si', 'sk': 'sk',
+            'sv': 'sv', 'tr': 'tr', 'uk': 'ua',
+        };
+
+        var current_locale = session.user_context.lang;
+        var current_short_locale = current_locale.split('_')[0];
+        var locale_code = locales_mapping[current_locale] || locales_mapping[current_short_locale];
+        if (locale_code) {
+            return ajax.loadJS(gantt_path+'/codebase/locale/locale_'+locale_code+'.js');
+        }
+        return;
     },
 
     /**
