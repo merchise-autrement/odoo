@@ -10,7 +10,7 @@ var core = require('web.core');
 var qweb = core.qweb;
 
 return AbstractController.extend({
-    className: 'oe_gantt',
+//    className: 'oe_gantt',
     custom_events: _.extend({}, AbstractController.prototype.custom_events, {
         gantt_new_task:'_onGanttNewTask',
         gantt_open_task:'_onGanttOpenTask',
@@ -26,6 +26,18 @@ return AbstractController.extend({
      */
     init: function () {
         this._super.apply(this, arguments);
+    },
+
+    renderButtons: function ($node) {
+        var self = this;
+        this.$buttons = $(qweb.render("GanttView.buttons", {'widget': this}));
+
+        this.$buttons.find('.o_gantt_button_scale').bind('click', function (event) {
+            return self._onClickScaleButton(event);
+        });
+        if ($node) {
+            this.$buttons.appendTo($node);
+        }
     },
 
     _onGanttNewTask: function(event){
@@ -58,7 +70,12 @@ return AbstractController.extend({
 
     _onGanttDeleteLink: function(event){
         this.model.deleteLink(event.data.link);
-    }
+    },
+
+    _onClickScaleButton: function (e) {
+        var scale = e.target.value;
+        this.renderer.setScale(scale);
+    },
 
 });
 
