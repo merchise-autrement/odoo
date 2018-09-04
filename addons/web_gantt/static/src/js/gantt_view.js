@@ -50,6 +50,7 @@ var configsOdoo = {
 var GraphView = AbstractView.extend({
     display_name: _lt('Gantt'),
     icon: 'fa-tasks',
+    template: 'GanttView',
     cssLibs: [
         '/web_gantt/static/lib/dhtmlxGantt/codebase/dhtmlxgantt.css'
     ],

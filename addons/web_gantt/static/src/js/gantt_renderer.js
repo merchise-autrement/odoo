@@ -123,6 +123,41 @@ return AbstractRenderer.extend({
     deleteLink: function(link){
         this.trigger_up('gantt_delete_link', {link: link});
     },
+
+    setScale: function(scale){
+        switch (scale) {
+            case "hour":
+                gantt.config.scale_unit = "hour";
+                gantt.config.step = 1;
+                gantt.config.date_scale = '%H:%i';
+                gantt.config.subscales = [
+                    {unit:"day", step:1, date:"%d %M"}
+                ];
+                break;
+            case "day":
+                gantt.config.scale_unit = "day";
+                gantt.config.step = 1;
+                gantt.config.date_scale = "%d %M";
+                gantt.config.subscales = [];
+                break;
+            case "month":
+                gantt.config.scale_unit = "month";
+                gantt.config.date_scale = "%F, %Y";
+                gantt.config.subscales = [
+                    {unit: "day", step: 1, date: "%j, %D"}
+                ];
+                break;
+            case "year":
+                gantt.config.scale_unit = "year";
+                gantt.config.step = 1;
+                gantt.config.date_scale = "%Y";
+                gantt.config.subscales = [
+                    {unit: "month", step: 1, date: "%M"}
+                ];
+                break;
+        }
+        gantt.render();
+    },
 });
 
 });

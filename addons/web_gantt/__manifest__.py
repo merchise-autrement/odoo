@@ -35,19 +35,20 @@ links
 
 links_options
     dictionary with the following values
+    
         * types: { "finish_to_start":"0", "start_to_start":"1", "finish_to_finish":"2", "start_to_finish":"3" }
         * type: name of field providing type value on relational model
         * target: name of field providing dependent event on relational model
 
 options 
     dictionary with the following values, these are use in 'gantt.config':
-    
+        
         * work_time: bool (default false)
         * correct_work_time: bool (default false)
         * skip_off_time: bool (default false)
         * server_utc: bool (default false)
         * open_tree_initially: bool (default false)
-        * show_links: bool (default true)
+        * show_links: bool (default true if links defined, otherwise is false)
         * show_task_cells: bool (default true)
         * start_on_monday: bool (default true)
         * scale_offset_minimal: bool (default true)
