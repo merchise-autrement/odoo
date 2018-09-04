@@ -7,6 +7,7 @@
                 <link rel="stylesheet" href="/web_gantt/static/lib/dhtmlxGantt/codebase/dhtmlxgantt.css"/>
 
                 <script type="text/javascript" src="/web_gantt/static/lib/dhtmlxGantt/codebase/dhtmlxgantt.js"></script>
+                <script type="text/javascript" src="/web_gantt/static/lib/dhtmlxGantt/codebase/ext/dhtmlxgantt_tooltip.js"></script>
 
                 <script type="text/javascript" src="/web_gantt/static/src/js/gantt_model.js"></script>
                 <script type="text/javascript" src="/web_gantt/static/src/js/gantt_controller.js"></script>
