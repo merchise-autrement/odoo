@@ -24,6 +24,9 @@ return AbstractRenderer.extend({
         this._super.apply(this, arguments);
         this.gantt_id = _.uniqueId();
         this.ganttConfig = params.config;
+        this.$div_with_id = $('<div>').attr('id', this.gantt_id).attr('style',"width:100%; height:100%;");
+        if (this.arch.attrs.x2manyField)
+            this.$div_with_id.height(500);
     },
 
     /**
@@ -42,7 +45,6 @@ return AbstractRenderer.extend({
     _renderGantt: function(){
         this.$el.empty();
         var self = this;
-        this.$div_with_id = $('<div>').attr('id', this.gantt_id).attr('style',"width:100%; height:100%;");
         this.$el.append(this.$div_with_id)
         this.configGantt();
         gantt.init(this.$div_with_id[0]);
