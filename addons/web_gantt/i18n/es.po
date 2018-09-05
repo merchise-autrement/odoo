@@ -1,32 +1,85 @@
-# Spanish translation for openerp-web
-# Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
-# This file is distributed under the same license as the openerp-web package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* web_gantt
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: openerp-web\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-08-14 13:09+0000\n"
-"PO-Revision-Date: 2014-08-14 16:14+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: Spanish <es@li.org>\n"
+"Project-Id-Version: Odoo Server 11.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-09-04 22:16+0000\n"
+"PO-Revision-Date: 2018-09-04 22:16+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-08-15 08:24+0000\n"
-"X-Generator: Launchpad (build 17156)\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
 
 #. module: web_gantt
 #. openerp-web
-#: code:addons/web_gantt/static/src/xml/web_gantt.xml:10
+#: code:addons/web_gantt/static/src/xml/web_gantt.xml:14
 #, python-format
-msgid "Create"
-msgstr "Crear"
+msgid "Day"
+msgstr "Día"
 
 #. module: web_gantt
 #. openerp-web
-#: code:addons/web_gantt/static/src/js/gantt.js:11
+#: code:addons/web_gantt/static/src/js/gantt_renderer.js:199
+#, python-format
+msgid "End date:"
+msgstr "Fecha fin:"
+
+#. module: web_gantt
+#. openerp-web
+#: code:addons/web_gantt/static/src/js/gantt_view.js:51
 #, python-format
 msgid "Gantt"
 msgstr "Gantt"
+
+#. module: web_gantt
+#. openerp-web
+#: code:addons/web_gantt/static/src/js/gantt_view.js:73
+#, python-format
+msgid "Gantt view has not defined 'date_start' attribute."
+msgstr "Vista Gantt no tiene definido en atributo 'date_start'."
+
+#. module: web_gantt
+#. openerp-web
+#: code:addons/web_gantt/static/src/xml/web_gantt.xml:11
+#, python-format
+msgid "Hour"
+msgstr "Hora"
+
+#. module: web_gantt
+#. openerp-web
+#: code:addons/web_gantt/static/src/xml/web_gantt.xml:17
+#, python-format
+msgid "Month"
+msgstr "Mes"
+
+#. module: web_gantt
+#. openerp-web
+#: code:addons/web_gantt/static/src/js/gantt_renderer.js:199
+#, python-format
+msgid "Start date:"
+msgstr "Fecha inicio:"
+
+#. module: web_gantt
+#. openerp-web
+#: code:addons/web_gantt/static/src/js/gantt_renderer.js:199
+#, python-format
+msgid "Task:"
+msgstr "Tarea:"
+
+#. module: web_gantt
+#. openerp-web
+#: code:addons/web_gantt/static/src/xml/web_gantt.xml:20
+#, python-format
+msgid "Year"
+msgstr "Año"
+
+#. module: web_gantt
+#: model:ir.model,name:web_gantt.model_ir_ui_view
+msgid "ir.ui.view"
+msgstr "ir.ui.view"
+
