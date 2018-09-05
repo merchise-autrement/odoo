@@ -49,7 +49,7 @@ return AbstractModel.extend({
             domain: params.domain,
             context: params.context,
         };
-        return this._loadGantt();
+        return this._loadGantt(params.res_ids);
     },
 
     /**
@@ -70,17 +70,12 @@ return AbstractModel.extend({
      * @private
      * @returns {Deferred}
      */
-    _loadGantt: function () {
+    _loadGantt: function (ids) {
         var self = this;
         // the method 'search_read' could be used but it does a read with
         // '_classic_read' load. In this case to ensure that gantt data
         // are properly created, only ids are used as fields values.
-        return self._rpc({
-                model: self.modelName,
-                method: 'search',
-                context: self.gantt.context,
-                args: [self.gantt.domain],
-        }).then(function (ids) {
+        return this._getIds(ids).then(function (ids) {
             return self._rpc({
                 model: self.modelName,
                 method: 'read',
@@ -92,6 +87,21 @@ return AbstractModel.extend({
         }).then(function(events){
             return self.get_links(events);
         });
+    },
+
+    _getIds: function(ids){
+        if (!ids){
+            return this._rpc({
+                model: this.modelName,
+                method: 'search',
+                context: this.gantt.context,
+                args: [this.gantt.domain],
+            });
+        }
+        else {
+            var deferred = $.Deferred();
+            return deferred.resolve(ids);
+        }
     },
 
     /**

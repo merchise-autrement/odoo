@@ -13,6 +13,7 @@
                 <script type="text/javascript" src="/web_gantt/static/src/js/gantt_controller.js"></script>
                 <script type="text/javascript" src="/web_gantt/static/src/js/gantt_renderer.js"></script>
                 <script type="text/javascript" src="/web_gantt/static/src/js/gantt_view.js"></script>
+                <script type="text/javascript" src="/web_gantt/static/src/js/relational_fields.js"></script>
 
             </xpath>
         </template>
