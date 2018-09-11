@@ -27,7 +27,7 @@ from odoo import fields
 # We need to place this module in the core of Odoo cause otherwise DB columns
 # will be overridden.  We keep other changes in our custom addons.
 class Requisition(Model):
-    _name = _inherit = 'purchase.requisition'
+    _inherit = 'purchase.requisition'
 
     schedule_date = fields.Datetime(
         string='Delivery Date',
@@ -38,6 +38,6 @@ class Requisition(Model):
 
 
 class RequisitionLine(Model):
-    _name = _inherit = 'purchase.requisition.line'
+    _inherit = 'purchase.requisition.line'
 
     schedule_date = fields.Datetime('Scheduled Date')
