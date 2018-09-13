@@ -21,7 +21,7 @@ return AbstractController.extend({
         gantt_open_link:'_onGanttOpenLink',
         gantt_new_link:'_onGanttNewLink',
         gantt_delete_link:'_onGanttDeleteLink',
-        gant_reload: '_onGanttReload'
+        gantt_reload: '_onGanttReload'
     }),
     /**
      * @override
@@ -53,7 +53,7 @@ return AbstractController.extend({
      * Reload all Gantt.
      */
     _onGanttReload: function(event){
-        self.reload();
+        this.reload();
     },
 
     /**
@@ -97,16 +97,28 @@ return AbstractController.extend({
      * Open link.
      */
     _onGanttOpenLink: function(event){
+        event.stopPropagation();
         var self = this;
-        new dialogs.FormViewDialog(this, {
+        var dialog = new dialogs.FormViewDialog(this, {
+            shouldSaveLocally: true, // update links on chart gantt will write on model
             res_model: this.model.linkModel,
             mode: event.data.mode,
             res_id: parseInt(event.data.id),
             title: _t("Edit link"),
             on_saved: function(record){
-                self.trigger_up('gant_reload');
+                this.close();
+                self.trigger_up('gantt_reload');
             }
-        }).open();
+        });
+        dialog.buttons.push({
+            text: _t("Delete"),
+            classes: "btn-warning pull-right",
+            close: true,
+            click: function(){
+                self.deleteGanttLink(event.data.id);
+            },
+        });
+        dialog.open();
     },
 
     /**
@@ -124,7 +136,12 @@ return AbstractController.extend({
      * Create new link.
      */
     _onGanttNewLink: function(event){
-        this.model.saveLink(event.data.link);
+        var self = this;
+        this.model.saveLink(event.data.link).then(function(new_id){
+            if (typeof new_id === 'number'){
+                self.renderer.executeGanttFunction('changeLinkId', event.data.link.id,new_id);
+            }
+        });
     },
 
     /**
@@ -144,6 +161,10 @@ return AbstractController.extend({
     _onClickScaleButton: function (e) {
         var scale = e.target.value;
         this.renderer.setScale(scale);
+    },
+
+    deleteGanttLink:function(linkId){
+        this.renderer.executeGanttFunction('deleteLink', linkId);
     },
 
 });

@@ -284,8 +284,8 @@ return AbstractModel.extend({
                 method: method,
                 context: this.gantt.context,
                 args : args,
-        }).then(function(result){
-            return;
+        }).then(function(new_id){
+            return new_id;
         }).fail(function(error){
             gantt.deleteLink(link.id);
         });

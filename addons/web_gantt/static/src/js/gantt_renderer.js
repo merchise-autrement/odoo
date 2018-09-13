@@ -60,6 +60,7 @@ return AbstractRenderer.extend({
      * Set configurations and events to gantt chart.
      */
     configGantt: function(){
+        var self = this;
         this._configGantt();
         gantt.showLightbox = function(id){
             var task = gantt.getTask(id);
@@ -275,6 +276,18 @@ return AbstractRenderer.extend({
         return "<b>" + _t("Task:") + "</b> " + event.text + "<br/><b>" + _t("Start date:") + "</b> " + this.tooltip_date_format(start) + "<br/><b>" + _t("End date:") + "</b> " + this.tooltip_date_format(end);
     },
 
+    executeGanttFunction: function(){
+        var funcName = Array.prototype.shift.apply(arguments);
+        if (gantt[funcName] === undefined){
+            throw 'This function name is undefined.';
+        }
+        else if (typeof gantt[funcName] !== 'function'){
+            throw 'This is not a function.';
+        }
+        else{
+            return gantt[funcName].apply(gantt,arguments);
+        }
+    },
 });
 
 });
