@@ -35,9 +35,12 @@ var link_types = {
 };
 
 var links_properties = {
-    "source": "source",
+    "source": undefined, // a relation_field
     "target": "target",
     "type": "type",
+    "lag": "lag",
+    "id": 'id',
+    "display_name": "display_name"
 }
 
 var configsOdoo = {
@@ -109,12 +112,19 @@ var GraphView = AbstractView.extend({
         this.loadParams.fieldsInfo = viewInfo.fieldsInfo;
         this.loadParams.initialDate = moment(params.initialDate || new Date());
         this.loadParams.groupBy = groupBy;
-        this.loadParams.links = attrs.links;
         if (attrs.links){
+            var links_field = attrs.links;
+            var rel_field = fields[links_field];
+            var links_model = rel_field.relation;
+            links_properties['source'] = rel_field.relation_field;
             var links_options = JSON.parse(attrs.links_options ? attrs.links_options.replace(/'/g, '"') : '{}');
+
             if (links_options.types){
                 this.rendererParams.config.links = links_options.types;
             }
+
+            this.loadParams.links_field = links_field;
+            this.loadParams.links_model = links_model;
             this.loadParams.links_options = _.extend(links_properties, links_options);
         }
     },

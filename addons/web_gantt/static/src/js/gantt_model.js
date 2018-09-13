@@ -30,19 +30,9 @@ return AbstractModel.extend({
         this.groupBy = groupBy;
         this.modelName = params.modelName;
         this.parent_tasks = [];
-        this.links_field = params.links;
-        if (this.links_field){
-            var rel_field = this.fields[this.links_field];
-            var mappingLinks = _.omit(params.links_options, 'types');
-            var needed = {
-                source: rel_field.relation_field,
-                id:'id',
-                lag: 'lag',
-                display_name: 'display_name'
-            };
-            this.mappingLinks = _.extend(needed, mappingLinks);
-            this.linkModel = rel_field.relation;
-        }
+        this.links_field = params.links_field;
+        this.linkModel = params.links_model;
+        this.mappingLinks = _.omit(params.links_options, 'types');
         this.gantt = {
             data: [],
             fieldNames:params.fieldNames,
