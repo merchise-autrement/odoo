@@ -36,9 +36,19 @@ links
 links_options
     dictionary with the following values
     
-        * types: { "finish_to_start":"0", "start_to_start":"1", "finish_to_finish":"2", "start_to_finish":"3" }
+        * types: { 
+            "finish_to_start":"0", 
+            "start_to_start":"1", 
+            "finish_to_finish":"2", 
+            "start_to_finish":"3"
+          }
         * type: name of field providing type value on relational model
+        * source: (optional) name of the field that provides the origin event in 
+          the relational model, as default is the relation_field of the one2many 
+          field.
         * target: name of field providing dependent event on relational model
+        * lag: (optional) name of the field that provides a positive or negative 
+          value that specifies the delay time between events involved in a link
 
 options 
     dictionary with the following values, these are use in 'gantt.config':

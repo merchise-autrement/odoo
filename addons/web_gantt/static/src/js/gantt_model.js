@@ -37,9 +37,10 @@ return AbstractModel.extend({
             var needed = {
                 source: rel_field.relation_field,
                 id:'id',
+                lag: 'lag',
                 display_name: 'display_name'
             };
-            this.mappingLinks = _.extend(mappingLinks, needed);
+            this.mappingLinks = _.extend(needed, mappingLinks);
             this.linkModel = rel_field.relation;
         }
         this.gantt = {
@@ -212,8 +213,12 @@ return AbstractModel.extend({
         var self = this;
         var record = {};
         _.each(this.mappingLinks, function(recordKey, linkKey){
-            if (link[linkKey]){
+            if (link[linkKey] !== undefined){
                 record[recordKey] = link[linkKey];
+            }
+            //in links, lag could be represented as 'lag' or 'lead' key
+            else if (linkKey === 'lag' && link['lead']){
+                record[recordKey] = link['lead'];
             }
         });
         return record;
@@ -226,7 +231,11 @@ return AbstractModel.extend({
         var self = this;
         var link = {};
         _.each(this.mappingLinks, function(recordKey, linkKey){
-            if (record[recordKey]){
+            if (record[recordKey] !== undefined){
+                if (linkKey === 'lag'){
+                    var lag = record[recordKey];
+                    linkKey = (lag >= 0) ? 'lag' : 'lead';
+                }
                 link[linkKey] = record[recordKey];
             }
         });
