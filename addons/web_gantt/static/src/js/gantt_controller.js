@@ -5,9 +5,11 @@ odoo.define('web_gantt.GanttController', function (require) {
  *---------------------------------------------------------*/
 
 var AbstractController = require('web.AbstractController');
+var dialogs = require('web.view_dialogs');
 var core = require('web.core');
 
 var qweb = core.qweb;
+var _t = core._t;
 
 return AbstractController.extend({
     custom_events: _.extend({}, AbstractController.prototype.custom_events, {
@@ -16,8 +18,10 @@ return AbstractController.extend({
         gantt_delete_task:'_onGanttDeleteTask',
         gantt_update_task:'_onGanttUpdateTask',
         gantt_update_link:'_onGanttUpdateLink',
+        gantt_open_link:'_onGanttOpenLink',
         gantt_new_link:'_onGanttNewLink',
         gantt_delete_link:'_onGanttDeleteLink',
+        gant_reload: '_onGanttReload'
     }),
     /**
      * @override
@@ -41,6 +45,15 @@ return AbstractController.extend({
         if ($node) {
             this.$buttons.appendTo($node);
         }
+    },
+
+    /**
+     * @event
+     *
+     * Reload all Gantt.
+     */
+    _onGanttReload: function(event){
+        self.reload();
     },
 
     /**
@@ -76,6 +89,24 @@ return AbstractController.extend({
      */
     _onGanttUpdateTask: function(event){
         this.model.saveTask(event.data.task);
+    },
+
+    /**
+     * @event
+     *
+     * Open link.
+     */
+    _onGanttOpenLink: function(event){
+        var self = this;
+        new dialogs.FormViewDialog(this, {
+            res_model: this.model.linkModel,
+            mode: event.data.mode,
+            res_id: parseInt(event.data.id),
+            title: _t("Edit link"),
+            on_saved: function(record){
+                self.trigger_up('gant_reload');
+            }
+        }).open();
     },
 
     /**
