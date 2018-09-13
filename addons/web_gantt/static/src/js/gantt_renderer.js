@@ -115,6 +115,10 @@ return AbstractRenderer.extend({
                 link.$new = true;
                 return true;
             },
+            onLinkDblClick: function(id, e){
+                self.openLink(id);
+                return false;
+            },
         };
 
         // attach all events
@@ -153,6 +157,16 @@ return AbstractRenderer.extend({
      */
     deleteTask: function(task){
         this.trigger_up('gantt_delete_task', {task: task});
+    },
+
+    /**
+     * Open selected link in a form view.
+     */
+    openLink: function(link_id){
+        this.trigger_up('gantt_open_link', {
+            mode: 'edit',
+            id:link_id,
+        });
     },
 
     /**
