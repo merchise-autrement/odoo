@@ -188,6 +188,11 @@ return AbstractModel.extend({
         var task = {};
         _.each(self.mapping, function(recordKey, ganttKey){
             task[ganttKey] = record[recordKey];
+            if (typeof record[recordKey] === 'object' && (record[recordKey]['res_ids'] || record[recordKey]['res_ids'])){
+                if (record[recordKey]['res_ids'].length)
+                    task[ganttKey] = record[recordKey]['res_ids'];
+                else task[ganttKey] = record[recordKey]['res_id']
+            }
             if (ganttKey === 'parent' && record[recordKey]){
                 if (!_.contains(self.parent_tasks, record[recordKey]))
                     self.parent_tasks.push(record[recordKey]);
@@ -226,7 +231,12 @@ return AbstractModel.extend({
                     var lag = record[recordKey];
                     linkKey = (lag >= 0) ? 'lag' : 'lead';
                 }
-                link[linkKey] = record[recordKey];
+                else if (typeof record[recordKey] === 'object' && (record[recordKey]['res_ids'] || record[recordKey]['res_ids'])){
+                    if (record[recordKey]['res_ids'].length)
+                        link[linkKey] = record[recordKey]['res_ids'];
+                    else link[linkKey] = record[recordKey]['res_id']
+                }
+                else link[linkKey] = record[recordKey];
             }
         });
         return link;
