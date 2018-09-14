@@ -53,6 +53,7 @@ return AbstractController.extend({
      * Reload all Gantt.
      */
     _onGanttReload: function(event){
+        event.stopPropagation();
         this.reload();
     },
 
@@ -88,6 +89,7 @@ return AbstractController.extend({
      * Update task.
      */
     _onGanttUpdateTask: function(event){
+        event.stopPropagation();
         this.model.saveTask(event.data.task);
     },
 
@@ -127,6 +129,7 @@ return AbstractController.extend({
      * Update link.
      */
     _onGanttUpdateLink: function(event){
+        event.stopPropagation();
         this.model.saveLink(event.data.link);
     },
 
@@ -136,6 +139,7 @@ return AbstractController.extend({
      * Create new link.
      */
     _onGanttNewLink: function(event){
+        event.stopPropagation();
         var self = this;
         this.model.saveLink(event.data.link).then(function(new_id){
             if (typeof new_id === 'number'){
@@ -150,6 +154,7 @@ return AbstractController.extend({
      * Delete link.
      */
     _onGanttDeleteLink: function(event){
+        event.stopPropagation();
         this.model.deleteLink(event.data.link);
     },
 
@@ -159,6 +164,7 @@ return AbstractController.extend({
      * Set gantt scale.
      */
     _onClickScaleButton: function (e) {
+        e.stopPropagation();
         var scale = e.target.value;
         this.renderer.setScale(scale);
     },
