@@ -21,7 +21,7 @@ return AbstractController.extend({
         gantt_open_link:'_onGanttOpenLink',
         gantt_new_link:'_onGanttNewLink',
         gantt_delete_link:'_onGanttDeleteLink',
-        gantt_reload: '_onGanttReload'
+        update_record_link: '_onUpdateRecordLink'
     }),
     /**
      * @override
@@ -109,7 +109,7 @@ return AbstractController.extend({
             title: _t("Edit link"),
             on_saved: function(record){
                 this.close();
-                self.trigger_up('gantt_reload');
+                self.trigger_up('update_record_link', {record:record.data});
             }
         });
         dialog.buttons.push({
@@ -169,8 +169,24 @@ return AbstractController.extend({
         this.renderer.setScale(scale);
     },
 
+    _onUpdateRecordLink: function(event){
+        event.stopPropagation();
+        this.updateGanttLink(event.data.record);
+    },
+
     deleteGanttLink:function(linkId){
         this.renderer.executeGanttFunction('deleteLink', linkId);
+    },
+
+    updateGanttLink: function(record){
+        var link = this.renderer.executeGanttFunction('getLink', record.id);
+        var link2 = this.model.recordToLink(record);
+        _.each(_.omit(link2,'id'), function(val, key){
+            if (link2[key] !== link[key]){
+                link[key] = val;
+            }
+        });
+        this.renderer.executeGanttFunction('updateLink', record.id);
     },
 
 });
