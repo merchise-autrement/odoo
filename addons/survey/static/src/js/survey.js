@@ -85,6 +85,10 @@ if(!the_form.length) {
             var prefill_def = $.ajax(prefill_controller, {dataType: "json"})
                 .done(function(json_data){
                     _.each(json_data, function(value, key){
+			if (key == 'partner'){
+			    var element = $("#partner");
+			    element[0].innerText = value;
+			}
                         // prefill of text/number/date boxes
                         var input = the_form.find(".form-control[name=" + key + "]");
                         input.val(value);
