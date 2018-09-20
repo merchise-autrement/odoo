@@ -47,35 +47,35 @@ if(!the_form.length) {
     });
 
     // Custom code for right behavior of radio buttons with comments box
-    $('.js_comments>input[type="text"]').focusin(function(){
+    $('.js_comments>textarea.question-comment').focusin(function(){
         $(this).prev().find('>input').attr("checked","checked");
     });
     $('.js_radio input[type="radio"][data-oe-survey-otherr!="1"]').click(function(){
-        $(this).closest('.js_radio').find('.js_comments>input[type="text"]').val("");
+        $(this).closest('.js_radio').find('.js_comments>textarea.question-comment').val("");
     });
     $('.js_comments input[type="radio"]').click(function(){
-        $(this).closest('.js_comments').find('>input[data-oe-survey-othert="1"]').focus();
+        $(this).closest('.js_comments').find('>textarea[data-oe-survey-othert="1"]').focus();
     });
     // Custom code for right behavior of dropdown menu with comments
-    $('.js_drop input[data-oe-survey-othert="1"]').hide();
+    $('.js_drop textarea[data-oe-survey-othert="1"]').hide();
     $('.js_drop select').change(function(){
         var other_val = $(this).find('.js_other_option').val();
         if($(this).val() === other_val){
             $(this).parent().removeClass('col-md-12').addClass('col-md-6');
-            $(this).closest('.js_drop').find('input[data-oe-survey-othert="1"]').show().focus();
+            $(this).closest('.js_drop').find('textarea[data-oe-survey-othert="1"]').show().focus();
         }
         else{
             $(this).parent().removeClass('col-md-6').addClass('col-md-12');
-            $(this).closest('.js_drop').find('input[data-oe-survey-othert="1"]').val("").hide();
+            $(this).closest('.js_drop').find('textarea[data-oe-survey-othert="1"]').val("").hide();
         }
     });
     // Custom code for right behavior of checkboxes with comments box
-    $('.js_ck_comments>input[type="text"]').focusin(function(){
+    $('.js_ck_comments>textarea.question-comment').focusin(function(){
         $(this).prev().find('>input').attr("checked","checked");
     });
     $('.js_ck_comments input[type="checkbox"]').change(function(){
         if (! $(this).prop("checked")){
-            $(this).closest('.js_ck_comments').find('input[type="text"]').val("");
+            $(this).closest('.js_ck_comments').find('textarea.question-comment').val("");
         }
     });
 
