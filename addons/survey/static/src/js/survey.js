@@ -85,11 +85,23 @@ if(!the_form.length) {
             var prefill_def = $.ajax(prefill_controller, {dataType: "json"})
                 .done(function(json_data){
                     _.each(json_data, function(value, key){
-
                         // prefill of text/number/date boxes
                         var input = the_form.find(".form-control[name=" + key + "]");
                         input.val(value);
-
+                        if (print_mode && input.length) {
+                            $(input).hide();
+                            var div = document.createElement('div');
+                            $(div).addClass('survey-wrapped-div');
+                            $(div).addClass('form-control');
+                            $(input[0]).parent().append(div);
+                            if (input[0].tagName == 'SELECT'){
+                                var text = input[0].item(input[0].selectedIndex).innerHTML;
+                                div.innerHTML = text;
+                            }
+                            else {
+                                div.innerHTML = value;
+                            }
+                        }
                         // special case for comments under multiple suggestions questions
                         if (_.string.endsWith(key, "_comment") &&
                             (input.parent().hasClass("js_comments") || input.parent().hasClass("js_ck_comments"))) {
