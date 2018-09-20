@@ -1,3 +1,9 @@
+.survey-wrapped-div {
+    overflow-wrap: break-word;
+    cursor: text;
+    height: auto;
+}
+
 @media print {
     .js_surveyform {
         font-size: 13px;
