@@ -160,9 +160,6 @@ class WebsiteSurvey(http.Controller):
         else:
             previous_answers = UserInputLine.sudo().search([('user_input_id.token', '=', token)])
 
-        # get the partner who filled the survey
-        ret['partner'] = previous_answers[0].user_input_id.partner_id.name
-
         # Return non empty answers in a JSON compatible format
         for answer in previous_answers:
             if not answer.skipped:
