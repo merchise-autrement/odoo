@@ -21,7 +21,8 @@ return AbstractController.extend({
         gantt_open_link:'_onGanttOpenLink',
         gantt_new_link:'_onGanttNewLink',
         gantt_delete_link:'_onGanttDeleteLink',
-        update_record_link: '_onUpdateRecordLink'
+        update_record_link: '_onUpdateRecordLink',
+        gantt_reload: '_onGanttReload'
     }),
     /**
      * @override
@@ -64,7 +65,11 @@ return AbstractController.extend({
      */
     _onGanttNewTask: function(event){
         event.stopPropagation();
-        this.trigger_up('switch_view', {view_type: 'form', res_id: undefined});
+        var options = {view_type: 'form', res_id: undefined}
+        if (this.renderer.arch.attrs.x2manyField){
+            this.openTaskInFormDialog(options);
+        }
+        else this.trigger_up('switch_view', options);
     },
 
     /**
@@ -75,12 +80,40 @@ return AbstractController.extend({
     _onGanttOpenTask: function(event){
         event.stopPropagation();
         var record = this.model.get(event.data.id, {raw: true});
-        this.trigger_up('switch_view', {
+        var options = {
             view_type: 'form',
-            res_id: record.res_id,
+            res_id: parseInt(record.res_id),
             mode: event.data.mode || 'readonly',
-            model: this.modelName,
-        });
+            model: this.model.modelName,
+            title: event.data.task.text
+        }
+        if (this.renderer.arch.attrs.x2manyField){
+            this.openTaskInFormDialog(options);
+        }
+        else this.trigger_up('switch_view', options);
+    },
+
+    openTaskInFormDialog: function(options){
+        var self = this;
+        var id = options.res_id;
+        var context = this.getSession().user_context;
+        this._rpc({
+                model: self.modelName,
+                method: 'get_formview_id',
+                args: [[id], context],
+            }).then(function (viewId) {
+                var dialog = new dialogs.FormViewDialog(self, {
+                    res_model: self.model.modelName,
+                    res_id: parseInt(id).toString() == id ? parseInt(id) : id,
+                    context: context,
+                    title: options.title,
+                    view_id: viewId,
+                    on_saved: function (record) {
+                        self.trigger_up('gantt_reload',{});
+                    },
+                }).open();
+            });
+            return;
     },
 
     /**
