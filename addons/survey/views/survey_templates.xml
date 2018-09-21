@@ -163,7 +163,7 @@
 
     <!-- Question widgets -->
     <template id="free_text" name="Free text box">
-        <textarea class="form-control" rows="3" t-att-name="prefix"></textarea>
+        <textarea class="question-comment form-control" rows="3" t-att-name="prefix"></textarea>
     </template>
 
     <template id="textbox" name="Text box">
@@ -195,11 +195,11 @@
                 </select>
             </div>
             <div t-if='question.comments_allowed and question.comment_count_as_answer' class="col-md-6">
-                <input type="text" class="form-control" t-att-name="'%s_%s' % (prefix, 'comment')" data-oe-survey-othert="1"/>
+                <textarea class="question-comment form-control" t-att-name="'%s_%s' % (prefix, 'comment')" data-oe-survey-othert="1"/>
             </div>
             <div t-if='question.comments_allowed and not question.comment_count_as_answer' class="col-md-12 mt16">
                 <span t-field="question.comments_message"/>
-                <input type="text" class="form-control" t-att-name="'%s_%s' % (prefix, 'comment')"/>
+                <textarea class="question-comment form-control" t-att-name="'%s_%s' % (prefix, 'comment')"/>
             </div>
         </div>
         <div t-if="question.display_mode == 'columns' or not token" class="row js_radio">
@@ -214,11 +214,11 @@
                     <input type="radio" t-att-name="prefix" value="-1"/>
                     <span t-field="question.comments_message" />
                 </label>
-                <input type="text" class="form-control" t-att-name="'%s_%s' % (prefix, 'comment')"/>
+                <textarea class="question-comment form-control" t-att-name="'%s_%s' % (prefix, 'comment')"/>
             </div>
             <div t-if='question.comments_allowed and not question.comment_count_as_answer' class="col-md-12">
                 <span t-field="question.comments_message"/>
-                <input type="text" class="form-control" t-att-name="'%s_%s' % (prefix, 'comment')" data-oe-survey-othert="1"/>
+                <textarea class="question-comment form-control" t-att-name="'%s_%s' % (prefix, 'comment')" data-oe-survey-othert="1"/>
             </div>
         </div>
     </template>
@@ -236,11 +236,11 @@
                     <input type="checkbox" t-att-name="'%s_%s' % (prefix, -1)" value="-1" />
                     <span t-field="question.comments_message" />
                 </label>
-                <input type="text" class="form-control" t-att-name="'%s_%s' % (prefix, 'comment')"/>
+                <textarea class="question-comment form-control" t-att-name="'%s_%s' % (prefix, 'comment')"/>
             </div>
             <div t-if='question.comments_allowed and not question.comment_count_as_answer' class="col-md-12">
                 <span t-field="question.comments_message"/>
-                <input type="text" class="form-control" t-att-name="'%s_%s' % (prefix, 'comment')" data-oe-survey-othert="1"/>
+                <textarea class="question-comment form-control" t-att-name="'%s_%s' % (prefix, 'comment')" data-oe-survey-othert="1"/>
             </div>
         </div>
     </template>
@@ -265,7 +265,7 @@
         </table>
         <div t-if='question.comments_allowed'>
             <span t-field="question.comments_message"/>
-            <input type="text" class="form-control" t-att-name="'%s_%s' % (prefix, 'comment')" />
+            <textarea class="question-comment form-control" t-att-name="'%s_%s' % (prefix, 'comment')" />
         </div>
     </template>
 
