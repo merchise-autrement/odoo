@@ -135,6 +135,7 @@ return AbstractRenderer.extend({
     openTask: function (task) {
         this.trigger_up('gantt_open_task', {
             id: task.id,
+            task:task,
             mode: 'edit',
         });
     },
