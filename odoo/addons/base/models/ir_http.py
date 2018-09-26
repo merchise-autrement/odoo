@@ -148,8 +148,10 @@ class IrHttp(models.AbstractModel):
             if response.status_code == 304:
                 return response
 
-            if attach[0]['cache_control_header']:
-                response.headers['Cache-Control'] = attach[0]['cache_control_header']
+            # merchise; use the saved cache_control_header if any.  See the
+            # note on the field in ir_attachment.py
+            # if attach[0]['cache_control_header']:
+            #     response.headers['Cache-Control'] = attach[0]['cache_control_header']
 
             response.mimetype = attach[0]['mimetype'] or 'application/octet-stream'
             response.data = base64.b64decode(datas)
