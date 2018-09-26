@@ -9,6 +9,7 @@ odoo.define('web.ActionManager', function (require) {
  * coordinated.
  */
 
+var AbstractAction = require('web.AbstractAction');
 var Bus = require('web.Bus');
 var concurrency = require('web.concurrency');
 var Context = require('web.Context');
@@ -18,9 +19,10 @@ var core = require('web.core');
 var Dialog = require('web.Dialog');
 var dom = require('web.dom');
 var framework = require('web.framework');
-var pyeval = require('web.pyeval');
+var pyUtils = require('web.py_utils');
 var Widget = require('web.Widget');
 
+var _t = core._t;
 var ActionManager = Widget.extend({
     className: 'o_content',
     custom_events: {
@@ -61,7 +63,6 @@ var ActionManager = Widget.extend({
         // dialog (i.e. coming from an action with target='new')
         this.currentDialogController = null;
     },
-
     /**
      * @override
      */
@@ -79,7 +80,7 @@ var ActionManager = Widget.extend({
     on_attach_callback: function() {
         this.isInDOM = true;
         var currentController = this.getCurrentController();
-        if (currentController && currentController.widget.on_attach_callback) {
+        if (currentController) {
             currentController.widget.on_attach_callback();
         }
     },
@@ -89,7 +90,7 @@ var ActionManager = Widget.extend({
     on_detach_callback: function() {
         this.isInDOM = false;
         var currentController = this.getCurrentController();
-        if (currentController && currentController.widget.on_detach_callback) {
+        if (currentController) {
             currentController.widget.on_detach_callback();
         }
     },
@@ -109,13 +110,8 @@ var ActionManager = Widget.extend({
      */
     clearUncommittedChanges: function () {
         var currentController = this.getCurrentController();
-        // AAB: with AbstractAction, the second part of the condition won't be
-        // necessary anymore, as there will be such a function it its API
-        if (currentController && currentController.widget.discardChanges) {
-            return currentController.widget.discardChanges(undefined, {
-                // AAB: get rid of this option when on_hashchange mechanism is improved
-                readonlyIfRealDiscard: true,
-            });
+        if (currentController) {
+            return currentController.widget.canBeRemoved();
         }
         return $.when();
     },
@@ -140,10 +136,11 @@ var ActionManager = Widget.extend({
      *   is useful when we come from a loadState())
      * @param {boolean} [options.replace_last_action=false] set to true to
      *   replace last part of the breadcrumbs with the action
-     * @return {Deferred} resolved when the action is loaded and appended to the
-     *   DOM ; rejected if the action can't be executed (e.g. if doAction has
-     *   been called to execute another action before this one was complete).
-    */
+     * @return {$.Deferred<Object>} resolved with the action when the action is
+     *   loaded and appended to the DOM ; rejected if the action can't be
+     *   executed (e.g. if doAction has been called to execute another action
+     *   before this one was complete).
+     */
     doAction: function (action, options) {
         var self = this;
         options = _.defaults({}, options, {
@@ -179,7 +176,14 @@ var ActionManager = Widget.extend({
 
             self._preprocessAction(action, options);
 
-            return self._handleAction(action, options);
+            return self._handleAction(action, options).then(function () {
+                // now that the action has been executed, force its 'pushState'
+                // flag to 'true', as we don't want to prevent its controller
+                // from pushing its state if it changes in the future
+                action.pushState = true;
+
+                return action;
+            });
         });
     },
     /**
@@ -259,7 +263,9 @@ var ActionManager = Widget.extend({
             callbacks: [{widget: controller.widget}],
         });
 
-        this.trigger_up('scrollTo', {offset: controller.scrollTop || 0});
+        if (controller.scrollPosition) {
+            this.trigger_up('scrollTo', controller.scrollPosition);
+        }
 
         if (!controller.widget.need_control_panel) {
             this.controlPanel.do_hide();
@@ -273,17 +279,21 @@ var ActionManager = Widget.extend({
      * Closes the current dialog, if any. Because we listen to the 'closed'
      * event triggered by the dialog when it is closed, this also destroys the
      * embedded controller and removes the reference to the corresponding action.
-     * This also executes the 'on_close' handler in some cases.
+     * This also executes the 'on_close' handler in some cases, and may also
+     * provide infos for closing this dialog.
      *
      * @private
-     * @param {boolean} [silent=false] if true, the 'on_close' handler won't be
-     *   called ; this is in general the case when the current dialog is closed
-     *   because another action is opened, so we don't want the former action
-     *   to execute its handler as it won't be displayed anyway
+     * @param {Object} options
+     * @param {Object} [options.infos] some infos related to the closing the
+     *   dialog.
+     * @param {boolean} [options.silent=false] if true, the 'on_close' handler
+     *   won't be called ; this is in general the case when the current dialog
+     *   is closed because another action is opened, so we don't want the former
+     *   action to execute its handler as it won't be displayed anyway
      */
-    _closeDialog: function (silent) {
+    _closeDialog: function (options) {
         if (this.currentDialogController) {
-            this.currentDialogController.dialog.destroy(silent);
+            this.currentDialogController.dialog.destroy(options);
         }
     },
     /**
@@ -295,7 +305,7 @@ var ActionManager = Widget.extend({
     _detachCurrentController: function () {
         var currentController = this.getCurrentController();
         if (currentController) {
-            currentController.scrollTop = this._getScrollTop();
+            currentController.scrollPosition = this._getScrollPosition();
             dom.detach([{widget: currentController.widget}]);
         }
     },
@@ -330,11 +340,11 @@ var ActionManager = Widget.extend({
                     // communicate its status
                     widget.set_cp_bus(self.controlPanel.get_bus());
                 }
-                return self._startController(controller);
+                return self.dp.add(self._startController(controller));
             })
             .then(function (controller) {
                 if (self.currentDialogController) {
-                    self._closeDialog(true);
+                    self._closeDialog({ silent: true });
                 }
 
                 // store the optional 'on_reverse_breadcrumb' handler
@@ -352,6 +362,10 @@ var ActionManager = Widget.extend({
 
                 // toggle the fullscreen mode for actions in target='fullscreen'
                 self._toggleFullscreen();
+
+                // store the action into the sessionStorage so that it can be
+                // fully restored on F5
+                self.call('session_storage', 'setItem', 'current_action', action._originalAction);
 
                 return action;
             })
@@ -381,37 +395,46 @@ var ActionManager = Widget.extend({
         }
 
         return this._startController(controller).then(function (controller) {
+            var prevDialogOnClose;
             if (self.currentDialogController) {
-                self._closeDialog(true);
+                prevDialogOnClose = self.currentDialogController.onClose;
+                self._closeDialog({ silent: true });
             }
 
+            controller.onClose = prevDialogOnClose || options.on_close;
             var dialog = new Dialog(self, _.defaults({}, options, {
                 buttons: [],
                 dialogClass: controller.className,
                 title: action.name,
                 size: action.context.dialog_size,
             }));
-            dialog.on('closed', self, function (silent) {
+            /**
+             * @param {Object} [options={}]
+             * @param {Object} [options.infos] if provided and `silent` is
+             *   unset, the `on_close` handler will pass this information,
+             *   which gives some context for closing this dialog.
+             * @param {boolean} [options.silent=false] if set, do not call the
+             *   `on_close` handler.
+             */
+            dialog.on('closed', self, function (options) {
+                options = options || {};
                 self._removeAction(action.jsID);
                 self.currentDialogController = null;
-                if (silent !== true) {
-                    options.on_close();
+                if (options.silent !== true) {
+                    controller.onClose(options.infos);
                 }
             });
             controller.dialog = dialog;
 
             return dialog.open().opened(function () {
+                self.currentDialogController = controller;
+
                 dom.append(dialog.$el, widget.$el, {
                     in_DOM: true,
-                    callbacks: [{widget: dialog}],
+                    callbacks: [{widget: dialog}, {widget: controller.widget}],
                 });
-                // AAB: renderButtons will be a function of AbstractAction, so this
-                // test won't be necessary anymore
-                if (widget.renderButtons) {
-                    widget.renderButtons(dialog.$footer);
-                }
-
-                self.currentDialogController = controller;
+                widget.renderButtons(dialog.$footer);
+                dialog.rebindButtonBehavior();
 
                 return action;
             });
@@ -435,6 +458,9 @@ var ActionManager = Widget.extend({
             console.error("Could not find client action " + action.tag, action);
             return $.Deferred().reject();
         }
+        if (!(ClientAction.prototype instanceof AbstractAction)) {
+            console.warn('The client action ' + action.tag + ' should be an instance of AbstractAction!');
+        }
         if (!(ClientAction.prototype instanceof Widget)) {
             // the client action might be a function, which is executed and
             // whose returned value might be another action to execute
@@ -446,6 +472,7 @@ var ActionManager = Widget.extend({
         }
 
         var controllerID = _.uniqueId('controller_');
+        options.controllerID = controllerID;
         var controller = {
             actionID: action.jsID,
             jsID: controllerID,
@@ -472,23 +499,31 @@ var ActionManager = Widget.extend({
      * Executes actions of type 'ir.actions.act_window_close', i.e. closes the
      * last opened dialog.
      *
+     * The action may also specify an effect to display right after the close
+     * action (e.g. rainbow man), or provide a reason for the close action.
+     * This is useful for decision making for the `on_close` handler.
+     *
      * @private
      * @param {Object} action
+     * @param {Object} [action.effect] effect to show up, e.g. rainbow man.
+     * @param {Object} [action.infos] infos on performing the close action.
+     *   Useful for providing some context for the `on_close` handler.
      * @returns {Deferred} resolved immediately
      */
     _executeCloseAction: function (action, options) {
+        var result;
         if (!this.currentDialogController) {
-            options.on_close();
+            result = options.on_close(action.infos);
         }
 
-        this._closeDialog();
+        this._closeDialog({ infos: action.infos });
 
         // display some effect (like rainbowman) on appropriate actions
         if (action.effect) {
             this.trigger_up('show_effect', action.effect);
         }
 
-        return $.when();
+        return $.when(result);
     },
     /**
      * Executes actions of type 'ir.actions.server'.
@@ -510,6 +545,7 @@ var ActionManager = Widget.extend({
             },
         });
         return this.dp.add(runDef).then(function (action) {
+            action = action || { type: 'ir.actions.act_window_close' };
             return self.doAction(action, options);
         });
     },
@@ -536,7 +572,13 @@ var ActionManager = Widget.extend({
             framework.redirect(url);
             return $.Deferred();
         } else {
-            window.open(url, '_blank');
+            var w = window.open(url, '_blank');
+            if (!w || w.closed || typeof w.closed === 'undefined') {
+                var message = _t('A popup window has been blocked. You ' +
+                             'may need to change your browser settings to allow ' +
+                             'popup windows for this page.');
+                this.do_warn(_t('Warning'), message, true);
+            }
         }
 
         options.on_close();
@@ -609,19 +651,19 @@ var ActionManager = Widget.extend({
         return state;
     },
     /**
-     * Returns the current vertical scroll position.
+     * Returns the current horizontal and vertical scroll positions.
      *
      * @private
-     * @returns {integer}
+     * @returns {Object}
      */
-    _getScrollTop: function () {
-        var scrollTop;
-        this.trigger_up('getScrollTop', {
-            callback: function (value) {
-                scrollTop = value;
+    _getScrollPosition: function () {
+        var scrollPosition;
+        this.trigger_up('getScrollPosition', {
+            callback: function (_scrollPosition) {
+                scrollPosition = _scrollPosition;
             }
         });
-        return scrollTop;
+        return scrollPosition;
     },
     /**
      * Dispatches the given action to the corresponding handler to execute it,
@@ -757,15 +799,17 @@ var ActionManager = Widget.extend({
      * @param {Object} options see @doAction options
      */
     _preprocessAction: function (action, options) {
-        action.jsID = _.uniqueId('action_');
-        action.pushState = options.pushState;
-
         // ensure that the context and domain are evaluated
         var context = new Context(this.userContext, options.additional_context, action.context);
-        action.context = pyeval.eval('context', context);
+        action.context = pyUtils.eval('context', context);
         if (action.domain) {
-            action.domain = pyeval.eval('domain', action.domain, action.context);
+            action.domain = pyUtils.eval('domain', action.domain, action.context);
         }
+
+        action._originalAction = JSON.stringify(action);
+
+        action.jsID = _.uniqueId('action_');
+        action.pushState = options.pushState;
     },
     /**
      * Unlinks the given action and its controller from the internal structures
@@ -826,12 +870,27 @@ var ActionManager = Widget.extend({
      * is ready when it will be appended to the DOM. This allows to prevent
      * flickering for widgets doing async stuff in willStart() or start().
      *
+     * Also updates the control panel on any change of the title on controller's
+     * widget.
+     *
      * @private
      * @param {Object} controller
      * @returns {Deferred<Object>} resolved with the controller when it is ready
      */
     _startController: function (controller) {
+        var self = this;
         var fragment = document.createDocumentFragment();
+        // AAB: change this logic to stop using the properties mixin
+        controller.widget.on("change:title", this, function () {
+            if (self.getCurrentController() !== controller) {
+                return;
+            }
+            var action = self.actions[controller.actionID];
+            if (!action.flags || !action.flags.headless) {
+                var breadcrumbs = self._getBreadcrumbs();
+                self.controlPanel.update({breadcrumbs: breadcrumbs}, {clear: false});
+            }
+        });
         return controller.widget.appendTo(fragment).then(function () {
             return controller;
         });
@@ -897,13 +956,13 @@ var ActionManager = Widget.extend({
         }
     },
     /**
-    * Intercepts and triggers a redirection on a link
-    *
-    * @private
-    * @param {OdooEvent} ev
-    * @param {integer} ev.data.res_id
-    * @param {string} ev.data.res_model
-    */
+     * Intercepts and triggers a redirection on a link.
+     *
+     * @private
+     * @param {OdooEvent} ev
+     * @param {integer} ev.data.res_id
+     * @param {string} ev.data.res_model
+     */
     _onRedirect: function (ev) {
         this.do_action({
             type:'ir.actions.act_window',

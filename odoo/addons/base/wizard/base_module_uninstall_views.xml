@@ -19,7 +19,7 @@
                             <templates>
                                 <t t-name="kanban-box">
                                     <div class="oe_module_vignette">
-                                        <img t-attf-src="#{record.icon.value}"
+                                        <img t-attf-src="#{record.icon.value}" alt="Icon"
                                              class="oe_module_icon" style="width: 60px; height: 60px"/>
                                         <div class="oe_module_desc" style="padding-left: 70px">
                                             <h4><field name="shortdesc"/></h4>
@@ -42,7 +42,7 @@
                     </field>
                     <footer>
                         <button string="Confirm" class="btn-primary" type="object" name="action_uninstall"/>
-                        <button string="Cancel" class="btn-default" special="cancel"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
                     </footer>
                 </form>
             </field>

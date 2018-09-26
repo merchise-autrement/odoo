@@ -36,7 +36,7 @@
                     <button string="Start Challenge" type="object" name="action_start" states="draft" class="oe_highlight"/>
                     <button string="Refresh Challenge" type="object" name="action_check" states="inprogress"/>
                     <button string="Send Report" type="object" name="action_report_progress" states="inprogress,done" groups="base.group_no_one"/>
-                    <field name="state" widget="statusbar" clickable="True"/>
+                    <field name="state" widget="statusbar" options="{'clickable': '1'}"/>
                 </header>
                 <sheet>
                     <!-- action buttons -->
@@ -151,14 +151,14 @@
                                <strong>
                                    <h4 class="o_kanban_record_title"><field name="name"/></h4>
                                    <div class="oe_kanban_project_list o_kanban_record_subtitle">
-                                       <a type="action" name="%(goals_from_challenge_act)d" style="margin-right: 10px">
+                                       <a type="action" name="%(goals_from_challenge_act)d" style="margin-right: 10px" tabindex="-1">
                                            <span t-if="record.line_ids.raw_value.length gt 1"><t t-esc="record.line_ids.raw_value.length"/> Goals</span>
                                            <span t-if="record.line_ids.raw_value.length lt 2"><t t-esc="record.line_ids.raw_value.length"/> Goal</span>
                                        </a>
                                    </div>
                                </strong>
                                 <t t-foreach="record.user_ids.raw_value.slice(0,11)" t-as="member">
-                                    <img class="o_kanban_badge_avatars" t-att-src="kanban_image('res.users', 'image_small', member)" t-att-data-member_id="member"/>
+                                    <img class="o_kanban_badge_avatars" t-att-src="kanban_image('res.users', 'image_small', member)" t-att-data-member_id="member" alt="Member"/>
                                 </t>
                             </div>
                         </div>

@@ -8,9 +8,9 @@ from odoo.http import request
 
 class WebsiteEventSaleController(WebsiteEventController):
 
-    @http.route(['/event/<model("event.event"):event>/register'], type='http', auth="public", website=True)
+    @http.route()
     def event_register(self, event, **post):
-        event = event.with_context(pricelist=request.website.get_current_pricelist().id)
+        event = event.with_context(pricelist=request.website.id)
         return super(WebsiteEventSaleController, self).event_register(event, **post)
 
     def _process_tickets_details(self, data):
@@ -25,7 +25,7 @@ class WebsiteEventSaleController(WebsiteEventController):
         tickets = request.env['event.event.ticket'].browse(tuple(ticket_post))
         return [{'id': ticket.id, 'name': ticket.name, 'quantity': ticket_post[ticket.id], 'price': ticket.price} for ticket in tickets if ticket_post[ticket.id]]
 
-    @http.route(['/event/<model("event.event"):event>/registration/confirm'], type='http', auth="public", methods=['POST'], website=True)
+    @http.route()
     def registration_confirm(self, event, **post):
         order = request.website.sale_get_order(force_create=1)
         attendee_ids = set()
@@ -39,12 +39,15 @@ class WebsiteEventSaleController(WebsiteEventController):
         # free tickets -> order with amount = 0: auto-confirm, no checkout
         if not order.amount_total:
             order.action_confirm()  # tde notsure: email sending ?
-            attendees = request.env['event.registration'].browse(list(attendee_ids))
+            attendees = request.env['event.registration'].browse(list(attendee_ids)).sudo()
             # clean context and session, then redirect to the confirmation page
             request.website.sale_reset()
+            urls = event._get_event_resource_urls(list(attendee_ids))
             return request.render("website_event.registration_complete", {
                 'attendees': attendees,
                 'event': event,
+                'google_url': urls.get('google_url'),
+                'iCal_url': urls.get('iCal_url')
             })
 
         return request.redirect("/shop/checkout")

@@ -15,6 +15,7 @@ var NewContentMenu = websiteNavbarData.WebsiteNavbarActionWidget.extend({
     }),
     events: _.extend({}, websiteNavbarData.WebsiteNavbarActionWidget.prototype.events || {}, {
         'click > a': '_onMenuToggleClick',
+        'click > #o_new_content_menu_choices': '_onBackgroundClick',
     }),
 
     /**
@@ -45,8 +46,8 @@ var NewContentMenu = websiteNavbarData.WebsiteNavbarActionWidget.extend({
                 $group.removeClass('mb0');
 
                 var $add = $('<div/>', {'class': 'form-group mb0'})
-                            .append($('<span/>', {'class': 'col-sm-offset-3 col-sm-9 text-left'})
-                                    .append(qweb.render('web_editor.components.switch', {id: 'switch_addTo_menu', label: _t("Add page in menu")})));
+                            .append($('<span/>', {'class': 'offset-md-3 col-md-9 text-left'})
+                                    .append(qweb.render('web_editor.components.switch', {id: 'switch_addTo_menu', label: _t("Add to menu")})));
                 $add.find('input').prop('checked', true);
                 $group.after($add);
             }
@@ -72,6 +73,15 @@ var NewContentMenu = websiteNavbarData.WebsiteNavbarActionWidget.extend({
     _onMenuToggleClick: function (ev) {
         ev.preventDefault();
         this.$newContentMenuChoices.toggleClass('o_hidden');
+    },
+    /**
+     * Called when a click outside the menu's options occurs -> Closes the menu
+     *
+     * @private
+     * @param {Event} ev
+     */
+    _onBackgroundClick: function (ev) {
+        this.$newContentMenuChoices.addClass('o_hidden');
     },
 });
 

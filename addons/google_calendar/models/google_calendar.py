@@ -193,12 +193,12 @@ class GoogleCalendar(models.AbstractModel):
     def generate_data(self, event, isCreating=False):
         if event.allday:
             start_date = event.start_date
-            final_date = (datetime.strptime(event.stop_date, tools.DEFAULT_SERVER_DATE_FORMAT) + timedelta(days=1)).strftime(tools.DEFAULT_SERVER_DATE_FORMAT)
+            final_date = event.stop_date + timedelta(days=1)
             type = 'date'
             vstype = 'dateTime'
         else:
-            start_date = fields.Datetime.context_timestamp(self, fields.Datetime.from_string(event.start)).isoformat('T')
-            final_date = fields.Datetime.context_timestamp(self, fields.Datetime.from_string(event.stop)).isoformat('T')
+            start_date = fields.Datetime.context_timestamp(self, event.start).isoformat('T')
+            final_date = fields.Datetime.context_timestamp(self, event.stop).isoformat('T')
             type = 'dateTime'
             vstype = 'date'
         attendee_list = []
@@ -677,7 +677,7 @@ class GoogleCalendar(models.AbstractModel):
             try:
                 all_event_from_google = self.get_event_synchro_dict(lastSync=lastSync)
             except requests.HTTPError as e:
-                if e.response.code == 410:  # GONE, Google is lost.
+                if e.response.status_code == 410:  # GONE, Google is lost.
                     # we need to force the rollback from this cursor, because it locks my res_users but I need to write in this tuple before to raise.
                     self.env.cr.rollback()
                     self.env.user.write({'google_calendar_last_sync_date': False})
@@ -842,7 +842,7 @@ class GoogleCalendar(models.AbstractModel):
                         try:
                             # if already deleted from gmail or never created
                             recs.delete_an_event(current_event[0])
-                        except Exception as e:
+                        except requests.exceptions.HTTPError as e:
                             if e.response.status_code in (401, 410,):
                                 pass
                             else:
@@ -852,9 +852,9 @@ class GoogleCalendar(models.AbstractModel):
         return True
 
     def check_and_sync(self, oe_event, google_event):
-        if datetime.strptime(oe_event.oe_update_date, "%Y-%m-%d %H:%M:%S.%f") > datetime.strptime(google_event['updated'], "%Y-%m-%dT%H:%M:%S.%fz"):
+        if oe_event.oe_update_date > datetime.strptime(google_event['updated'], "%Y-%m-%dT%H:%M:%S.%fz"):
             self.update_to_google(oe_event, google_event)
-        elif datetime.strptime(oe_event.oe_update_date, "%Y-%m-%d %H:%M:%S.%f") < datetime.strptime(google_event['updated'], "%Y-%m-%dT%H:%M:%S.%fz"):
+        elif oe_event.oe_update_date < datetime.strptime(google_event['updated'], "%Y-%m-%dT%H:%M:%S.%fz"):
             self.update_from_google(oe_event, google_event, 'write')
 
     def get_sequence(self, instance_id):

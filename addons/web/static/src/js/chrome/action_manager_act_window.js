@@ -11,7 +11,7 @@ var config = require('web.config');
 var Context = require('web.Context');
 var core = require('web.core');
 var data = require('web.data'); // this will be removed at some point
-var pyeval = require('web.pyeval');
+var pyUtils = require('web.py_utils');
 var SearchView = require('web.SearchView');
 var view_registry = require('web.view_registry');
 
@@ -21,8 +21,11 @@ ActionManager.include({
     custom_events: _.extend({}, ActionManager.prototype.custom_events, {
         env_updated: '_onEnvUpdated',
         execute_action: '_onExecuteAction',
+        get_controller_context: '_onGetControllerContext',
+        update_filters: '_onUpdateFilters',
         search: '_onSearch',
         switch_view: '_onSwitchView',
+        navigation_move: '_onNavigationMove',
     }),
 
     //--------------------------------------------------------------------------
@@ -90,6 +93,15 @@ ActionManager.include({
                 type: 'ir.actions.act_window',
                 views: [[state.view_id || false, 'form']],
             };
+        } else if (state.model && state.view_type) {
+            // this is a window action on a multi-record view, so restore it
+            // from the session storage
+            var storedAction = this.call('session_storage', 'getItem', 'current_action');
+            var lastAction = JSON.parse(storedAction || '{}');
+            if (lastAction.res_model === state.model) {
+                action = lastAction;
+                options.viewType = state.view_type;
+            }
         }
         if (action) {
             return this.doAction(action, options);
@@ -110,6 +122,22 @@ ActionManager.include({
      * @returns {Deferred} resolved with the search view when it is ready
      */
     _createSearchView: function (action) {
+        // if requested, keep the searchview of the current action instead of
+        // creating a new one
+        if (action._keepSearchView) {
+            var currentAction = this.getCurrentAction();
+            if (currentAction) {
+                action.searchView = currentAction.searchView;
+                action.env = currentAction.env; // make those actions share the same env
+                return $.when(currentAction.searchView);
+            } else {
+                // there is not searchview to keep, so reset the flag to false
+                // to ensure that the one that will be created will be correctly
+                // destroyed
+                action._keepSearchView = false;
+            }
+        }
+
         // AAB: temporarily create a dataset, until the SearchView is refactored
         // and stops using it
         var dataset = new data.DataSetSearch(this, action.res_model, action.context, action.domain);
@@ -201,15 +229,7 @@ ActionManager.include({
                     // the action has been removed, so simply destroy the widget
                     widget.destroy();
                 } else {
-                    // AAB: change this logic to stop using the properties mixin
-                    widget.on("change:title", this, function () {
-                        if (!action.flags.headless) {
-                            var breadcrumbs = self._getBreadcrumbs();
-                            self.controlPanel.update({breadcrumbs: breadcrumbs}, {clear: false});
-                        }
-                    });
                     controller.widget = widget;
-
                     def.resolve(controller);
                 }
             }).fail(def.reject.bind(def));
@@ -221,6 +241,31 @@ ActionManager.include({
         }
 
         return action.controllers[viewType];
+    },
+    /**
+     * Destroys the controllers and search view of a given action of type
+     * 'ir.actions.act_window'.
+     *
+     * @private
+     * @param {Object} action
+     */
+    _destroyWindowAction: function (action) {
+        var self = this;
+        _.each(action.controllers, function (controllerDef) {
+            controllerDef.then(function (controller) {
+                delete self.controllers[controller.jsID];
+                if (controller.widget) {
+                    controller.widget.destroy();
+                }
+            });
+            // reject the deferred if it is not yet resolved, so that the
+            // controller is correctly destroyed as soon as it is ready, and
+            // its reference is removed
+            controllerDef.reject();
+        });
+        if (action.searchView && !action._keepSearchView) {
+            action.searchView.destroy();
+        }
     },
     /**
      * Executes actions of type 'ir.actions.act_window'.
@@ -244,7 +289,7 @@ ActionManager.include({
         }
         action.flags = this._generateActionFlags(action);
 
-        return this._loadViews(action).then(function (fieldsViews) {
+        return this.dp.add(this._loadViews(action)).then(function (fieldsViews) {
             var views = self._generateActionViews(action, fieldsViews);
             action._views = action.views;  // save the initial attribute
             action.views = views;
@@ -254,18 +299,26 @@ ActionManager.include({
             action.env = self._generateActionEnv(action, options);
             action.controllers = {};
 
-            // select the first view to display
-            var lazyLoadFirstView = false;
+            // select the first view to display, and optionally the main view
+            // which will be lazyloaded
             var firstView = options.viewType && _.findWhere(views, {type: options.viewType});
+            var mainView;
             if (firstView) {
                 if (!firstView.multiRecord && views[0].multiRecord) {
-                    lazyLoadFirstView = true;
+                    mainView = views[0];
                 }
             } else {
                 firstView = views[0];
             }
-            if (config.device.isMobile && !firstView.isMobileFriendly) {
-                firstView = _.findWhere(action.views, {isMobileFriendly: true}) || firstView;
+
+            // use mobile-friendly view by default in mobile, if possible
+            if (config.device.isMobile) {
+                if (!firstView.isMobileFriendly) {
+                    firstView = self._findMobileView(views, firstView.multiRecord) || firstView;
+                }
+                if (mainView && !mainView.isMobileFriendly) {
+                    mainView = self._findMobileView(views, mainView.multiRecord) || mainView;
+                }
             }
 
             var def;
@@ -279,10 +332,10 @@ ActionManager.include({
             return $.when(def).then(function () {
                 var defs = [];
                 defs.push(self._createViewController(action, firstView.type));
-                if (lazyLoadFirstView) {
-                    defs.push(self._createViewController(action, views[0].type, {}, {lazy: true}));
+                if (mainView) {
+                    defs.push(self._createViewController(action, mainView.type, {}, {lazy: true}));
                 }
-                return $.when.apply($, defs);
+                return self.dp.add($.when.apply($, defs));
             }).then(function (controller, lazyLoadedController) {
                 action.controllerID = controller.jsID;
                 return self._executeAction(action, options).done(function () {
@@ -293,7 +346,23 @@ ActionManager.include({
                         }, {clear: false});
                     }
                 });
-            });
+            }).fail(self._destroyWindowAction.bind(self, action));
+        });
+    },
+    /**
+     * Helper function to find the first mobile-friendly view, if any.
+     *
+     * @private
+     * @param {Array} views an array of views
+     * @param {boolean} multiRecord set to true iff we search for a multiRecord
+     *   view
+     * @returns {Object|undefined} a mobile-friendly view of the requested
+     *   multiRecord type, undefined if there is no such view
+     */
+    _findMobileView: function (views, multiRecord) {
+        return _.findWhere(views, {
+            isMobileFriendly: true,
+            multiRecord: multiRecord,
         });
     },
     /**
@@ -329,7 +398,7 @@ ActionManager.include({
     _generateActionFlags: function (action) {
         var popup = action.target === 'new';
         var inline = action.target === 'inline';
-        var form = _.str.startsWith(action.view_mode, 'form');
+        var form = action.views[0][1] === 'form';
         return _.defaults({}, action.flags, {
             disableCustomFilters: action.context && action.context.search_disable_custom_filters,
             footerToButtons: popup,
@@ -359,7 +428,8 @@ ActionManager.include({
             var View = view_registry.get(key || viewType);
             if (View) {
                 views.push({
-                    accessKey: View.prototype.accessKey,
+                    accessKey: View.prototype.accessKey || View.prototype.accesskey,
+                    displayName: View.prototype.display_name,
                     fieldsView: fieldsView,
                     icon: View.prototype.icon,
                     isMobileFriendly: View.prototype.mobile_friendly,
@@ -424,6 +494,20 @@ ActionManager.include({
         return this.loadViews(action.res_model, action.context, views, options);
     },
     /**
+     * Overrides to handle the 'keepSearchView' option. If set to true, the
+     * search view of the current action will be re-used in the new action, i.e.
+     * the environment (domain, context, groupby) will be shared between both
+     * actions.
+     *
+     * @override
+     */
+    _preprocessAction: function (action, options) {
+        this._super.apply(this, arguments);
+        if (action.type === 'ir.actions.act_window' && options.keepSearchView) {
+            action._keepSearchView = true;
+        }
+    },
+    /**
      * Processes the search data sent by the search view.
      *
      * @private
@@ -439,21 +523,28 @@ ActionManager.include({
         var domains = searchData.domains;
         var groupbys = searchData.groupbys;
         var action_context = action.context || {};
-        var results = pyeval.eval_domains_and_contexts({
+        var results = pyUtils.eval_domains_and_contexts({
             domains: [action.domain || []].concat(domains || []),
             contexts: [action_context].concat(contexts || []),
             group_by_seq: groupbys || [],
             eval_context: this.userContext,
         });
+        var groupBy = results.group_by.length ?
+                        results.group_by :
+                        (action.context.group_by || []);
+        groupBy = (typeof groupBy === 'string') ? [groupBy] : groupBy;
+
         if (results.error) {
             throw new Error(_.str.sprintf(_t("Failed to evaluate search criterions")+": \n%s",
                             JSON.stringify(results.error)));
         }
-        var groupBy = results.group_by.length ? results.group_by : (action.context.group_by || []);
+
+        var context = _.omit(results.context, 'time_ranges');
+
         return {
-            context: results.context,
+            context: context,
             domain: results.domain,
-            groupBy: (typeof groupBy === 'string') ? [groupBy] : groupBy,
+            groupBy: groupBy,
         };
     },
     /**
@@ -465,25 +556,10 @@ ActionManager.include({
      * @private
      */
     _removeAction: function (actionID) {
-        var self = this;
         var action = this.actions[actionID];
         if (action.type === 'ir.actions.act_window') {
             delete this.actions[action.jsID];
-            _.each(action.controllers, function (controllerDef) {
-                controllerDef.then(function (controller) {
-                    delete self.controllers[controller.jsID];
-                    if (controller.widget) {
-                        controller.widget.destroy();
-                    }
-                });
-                // reject the deferred if it is not yet resolved, so that the
-                // controller is correctly destroyed as soon as it is ready, and
-                // its reference is removed
-                controllerDef.reject();
-            });
-            if (action.searchView) {
-                action.searchView.destroy();
-            }
+            this._destroyWindowAction(action);
         } else {
             this._super.apply(this, arguments);
         }
@@ -547,7 +623,14 @@ ActionManager.include({
         };
 
         var controllerDef = action.controllers[viewType];
-        if (!controllerDef) {
+        if (!controllerDef || controllerDef.state() === 'rejected') {
+            // if the controllerDef is rejected, it probably means that the js
+            // code or the requests made to the server crashed.  In that case,
+            // if we reuse the same deferred, then the switch to the view is
+            // definitely blocked.  We want to use a new controller, even though
+            // it is very likely that it will recrash again.  At least, it will
+            // give more feedback to the user, and it could happen that one
+            // record crashes, but not another.
             controllerDef = newController();
         } else {
             controllerDef = controllerDef.then(function (controller) {
@@ -628,12 +711,12 @@ ActionManager.include({
         var actionData = ev.data.action_data;
         var env = ev.data.env;
         var context = new Context(env.context, actionData.context || {});
-        var recordID = env.currentID || null; // pyeval handles null value, not undefined
-        var def;
+        var recordID = env.currentID || null; // pyUtils handles null value, not undefined
+        var def = $.Deferred();
 
         // determine the action to execute according to the actionData
         if (actionData.special) {
-            def = $.when({type: 'ir.actions.act_window_close'});
+            def = $.when({type: 'ir.actions.act_window_close', infos: 'special'});
         } else if (actionData.type === 'object') {
             // call a Python Object method, which may return an action to execute
             var args = recordID ? [[recordID]] : [env.resIDs];
@@ -658,7 +741,7 @@ ActionManager.include({
             });
         } else if (actionData.type === 'action') {
             // execute a given action, so load it first
-            def = this._loadAction(actionData.name, _.extend(pyeval.eval('context', context), {
+            def = this._loadAction(actionData.name, _.extend(pyUtils.eval('context', context), {
                 active_model: env.model,
                 active_ids: env.resIDs,
                 active_id: recordID,
@@ -676,7 +759,7 @@ ActionManager.include({
             // code below handles the first case i.e 'effect' attribute on button.
             var effect = false;
             if (actionData.effect) {
-                effect = pyeval.py_eval(actionData.effect);
+                effect = pyUtils.py_eval(actionData.effect);
             }
 
             if (action && action.constructor === Object) {
@@ -714,6 +797,51 @@ ActionManager.include({
             var options = {on_close: ev.data.on_closed};
             return self.doAction(action, options).then(ev.data.on_success, ev.data.on_fail);
         });
+    },
+    /**
+     * Handles a context request: provides to the caller the context of the
+     * current controller.
+     *
+     * @private
+     * @param {OdooEvent} ev
+     * @param {function} ev.data.callback used to send the requested context
+     */
+    _onGetControllerContext: function (ev) {
+        ev.stopPropagation();
+        var currentController = this.getCurrentController();
+        var context = currentController && currentController.widget.getContext();
+        ev.data.callback(context || {});
+    },
+    /**
+     * Handles a request to add/remove search view filters.
+     *
+     * @param {OdooEvent} ev
+     * @param {string} ev.data.controllerID
+     * @param {Array[Object]} [ev.data.newFilters]
+     * @param {Array[Object]} [ev.data.filtersToRemove]
+     * @param {function} ev.data.callback called with the added filters as arg
+     */
+    _onUpdateFilters: function (ev) {
+        var controller = this.controllers[ev.data.controllerID];
+        var action = this.actions[controller.actionID];
+        var data = ev.data;
+        var addedFilters = action.searchView.updateFilters(data.newFilters, data.filtersToRemove);
+        data.callback(addedFilters);
+    },
+    /**
+     * Called mainly from the control panel when the focus should be given to a controller
+     * 
+     * @param {OdooEvent} event
+     * @private
+     */
+    _onNavigationMove : function(event) {
+        switch(event.data.direction) {
+            case 'down' :
+                var currentController = this.getCurrentController().widget;
+                currentController.giveFocus();
+                event.stopPropagation();
+                break;
+        }
     },
     /**
      * Called when there is a change in the search view, so the current action's

@@ -13,6 +13,7 @@ var FieldOrgChart = AbstractField.extend({
 
     events: {
         "click .o_employee_redirect": "_onEmployeeRedirect",
+        "click .o_employee_sub_redirect": "_onEmployeeSubRedirect",
     },
     /**
      * @constructor
@@ -90,7 +91,7 @@ var FieldOrgChart = AbstractField.extend({
                             '.o_employee_sub_redirect', _.bind(self._onEmployeeSubRedirect, self));
                         return $content;
                     },
-                    template: $(QWeb.render('hr_orgchart_emp_popover', {})),
+                    template: QWeb.render('hr_orgchart_emp_popover', {}),
                 });
             });
         });

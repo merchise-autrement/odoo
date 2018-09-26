@@ -57,8 +57,8 @@ class SaleOrder(models.Model):
     # TODO onchange sol, clean delivery price
 
     @api.multi
-    def action_confirm(self):
-        res = super(SaleOrder, self).action_confirm()
+    def _action_confirm(self):
+        res = super(SaleOrder, self)._action_confirm()
         for so in self:
             so.invoice_shipping_on_delivery = all([not line.is_delivery for line in so.order_line])
         return res
@@ -88,6 +88,9 @@ class SaleOrder(models.Model):
 
     def _create_delivery_line(self, carrier, price_unit):
         SaleOrderLine = self.env['sale.order.line']
+        if self.partner_id:
+            # set delivery detail in the customer language
+            carrier = carrier.with_context(lang=self.partner_id.lang)
 
         # Apply fiscal position
         taxes = carrier.product_id.taxes_id.filtered(lambda t: t.company_id.id == self.company_id.id)
@@ -98,7 +101,7 @@ class SaleOrder(models.Model):
         # Create the sales order line
         values = {
             'order_id': self.id,
-            'name': carrier.name,
+            'name': carrier.with_context(lang=self.partner_id.lang).name,
             'product_uom_qty': 1,
             'product_uom': carrier.product_id.uom_id.id,
             'product_id': carrier.product_id.id,
@@ -110,6 +113,15 @@ class SaleOrder(models.Model):
             values['sequence'] = self.order_line[-1].sequence + 1
         sol = SaleOrderLine.sudo().create(values)
         return sol
+
+    @api.depends('state', 'order_line.invoice_status', 'order_line.invoice_lines',
+                 'order_line.is_delivery', 'order_line.is_downpayment', 'order_line.product_id.invoice_policy')
+    def _get_invoiced(self):
+        super(SaleOrder, self)._get_invoiced()
+        for order in self:
+            order_line = order.order_line.filtered(lambda x: not x.is_delivery and not x.is_downpayment)
+            if all(line.product_id.invoice_policy == 'delivery' and line.invoice_status == 'no' for line in order_line):
+                order.update({'invoice_status': 'no'})
 
 
 class SaleOrderLine(models.Model):
@@ -124,3 +136,7 @@ class SaleOrderLine(models.Model):
             if not line.product_id or not line.product_uom or not line.product_uom_qty:
                 return 0.0
             line.product_qty = line.product_uom._compute_quantity(line.product_uom_qty, line.product_id.uom_id)
+
+    def _is_delivery(self):
+        self.ensure_one()
+        return self.is_delivery

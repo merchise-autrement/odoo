@@ -109,11 +109,13 @@ class ResUsers(models.Model):
         # return user credentials
         return (self.env.cr.dbname, login, access_token)
 
-    @api.model
-    def check_credentials(self, password):
+    def _check_credentials(self, password):
         try:
-            return super(ResUsers, self).check_credentials(password)
+            return super(ResUsers, self)._check_credentials(password)
         except AccessDenied:
             res = self.sudo().search([('id', '=', self.env.uid), ('oauth_access_token', '=', password)])
             if not res:
                 raise
+
+    def _get_session_token_fields(self):
+        return super(ResUsers, self)._get_session_token_fields() | {'oauth_access_token'}

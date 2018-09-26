@@ -14,7 +14,7 @@ class MrpWorkcenter(models.Model):
     _inherit = ['resource.mixin']
 
     # resource
-    name = fields.Char(related='resource_id.name', store=True)
+    name = fields.Char('Work Center', related='resource_id.name', store=True)
     time_efficiency = fields.Float('Time Efficiency', related='resource_id.time_efficiency', default=100, store=True)
     active = fields.Boolean('Active', related='resource_id.active', default=True, store=True)
 
@@ -29,6 +29,7 @@ class MrpWorkcenter(models.Model):
         'Sequence', default=1, required=True,
         help="Gives the sequence order when displaying a list of work centers.")
     color = fields.Integer('Color')
+    costs_hour = fields.Float(string='Cost per hour', help='Specify cost of work center per hour.', default=0.0)
     time_start = fields.Float('Time before prod.', help="Time in minutes for the setup.")
     time_stop = fields.Float('Time after prod.', help="Time in minutes for the cleaning.")
     routing_line_ids = fields.One2many('mrp.routing.workcenter', 'workcenter_id', "Routing Lines")
@@ -159,10 +160,39 @@ class MrpWorkcenter(models.Model):
     def unblock(self):
         self.ensure_one()
         if self.working_state != 'blocked':
-            raise exceptions.UserError(_("It has been unblocked already. "))
+            raise exceptions.UserError(_("It has already been unblocked."))
         times = self.env['mrp.workcenter.productivity'].search([('workcenter_id', '=', self.id), ('date_end', '=', False)])
         times.write({'date_end': fields.Datetime.now()})
         return {'type': 'ir.actions.client', 'tag': 'reload'}
+
+    @api.model
+    def create(self, vals):
+        # resource_type is 'human' by default. As we are not living in
+        # /r/latestagecapitalism, workcenters are 'material'
+        return super(MrpWorkcenter, self.with_context({
+            'default_resource_type': 'material'})).create(vals)
+
+
+class MrpWorkcenterProductivityLossType(models.Model):
+    _name = "mrp.workcenter.productivity.loss.type"
+    _rec_name = 'loss_type'
+
+    @api.depends('loss_type')
+    def name_get(self):
+        """ As 'category' field in form view is a Many2one, its value will be in
+        lower case. In order to display its value capitalized 'name_get' is
+        overrided.
+        """
+        result = []
+        for rec in self:
+            result.append((rec.id, rec.loss_type.title()))
+        return result
+
+    loss_type = fields.Selection([
+            ('availability', 'Availability'),
+            ('performance', 'Performance'),
+            ('quality', 'Quality'),
+            ('productive', 'Productive')], string='Category', default='availability', required=True)
 
 
 class MrpWorkcenterProductivityLoss(models.Model):
@@ -173,12 +203,8 @@ class MrpWorkcenterProductivityLoss(models.Model):
     name = fields.Char('Reason', required=True)
     sequence = fields.Integer('Sequence', default=1)
     manual = fields.Boolean('Is a Blocking Reason', default=True)
-    loss_type = fields.Selection([
-        ('availability', 'Availability'),
-        ('performance', 'Performance'),
-        ('quality', 'Quality'),
-        ('productive', 'Productive')], "Effectiveness Category",
-        default='availability', required=True)
+    loss_id = fields.Many2one('mrp.workcenter.productivity.loss.type', domain=([('loss_type', 'in', ['quality', 'availability'])]), string='Category')
+    loss_type = fields.Selection(string='Effectiveness Category', related='loss_id.loss_type', store=True)
 
 
 class MrpWorkcenterProductivity(models.Model):
@@ -211,7 +237,7 @@ class MrpWorkcenterProductivity(models.Model):
                 d2 = fields.Datetime.from_string(blocktime.date_end)
                 diff = d2 - d1
                 if (blocktime.loss_type not in ('productive', 'performance')) and blocktime.workcenter_id.resource_calendar_id:
-                    r = blocktime.workcenter_id.resource_calendar_id.get_work_hours_count(d1, d2, blocktime.workcenter_id.resource_id.id)
+                    r = blocktime.workcenter_id.get_work_days_data(d1, d2)['hours']
                     blocktime.duration = round(r * 60, 2)
                 else:
                     blocktime.duration = round(diff.total_seconds() / 60.0, 2)

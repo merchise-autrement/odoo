@@ -8,8 +8,8 @@ class ProjectTask(models.Model):
     _name = "project.task"
     _inherit = ["project.task", 'pad.common']
 
-    description_pad = fields.Char('Pad URL', pad_content_field='description')
-    use_pad = fields.Boolean(related="project_id.use_pads", string="Use collaborative pad")
+    description_pad = fields.Char('Pad URL', pad_content_field='description', copy=False)
+    use_pad = fields.Boolean(related="project_id.use_pads", string="Use collaborative pad", readonly=True)
 
     @api.model
     def create(self, vals):
@@ -18,13 +18,6 @@ class ProjectTask(models.Model):
         if not self.env['project.project'].browse(project_id).use_pads:
             self = self.with_context(pad_no_create=True)
         return super(ProjectTask, self).create(vals)
-
-    @api.multi
-    @api.returns('self', lambda value: value.id)
-    def copy(self, default=None):
-        if not self.use_pad:
-            self = self.with_context(pad_no_create=True)
-        return super(ProjectTask, self).copy(default)
 
 
 class ProjectProject(models.Model):

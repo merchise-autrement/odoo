@@ -15,10 +15,14 @@ var FormController = BasicController.extend({
         bounce_edit: '_onBounceEdit',
         button_clicked: '_onButtonClicked',
         do_action: '_onDoAction',
-        freeze_order: '_onFreezeOrder',
+        edited_list: '_onEditedList',
         open_one2many_record: '_onOpenOne2ManyRecord',
         open_record: '_onOpenRecord',
         toggle_column_order: '_onToggleColumnOrder',
+        focus_control_button: '_onFocusControlButton',
+        form_dialog_discarded: '_onFormDialogDiscarded',
+        swipe_left: '_onSwipeLeft',
+        swipe_right: '_onSwipeRight',
     }),
     /**
      * @override
@@ -41,12 +45,20 @@ var FormController = BasicController.extend({
     // Public
     //--------------------------------------------------------------------------
 
+
     /**
      * Calls autofocus on the renderer
      */
     autofocus: function () {
         if (!this.disableAutofocus) {
-            this.renderer.autofocus();
+            var isControlActivted = this.renderer.autofocus();
+            if (!isControlActivted) {
+                // this can happen in read mode if there are no buttons with
+                // btn-primary class
+                if (this.$buttons && this.mode === 'readonly') {
+                    return this.$buttons.find('.o_form_button_edit').focus();
+                }
+            }
         }
     },
     /**
@@ -100,6 +112,7 @@ var FormController = BasicController.extend({
      * @todo convert to new style
      */
     on_attach_callback: function () {
+        this._super.apply(this, arguments);
         this.autofocus();
     },
     /**
@@ -119,13 +132,21 @@ var FormController = BasicController.extend({
         this.$buttons = $('<div/>');
         if (mustRenderFooterButtons) {
             this.$buttons.append($footer);
+
         } else {
             this.$buttons.append(qweb.render("FormView.buttons", {widget: this}));
             this.$buttons.on('click', '.o_form_button_edit', this._onEdit.bind(this));
             this.$buttons.on('click', '.o_form_button_create', this._onCreate.bind(this));
             this.$buttons.on('click', '.o_form_button_save', this._onSave.bind(this));
             this.$buttons.on('click', '.o_form_button_cancel', this._onDiscard.bind(this));
-
+            this._assignSaveCancelKeyboardBehavior(this.$buttons.find('.o_form_buttons_edit'));
+            this.$buttons.find('.o_form_buttons_edit').tooltip({
+                delay: {show: 200, hide:0},
+                title: function(){
+                    return qweb.render('SaveCancelButton.tooltip');
+                },
+                trigger: 'manual',
+            });
             this._updateButtons();
         }
         this.$buttons.appendTo($node);
@@ -214,11 +235,49 @@ var FormController = BasicController.extend({
             return changedFields;
         });
     },
+    /**
+     * Overrides to force the viewType to 'form', so that we ensure that the
+     * correct fields are reloaded (this is only useful for one2many form views).
+     *
+     * @override
+     */
+    update: function (params, options) {
+        params = _.extend({viewType: 'form'}, params);
+        return this._super(params, options);
+    },
 
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
-
+    /**
+     * Assign on the buttons save and discard additionnal behavior to facilitate
+     * the work of the users doing input only using the keyboard
+     *
+     * @param {jQueryElement} $saveCancelButtonContainer  The div containing the
+     * save and cancel buttons
+     * @private
+     */
+    _assignSaveCancelKeyboardBehavior: function ($saveCancelButtonContainer) {
+        var self = this;
+        $saveCancelButtonContainer.children().on('keydown', function(e) {
+            switch(e.which) {
+                case $.ui.keyCode.ENTER:
+                    e.preventDefault();
+                    self.saveRecord.apply(self);
+                    break;
+                case $.ui.keyCode.ESCAPE:
+                    e.preventDefault();
+                    self._discardChanges.apply(self);
+                    break;
+                case $.ui.keyCode.TAB:
+                    if (!e.shiftKey && e.target.classList.contains("btn-primary")) {
+                        $saveCancelButtonContainer.tooltip('show');
+                        e.preventDefault();
+                    }
+                    break;
+            }
+        });
+    },
     /**
      * When a save operation has been confirmed from the model, this method is
      * called.
@@ -443,11 +502,11 @@ var FormController = BasicController.extend({
      */
     _onDoAction: function (event) {
         var self=this;
-        // A priori, different widgets could write on the "on_success" key. 
+        // A priori, different widgets could write on the "on_success" key.
         // Below we ensure that all the actions required by those widgets
         // are executed in a suitable order before every cycle of destruction.
         var callback = event.data.on_success || function () {};
-        event.data.on_success = function () { 
+        event.data.on_success = function () {
             callback();
             function isDialog (widget) {
                 return (widget instanceof Dialog);
@@ -482,11 +541,37 @@ var FormController = BasicController.extend({
      * in a x2many list view
      *
      * @private
+     * @param {OdooEvent} ev
+     * @param {integer} ev.id of the list to freeze while editing a line
+     */
+    _onEditedList: function (ev) {
+        ev.stopPropagation();
+        if (ev.data.id) {
+            this.model.save(ev.data.id, {savePoint: true});
+        }
+        this.model.freezeOrder(ev.data.id);
+    },
+    /**
+     * Set the focus on the first primary button of the controller (likely Edit)
+     *
+     * @private
      * @param {OdooEvent} event
      */
-    _onFreezeOrder: function (event) {
-        event.stopPropagation();
-        this.model.freezeOrder(event.data.id);
+    _onFocusControlButton:function(e) {
+        if (this.$buttons) {
+            e.stopPropagation();
+            this.$buttons.find('.btn-primary:visible:first()').focus();
+        }
+    },
+    /**
+     * Reset the focus on the control that openned a Dialog after it was closed
+     *
+     * @private
+     * @param {OdooEvent} event
+     */
+    _onFormDialogDiscarded: function(e) {
+        e.stopPropagation();
+        this.renderer.focusLastActivatedWidget();
     },
     /**
      * Opens a one2many record (potentially new) in a dialog. This handler is
@@ -514,8 +599,10 @@ var FormController = BasicController.extend({
             fields_view: data.fields_view,
             model: this.model,
             on_saved: data.on_saved,
+            on_remove: data.on_remove,
             parentID: data.parentID,
             readonly: data.readonly,
+            deletable: data.deletable,
             recordID: record && record.id,
             res_id: record && record.res_id,
             res_model: data.field.relation,
@@ -537,7 +624,9 @@ var FormController = BasicController.extend({
             context: event.data.context,
             fields_view: event.data.fields_view,
             on_saved: event.data.on_saved,
+            on_remove: event.data.on_remove,
             readonly: event.data.readonly,
+            deletable: event.data.deletable,
             res_id: record.res_id,
             res_model: record.model,
             title: _t("Open: ") + event.data.string,
@@ -551,7 +640,35 @@ var FormController = BasicController.extend({
      */
     _onSave: function (ev) {
         ev.stopPropagation(); // Prevent x2m lines to be auto-saved
-        this.saveRecord();
+        var self = this;
+        this._disableButtons();
+        this.saveRecord().always(function () {
+            self._enableButtons();
+        });
+    },
+    /**
+     * Called when user swipes left. Move to next record.
+     *
+     * @private
+     * @param {OdooEvent} ev
+     */
+    _onSwipeLeft: function (ev) {
+        ev.stopPropagation();
+        if (this.pager) {
+            this.pager.next();
+        }
+    },
+    /**
+     * Called when user swipes right. Move to previous record.
+     *
+     * @private
+     * @param {OdooEvent} ev
+     */
+    _onSwipeRight: function (ev) {
+        ev.stopPropagation();
+        if (this.pager) {
+            this.pager.previous();
+        }
     },
     /**
      * This method is called when someone tries to sort a column, most likely

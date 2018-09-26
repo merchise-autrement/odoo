@@ -40,6 +40,15 @@ class TestVariantsSearch(TransactionCase):
         self.assertIn(self.product_shirt_template, search_value,
                       'Shirt should be found searching L')
 
+    def test_name_search(self):
+        self.product_slip_template = self.env['product.template'].create({
+            'name': 'Slip',
+        })
+        res = self.env['product.product'].name_search('Shirt', [], 'not ilike', None)
+        res_ids = [r[0] for r in res]
+        self.assertIn(self.product_slip_template.product_variant_ids.id, res_ids,
+                      'Slip should be found searching \'not ilike\'')
+
 
 class TestVariants(common.TestProductCommon):
 
@@ -330,3 +339,23 @@ class TestVariantsNoCreate(common.TestProductCommon):
             {variant.attribute_value_ids for variant in template.product_variant_ids},
             {self.prod_attr1_v1, self.prod_attr1_v2},
         )
+
+    def test_update_variant_with_nocreate(self):
+        """ update variants with a 'nocreate' value on variant """
+        template = self.env['product.template'].create({
+            'name': 'Sofax',
+            'uom_id': self.uom_unit.id,
+            'uom_po_id': self.uom_unit.id,
+            'attribute_line_ids': [
+                (0, 0, { # one variant for this one
+                    'attribute_id': self.prod_att_1.id,
+                    'value_ids': [(4, self.prod_attr1_v1.id)],
+                }),
+            ],
+        })
+        self.assertEqual(len(template.product_variant_ids), 1)
+
+        for variant_id in template.product_variant_ids:
+            variant_id.attribute_value_ids += self.size_S
+        template.attribute_line_ids += template.attribute_line_ids.browse()
+        self.assertEqual(len(template.product_variant_ids), 1)

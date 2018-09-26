@@ -10,6 +10,7 @@ odoo.define('web.KanbanController', function (require) {
 var BasicController = require('web.BasicController');
 var Context = require('web.Context');
 var core = require('web.core');
+var Domain = require('web.Domain');
 var view_dialogs = require('web.view_dialogs');
 
 var _t = core._t;
@@ -29,6 +30,7 @@ var KanbanController = BasicController.extend({
         kanban_load_more: '_onLoadMore',
         kanban_load_records: '_onLoadColumnRecords',
         column_toggle_fold: '_onToggleColumn',
+        kanban_column_records_toggle_active: '_onToggleActiveRecords',
     }),
     /**
      * @override
@@ -40,12 +42,6 @@ var KanbanController = BasicController.extend({
         this.on_create = params.on_create;
         this.hasButtons = params.hasButtons;
     },
-    /**
-     * Called each time the kanban view is attached into the DOM.
-     */
-    on_attach_callback: function () {
-        this.renderer.on_attach_callback();
-    },
 
     //--------------------------------------------------------------------------
     // Public
@@ -56,8 +52,12 @@ var KanbanController = BasicController.extend({
      */
     renderButtons: function ($node) {
         if (this.hasButtons && this.is_action_enabled('create')) {
-            this.$buttons = $(qweb.render('KanbanView.buttons', {widget: this}));
+            this.$buttons = $(qweb.render('KanbanView.buttons', {
+                btnClass: 'btn-primary',
+                widget: this,
+            }));
             this.$buttons.on('click', 'button.o-kanban-button-new', this._onButtonNew.bind(this));
+            this.$buttons.on('keydown',this._onButtonsKeyDown.bind(this));
             this._updateButtons();
             this.$buttons.appendTo($node);
         }
@@ -83,22 +83,73 @@ var KanbanController = BasicController.extend({
         return this.renderer.updateRecord(this.model.get(id));
     },
     /**
-     * The column quick create should be displayed in kanban iff grouped by an
-     * m2o field and group_create action enabled.
-     *
      * @private
-     * @param {Object} state the current state
-     * @returns {boolean}
+     * @param {Widget} kanbanRecord
+     * @param {Object} params
      */
-    _isCreateColumnEnabled: function (state) {
-        var groupCreate = this.is_action_enabled('group_create');
-        if (!groupCreate) {
-            // pre-return to avoid a lot of the following processing
-            return false;
-        }
-        var groupByField = state.fields[state.groupedBy[0]];
-        var groupedByM2o = groupByField && (groupByField.type === 'many2one');
-        return !!groupedByM2o;
+    _reloadAfterButtonClick: function (kanbanRecord, params) {
+        var self = this;
+        var recordModel = this.model.localData[params.record.id];
+        var group = this.model.localData[recordModel.parentID];
+        var parent = this.model.localData[group.parentID];
+
+        this.model.reload(params.record.id).then(function (db_id) {
+            var data = self.model.get(db_id);
+            kanbanRecord.update(data);
+
+            // Check if we still need to display the record. Some fields of the domain are
+            // not guaranteed to be in data. This is for example the case if the action
+            // contains a domain on a field which is not in the Kanban view. Therefore,
+            // we need to handle multiple cases based on 3 variables:
+            // domInData: all domain fields are in the data
+            // activeInDomain: 'active' is already in the domain
+            // activeInData: 'active' is available in the data
+
+            var domain = (parent ? parent.domain : group.domain) || [];
+            var domInData = _.every(domain, function (d) {
+                return d[0] in data.data;
+            });
+            var activeInDomain = _.pluck(domain, 0).indexOf('active') !== -1;
+            var activeInData = 'active' in data.data;
+
+            // Case # | domInData | activeInDomain | activeInData
+            //   1    |   true    |      true      |      true     => no domain change
+            //   2    |   true    |      true      |      false    => not possible
+            //   3    |   true    |      false     |      true     => add active in domain
+            //   4    |   true    |      false     |      false    => no domain change
+            //   5    |   false   |      true      |      true     => no evaluation
+            //   6    |   false   |      true      |      false    => no evaluation
+            //   7    |   false   |      false     |      true     => replace domain
+            //   8    |   false   |      false     |      false    => no evaluation
+
+            // There are 3 cases which cannot be evaluated since we don't have all the
+            // necessary information. The complete solution would be to perform a RPC in
+            // these cases, but this is out of scope. A simpler one is to do a try / catch.
+
+            if (domInData && !activeInDomain && activeInData) {
+                domain = domain.concat([['active', '=', true]]);
+            } else if (!domInData && !activeInDomain && activeInData) {
+                domain = [['active', '=', true]];
+            }
+            try {
+                var visible = new Domain(domain).compute(data.evalContext);
+            } catch (e) {
+                return;
+            }
+            if (!visible) {
+                kanbanRecord.destroy();
+            }
+        });
+    },
+    /**
+     * @param {number[]} ids
+     * @private
+     * @returns {Deferred}
+     */
+    _resequenceColumns: function (ids) {
+        var state = this.model.get(this.handle, {raw: true});
+        var model = state.fields[state.groupedBy[0]].relation;
+        return this.model.resequence(model, ids, this.handle);
     },
     /**
      * This method calls the server to ask for a resequence.  Note that this
@@ -127,7 +178,7 @@ var KanbanController = BasicController.extend({
         return this._super.apply(this, arguments);
     },
     /**
-     * In grouped mode, set 'Create' button as btn-default if there is no column
+     * In grouped mode, set 'Create' button as btn-secondary if there is no column
      * (except if we can't create new columns)
      *
      * @private
@@ -136,7 +187,7 @@ var KanbanController = BasicController.extend({
     _updateButtons: function () {
         if (this.$buttons) {
             var state = this.model.get(this.handle, {raw: true});
-            var createHidden = state.data.length === 0 && this._isCreateColumnEnabled(state);
+            var createHidden = this.is_action_enabled('group_create') && state.isGroupedByM2ONoColumn;
             this.$buttons.find('.o-kanban-button-new').toggleClass('o_hidden', createHidden);
         }
     },
@@ -156,6 +207,10 @@ var KanbanController = BasicController.extend({
     _onAddColumn: function (event) {
         var self = this;
         this.model.createGroup(event.data.value, this.handle).then(function () {
+            var state = self.model.get(self.handle, {raw: true});
+            var ids = _.pluck(state.data, 'res_id').filter(_.isNumber);
+            return self._resequenceColumns(ids);
+        }).then(function () {
             return self.update({}, {reload: false});
         }).then(function () {
             self._updateButtons();
@@ -187,7 +242,6 @@ var KanbanController = BasicController.extend({
      */
     _onButtonClicked: function (event) {
         event.stopPropagation();
-        var self = this;
         var attrs = event.data.attrs;
         var record = event.data.record;
         if (attrs.context) {
@@ -206,13 +260,7 @@ var KanbanController = BasicController.extend({
                 model: record.model,
                 resIDs: record.res_ids,
             },
-            on_closed: function () {
-                self.model.reload(record.id).then(function (db_id) {
-                    var data = self.model.get(db_id);
-                    var kanban_record = event.target;
-                    kanban_record.update(data);
-                });
-            },
+            on_closed: this._reloadAfterButtonClick.bind(this, event.target, event.data),
         });
     },
     /**
@@ -236,6 +284,18 @@ var KanbanController = BasicController.extend({
                 view_type: 'form',
                 res_id: undefined
             });
+        }
+    },
+    /**
+     * Moves the focus from the controller buttons to the first kanban record
+     *
+     * @private
+     * @param {jQueryEvent} e
+     */
+    _onButtonsKeyDown: function (e) {
+        switch(e.keyCode) {
+            case $.ui.keyCode.DOWN:
+                this.$('.o_kanban_record:first').focus();
         }
     },
     /**
@@ -298,17 +358,20 @@ var KanbanController = BasicController.extend({
     },
     /**
      * @private
-     * @param {OdooEvent} event
-     * @param {KanbanColumn} event.target the column in which the record should
+     * @param {OdooEvent} ev
+     * @param {KanbanColumn} ev.target the column in which the record should
      *   be added
-     * @param {Object} event.data.values the field values of the record to
+     * @param {Object} ev.data.values the field values of the record to
      *   create; if values only contains the value of the 'display_name', a
      *   'name_create' is performed instead of 'create'
+     * @param {function} [ev.data.onFailure] called when the quick creation
+     *   failed
      */
-    _onQuickCreateRecord: function (event) {
+    _onQuickCreateRecord: function (ev) {
         var self = this;
-        var values = event.data.values;
-        var column = event.target;
+        var values = ev.data.values;
+        var column = ev.target;
+        var onFailure = ev.data.onFailure || function () {};
 
         // function that updates the kanban view once the record has been added
         // it receives the local id of the created record in arguments
@@ -320,7 +383,7 @@ var KanbanController = BasicController.extend({
             return self.renderer
                 .updateColumn(columnState.id, columnState, {openQuickCreate: true, state: state})
                 .then(function () {
-                    if (event.data.openRecord) {
+                    if (ev.data.openRecord) {
                         self.trigger_up('open_record', {id: db_id, mode: 'edit'});
                     }
                 });
@@ -328,8 +391,8 @@ var KanbanController = BasicController.extend({
 
         this.model.createRecordInGroup(column.db_id, values)
             .then(update)
-            .fail(function (error, event) {
-                event.preventDefault();
+            .fail(function (error, ev) {
+                ev.preventDefault();
                 var columnState = self.model.get(column.db_id, {raw: true});
                 var context = columnState.getContext();
                 var state = self.model.get(self.handle, {raw: true});
@@ -343,7 +406,7 @@ var KanbanController = BasicController.extend({
                         self.model.addRecordToGroup(column.db_id, record.res_id)
                             .then(update);
                     },
-                }).open();
+                }).open().opened(onFailure);
             });
     },
     /**
@@ -359,9 +422,7 @@ var KanbanController = BasicController.extend({
      */
     _onResequenceColumn: function (event) {
         var self = this;
-        var state = this.model.get(this.handle, {raw: true});
-        var model = state.fields[state.groupedBy[0]].relation;
-        this.model.resequence(model, event.data.ids, this.handle).then(function () {
+        this._resequenceColumns(event.data.ids).then(function () {
             self._updateEnv();
         });
     },
@@ -393,6 +454,27 @@ var KanbanController = BasicController.extend({
         var changes = _.clone(ev.data);
         ev.data.force_save = true;
         this._applyChanges(ev.target.db_id, changes, ev);
+    },
+    /**
+     * Allow the user to archive/restore all the records of a column.
+     *
+     * @private
+     * @param {OdooEvent} event
+     */
+    _onToggleActiveRecords: function (event) {
+        var self = this;
+        var active = !event.data.archive;
+        var column = event.target;
+        var recordIds = _.pluck(column.records, 'db_id');
+        if (recordIds.length) {
+            this.model
+                .toggleActive(recordIds, active, column.db_id)
+                .then(function (dbID) {
+                    var data = self.model.get(dbID);
+                    self.renderer.updateColumn(dbID, data);
+                    self._updateEnv();
+                });
+        }
     },
 });
 

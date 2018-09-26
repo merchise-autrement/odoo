@@ -42,6 +42,7 @@ Wizards provided by this module:
         'l10n_multilang',
     ],
     'data': [
+        'data/res.country.state.csv',
         'data/account_chart_template_data.xml',
         'data/account_pcmn_belgium_data.xml',
         'data/account_data.xml',
@@ -56,6 +57,5 @@ Wizards provided by this module:
     'demo': [
         'demo/l10n_be_demo.xml',
     ],
-    'website': 'https://www.odoo.com/page/accounting',
     'post_init_hook': 'load_translations',
 }

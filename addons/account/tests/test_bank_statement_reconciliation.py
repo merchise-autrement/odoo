@@ -11,16 +11,19 @@ class TestBankStatementReconciliation(AccountingTestCase):
         self.il_model = self.env['account.invoice.line']
         self.bs_model = self.env['account.bank.statement']
         self.bsl_model = self.env['account.bank.statement.line']
-        self.partner_agrolait = self.env.ref("base.res_partner_2")
+        self.reconciliation_widget = self.env['account.reconciliation.widget']
+        self.partner = self.env['res.partner'].create({'name': 'test'})
 
     def test_reconciliation_proposition(self):
         rcv_mv_line = self.create_invoice(100)
         st_line = self.create_statement_line(100)
 
         # exact amount match
-        rec_prop = st_line.get_reconciliation_proposition()
-        self.assertEqual(len(rec_prop), 1)
-        self.assertEqual(rec_prop[0].id, rcv_mv_line.id)
+        rec_prop = self.reconciliation_widget.get_bank_statement_line_data(st_line.ids)
+        prop = rec_prop[0]['reconciliation_proposition']
+
+        self.assertEqual(len(prop), 1)
+        self.assertEqual(prop[0]['id'], rcv_mv_line.id)
 
     def test_full_reconcile(self):
         rcv_mv_line = self.create_invoice(100)
@@ -50,7 +53,7 @@ class TestBankStatementReconciliation(AccountingTestCase):
 
     def create_invoice(self, amount):
         """ Return the move line that gets to be reconciled (the one in the receivable account) """
-        vals = {'partner_id': self.partner_agrolait.id,
+        vals = {'partner_id': self.partner.id,
                 'type': 'out_invoice',
                 'name': '-',
                 'currency_id': self.env.user.company_id.currency_id.id,
@@ -86,7 +89,7 @@ class TestBankStatementReconciliation(AccountingTestCase):
         bank_stmt_line = self.bsl_model.create({
             'name': '_',
             'statement_id': bank_stmt.id,
-            'partner_id': self.partner_agrolait.id,
+            'partner_id': self.partner.id,
             'amount': st_line_amount,
             })
 

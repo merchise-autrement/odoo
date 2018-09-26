@@ -16,6 +16,7 @@
                 </header>
                 <sheet>
                     <field name='product_variant_count' invisible='1'/>
+                    <field name='is_product_variant' invisible='1'/>
                     <field name="id" invisible="True"/>
                     <div class="oe_button_box" name="button_box">
                         <button name="toggle_active" type="object"
@@ -48,18 +49,53 @@
                                 </group>
                                 <group name="group_standard_price">
                                     <field name="list_price" string="Sales Price" widget='monetary' options="{'currency_field': 'currency_id', 'field_digits': True}"/>
-                                    <label for="standard_price" groups="base.group_user" attrs="{'invisible': [('product_variant_count', '&gt;', 1)]}"/>
-                                    <div name="standard_price_uom" groups="base.group_user" attrs="{'invisible': [('product_variant_count', '&gt;', 1)]}">
+                                    <label for="standard_price" groups="base.group_user" attrs="{'invisible': [('product_variant_count', '&gt;', 1), ('is_product_variant', '=', False)]}"/>
+                                    <div name="standard_price_uom" groups="base.group_user" attrs="{'invisible': [('product_variant_count', '&gt;', 1), ('is_product_variant', '=', False)]}">
                                         <field name="standard_price" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                                     </div>
                                     <field name="company_id" groups="base.group_multi_company"
                                         options="{'no_create': True}"/>
-                                    <field name="uom_id" groups="product.group_uom" options="{'no_create': True}"/>
-                                    <field name="uom_po_id" groups="product.group_uom" options="{'no_create': True}"/>
+                                    <field name="uom_id" groups="uom.group_uom" options="{'no_create': True}"/>
+                                    <field name="uom_po_id" groups="uom.group_uom" options="{'no_create': True}"/>
                                     <field name="currency_id" invisible="1"/>
                                     <field name="product_variant_id" invisible="1"/>
                                 </group>
-                                <group name="group_lots_and_weight" attrs="{'invisible':[('type', 'not in', ['product', 'consu'])]}">
+                            </group>
+                            <group string="Internal Notes">
+                                <field name="description" nolabel="1" placeholder="This note is only for internal purposes."/>
+                            </group>
+                        </page>
+                        <page string="Sales" attrs="{'invisible':[('sale_ok','=',False)]}" name="sales">
+                            <group name="sale">
+                                <group groups="product.group_product_pricelist" name="pricelists">
+                                    <div name="pricelist_item" groups="product.group_product_pricelist">
+                                        <separator string="Pricing"/>
+                                        <field name="item_ids" nolabel="1" context="{'default_base':'list_price', 'default_applied_on' :'1_product'}">
+                                            <tree string="Pricelist Items" editable="bottom">
+                                                <field name="pricelist_id" string="Pricelist" required='1'/>
+                                                <field name="fixed_price" string="Price" required='1'/>
+                                                <field name="min_quantity"/>
+                                                <field name="date_start"/>
+                                                <field name="date_end"/>
+                                                <field name="applied_on" invisible="1"/>
+                                            </tree>
+                                        </field>
+                                    </div>
+                                </group>
+                                <group name="email_template_and_project" invisible="1"/>
+                            </group>
+                            <group string="Description for Customers" name="description" invisible="1">
+                                <field name="description_sale" nolabel="1" placeholder="This note will show up on sales orders &amp; invoices."/>
+                            </group>
+                        </page>
+                        <page string="Purchase" name="purchase" attrs="{'invisible': [('purchase_ok','=',False)]}" invisible="1">
+                            <group name="purchase">
+                                <group string="Vendor Bills" name="bill"/>
+                            </group>
+                        </page>
+                        <page string="Inventory" name="inventory" groups="stock.group_stock_user,product.group_stock_packaging" attrs="{'invisible':[('type', '=', 'service')]}">
+                            <group name="inventory">
+                                <group name="group_lots_and_weight" string="Logistics" attrs="{'invisible': [('type', 'not in', ['product', 'consu'])]}">
                                     <label for="weight"/>
                                     <div class="o_row" name="weight">
                                         <field name="weight"/>
@@ -72,40 +108,11 @@
                                     </div>
                                 </group>
                             </group>
-                        </page>
-                        <page string="Sales" attrs="{'invisible':[('sale_ok','=',False)]}" name="sales">
-                            <div name="pricelist_item" groups="product.group_product_pricelist">
-                                <separator string="Pricing"/>
-                                <field name="item_ids" nolabel="1" context="{'default_base':'list_price', 'default_applied_on' :'1_product'}">
-                                    <tree string="Pricelist Items" editable="bottom">
-                                        <field name="pricelist_id" string="Pricelist" required='1'/>
-                                        <field name="fixed_price" string="Price" required='1'/>
-                                        <field name="min_quantity"/>
-                                        <field name="date_start"/>
-                                        <field name="date_end"/>
-                                        <field name="applied_on" invisible="1"/>
-                                    </tree>
-                                </field>
-                            </div>
-                            <group name="sale">
-                                <group name="email_template_and_project"
-                                    attrs="{'invisible':[('type', '!=', 'service')]}"/>
-                            </group>
-                            <group string="Description for Customers" name="description">
-                                <field name="description_sale" nolabel="1" placeholder="This note will show up on sales orders &amp; invoices."/>
-                            </group>
-                        </page>
-                        <page string="Purchase" name="purchase" attrs="{'invisible': [('purchase_ok','=',False)]}">
-                            <group name="purchase">
-                                <group string="Purchase Bills" name="bill"/>
-                            </group>
-                        </page>
-                        <page string="Inventory" name="inventory" groups="stock.group_stock_user,product.group_stock_packaging" attrs="{'invisible':[('type', '=', 'service')]}">
                             <group name="packaging" string="Packaging"
                                 colspan="4"
                                 attrs="{'invisible':['|', ('type', 'not in', ['product', 'consu']), ('product_variant_count', '>', 1)]}"
                                 groups="product.group_stock_packaging">
-                                <field name="packaging_ids" nolabel="1" context="{'default_product_id': product_variant_id,'tree_view_ref':'product.product_packaging_tree_view', 'form_view_ref':'product.product_packaging_form_view'}"/>
+                                <field name="packaging_ids" nolabel="1" context="{'tree_view_ref':'product.product_packaging_tree_view2', 'form_view_ref':'product.product_packaging_form_view2'}"/>
                             </group>
                         </page>
                     </notebook>
@@ -251,7 +258,7 @@
                         <group name="packaging" string="Packaging"
                             colspan="4"
                             groups="product.group_stock_packaging">
-                            <field name="packaging_ids" nolabel="1" context="{'default_product_id': id, 'tree_view_ref':'product.product_packaging_tree_view', 'form_view_ref':'product.product_packaging_form_view'}"/>
+                            <field name="packaging_ids" nolabel="1" context="{'tree_view_ref':'product.product_packaging_tree_view2', 'form_view_ref':'product.product_packaging_form_view2'}"/>
                         </group>
                     </sheet>
                 </form>
@@ -292,8 +299,10 @@
                     <field name="name"/>
                     <field name="attribute_value_ids" widget="many2many_tags" groups="product.group_product_variant"/>
                     <field name="lst_price"/>
+                    <field name="standard_price"/>
+                    <field name="type" invisible="1"/>
                     <field name="price" invisible="not context.get('pricelist',False)"/>
-                    <field name="uom_id" options="{'no_open': True, 'no_create': True}" groups="product.group_uom"/>
+                    <field name="uom_id" options="{'no_open': True, 'no_create': True}" groups="uom.group_uom"/>
                     <field name="barcode"/>
                     <field name="product_tmpl_id" invisible="1"/>
                     <field name="active" invisible="1"/>
@@ -322,8 +331,11 @@
                 <group name="packaging" position="attributes">
                     <attribute name="attrs">{'invisible': 0}</attribute>
                 </group>
+                <field name="name" position="attributes">
+                    <attribute name="class">oe_edit_only</attribute>
+                </field>
                 <field name="name" position="after">
-                    <field name="product_tmpl_id" class="oe_inline" readonly="1" invisible="1" attrs="{'required': [('id', '!=', False)]}"/>
+                    <field name="product_tmpl_id" class="oe_read_only oe_inline" readonly="1" attrs="{'required': [('id', '!=', False)]}"/>
                 </field>
                 <field name="item_ids" position="inside">
                     <field name="pricelist_item_ids" widget="many2many">
@@ -343,7 +355,8 @@
                     </field>
                 </field>
                 <xpath expr="//div[hasclass('oe_title')]" position="inside">
-                    <field name="attribute_value_ids" widget="many2many_tags" groups="product.group_product_variant"/>
+                    <field name="attribute_value_ids" widget="many2many_tags" readonly="1"
+                        groups="product.group_product_variant"/>
                 </xpath>
             </field>
         </record>
@@ -360,7 +373,7 @@
                         <t t-name="kanban-box">
                             <div class="oe_kanban_global_click">
                                 <div class="o_kanban_image">
-                                    <img t-att-src="kanban_image('product.product', 'image_small', record.id.raw_value)"/>
+                                    <img t-att-src="kanban_image('product.product', 'image_small', record.id.raw_value)" alt="Product"/>
                                 </div>
                                 <div class="oe_kanban_details">
                                     <strong class="o_kanban_record_title"><field name="name"/></strong>
@@ -445,7 +458,7 @@
             <field name="priority">1</field>
             <field name="arch" type="xml">
                 <tree string="Product Categories">
-                    <field name="display_name"/>
+                    <field name="display_name" string="Product Category"/>
                 </tree>
             </field>
         </record>
@@ -468,7 +481,19 @@
                     <field name="product_id"/>
                     <field name="name" string="Packaging"/>
                     <field name="qty"/>
+                    <field name="product_uom_id" options="{'no_open': True, 'no_create': True}" groups="uom.group_uom"/>
                 </tree>
+            </field>
+        </record>
+
+        <record id="product_packaging_tree_view2" model="ir.ui.view">
+            <field name="name">product.packaging.tree.view2</field>
+            <field name="model">product.packaging</field>
+            <field name="mode">primary</field>
+            <field name="inherit_id" ref="product.product_packaging_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='product_id']" position="replace"/>
+                <xpath expr="//field[@name='sequence']" position="replace"/>
             </field>
         </record>
 
@@ -484,16 +509,31 @@
                         </h1>
                         <group>
                             <field name="id" invisible='1'/>
-                            <group>
+                            <group name="group_product">
                                 <field name="product_id"  required='True' attrs="{'readonly': [('id', '!=', False)]}"/>
                             </group>
                             <group name="qty">
-                                <field name="qty"/>
+                                <label for="qty" string="Contained quantity"/>
+                                <div class="o_row">
+                                    <field name="qty"/>
+                                    <field name="product_uom_id" options="{'no_open': True, 'no_create': True}" groups="uom.group_uom"/>
+                                </div>
                                 <field name="barcode"/>
                             </group>
                         </group>
                     </sheet>
                 </form>
+            </field>
+        </record>
+
+        <record id="product_packaging_form_view2" model="ir.ui.view">
+            <field name="name">product.packaging.form.view2</field>
+            <field name="model">product.packaging</field>
+            <field name="mode">primary</field>
+            <field name="inherit_id" ref="product.product_packaging_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='group_product']" position="replace"/>
+                <xpath expr="//field[@name='id']" position="replace"/>
             </field>
         </record>
 
@@ -528,7 +568,7 @@
                             <label for="min_qty"/>
                             <div>
                                 <field name="min_qty" class="oe_inline"/>
-                                <field name="product_uom" class="oe_inline" groups="product.group_uom"/>
+                                <field name="product_uom" class="oe_inline" groups="uom.group_uom"/>
                             </div>
                             <label for="price"/>
                             <div>
@@ -576,16 +616,16 @@
                         <t t-name="kanban-box">
                             <div class="oe_kanban_global_click">
                                 <div class="row mb4">
-                                    <strong class="col-xs-6">
+                                    <strong class="col-6">
                                         <span t-esc="record.name.value"/>
                                     </strong>
-                                    <strong class="col-xs-6 text-right">
+                                    <strong class="col-6 text-right">
                                         <strong><field name="price" widget="monetary"/></strong>
                                     </strong>
-                                    <div class="col-xs-6">
+                                    <div class="col-6">
                                         <span t-esc="record.min_qty.value"/>
                                     </div>
-                                    <div class="col-xs-6 text-right">
+                                    <div class="col-6 text-right">
                                         <span t-esc="record.delay.value"/> days
                                     </div>
                                 </div>
@@ -606,7 +646,9 @@
                     <field name="product_id" invisible="context.get('product_template_invisible_variant', False)" groups="product.group_product_variant"/>
                     <field name="product_tmpl_id" string="Product" invisible="context.get('visible_product_tmpl_id', True)"/>
                     <field name="min_qty"/>
+                    <field name="product_uom" groups="uom.group_uom"/>
                     <field name="price" string="Price"/>
+                    <field name="currency_id" groups="base.group_multi_currency"/>
                     <field name="date_start"/>
                     <field name="date_end"/>
                 </tree>

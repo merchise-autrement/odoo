@@ -1,0 +1,21 @@
+//
+// Color system
+//
+
+$yiq-text-dark: color('text');
+
+// Body
+//
+// Settings for the `<body>` element.
+
+$body-bg: color('body');
+$body-color: color('text');
+
+// Fonts
+//
+// Font, line-height, and color for body text, headings, and more.
+
+$font-family-sans-serif: nth($o-theme-fonts, $o-theme-font-number);
+
+$headings-font-family: nth($o-theme-fonts, $o-theme-headings-font-number);
+$headings-color: color('h1');

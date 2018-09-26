@@ -121,6 +121,12 @@ var BasicController = AbstractController.extend(FieldManagerMixin, {
         return [];
     },
     /**
+     * Gives the focus to the renderer
+     */
+    giveFocus:function() {
+        this.renderer.giveFocus();
+    },
+    /**
      * Returns true iff the given recordID (or the main recordID) is dirty.
      *
      * @param {string} [recordID] - default to main recordID
@@ -139,12 +145,13 @@ var BasicController = AbstractController.extend(FieldManagerMixin, {
         this.pager.on('pager_changed', this, function (newState) {
             var self = this;
             this.pager.disable();
+            data = this.model.get(this.handle, {raw: true});
             var limitChanged = (data.limit !== newState.limit);
             this.reload({limit: newState.limit, offset: newState.current_min - 1})
                 .then(function () {
                     // Reset the scroll position to the top on page changed only
                     if (!limitChanged) {
-                        self.trigger_up('scrollTo', {offset: 0});
+                        self.trigger_up('scrollTo', {top: 0});
                     }
                 })
                 .then(this.pager.enable.bind(this.pager));
@@ -166,18 +173,21 @@ var BasicController = AbstractController.extend(FieldManagerMixin, {
         // may have to validate them before notifying them, so we ask them to
         // commit their current value before saving. This has to be done outside
         // of the mutex protection of saving because commitChanges will trigger
-        // changes and these are also protected. So the actual saving has to be
+        // changes and these are also protected. However, we must wait for the
+        // mutex to be idle to ensure that onchange RPCs returned before asking
+        // field widgets to commit their value (and validate it, for instance
+        // for one2many with required fields). So the actual saving has to be
         // done after these changes. Also the commitChanges operation might not
         // be synchronous for other reason (e.g. the x2m fields will ask the
         // user if some discarding has to be made). This operation must also be
         // mutex-protected as commitChanges function of x2m has to be aware of
         // all final changes made to a row.
         var self = this;
-        return this.mutex
-            .exec(this.renderer.commitChanges.bind(this.renderer, recordID || this.handle))
-            .then(function () {
+        return this.mutex.getUnlockedDef().then(function () {
+            return self.renderer.commitChanges(recordID || self.handle).then(function () {
                 return self.mutex.exec(self._saveRecord.bind(self, recordID, options));
             });
+        });
     },
     /**
      * @override
@@ -254,9 +264,7 @@ var BasicController = AbstractController.extend(FieldManagerMixin, {
                 resIDs: record.res_ids,
             },
             on_success: def.resolve.bind(def),
-            on_fail: function () {
-                reload().always(def.reject.bind(def));
-            },
+            on_fail: def.reject.bind(def),
             on_closed: reload,
         });
         return this.alive(def);
@@ -274,6 +282,13 @@ var BasicController = AbstractController.extend(FieldManagerMixin, {
      * @returns {Deferred}
      */
     _confirmChange: function (id, fields, e) {
+        if (e.name === 'discard_changes' && e.target.reset) {
+            // the target of the discard event is a field widget.  In that
+            // case, we simply want to reset the specific field widget,
+            // not the full view
+            return  e.target.reset(this.model.get(e.target.dataPointID), e, true);
+        }
+
         var state = this.model.get(this.handle);
         return this.renderer.confirmChange(state, id, fields, e);
     },
@@ -302,7 +317,7 @@ var BasicController = AbstractController.extend(FieldManagerMixin, {
      *
      * @private
      */
-    _disableButtons: function () {
+    _disableButtons: function () {
         if (this.$buttons) {
             this.$buttons.find('button').attr('disabled', true);
         }
@@ -334,7 +349,7 @@ var BasicController = AbstractController.extend(FieldManagerMixin, {
                     return;
                 }
                 self.model.discardChanges(recordID);
-                if (self.model.isNew(recordID)) {
+                if (self.model.canBeAbandoned(recordID)) {
                     self._abandonRecord(recordID);
                     return;
                 }
@@ -346,7 +361,7 @@ var BasicController = AbstractController.extend(FieldManagerMixin, {
      *
      * @private
      */
-    _enableButtons: function () {
+    _enableButtons: function () {
         if (this.$buttons) {
             this.$buttons.find('button').removeAttr('disabled');
         }
@@ -600,12 +615,12 @@ var BasicController = AbstractController.extend(FieldManagerMixin, {
         }).then(function (result) {
             self.do_action(result, {
                 on_reverse_breadcrumb: function () {
-                    if (self.renderer.alertFields.length) {
+                    if (!_.isEmpty(self.renderer.alertFields)) {
                         self.renderer.displayTranslationAlert();
                     }
-                    return false
+                    return false;
                 },
-            })
+            });
         });
     },
 });

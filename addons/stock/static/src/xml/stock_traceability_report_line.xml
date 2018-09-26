@@ -3,11 +3,11 @@
 <templates>
 
     <t t-name="foldable">
-        <span t-att-class="'o_stock_reports_foldable ' + lineId + ' o_stock_reports_caret_icon'"><i class="fa fa-fw fa-caret-down"></i></span>
+        <span t-att-class="'o_stock_reports_foldable ' + lineId + ' o_stock_reports_caret_icon'"><i class="fa fa-fw fa-caret-down" role="img" aria-label="Fold" title="Fold"></i></span>
     </t>
 
     <t t-name="unfoldable">
-        <span t-att-class="'o_stock_reports_unfoldable ' + lineId + ' o_stock_reports_caret_icon'"><i class="fa fa-fw fa-caret-right"></i></span>
+        <span t-att-class="'o_stock_reports_unfoldable ' + lineId + ' o_stock_reports_caret_icon'"><i class="fa fa-fw fa-caret-right" role="img" aria-label="Unfold" title="Unfold"></i></span>
     </t>
 
     <t t-name="report_mrp_line">
@@ -33,17 +33,17 @@
                     <t t-if="column == 1">
                         <span t-att-style="space_td" t-att-class="domainClass"></span>
                         <t t-if="l.unfoldable">
-                            <span class="o_stock_reports_unfoldable o_stock_reports_caret_icon"><i class="fa fa-fw fa-caret-right"></i></span>
+                            <span class="o_stock_reports_unfoldable o_stock_reports_caret_icon"><i class="fa fa-fw fa-caret-right" role="img" aria-label="Unfold" title="Unfold"></i></span>
                         </t>
                     </t>
                     <t t-if="l.reference == c">
                         <span t-if="c" t-att-class="spanclass">
-                            <a t-att-data-active-id="l.res_id" t-att-data-res-model="l.res_model" class="o_stock_reports_web_action"><t t-raw="c" /></a>
+                            <a t-att-data-active-id="l.res_id" t-att-data-res-model="l.res_model" class="o_stock_reports_web_action" href="#"><t t-raw="c" /></a>
                         </span>
                     </t>
                     <t t-elif="l.lot_name == c and l.lot_name != false">
                             <span>
-                                <a class="o_stock_report_lot_action"><t t-raw="c"/></a>
+                                <a class="o_stock_report_lot_action" href="#"><t t-raw="c"/></a>
                             </span>
                         </t>
                     <t t-if="l.reference != c and l.lot_name != c">

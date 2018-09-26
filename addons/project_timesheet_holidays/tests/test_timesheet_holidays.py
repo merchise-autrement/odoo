@@ -16,7 +16,7 @@ class TestTimesheetHolidaysCreate(common.TransactionCase):
         """Ensure that when a status is created, it fullfills the project and task constrains"""
         status = self.env['hr.leave.type'].create({
             'name': 'A nice Leave Type',
-            'limit': True
+            'allocation_type': 'no'
         })
 
         company = self.env.user.company_id
@@ -33,8 +33,7 @@ class TestTimesheetHolidays(TestTimesheet):
         # leave dates : from next monday to next wednesday (to avoid crashing tests on weekend, when
         # there is no work days in working calendar)
         # NOTE: second and millisecond can add a working days
-        today = datetime.combine(datetime.today(), time.min)
-        self.leave_start_datetime = today.replace(hour=7) + relativedelta(weeks=0, days=1, weekday=0)
+        self.leave_start_datetime = datetime(2018, 2, 5, 7, 0, 0, 0)  # this is monday
         self.leave_end_datetime = self.leave_start_datetime + relativedelta(days=3)
 
         # all company have those internal project/task (created by default)
@@ -43,14 +42,14 @@ class TestTimesheetHolidays(TestTimesheet):
 
         self.hr_leave_type_with_ts = self.env['hr.leave.type'].create({
             'name': 'Leave Type with timesheet generation',
-            'limit': True,
+            'allocation_type': 'no',
             'timesheet_generate': True,
             'timesheet_project_id': self.internal_project.id,
             'timesheet_task_id': self.internal_task_leaves.id,
         })
         self.hr_leave_type_no_ts = self.env['hr.leave.type'].create({
             'name': 'Leave Type without timesheet generation',
-            'limit': True,
+            'allocation_type': 'no',
             'timesheet_generate': False,
             'timesheet_project_id': False,
             'timesheet_task_id': False,
@@ -63,14 +62,14 @@ class TestTimesheetHolidays(TestTimesheet):
             'name': 'Days for limited category with timesheet',
             'employee_id': self.empl_employee.id,
             'holiday_status_id': self.hr_leave_type_with_ts.id,
-            'number_of_days_temp': 10,
+            'number_of_days': 10,
         })
         self.hr_leave_allocation_with_ts.action_approve()
         self.hr_leave_allocation_no_ts = self.Allocations.sudo().create({
             'name': 'Days for limited category without timesheet',
             'employee_id': self.empl_employee.id,
             'holiday_status_id': self.hr_leave_type_no_ts.id,
-            'number_of_days_temp': 10,
+            'number_of_days': 10,
         })
         self.hr_leave_allocation_no_ts.action_approve()
 
@@ -83,7 +82,7 @@ class TestTimesheetHolidays(TestTimesheet):
             'holiday_status_id': self.hr_leave_type_with_ts.id,
             'date_from': self.leave_start_datetime,
             'date_to': self.leave_end_datetime,
-            'number_of_days_temp': number_of_days,
+            'number_of_days': number_of_days,
         })
         holiday.sudo().action_validate()
         self.assertEquals(len(holiday.timesheet_ids), number_of_days, 'Number of generated timesheets should be the same as the leave duration (1 per day between %s and %s)' % (fields.Datetime.to_string(self.leave_start_datetime), fields.Datetime.to_string(self.leave_end_datetime)))
@@ -101,7 +100,7 @@ class TestTimesheetHolidays(TestTimesheet):
             'holiday_status_id': self.hr_leave_type_no_ts.id,
             'date_from': self.leave_start_datetime,
             'date_to': self.leave_end_datetime,
-            'number_of_days_temp': number_of_days,
+            'number_of_days': number_of_days,
         })
         holiday.sudo().action_validate()
         self.assertEquals(len(holiday.timesheet_ids), 0, 'Number of generated timesheets should be zero since the leave type does not generate timesheet')

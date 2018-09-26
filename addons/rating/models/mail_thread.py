@@ -8,9 +8,9 @@ class MailThread(models.AbstractModel):
     _inherit = 'mail.thread'
 
     @api.multi
-    @api.returns('self', lambda value: value.id)
+    @api.returns('mail.message', lambda value: value.id)
     def message_post(self, **kwargs):
-        rating_value = kwargs.get('rating_value')
+        rating_value = kwargs.pop('rating_value', False)
         message = super(MailThread, self).message_post(**kwargs)
         if rating_value:
             ir_model = self.env['ir.model'].sudo().search([('model', '=', self._name)])

@@ -3,7 +3,7 @@ odoo.define('web.MockServer', function (require) {
 
 var Class = require('web.Class');
 var Domain = require('web.Domain');
-var pyeval = require('web.pyeval');
+var pyUtils = require('web.py_utils');
 
 var MockServer = Class.extend({
     /**
@@ -110,19 +110,34 @@ var MockServer = Class.extend({
             console.log('%c[rpc] request ' + route, 'color: blue; font-weight: bold;', args);
             args = JSON.parse(JSON.stringify(args));
         }
-        return this._performRpc(route, args).then(function (result) {
+        var def = this._performRpc(route, args);
+
+        var abort = def.abort || def.reject;
+        if (abort) {
+            abort = abort.bind(def);
+        } else {
+            abort = function () {
+                throw new Error("Can't abort this request");
+            };
+        }
+
+        def = def.then(function (result) {
             var resultString = JSON.stringify(result || false);
             if (debug) {
                 console.log('%c[rpc] response' + route, 'color: blue; font-weight: bold;', JSON.parse(resultString));
             }
             return JSON.parse(resultString);
-        }).fail(function (result) {
+        }, function (result, event) {
             var errorString = JSON.stringify(result || false);
             if (debug) {
                 console.log('%c[rpc] response (error) ' + route, 'color: orange; font-weight: bold;', JSON.parse(errorString));
             }
-            return JSON.parse(errorString);
+            return $.Deferred().reject(errorString, event || $.Event());
         });
+
+        var promise = def.promise();
+        promise.abort = abort;
+        return promise;
     },
 
     //--------------------------------------------------------------------------
@@ -235,9 +250,8 @@ var MockServer = Class.extend({
             // 'transfer_node_to_modifiers' simulation
             var attrs = node.getAttribute('attrs');
             if (attrs) {
-                attrs = pyeval.py_eval(attrs);
+                attrs = pyUtils.py_eval(attrs);
                 _.extend(modifiers, attrs);
-                node.removeAttribute('attrs');
             }
 
             var states = node.getAttribute('states');
@@ -251,7 +265,7 @@ var MockServer = Class.extend({
                 var mod = node.getAttribute(a);
                 if (mod) {
                     var pyevalContext = window.py.dict.fromJSON(context || {});
-                    var v = pyeval.py_eval(mod, {context: pyevalContext}) ? true: false;
+                    var v = pyUtils.py_eval(mod, {context: pyevalContext}) ? true: false;
                     if (inTreeView && a === 'invisible') {
                         modifiers.column_invisible = v;
                     } else if (v || !(a in modifiers) || !_.isArray(modifiers[a])) {
@@ -332,7 +346,7 @@ var MockServer = Class.extend({
                 activeInDomain = activeInDomain || subdomain[0] === 'active';
             });
             if (!activeInDomain) {
-                domain.unshift(['active', '=', true]);
+                domain = [['active', '=', true]].concat(domain);
             }
         }
 
@@ -565,9 +579,13 @@ var MockServer = Class.extend({
                 return record.display_name.indexOf(str) !== -1;
             });
         }
-        return _.map(records, function (record) {
+        var result = _.map(records, function (record) {
             return [record.id, record.display_name];
         });
+        if (args.limit) {
+            return result.slice(0, args.limit);
+        }
+        return result;
     },
     /**
      * Simulate an 'onchange' rpc
@@ -675,7 +693,19 @@ var MockServer = Class.extend({
         }
         var self = this;
         var fields = this.data[model].fields;
-        var aggregatedFields = _.clone(kwargs.fields);
+        var aggregatedFields = [];
+        _.each(kwargs.fields, function (field) {
+            var split = field.split(":");
+            var fieldName = split[0];
+            if (kwargs.groupby.indexOf(fieldName) > 0) {
+                // grouped fields are not aggregated
+                return;
+            }
+            if (fields[fieldName] && (fields[fieldName].type === 'many2one') && split[1] !== 'count_distinct') {
+                return;
+            }
+            aggregatedFields.push(fieldName);
+        });
         var groupBy = [];
         if (kwargs.groupby.length) {
             groupBy = kwargs.lazy ? [kwargs.groupby[0]] : kwargs.groupby;
@@ -683,13 +713,17 @@ var MockServer = Class.extend({
         var records = this._getRecords(model, kwargs.domain);
 
         // if no fields have been given, the server picks all stored fields
-        if (aggregatedFields.length === 0) {
+        if (kwargs.fields.length === 0) {
             aggregatedFields = _.keys(this.data[model].fields);
         }
 
+        var groupByFieldNames = _.map(groupBy, function (groupByField) {
+            return groupByField.split(":")[0];
+        });
+
         // filter out non existing fields
         aggregatedFields = _.filter(aggregatedFields, function (name) {
-            return name in self.data[model].fields;
+            return name in self.data[model].fields && !(_.contains(groupByFieldNames,name));
         });
 
         function aggregateFields(group, records) {
@@ -697,10 +731,15 @@ var MockServer = Class.extend({
             for (var i = 0; i < aggregatedFields.length; i++) {
                 type = fields[aggregatedFields[i]].type;
                 if (type === 'float' || type === 'integer') {
-                    group[aggregatedFields[i]] = 0;
+                    group[aggregatedFields[i]] = null;
                     for (var j = 0; j < records.length; j++) {
-                        group[aggregatedFields[i]] += records[j][aggregatedFields[i]];
+                        var value = group[aggregatedFields[i]] || 0;
+                        group[aggregatedFields[i]] = value + records[j][aggregatedFields[i]];
                     }
+                }
+                if (type === 'many2one') {
+                    var ids = _.pluck(records, aggregatedFields[i]); 
+                    group[aggregatedFields[i]] = _.uniq(ids).length || null;
                 }
             }
         }
@@ -712,6 +751,10 @@ var MockServer = Class.extend({
                     return false;
                 } else if (aggregateFunction === 'day') {
                     return moment(val).format('YYYY-MM-DD');
+                } else if (aggregateFunction === 'week') {
+                    return moment(val).format('ww YYYY');
+                } else if (aggregateFunction === 'year') {
+                    return moment(val).format('Y');
                 } else {
                     return moment(val).format('MMMM YYYY');
                 }
@@ -725,12 +768,7 @@ var MockServer = Class.extend({
                 value = (value ? value + ',' : value) + groupByField + '#';
                 var fieldName = groupByField.split(':')[0];
                 if (fields[fieldName].type === 'date') {
-                    var aggregateFunction = groupByField.split(':')[1] || 'month';
-                    if (aggregateFunction === 'day') {
-                        value += moment(record[fieldName]).format('YYYY-MM-DD');
-                    } else {
-                        value += moment(record[fieldName]).format('MMMM YYYY');
-                    }
+                    value += formatValue(groupByField, record[fieldName]);
                 } else {
                     value += record[groupByField];
                 }
@@ -765,7 +803,28 @@ var MockServer = Class.extend({
                 } else {
                     res[groupByField] = val;
                 }
-                res.__domain = [[fieldName, "=", val]].concat(res.__domain);
+
+                if (field.type === 'date') {
+                    var aggregateFunction = groupByField.split(':')[1];
+                    var startDate, endDate;
+                    if (aggregateFunction === 'day') {
+                        startDate = moment(val, 'YYYY-MM-DD');
+                        endDate = startDate.clone().add(1, 'days');
+                    } else if (aggregateFunction === 'week') {
+                        startDate = moment(val, 'ww YYYY');
+                        endDate = startDate.clone().add(1, 'weeks');
+                    } else if (aggregateFunction === 'year') {
+                        startDate = moment(val, 'Y');
+                        endDate = startDate.clone().add(1, 'years');
+                    } else {
+                        startDate = moment(val, 'MMMM YYYY');
+                        endDate = startDate.clone().add(1, 'months');
+                    }
+                    res.__domain = [[fieldName, '>=', startDate.format('YYYY-MM-DD')], [fieldName, '<', endDate.format('YYYY-MM-DD')]].concat(res.__domain);
+                } else {
+                    res.__domain = [[fieldName, '=', val]].concat(res.__domain);
+                }
+
             });
 
             // compute count key to match dumb server logic...
@@ -809,7 +868,7 @@ var MockServer = Class.extend({
      */
     _mockReadProgressBar: function (model, kwargs) {
         var domain = kwargs.domain;
-        var groupBy = kwargs.groupBy;
+        var groupBy = kwargs.group_by;
         var progress_bar = kwargs.progress_bar;
 
         var records = this._getRecords(model, domain || []);
@@ -832,6 +891,23 @@ var MockServer = Class.extend({
         });
 
         return data;
+    },
+    /**
+     * Simulates a 'resequence' operation
+     *
+     * @private
+     * @param {string} model
+     * @param {string} field
+     * @param {Array} ids
+     */
+    _mockResequence: function (args) {
+        var offset = args.offset ? Number(args.offset) : 0;
+        var field = args.field ? args.field : 'sequence';
+        var records = this.data[args.model].records;
+        for (var i in args.ids) {
+            var record = _.findWhere(records, {id: args.ids[i]});
+            record[field] = Number(i) + offset;
+        }
     },
     /**
      * Simulate a 'search_count' operation
@@ -990,6 +1066,9 @@ var MockServer = Class.extend({
 
             case '/web/dataset/search_read':
                 return $.when(this._mockSearchReadController(args));
+
+            case '/web/dataset/resequence':
+                return $.when(this._mockResequence(args));
         }
         if (route.indexOf('/web/image') >= 0 || _.contains(['.png', '.jpg'], route.substr(route.length - 4))) {
             return $.when();

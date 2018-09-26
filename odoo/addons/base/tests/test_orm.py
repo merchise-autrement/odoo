@@ -163,6 +163,25 @@ class TestORM(TransactionCase):
                                   ['date:month', 'date:day'], lazy=False)
         self.assertEqual(len(res), len(partner_ids))
 
+        # combine groupby and orderby
+        months = ['February 2013', 'January 2013', 'December 2012', 'November 2012']
+        res = partners.read_group([('id', 'in', partner_ids)], ['date'],
+                                  groupby=['date:month'], orderby='date:month DESC')
+        self.assertEqual([item['date:month'] for item in res], months)
+
+        # order by date should reorder by date:month
+        res = partners.read_group([('id', 'in', partner_ids)], ['date'],
+                                  groupby=['date:month'], orderby='date DESC')
+        self.assertEqual([item['date:month'] for item in res], months)
+
+        # order by date should reorder by date:day
+        days = ['11 Feb 2013', '28 Jan 2013', '14 Jan 2013', '07 Jan 2013',
+                '31 Dec 2012', '17 Dec 2012', '19 Nov 2012']
+        res = partners.read_group([('id', 'in', partner_ids)], ['date'],
+                                  groupby=['date:month', 'date:day'],
+                                  orderby='date DESC', lazy=False)
+        self.assertEqual([item['date:day'] for item in res], days)
+
     def test_write_duplicate(self):
         p1 = self.env['res.partner'].create({'name': 'W'})
         (p1 + p1).write({'name': 'X'})
@@ -182,6 +201,73 @@ class TestORM(TransactionCase):
 
         group_user.write({'users': [(3, user.id)]})
         self.assertTrue(user.share)
+
+    @mute_logger('odoo.models')
+    def test_unlink_with_property(self):
+        """ Verify that unlink removes the related ir.property as unprivileged user """
+        user = self.env['res.users'].create({
+            'name': 'Justine Bridou',
+            'login': 'saucisson',
+            'groups_id': [4, self.ref('base.group_partner_manager')],
+        })
+        p1 = self.env['res.partner'].sudo(user).create({'name': 'Zorro'})
+        p1_prop = self.env['ir.property'].sudo(user).create({
+            'name': 'Slip en laine',
+            'res_id': 'res.partner,{}'.format(p1.id),
+            'fields_id': self.env['ir.model.fields'].search([
+                ('model', '=', 'res.partner'), ('name', '=', 'ref')], limit=1).id,
+            'value_text': 'Nain poilu',
+            'type': 'char',
+        })
+
+        # Unlink with unprivileged user
+        p1.unlink()
+
+        # ir.property is deleted
+        self.assertEqual(
+            p1_prop.exists(), self.env['ir.property'], 'p1_prop should have been deleted')
+
+    def test_create_multi(self):
+        """ create for multiple records """
+        # assumption: 'res.bank' does not override 'create'
+        vals_list = [{'name': name} for name in ('Foo', 'Bar', 'Baz')]
+        vals_list[0]['email'] = 'foo@example.com'
+        for vals in vals_list:
+            record = self.env['res.bank'].create(vals)
+            self.assertEqual(len(record), 1)
+            self.assertEqual(record.name, vals['name'])
+            self.assertEqual(record.email, vals.get('email', False))
+
+        records = self.env['res.bank'].create([])
+        self.assertFalse(records)
+
+        records = self.env['res.bank'].create(vals_list)
+        self.assertEqual(len(records), len(vals_list))
+        for record, vals in pycompat.izip(records, vals_list):
+            self.assertEqual(record.name, vals['name'])
+            self.assertEqual(record.email, vals.get('email', False))
+
+        # create countries and states
+        vals_list = [{
+            'name': 'Foo',
+            'state_ids': [
+                (0, 0, {'name': 'North Foo', 'code': 'NF'}),
+                (0, 0, {'name': 'South Foo', 'code': 'SF'}),
+                (0, 0, {'name': 'West Foo', 'code': 'WF'}),
+                (0, 0, {'name': 'East Foo', 'code': 'EF'}),
+            ],
+        }, {
+            'name': 'Bar',
+            'state_ids': [
+                (0, 0, {'name': 'North Bar', 'code': 'NB'}),
+                (0, 0, {'name': 'South Bar', 'code': 'SB'}),
+            ],
+        }]
+        foo, bar = self.env['res.country'].create(vals_list)
+        self.assertEqual(foo.name, 'Foo')
+        self.assertCountEqual(foo.mapped('state_ids.code'), ['NF', 'SF', 'WF', 'EF'])
+        self.assertEqual(bar.name, 'Bar')
+        self.assertCountEqual(bar.mapped('state_ids.code'), ['NB', 'SB'])
 
 
 class TestInherits(TransactionCase):
@@ -248,8 +334,7 @@ class TestInherits(TransactionCase):
     @mute_logger('odoo.models')
     def test_copy_with_ancestor(self):
         """ copying a user with 'parent_id' in defaults should not duplicate the partner """
-        user_foo = self.env['res.users'].create({'name': 'Foo', 'login': 'foo', 'password': 'foo',
-                                                 'login_date': '2016-01-01', 'signature': 'XXX'})
+        user_foo = self.env['res.users'].create({'login': 'foo', 'name': 'Foo', 'signature': 'Foo'})
         partner_bar = self.env['res.partner'].create({'name': 'Bar'})
 
         foo_before, = user_foo.read()

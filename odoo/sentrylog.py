@@ -12,7 +12,7 @@
 #
 # Created on 2015-04-09
 
-'''Extends/Overrides the OpenERP's logging system to Sentry-based approach.
+'''Extends/Overrides the Odoo's logging system to Sentry-based approach.
 
 Sentry_ aggregates logs and lets you inspect the server's health by a web
 application.
@@ -61,7 +61,7 @@ conf = {
     # be string like 'http://12345abc:091bacfe@sentry.example.com/0'.
     'dsn': Bail,
 
-    # The release to be reported to Sentry.  If Unset, the openerp.release
+    # The release to be reported to Sentry.  If Unset, the odoo.release
     # version will be used.
     'release': Unset,
 
@@ -92,7 +92,7 @@ _sentry_client = None
 
 
 def get_client():
-    from openerp.tools import config
+    from odoo.tools import config
     global _sentry_client
     overrides = config.misc.get('sentry', {})
     conf.update(overrides)
@@ -114,7 +114,7 @@ def get_client():
 
 
 def patch_logging(override=True, force=False):
-    '''Patch openerp's logging.
+    '''Patch odoo's logging.
 
     :param override: If True suppress all normal logging.  All logs will be
            sent to the Sentry instead of being logged to the console.  If
@@ -132,7 +132,7 @@ def patch_logging(override=True, force=False):
     def _require_httprequest(func):
         def inner(self, record):
             try:
-                from openerp.http import request
+                from odoo.http import request
                 httprequest = getattr(request, 'httprequest', None)
                 if httprequest:
                     return func(self, record, httprequest)
@@ -233,8 +233,8 @@ def patch_logging(override=True, force=False):
                     record.fingerprint = fingerprint
 
         def _get_http_request_data(self, request):
-            from openerp.http import JsonRequest, HttpRequest
-            from openerp.http import request  # Let it raise
+            from odoo.http import JsonRequest, HttpRequest
+            from odoo.http import request  # Let it raise
             # We can't simply use `isinstance` cause request is actual a
             # 'werkzeug.local.LocalProxy' instance.
             if request._request_type == JsonRequest._request_type:
@@ -287,7 +287,7 @@ def patch_logging(override=True, force=False):
         else:
             logger.handlers.append(handler)
 
-    for name in (None, 'openerp'):
+    for name in (None, 'odoo'):
         logger = logging.getLogger(name)
         sethandler(logger)
 
@@ -299,7 +299,7 @@ class OdooRecordSerializer(Serializer):
     types = (models.Model, )
 
     def serialize(self, value, **kwargs):
-        from openerp.osv import fields
+        from odoo.osv import fields
         try:
             if len(value) == 0:
                 return transform((None, 'record with 0 items'))

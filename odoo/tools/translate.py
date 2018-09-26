@@ -143,8 +143,11 @@ TRANSLATED_ELEMENTS = {
 
 # which attributes must be translated
 TRANSLATED_ATTRS = {
-    'string', 'help', 'sum', 'avg', 'confirm', 'placeholder', 'alt', 'title',
+    'string', 'help', 'sum', 'avg', 'confirm', 'placeholder', 'alt', 'title', 'aria-label',
+    'aria-keyshortcuts', 'aria-placeholder', 'aria-roledescription', 'aria-valuetext',
 }
+
+TRANSLATED_ATTRS = TRANSLATED_ATTRS | {'t-attf-' + attr for attr in TRANSLATED_ATTRS}
 
 avoid_pattern = re.compile(r"\s*<!DOCTYPE", re.IGNORECASE | re.MULTILINE | re.UNICODE)
 node_pattern = re.compile(r"<[^>]*>(.*)</[^<]*>", re.DOTALL | re.MULTILINE | re.UNICODE)
@@ -460,7 +463,7 @@ def quote(s):
                      .replace('\n', '\\n"\n"')
 
 re_escaped_char = re.compile(r"(\\.)")
-re_escaped_replacements = {'n': '\n', }
+re_escaped_replacements = {'n': '\n', 't': '\t',}
 
 def _sub_replacement(match_obj):
     return re_escaped_replacements.get(match_obj.group(1)[1], match_obj.group(1)[1])
@@ -584,8 +587,11 @@ class PoFile(object):
                 # end of this next() call), and keep the others to generate
                 # additional entries (returned the next next() calls).
                 trans_type, name, res_id = targets.pop(0)
+                code = trans_type == 'code'
                 for t, n, r in targets:
-                    if t == trans_type == 'code': continue
+                    if t == 'code' and code: continue
+                    if t == 'code':
+                        code = True
                     self.extra_lines.append((t, n, r, source, trad, comments))
 
         if name is None:
@@ -687,23 +693,27 @@ def trans_export(lang, modules, buffer, format, cr):
                 writer.write(row['modules'], row['tnrs'], src, row['translation'], row['comments'])
 
         elif format == 'tgz':
-            rows_by_module = {}
+            rows_by_module = defaultdict(list)
             for row in rows:
                 module = row[0]
-                rows_by_module.setdefault(module, []).append(row)
-            tmpdir = tempfile.mkdtemp()
-            for mod, modrows in rows_by_module.items():
-                tmpmoddir = join(tmpdir, mod, 'i18n')
-                os.makedirs(tmpmoddir)
-                pofilename = (lang if lang else mod) + ".po" + ('t' if not lang else '')
-                buf = open(join(tmpmoddir, pofilename), 'wb')
-                _process('po', [mod], modrows, buf, lang)
-                buf.close()
+                rows_by_module[module].append(row)
 
-            tar = tarfile.open(fileobj=buffer, mode='w|gz')
-            tar.add(tmpdir, '')
-            tar.close()
+            with tarfile.open(fileobj=buffer, mode='w|gz') as tar:
+                for mod, modrows in rows_by_module.items():
+                    with io.BytesIO() as buf:
+                        _process('po', [mod], modrows, buf, lang)
+                        buf.seek(0)
 
+                        info = tarfile.TarInfo(
+                            join(mod, 'i18n', '{basename}.{ext}'.format(
+                                basename=lang or mod,
+                                ext='po' if lang else 'pot',
+                            )))
+                        # addfile will read <size> bytes from the buffer so
+                        # size *must* be set first
+                        info.size = len(buf.getvalue())
+
+                        tar.addfile(info, fileobj=buf)
         else:
             raise Exception(_('Unrecognized extension: must be one of '
                 '.csv, .po, or .tgz (received .%s).') % format)
@@ -820,7 +830,7 @@ def trans_generate(lang, modules, cr):
         tnx = (module, source, name, id, type, tuple(comments or ()))
         to_translate.add(tnx)
 
-    query = 'SELECT name, model, res_id, module FROM ir_model_data'
+    query = 'SELECT min(name), model, res_id, module FROM ir_model_data'
     query_models = """SELECT m.id, m.model, imd.module
                       FROM ir_model AS m, ir_model_data AS imd
                       WHERE m.id = imd.res_id AND imd.model = 'ir.model'"""
@@ -838,7 +848,7 @@ def trans_generate(lang, modules, cr):
         query_models += ' AND imd.module != %s'
         query_param = ('__export__',)
 
-    query += ' ORDER BY module, model, name'
+    query += ' GROUP BY model, res_id, module ORDER BY module, model, min(name)'
     query_models += ' ORDER BY module, model'
 
     cr.execute(query, query_param)
@@ -884,7 +894,8 @@ def trans_generate(lang, modules, cr):
                 except Exception:
                     continue
                 for term in set(field.get_trans_terms(value)):
-                    push_translation(module, 'model', name, xml_name, term)
+                    trans_type = 'model_terms' if callable(field.translate) else 'model'
+                    push_translation(module, trans_type, name, xml_name, term)
 
         # End of data for ir.model.data query results
 
@@ -972,9 +983,6 @@ def trans_generate(lang, modules, cr):
         for root, dummy, files in walksymlinks(path):
             for fname in fnmatch.filter(files, '*.py'):
                 babel_extract_terms(fname, path, root)
-            # mako provides a babel extractor: http://docs.makotemplates.org/en/latest/usage.html#babel
-            for fname in fnmatch.filter(files, '*.mako'):
-                babel_extract_terms(fname, path, root, 'mako', trans_type='report')
             # Javascript source files in the static/src/js directory, rest is ignored (libs)
             if fnmatch.fnmatch(root, '*/static/src/js*'):
                 for fname in fnmatch.filter(files, '*.js'):
@@ -1076,7 +1084,7 @@ def trans_load_data(cr, fileobj, fileformat, lang, lang_name=None, verbose=True,
         for type, name, res_id, src, _ignored, comments in pot_reader:
             if type is not None:
                 target = pot_targets[src]
-                target.targets.add((type, name, res_id))
+                target.targets.add((type, name, type != 'code' and res_id or 0))
                 target.comments = comments
 
         # read the rest of the file
@@ -1094,14 +1102,19 @@ def trans_load_data(cr, fileobj, fileformat, lang, lang_name=None, verbose=True,
 
             # discard the target from the POT targets.
             src = dic['src']
-            if src in pot_targets:
-                target = pot_targets[src]
-                target.value = dic['value']
-                target.targets.discard((dic['type'], dic['name'], dic['res_id']))
+            target_key = (dic['type'], dic['name'], dic['type'] != 'code' and dic['res_id'] or 0)
+            target = pot_targets.get(src)
+            if not target or target_key not in target.targets:
+                _logger.info("Translation '%s' (%s, %s, %s) not found in reference pot, skipping",
+                    src[:60], dic['type'], dic['name'], dic['res_id'])
+                return
+
+            target.value = dic['value']
+            target.targets.discard(target_key)
 
             # This would skip terms that fail to specify a res_id
             res_id = dic['res_id']
-            if not res_id:
+            if not res_id and dic['type'] != 'code':
                 return
 
             if isinstance(res_id, pycompat.integer_types) or \
@@ -1132,7 +1145,6 @@ def trans_load_data(cr, fileobj, fileformat, lang, lang_name=None, verbose=True,
             if target.value:
                 for type, name, res_id in target.targets:
                     pot_rows.append((type, name, res_id, src, target.value, target.comments))
-        pot_targets.clear()
         for row in pot_rows:
             process_row(row)
 

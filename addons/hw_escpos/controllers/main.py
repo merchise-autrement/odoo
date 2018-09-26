@@ -8,9 +8,10 @@ import os
 import os.path
 import subprocess
 import time
+import netifaces as ni
 import traceback
 
-try:
+try: 
     from .. escpos import *
     from .. escpos.exceptions import *
     from .. escpos.printer import Usb
@@ -29,8 +30,9 @@ except ImportError:
     usb = None
 
 from odoo import http, _
-
 from odoo.addons.hw_proxy.controllers import main as hw_proxy
+
+from uuid import getnode as get_mac
 
 _logger = logging.getLogger(__name__)
 
@@ -98,9 +100,9 @@ class EscposDriver(Thread):
             if not self.isAlive():
                 self.daemon = True
                 self.start()
-
+    
     def get_escpos_printer(self):
-
+  
         printers = self.connected_usb_devices()
         if len(printers) > 0:
             print_dev = Usb(printers[0]['vendor'], printers[0]['product'])
@@ -136,10 +138,7 @@ class EscposDriver(Thread):
         if status == 'error' and message:
             _logger.error('ESC/POS Error: %s', message)
         elif status == 'disconnected' and message:
-            import warnings
-            warnings.warn('ESC/POS Device Disconnected: ' + message)
-        else:
-            _logger.info(status+' : '+ (message or 'no message'))
+            _logger.warning('ESC/POS Device Disconnected: %s', message)
 
     def run(self):
         printer = None
@@ -159,7 +158,7 @@ class EscposDriver(Thread):
                     error = False
                     time.sleep(5)
                     continue
-                elif task == 'receipt':
+                elif task == 'receipt': 
                     if timestamp >= time.time() - 1 * 60 * 60:
                         self.print_receipt_body(printer,data)
                         printer.cut()
@@ -199,10 +198,18 @@ class EscposDriver(Thread):
     def print_status(self,eprint):
         localips = ['0.0.0.0','127.0.0.1','127.0.1.1']
         hosting_ap = os.system('pgrep hostapd') == 0
-        ssid = subprocess.check_output('iwconfig 2>&1 | grep \'ESSID:"\' | sed \'s/.*"\\(.*\\)"/\\1/\'', shell=True).rstrip()
-        mac = subprocess.check_output('ifconfig | grep -B 1 \'inet addr\' | grep -o \'HWaddr .*\' | sed \'s/HWaddr //\'', shell=True).rstrip()
-        ips =  [ c.split(':')[1].split(' ')[0] for c in subprocess.check_output("/sbin/ifconfig").split('\n') if 'inet addr' in c ]
-        ips =  [ ip for ip in ips if ip not in localips ]
+        ssid = subprocess.check_output('iwconfig 2>&1 | grep \'ESSID:"\' | sed \'s/.*"\\(.*\\)"/\\1/\'', shell=True).decode('utf-8').rstrip()
+        mac = get_mac()
+        h = iter(hex(mac)[2:].zfill(12))
+        mac = ":".join(i + next(h) for i in h)
+        interfaces = ni.interfaces()
+        ips = []
+        for iface_id in interfaces:
+            iface_obj = ni.ifaddresses(iface_id)
+            ifconfigs = iface_obj.get(ni.AF_INET, [])
+            for conf in ifconfigs:
+                if conf.get('addr'):
+                    ips.append(conf.get('addr'))
         eprint.text('\n\n')
         eprint.set(align='center',type='b',height=2,width=2)
         eprint.text('PosBox Status\n')
@@ -224,8 +231,10 @@ class EscposDriver(Thread):
                 eprint.text(ip+'\n')
 
         if len(ips) >= 1:
-            eprint.text('\nMAC Address:\n' + mac + '\n')
-            eprint.text('\nHomepage:\nhttp://'+ips[0]+':8069\n')
+            ips_filtered = [i for i in ips if i != '127.0.0.1']
+            main_ips = ips_filtered and ips_filtered[0] or '127.0.0.1'
+            eprint.text('\nMAC Address:\n' + str(mac) + '\n')
+            eprint.text('\nHomepage:\nhttp://' + main_ips + ':8069\n')
 
         eprint.text('\n\n')
         eprint.cut()
@@ -234,10 +243,10 @@ class EscposDriver(Thread):
 
         def check(string):
             return string != True and bool(string) and string.strip()
-
+        
         def price(amount):
             return ("{0:."+str(receipt['precision']['price'])+"f}").format(amount)
-
+        
         def money(amount):
             return ("{0:."+str(receipt['precision']['money'])+"f}").format(amount)
 
@@ -248,10 +257,10 @@ class EscposDriver(Thread):
                 return str(amount)
 
         def printline(left, right='', width=40, ratio=0.5, indent=0):
-            lwidth = int(width * ratio)
-            rwidth = width - lwidth
+            lwidth = int(width * ratio) 
+            rwidth = width - lwidth 
             lwidth = lwidth - indent
-
+            
             left = left[:lwidth]
             if len(left) != lwidth:
                 left = left + ' ' * (lwidth - len(left))
@@ -261,7 +270,7 @@ class EscposDriver(Thread):
                 right = ' ' * (rwidth - len(right)) + right
 
             return ' ' * indent + left + right + '\n'
-
+        
         def print_taxes():
             taxes = receipt['tax_details']
             for tax in taxes:
@@ -324,7 +333,7 @@ class EscposDriver(Thread):
         eprint.set(align='center',height=2)
         eprint.text(printline(_('         TOTAL'),money(receipt['total_with_tax']),width=40, ratio=0.6))
         eprint.text('\n\n');
-
+        
         # Paymentlines
         eprint.set(align='center')
         for line in receipt['paymentlines']:
@@ -361,18 +370,18 @@ driver.push_task('printstatus')
 hw_proxy.drivers['escpos'] = driver
 
 class EscposProxy(hw_proxy.Proxy):
-
+    
     @http.route('/hw_proxy/open_cashbox', type='json', auth='none', cors='*')
     def open_cashbox(self):
-        _logger.info('ESC/POS: OPEN CASHBOX')
+        _logger.info('ESC/POS: OPEN CASHBOX') 
         driver.push_task('cashbox')
-
+        
     @http.route('/hw_proxy/print_receipt', type='json', auth='none', cors='*')
     def print_receipt(self, receipt):
-        _logger.info('ESC/POS: PRINT RECEIPT')
+        _logger.info('ESC/POS: PRINT RECEIPT') 
         driver.push_task('receipt',receipt)
 
     @http.route('/hw_proxy/print_xml_receipt', type='json', auth='none', cors='*')
     def print_xml_receipt(self, receipt):
-        _logger.info('ESC/POS: PRINT XML RECEIPT')
+        _logger.info('ESC/POS: PRINT XML RECEIPT') 
         driver.push_task('xml_receipt',receipt)

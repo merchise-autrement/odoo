@@ -11,6 +11,9 @@ $.extend($.expr[':'], {
     containsLike: function (element, index, matches){
         return element.innerHTML.toUpperCase().indexOf(matches[3].toUpperCase()) >= 0;
     },
+    containsTextLike: function (element, index, matches){
+        return element.innerText.toUpperCase().indexOf(matches[3].toUpperCase()) >= 0;
+    },
     containsExact: function (element, index, matches){
         return $.trim(element.innerHTML) === matches[3];
     },
@@ -89,8 +92,11 @@ $.fn.extend({
      */
     odooBounce: function () {
         return this.each(function () {
-            $(this).css('box-sizing', 'content-box')
-                   .effect('bounce', {distance: 18, times: 5}, 250);
+            var $el = $(this);
+            $el.addClass('o_catch_attention');
+            setTimeout(function () {
+                $el.removeClass('o_catch_attention');
+            }, 400);
         });
     },
     /**

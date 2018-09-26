@@ -13,21 +13,12 @@
 
 <!-- CHART OF Template -->
 
-<record id="transfer_account" model="account.account.template">
-    <field name="name">Transfer Account</field>
-    <field name="code">16</field>
-    <field name="reconcile" eval="True"/>
-    <field name="user_type_id" ref="account.data_account_type_current_assets"/>
-</record>
 <record id="chart" model="account.chart.template">
     <field name="name">Thailand - Chart of Accounts</field>
     <field name="cash_account_code_prefix">1100</field>
     <field name="bank_account_code_prefix">1110</field>
+    <field name="transfer_account_code_prefix">16</field>
     <field name="currency_id" ref="base.THB"/>
-    <field name="transfer_account_id" ref="transfer_account"/>
-</record>
-<record id="transfer_account" model="account.account.template">
-    <field name="chart_template_id" ref="chart"/>
 </record>
 
 <!-- 1. ASSETS -->
@@ -361,7 +352,7 @@
     <field name="chart_template_id" ref="chart"/>
     <field name="name">Company Withholding Tax 1% (Transportation)</field>
     <field name="amount_type">percent</field>
-    <field name="amount" eval="1"/>
+    <field name="amount" eval="-1"/>
     <field name="account_id" ref="a_wht"/>
     <field name="refund_account_id" ref="a_wht"/>
     <field name="type_tax_use">purchase</field>
@@ -373,7 +364,7 @@
     <field name="chart_template_id" ref="chart"/>
     <field name="name">Company Withholding Tax 2% (Advertising)</field>
     <field name="amount_type">percent</field>
-    <field name="amount" eval="2"/>
+    <field name="amount" eval="-2"/>
     <field name="account_id" ref="a_wht"/>
     <field name="refund_account_id" ref="a_wht"/>
     <field name="type_tax_use">purchase</field>
@@ -385,7 +376,7 @@
     <field name="chart_template_id" ref="chart"/>
     <field name="name">Company Withholding Tax 3% (Service)</field>
     <field name="amount_type">percent</field>
-    <field name="amount" eval="3"/>
+    <field name="amount" eval="-3"/>
     <field name="account_id" ref="a_wht"/>
     <field name="refund_account_id" ref="a_wht"/>
     <field name="type_tax_use">purchase</field>
@@ -397,7 +388,7 @@
     <field name="chart_template_id" ref="chart"/>
     <field name="name">Company Withholding Tax 5% (Rental)</field>
     <field name="amount_type">percent</field>
-    <field name="amount" eval="5"/>
+    <field name="amount" eval="-5"/>
     <field name="account_id" ref="a_wht"/>
     <field name="refund_account_id" ref="a_wht"/>
     <field name="type_tax_use">purchase</field>
@@ -409,7 +400,7 @@
     <field name="chart_template_id" ref="chart"/>
     <field name="name">Personal Withholding Tax 1% (Transportation)</field>
     <field name="amount_type">percent</field>
-    <field name="amount" eval="1"/>
+    <field name="amount" eval="-1"/>
     <field name="account_id" ref="a_wht"/>
     <field name="refund_account_id" ref="a_wht"/>
     <field name="type_tax_use">purchase</field>
@@ -421,7 +412,7 @@
     <field name="chart_template_id" ref="chart"/>
     <field name="name">Personal Withholding Tax 2% (Advertising)</field>
     <field name="amount_type">percent</field>
-    <field name="amount" eval="2"/>
+    <field name="amount" eval="-2"/>
     <field name="account_id" ref="a_wht"/>
     <field name="refund_account_id" ref="a_wht"/>
     <field name="type_tax_use">purchase</field>
@@ -433,7 +424,7 @@
     <field name="chart_template_id" ref="chart"/>
     <field name="name">Personal Withholding Tax 3% (Service)</field>
     <field name="amount_type">percent</field>
-    <field name="amount" eval="3"/>
+    <field name="amount" eval="-3"/>
     <field name="account_id" ref="a_wht"/>
     <field name="refund_account_id" ref="a_wht"/>
     <field name="type_tax_use">purchase</field>
@@ -445,7 +436,7 @@
     <field name="chart_template_id" ref="chart"/>
     <field name="name">Personal Withholding Tax 5% (Rental)</field>
     <field name="amount_type">percent</field>
-    <field name="amount" eval="5"/>
+    <field name="amount" eval="-5"/>
     <field name="account_id" ref="a_wht"/>
     <field name="refund_account_id" ref="a_wht"/>
     <field name="type_tax_use">purchase</field>
@@ -457,7 +448,7 @@
     <field name="chart_template_id" ref="chart"/>
     <field name="name">Withholding Income Tax 1% (Transportation)</field>
     <field name="amount_type">percent</field>
-    <field name="amount" eval="1"/>
+    <field name="amount" eval="-1"/>
     <field name="account_id" ref="a_wht_income"/>
     <field name="refund_account_id" ref="a_wht_income"/>
     <field name="type_tax_use">sale</field>
@@ -468,7 +459,7 @@
     <field name="chart_template_id" ref="chart"/>
     <field name="name">Withholding Income Tax 2% (Advertising)</field>
     <field name="amount_type">percent</field>
-    <field name="amount" eval="2"/>
+    <field name="amount" eval="-2"/>
     <field name="account_id" ref="a_wht_income"/>
     <field name="refund_account_id" ref="a_wht_income"/>
     <field name="type_tax_use">sale</field>
@@ -479,7 +470,7 @@
     <field name="chart_template_id" ref="chart"/>
     <field name="name">Withholding Income Tax 3% (Service)</field>
     <field name="amount_type">percent</field>
-    <field name="amount" eval="3"/>
+    <field name="amount" eval="-3"/>
     <field name="account_id" ref="a_wht_income"/>
     <field name="refund_account_id" ref="a_wht_income"/>
     <field name="type_tax_use">sale</field>
@@ -490,7 +481,7 @@
     <field name="chart_template_id" ref="chart"/>
     <field name="name">Withholding Income Tax 5% (Rental)</field>
     <field name="amount_type">percent</field>
-    <field name="amount" eval="5"/>
+    <field name="amount" eval="-5"/>
     <field name="account_id" ref="a_wht_income"/>
     <field name="refund_account_id" ref="a_wht_income"/>
     <field name="type_tax_use">sale</field>

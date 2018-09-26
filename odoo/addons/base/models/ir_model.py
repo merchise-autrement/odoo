@@ -28,7 +28,7 @@ SAFE_EVAL_BASE = {
 def make_compute(text, deps):
     """ Return a compute function from its code body and dependencies. """
     func = lambda self: safe_eval(text, SAFE_EVAL_BASE, {'self': self}, mode="exec")
-    deps = [arg.strip() for arg in (deps or "").split(",")]
+    deps = [arg.strip() for arg in deps.split(",")] if deps else []
     return api.depends(*deps)(func)
 
 
@@ -177,7 +177,7 @@ class IrModel(models.Model):
         if not self._context.get(MODULE_UNINSTALL_FLAG):
             for model in self:
                 if model.state != 'manual':
-                    raise UserError(_("Model '%s' contains module data and cannot be removed!") % model.name)
+                    raise UserError(_("Model '%s' contains module data and cannot be removed.") % model.name)
                 # prevent screwing up fields that depend on these models' fields
                 model.field_id._prepare_update()
 
@@ -308,6 +308,8 @@ class IrModelFields(models.Model):
     relation = fields.Char(string='Object Relation',
                            help="For relationship fields, the technical name of the target model")
     relation_field = fields.Char(help="For one2many fields, the field on the target model that implement the opposite many2one relationship")
+    relation_field_id = fields.Many2one('ir.model.fields', compute='_compute_relation_field_id',
+                                        store=True, ondelete='cascade', string='Relation field')
     model_id = fields.Many2one('ir.model', string='Model', required=True, index=True, ondelete='cascade',
                                help="The model this field belongs to")
     field_description = fields.Char(string='Field Label', default='', required=True, translate=True)
@@ -317,8 +319,11 @@ class IrModelFields(models.Model):
                             help="List of options for a selection field, "
                                  "specified as a Python expression defining a list of (key, label) pairs. "
                                  "For example: [('blue','Blue'),('yellow','Yellow')]")
-    copy = fields.Boolean(string='Copied', help="Whether the value is copied when duplicating a record.")
+    copied = fields.Boolean(string='Copied', oldname='copy',
+                            help="Whether the value is copied when duplicating a record.")
     related = fields.Char(string='Related Field', help="The corresponding related field, if any. This must be a dot-separated list of field names.")
+    related_field_id = fields.Many2one('ir.model.fields', compute='_compute_related_field_id',
+                                       store=True, string="Related field", ondelete='cascade')
     required = fields.Boolean()
     readonly = fields.Boolean()
     index = fields.Boolean(string='Indexed')
@@ -345,6 +350,19 @@ class IrModelFields(models.Model):
                                                       "a list of comma-separated field names, like\n\n"
                                                       "    name, partner_id.name")
     store = fields.Boolean(string='Stored', default=True, help="Whether the value is stored in the database.")
+
+    @api.depends('relation', 'relation_field')
+    def _compute_relation_field_id(self):
+        for rec in self:
+            if rec.state == 'manual' and rec.relation_field:
+                rec.relation_field_id = self._get(rec.relation, rec.relation_field)
+
+    @api.depends('related')
+    def _compute_related_field_id(self):
+        for rec in self:
+            if rec.state == 'manual' and rec.related:
+                field = rec._related_field()
+                rec.related_field_id = self._get(field.model_name, field.name)
 
     @api.depends()
     def _in_modules(self):
@@ -417,7 +435,7 @@ class IrModelFields(models.Model):
             self.ttype = field.type
             self.relation = field.comodel_name
             self.readonly = True
-            self.copy = False
+            self.copied = False
 
     @api.constrains('depends')
     def _check_depends(self):
@@ -443,7 +461,7 @@ class IrModelFields(models.Model):
     def _onchange_compute(self):
         if self.compute:
             self.readonly = True
-            self.copy = False
+            self.copied = False
 
     @api.one
     @api.constrains('relation_table')
@@ -464,8 +482,15 @@ class IrModelFields(models.Model):
 
     @api.onchange('ttype', 'model_id', 'relation')
     def _onchange_ttype(self):
-        self.copy = (self.ttype != 'one2many')
+        self.copied = (self.ttype != 'one2many')
         if self.ttype == 'many2many' and self.model_id and self.relation:
+            if self.relation not in self.env:
+                return {
+                    'warning': {
+                        'title': _('Model %s does not exist') % self.relation,
+                        'message': _('Please specify a valid model for the object relation'),
+                    }
+                }
             names = self._custom_many2many_names(self.model_id.model, self.relation)
             self.relation_table, self.column1, self.column2 = names
         else:
@@ -540,22 +565,32 @@ class IrModelFields(models.Model):
             This method prevents the modification/deletion of many2one fields
             that have an inverse one2many, for instance.
         """
+        failed_dependencies = []
+        for rec in self:
+            model = self.env[rec.model]
+            if rec.name in model._fields:
+                field = model._fields[rec.name]
+            else:
+                # field hasn't been loaded (yet?)
+                continue
+            for dependant, path in model._field_triggers.get(field, ()):
+                if dependant.manual:
+                    failed_dependencies.append((field, dependant))
+            for inverse in model._field_inverses.get(field, ()):
+                if inverse.manual and inverse.type == 'one2many':
+                    failed_dependencies.append((field, inverse))
+
+        if not self._context.get(MODULE_UNINSTALL_FLAG) and failed_dependencies:
+            msg = _("The field '%s' cannot be removed because the field '%s' depends on it.")
+            raise UserError(msg % failed_dependencies[0])
+        elif failed_dependencies:
+            dependants = {rel[1] for rel in failed_dependencies}
+            to_unlink = [self._get(field.model_name, field.name) for field in dependants]
+            self.browse().union(*to_unlink).unlink()
+
         self = self.filtered(lambda record: record.state == 'manual')
         if not self:
             return
-
-        for record in self:
-            model = self.env[record.model]
-            field = model._fields[record.name]
-            if field.type == 'many2one' and model._field_inverses.get(field):
-                if self._context.get(MODULE_UNINSTALL_FLAG):
-                    # automatically unlink the corresponding one2many field(s)
-                    inverses = self.search([('relation', '=', field.model_name),
-                                            ('relation_field', '=', field.name)])
-                    inverses.unlink()
-                    continue
-                msg = _("The field '%s' cannot be removed because the field '%s' depends on it.")
-                raise UserError(msg % (field, model._field_inverses[field][0]))
 
         # remove fields from registry, and check that views are not broken
         fields = [self.env[record.model]._pop_field(record.name) for record in self]
@@ -729,11 +764,12 @@ class IrModelFields(models.Model):
             'relation': field.comodel_name or None,
             'index': bool(field.index),
             'store': bool(field.store),
-            'copy': bool(field.copy),
+            'copied': bool(field.copy),
             'related': ".".join(field.related) if field.related else None,
             'readonly': bool(field.readonly),
             'required': bool(field.required),
             'selectable': bool(field.search or field.store),
+            'size': getattr(field, 'size', None),
             'translate': bool(field.translate),
             'relation_field': field.inverse_name if field.type == 'one2many' else None,
             'relation_table': field.relation if field.type == 'many2many' else None,
@@ -746,39 +782,45 @@ class IrModelFields(models.Model):
         fields_data = self._existing_field_data(field.model_name)
         field_data = fields_data.get(field.name)
         params = self._reflect_field_params(field)
+        cr = self.env.cr
+        created = False
 
         if field_data is None:
-            cr = self.env.cr
-            # create an entry in this table
+            # does not exist, create an entry in this table
             query_insert(cr, self._table, params)
             record = self.browse(cr.fetchone())
             self.pool.post_init(record.modified, list(params))
-            # create a corresponding xml id
-            module = field._module or self._context.get('module')
-            if module:
-                model_name = field.model_name.replace('.', '_')
-                xmlid = 'field_%s__%s' % (model_name, field.name)
-                cr.execute(""" INSERT INTO ir_model_data (module, name, model, res_id, date_init, date_update)
-                               VALUES (%s, %s, %s, %s, (now() at time zone 'UTC'), (now() at time zone 'UTC')) """,
-                           (module, xmlid, record._name, record.id))
             # update fields_data (for recursive calls)
             fields_data[field.name] = dict(params, id=record.id)
-            return record
+            created = True
 
-        diff = {key for key, val in params.items() if field_data[key] != val}
-        if diff:
-            cr = self.env.cr
-            # update the entry in this table
+        elif any(field_data[key] != val for key, val in params.items()):
+            # exists, update the entry in this table
             query_update(cr, self._table, params, ['model', 'name'])
             record = self.browse(cr.fetchone())
-            self.pool.post_init(record.modified, diff)
+            names = [key for key, val in params.items() if field_data[key] != val]
+            self.pool.post_init(record.modified, names)
             # update fields_data (for recursive calls)
             field_data.update(params)
-            return record
 
         else:
-            # nothing to update, simply return the corresponding record
-            return self.browse(field_data['id'])
+            # exists, but nothing to update
+            record = self.browse(field_data['id'])
+
+        # generate xmlids if necessary, one per module defining the same field
+        module = self._context.get('module')
+        if module and (created or module in field._modules):
+            model_name = field.model_name.replace('.', '_')
+            xmlid = 'field_%s__%s' % (model_name, field.name)
+            cr.execute(
+                """
+                INSERT INTO ir_model_data (module, name, model, res_id, date_init, date_update)
+                SELECT %s, %s, %s, %s, (now() at time zone 'UTC'), (now() at time zone 'UTC')
+                WHERE NOT EXISTS (SELECT id FROM ir_model_data WHERE module=%s AND name=%s)
+                """, (module, xmlid, record._name, record.id, module, xmlid)
+            )
+
+        return record
 
     def _reflect_model(self, model):
         """ Reflect the given model's fields. """
@@ -821,7 +863,7 @@ class IrModelFields(models.Model):
             'string': field_data['field_description'],
             'help': field_data['help'],
             'index': bool(field_data['index']),
-            'copy': bool(field_data['copy']),
+            'copy': bool(field_data['copied']),
             'related': field_data['related'],
             'required': bool(field_data['required']),
             'readonly': bool(field_data['readonly']),
@@ -1208,10 +1250,10 @@ class IrModelAccess(models.Model):
     #
     # Check rights on actions
     #
-    @api.model
-    def create(self, values):
+    @api.model_create_multi
+    def create(self, vals_list):
         self.call_cache_clearing_methods()
-        return super(IrModelAccess, self).create(values)
+        return super(IrModelAccess, self).create(vals_list)
 
     @api.multi
     def write(self, values):
@@ -1373,139 +1415,104 @@ class IrModelData(models.Model):
         """
         return self.xmlid_to_object("%s.%s" % (module, xml_id), raise_if_not_found=True)
 
-    @api.model
-    def _update_dummy(self, model, module, xml_id=False, store=True):
-        if xml_id:
-            try:
-                # One step to check the ID is defined and the record actually exists
-                record = self.get_object(module, xml_id)
-                if record:
-                    self.loads[(module, xml_id)] = (model, record.id)
-                    for parent_model, parent_field in self.env[model]._inherits.items():
-                        parent = record[parent_field]
-                        parent_xid = '%s_%s' % (xml_id, parent_model.replace('.', '_'))
-                        self.loads[(module, parent_xid)] = (parent_model, parent.id)
-                return record.id
-            except Exception:
-                pass
-        return False
-
     @api.multi
     def unlink(self):
         """ Regular unlink method, but make sure to clear the caches. """
         self.clear_caches()
         return super(IrModelData, self).unlink()
 
+    def _lookup_xmlids(self, xml_ids, model):
+        """ Look up the given XML ids of the given model. """
+        if not xml_ids:
+            return []
+
+        # group xml_ids by prefix
+        bymodule = defaultdict(set)
+        for xml_id in xml_ids:
+            prefix, suffix = xml_id.split('.', 1)
+            bymodule[prefix].add(suffix)
+
+        # query xml_ids by prefix
+        result = []
+        cr = self.env.cr
+        for prefix, suffixes in bymodule.items():
+            query = """
+                SELECT d.id, d.module, d.name, d.model, d.res_id, d.noupdate, r.id
+                FROM ir_model_data d LEFT JOIN "{}" r on d.res_id=r.id
+                WHERE d.module=%s AND d.name IN %s
+            """.format(model._table)
+            for subsuffixes in cr.split_for_in_conditions(suffixes):
+                cr.execute(query, (prefix, subsuffixes))
+                result.extend(cr.fetchall())
+
+        return result
+
+    def _generate_xmlids(self, xml_id, model):
+        """ Return all the XML ids to create for the given model. """
+        yield xml_id
+        for parent_model in model._inherits:
+            yield '%s_%s' % (xml_id, parent_model.replace('.', '_'))
+
     @api.model
-    def _update(self, model, module, values, xml_id=False, store=True, noupdate=False, mode='init', res_id=False):
-        # records created during module install should not display the messages of OpenChatter
-        self = self.with_context(install_mode=True)
-        current_module = module
+    def _update_xmlids(self, data_list, update=False):
+        """ Create or update the given XML ids.
 
-        if xml_id and ('.' in xml_id):
-            assert len(xml_id.split('.')) == 2, _("'%s' contains too many dots. XML ids should not contain dots ! These are used to refer to other modules data, as in module.reference_id") % xml_id
-            module, xml_id = xml_id.split('.')
+            :param data_list: list of dicts with keys `xml_id` (XMLID to
+                assign), `noupdate` (flag on XMLID), `record` (target record).
+            :param update: should be ``True`` when upgrading a module
+        """
+        if not data_list:
+            return
 
-        action = self.browse()
-        record = self.env[model].browse(res_id)
-
-        if xml_id:
-            self._cr.execute("""SELECT imd.id, imd.res_id, md.id, imd.model, imd.noupdate
-                                FROM ir_model_data imd LEFT JOIN %s md ON (imd.res_id = md.id)
-                                WHERE imd.module=%%s AND imd.name=%%s""" % record._table,
-                             (module, xml_id))
-            results = self._cr.fetchall()
-            for imd_id, imd_res_id, real_id, imd_model, imd_noupdate in results:
-                # In update mode, do not update a record if it's ir.model.data is flagged as noupdate
-                if mode == 'update' and imd_noupdate:
-                    return imd_res_id
-                if not real_id:
-                    self.clear_caches()
-                    self._cr.execute('DELETE FROM ir_model_data WHERE id=%s', (imd_id,))
-                    record = record.browse()
-                else:
-                    assert model == imd_model, "External ID conflict, %s already refers to a `%s` record,"\
-                        " you can't define a `%s` record with this ID." % (xml_id, imd_model, model)
-                    action = self.browse(imd_id)
-                    record = record.browse(imd_res_id)
-
-        if action and record:
-            record.write(values)
-            action.sudo().write({'date_update': fields.Datetime.now()})
-
-        elif record:
-            record.write(values)
-            if xml_id:
-                for parent_model, parent_field in record._inherits.items():
-                    self.sudo().create({
-                        'name': xml_id + '_' + parent_model.replace('.', '_'),
-                        'model': parent_model,
-                        'module': module,
-                        'res_id': record[parent_field].id,
-                        'noupdate': noupdate,
-                    })
-                self.sudo().create({
-                    'name': xml_id,
-                    'model': model,
-                    'module': module,
-                    'res_id': record.id,
-                    'noupdate': noupdate,
-                })
-
-        elif mode == 'init' or (mode == 'update' and xml_id):
-            existing_parents = set()            # {parent_model, ...}
-            if xml_id:
-                for parent_model, parent_field in record._inherits.items():
-                    xid = self.sudo().search([
-                        ('module', '=', module),
-                        ('name', '=', xml_id + '_' + parent_model.replace('.', '_')),
-                    ])
-                    # XML ID found in the database, try to recover an existing record
-                    if xid:
-                        parent = self.env[xid.model].browse(xid.res_id)
-                        if parent.exists():
-                            existing_parents.add(xid.model)
-                            values[parent_field] = parent.id
-                        else:
-                            xid.unlink()
-
-            record = record.create(values)
-            if xml_id:
-                #To add an external identifiers to all inherits model
-                inherit_models = [record]
-                while inherit_models:
-                    current_model = inherit_models.pop()
-                    for parent_model_name, parent_field in current_model._inherits.items():
-                        inherit_models.append(self.env[parent_model_name])
-                        if parent_model_name in existing_parents:
-                            continue
-                        self.sudo().create({
-                            'name': xml_id + '_' + parent_model_name.replace('.', '_'),
-                            'model': parent_model_name,
-                            'module': module,
-                            'res_id': record[parent_field].id,
-                            'noupdate': noupdate,
-                        })
-                        existing_parents.add(parent_model_name)
-                self.sudo().create({
-                    'name': xml_id,
-                    'model': model,
-                    'module': module,
-                    'res_id': record.id,
-                    'noupdate': noupdate
-                })
-                if current_module and module != current_module:
-                    _logger.warning("Creating the ir.model.data %s in module %s instead of %s.",
-                                    xml_id, module, current_module)
-
-
-        if xml_id and record:
-            self.loads[(module, xml_id)] = (model, record.id)
+        # rows to insert
+        rowf = "(%s, %s, %s, %s, %s, now() at time zone 'UTC', now() at time zone 'UTC')"
+        rows = set()
+        for data in data_list:
+            prefix, suffix = data['xml_id'].split('.', 1)
+            record = data['record']
+            noupdate = bool(data.get('noupdate'))
+            rows.add((prefix, suffix, record._name, record.id, noupdate))
+            # also create XML ids for parent records
             for parent_model, parent_field in record._inherits.items():
-                parent_xml_id = xml_id + '_' + parent_model.replace('.', '_')
-                self.loads[(module, parent_xml_id)] = (parent_model, record[parent_field].id)
+                parent = record[parent_field]
+                puffix = suffix + '_' + parent_model.replace('.', '_')
+                rows.add((prefix, puffix, parent._name, parent.id, noupdate))
 
-        return record.id
+        for sub_rows in self.env.cr.split_for_in_conditions(rows):
+            # insert rows or update them
+            query = """
+                INSERT INTO ir_model_data (module, name, model, res_id, noupdate, date_init, date_update)
+                VALUES {rows}
+                ON CONFLICT (module, name)
+                DO UPDATE SET date_update=(now() at time zone 'UTC') {where}
+            """.format(
+                rows=", ".join([rowf] * len(sub_rows)),
+                where="WHERE NOT ir_model_data.noupdate" if update else "",
+            )
+            try:
+                self.env.cr.execute(query, [arg for row in sub_rows for arg in row])
+            except Exception:
+                _logger.error("Failed to insert ir_model_data\n%s", "\n".join(str(row) for row in sub_rows))
+                raise
+
+        # update self.loads
+        for prefix, suffix, res_model, res_id, noupdate in rows:
+            self.loads[(prefix, suffix)] = (res_model, res_id)
+
+    @api.model
+    def _load_xmlid(self, xml_id):
+        """ Simply mark the given XML id as being loaded, and return the
+            corresponding record.
+        """
+        record = self.xmlid_to_object(xml_id)
+        if record:
+            prefix, suffix = xml_id.split('.', 1)
+            self.loads[(prefix, suffix)] = (record._name, record.id)
+            for parent_model, parent_field in record._inherits.items():
+                parent = record[parent_field]
+                puffix = suffix + '_' + parent_model.replace('.', '_')
+                self.loads[(prefix, puffix)] = (parent._name, parent.id)
+        return record
 
     @api.model
     def _module_data_uninstall(self, modules_to_remove):
@@ -1615,6 +1622,14 @@ class IrModelData(models.Model):
         if bad_imd_ids:
             self.browse(bad_imd_ids).unlink()
         self.loads.clear()
+
+    @api.model
+    def toggle_noupdate(self, model, res_id):
+        """ Toggle the noupdate flag on the external id of the record """
+        record = self.env[model].browse(res_id)
+        if record.check_access_rights('write'):
+            for xid in  self.search([('model', '=', model), ('res_id', '=', res_id)]):
+                xid.noupdate = not xid.noupdate
 
 
 class WizardModelMenu(models.TransientModel):

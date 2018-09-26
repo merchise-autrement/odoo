@@ -16,6 +16,8 @@ class ResConfigSettings(models.TransientModel):
         help="Track following dates on lots & serial numbers: best before, removal, end of life, alert. \n Such dates are set automatically at lot/serial number creation based on values set on the product (in days).")
     group_stock_production_lot = fields.Boolean("Lots & Serial Numbers",
         implied_group='stock.group_production_lot')
+    group_lot_on_delivery_slip = fields.Boolean("Display Lots & Serial Numbers",
+        implied_group='stock.group_lot_on_delivery_slip')
     group_stock_tracking_lot = fields.Boolean("Delivery Packages",
         implied_group='stock.group_tracking_lot')
     group_stock_tracking_owner = fields.Boolean("Consignment",
@@ -37,6 +39,7 @@ class ResConfigSettings(models.TransientModel):
     module_delivery_ups = fields.Boolean("UPS")
     module_delivery_usps = fields.Boolean("USPS")
     module_delivery_bpost = fields.Boolean("bpost")
+    module_delivery_easypost = fields.Boolean("Easypost")
     group_stock_multi_locations = fields.Boolean('Storage Locations', implied_group='stock.group_stock_multi_locations',
         help="Store products in specific locations of your warehouse (e.g. bins, racks) and to track inventory accordingly.")
     group_stock_multi_warehouses = fields.Boolean('Multi-Warehouses', implied_group='stock.group_stock_multi_warehouses')
@@ -57,6 +60,11 @@ class ResConfigSettings(models.TransientModel):
         if self.group_stock_multi_warehouses:
             self.group_stock_multi_locations = True
 
+    @api.onchange('group_stock_production_lot')
+    def _onchange_group_stock_production_lot(self):
+        if not self.group_stock_production_lot:
+            self.group_lot_on_delivery_slip = False
+
     @api.onchange('group_stock_adv_location')
     def onchange_adv_location(self):
         if self.group_stock_adv_location and not self.group_stock_multi_locations:
@@ -73,11 +81,13 @@ class ResConfigSettings(models.TransientModel):
         operation types of the warehouses, so they won't appear in the dashboard.
         Otherwise, activate them.
         """
+        warehouse_obj = self.env['stock.warehouse']
         if self.group_stock_multi_locations:
-            warehouses = self.env['stock.warehouse'].search([])
+            # override active_test that is false in set_values
+            warehouses = warehouse_obj.with_context(active_test=True).search([])
             active = True
         else:
-            warehouses = self.env['stock.warehouse'].search([
+            warehouses = warehouse_obj.search([
                 ('reception_steps', '=', 'one_step'),
                 ('delivery_steps', '=', 'ship_only')])
             active = False

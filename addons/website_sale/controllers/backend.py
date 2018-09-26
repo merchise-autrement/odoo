@@ -12,9 +12,11 @@ from odoo.http import request
 class WebsiteSaleBackend(WebsiteBackend):
 
     @http.route()
-    def fetch_dashboard_data(self, date_from, date_to):
-        results = super(WebsiteSaleBackend, self).fetch_dashboard_data(date_from, date_to)
+    def fetch_dashboard_data(self, website_id, date_from, date_to):
+        Website = request.env['website']
+        current_website = website_id and Website.browse(website_id) or Website.get_current_website()
 
+        results = super(WebsiteSaleBackend, self).fetch_dashboard_data(website_id, date_from, date_to)
         sales_values = dict(
             graph=[],
             best_sellers=[],
@@ -40,6 +42,7 @@ class WebsiteSaleBackend(WebsiteBackend):
         # Product-based computation
         report_product_lines = request.env['sale.report'].read_group(
             domain=[
+                ('website_id', '=', current_website.id),
                 ('team_id.team_type', '=', 'website'),
                 ('state', 'in', ['sale', 'done']),
                 ('confirmation_date', '>=', date_from),
@@ -57,6 +60,7 @@ class WebsiteSaleBackend(WebsiteBackend):
 
         # Sale-based results computation
         sale_order_domain = [
+            ('website_id', '=', current_website.id),
             ('team_id', 'in', request.env['crm.team'].search([('team_type', '=', 'website')]).ids),
             ('date_order', '>=', fields.Datetime.to_string(datetime_from)),
             ('date_order', '<=', fields.Datetime.to_string(datetime_to))]
@@ -70,6 +74,7 @@ class WebsiteSaleBackend(WebsiteBackend):
 
         report_price_lines = request.env['sale.report'].read_group(
             domain=[
+                ('website_id', '=', current_website.id),
                 ('team_id.team_type', '=', 'website'),
                 ('state', 'in', ['sale', 'done']),
                 ('date', '>=', date_from),
@@ -91,7 +96,7 @@ class WebsiteSaleBackend(WebsiteBackend):
             payment_to_capture_count=request.env['payment.transaction'].search_count([
                 ('state', '=', 'authorized'),
                 # that part perform a search on sale.order in order to comply with access rights as tx do not have any
-                ('sale_order_id.id', 'in', request.env['sale.order'].search(sale_order_domain + [('state', '!=', 'cancel')]).ids),
+                ('sale_order_ids', 'in', request.env['sale.order'].search(sale_order_domain + [('state', '!=', 'cancel')]).ids),
             ]),
             total_sold=sum(price_line['price_subtotal'] for price_line in report_price_lines)
         )
@@ -110,6 +115,7 @@ class WebsiteSaleBackend(WebsiteBackend):
             previous_sale_label = _('Previous Year')
 
         sales_domain = [
+            ('website_id', '=', current_website.id),
             ('team_id.team_type', '=', 'website'),
             ('state', 'in', ['sale', 'done']),
             ('confirmation_date', '>=', date_from),

@@ -65,18 +65,18 @@ odoo.define('payment.payment_form', function (require) {
                         if ($(element).attr('type') == 'hidden') {
                             return true;
                         }
-                        $(element).closest('div.form-group').removeClass('has-error');
+                        $(element).closest('div.form-group').removeClass('o_has_error').find('.form-control, .custom-select').removeClass('is-invalid');
                         $(element).siblings( ".o_invalid_field" ).remove();
                         //force check of forms validity (useful for Firefox that refill forms automatically on f5)
                         $(element).trigger("focusout");
                         if (element.dataset.isRequired && element.value.length === 0) {
-                                $(element).closest('div.form-group').addClass('has-error');
-                                $(element).closest('div.form-group').append('<div style="color: red" class="o_invalid_field">' + _.str.escapeHTML("The value is invalid.") + '</div>');
+                                $(element).closest('div.form-group').addClass('o_has_error').find('.form-control, .custom-select').addClass('is-invalid');
+                                $(element).closest('div.form-group').append('<div style="color: red" class="o_invalid_field" aria-invalid="true">' + _.str.escapeHTML("The value is invalid.") + '</div>');
                                 wrong_input = true;
                         }
-                        else if ($(element).closest('div.form-group').hasClass('has-error')) {
+                        else if ($(element).closest('div.form-group').hasClass('o_has_error')) {
                             wrong_input = true;
-                            $(element).closest('div.form-group').append('<div style="color: red" class="o_invalid_field">' + _.str.escapeHTML("The value is invalid.") + '</div>');
+                            $(element).closest('div.form-group').append('<div style="color: red" class="o_invalid_field" aria-invalid="true">' + _.str.escapeHTML("The value is invalid.") + '</div>');
                         }
                     });
 
@@ -106,6 +106,7 @@ odoo.define('payment.payment_form', function (require) {
                             else {
                                 checked_radio.value = data.id; // set the radio value to the new card id
                                 form.submit();
+                                return;
                             }
                         }
                         // if the server has returned false, we display an error
@@ -124,7 +125,7 @@ odoo.define('payment.payment_form', function (require) {
                         $(button).attr('disabled', false);
                         $(button).children('.fa').addClass('fa-plus-circle')
                         $(button).find('span.o_loader').remove();
-                    }).fail(function (message, data) {
+                    }).fail(function (data, event) {
                         // if the rpc fails, pretty obvious
                         $(button).attr('disabled', false);
                         $(button).children('.fa').addClass('fa-plus-circle')
@@ -133,7 +134,7 @@ odoo.define('payment.payment_form', function (require) {
                         self.displayError(
                             _t('Server Error'),
                             _t("We are not able to add your payment method at the moment.") +
-                               data.data.message
+                               message.data.message
                         );
                     });
                 }
@@ -152,6 +153,7 @@ odoo.define('payment.payment_form', function (require) {
                             'success_url': self.options.successUrl,
                             'error_url': self.options.errorUrl,
                             'callback_method': self.options.callbackMethod,
+                            'order_id': self.options.orderId,
                         }).then(function (result) {
                             if (result) {
                                 // if the server sent us the html form, we create a form element
@@ -174,11 +176,11 @@ odoo.define('payment.payment_form', function (require) {
                                     _t("We are not able to redirect you to the payment form.")
                                 );
                             }
-                        }).fail(function (message, data) {
+                        }).fail(function (data, event) {
                             self.displayError(
                                 _t('Server Error'),
-                                _t("We are not able to redirect you to the payment form.<") +
-                                   data.data.message
+                                _t("We are not able to redirect you to the payment form. ") +
+                                   message.data.message
                             );
                         });
                     }
@@ -220,25 +222,25 @@ odoo.define('payment.payment_form', function (require) {
                 var form_data = this.getFormData(inputs_form);
                 var ds = $('input[name="data_set"]', acquirer_form)[0];
                 var wrong_input = false;
-                
+
                 inputs_form.toArray().forEach(function (element) {
                     //skip the check of non visible inputs
                     if ($(element).attr('type') == 'hidden') {
                         return true;
                     }
-                    $(element).closest('div.form-group').removeClass('has-error');
+                    $(element).closest('div.form-group').removeClass('o_has_error').find('.form-control, .custom-select').removeClass('is-invalid');
                     $(element).siblings( ".o_invalid_field" ).remove();
                     //force check of forms validity (useful for Firefox that refill forms automatically on f5)
                     $(element).trigger("focusout");
                     if (element.dataset.isRequired && element.value.length === 0) {
-                            $(element).closest('div.form-group').addClass('has-error');
-                            var message = '<div style="color: red" class="o_invalid_field">' + _.str.escapeHTML("The value is invalid.") + '</div>';
+                            $(element).closest('div.form-group').addClass('o_has_error').find('.form-control, .custom-select').addClass('is-invalid');
+                            var message = '<div style="color: red" class="o_invalid_field" aria-invalid="true">' + _.str.escapeHTML("The value is invalid.") + '</div>';
                             $(element).closest('div.form-group').append(message);
                             wrong_input = true;
                     }
-                    else if ($(element).closest('div.form-group').hasClass('has-error')) {
+                    else if ($(element).closest('div.form-group').hasClass('o_has_error')) {
                         wrong_input = true;
-                        var message = '<div style="color: red" class="o_invalid_field">' + _.str.escapeHTML("The value is invalid.") + '</div>';
+                        var message = '<div style="color: red" class="o_invalid_field" aria-invalid="true">' + _.str.escapeHTML("The value is invalid.") + '</div>';
                         $(element).closest('div.form-group').append(message);
                     }
                 });
@@ -290,7 +292,7 @@ odoo.define('payment.payment_form', function (require) {
                     $(button).attr('disabled', false);
                     $(button).children('.fa').addClass('fa-plus-circle')
                     $(button).find('span.o_loader').remove();
-                }).fail(function (message, data) {
+                }).fail(function (data, event) {
                     // if the rpc fails, pretty obvious
                     $(button).attr('disabled', false);
                     $(button).children('.fa').addClass('fa-plus-circle')
@@ -362,7 +364,7 @@ odoo.define('payment.payment_form', function (require) {
                     // if there's no records linked to this payment method, then we delete it
                     tokenDelete();
                 }
-            }, function (type, err) {
+            }, function (err, event) {
                 self.displayError(
                     _t('Server Error'),
                     _t("We are not able to delete your payment method at the moment.") + err.data.message
@@ -375,8 +377,8 @@ odoo.define('payment.payment_form', function (require) {
             ev.preventDefault();
             var $listItems = $(ev.currentTarget).parents('ul').children('li');
             var $moreItem = $(ev.currentTarget).parents('li');
-            $listItems.removeClass('hidden');
-            $moreItem.addClass('hidden');
+            $listItems.removeClass('d-none');
+            $moreItem.addClass('d-none');
         },
 
         // event handler when clicking on a radio button
@@ -387,8 +389,8 @@ odoo.define('payment.payment_form', function (require) {
         {
             var checked_radio = this.$('input[type="radio"]:checked');
             // we hide all the acquirers form
-            this.$('[id*="o_payment_add_token_acq_"]').addClass('hidden');
-            this.$('[id*="o_payment_form_acq_"]').addClass('hidden');
+            this.$('[id*="o_payment_add_token_acq_"]').addClass('d-none');
+            this.$('[id*="o_payment_form_acq_"]').addClass('d-none');
             if (checked_radio.length !== 1) {
                 return;
             }
@@ -396,11 +398,11 @@ odoo.define('payment.payment_form', function (require) {
             var acquirer_id = this.getAcquirerIdFromRadio(checked_radio);
 
             // if we clicked on an add new payment radio, display its form
-            if (this.isNewPaymentRadio(checked_radio)) {                
-                this.$('#o_payment_add_token_acq_' + acquirer_id).removeClass('hidden');
+            if (this.isNewPaymentRadio(checked_radio)) {
+                this.$('#o_payment_add_token_acq_' + acquirer_id).removeClass('d-none');
             }
             else if (this.isFormPaymentRadio(checked_radio)) {
-                this.$('#o_payment_form_acq_' + acquirer_id).removeClass('hidden');
+                this.$('#o_payment_form_acq_' + acquirer_id).removeClass('d-none');
             }
         },
         isNewPaymentRadio: function (element) {
@@ -414,8 +416,14 @@ odoo.define('payment.payment_form', function (require) {
         },
         displayError: function (title, message) {
             var $checkedRadio = this.$('input[type="radio"]:checked'),
-                acquirerID = this.getAcquirerIdFromRadio($checkedRadio[0]),
+                acquirerID = this.getAcquirerIdFromRadio($checkedRadio[0]);
+            var $acquirerForm;
+            if (this.isNewPaymentRadio($checkedRadio[0])) {
                 $acquirerForm = this.$('#o_payment_add_token_acq_' + acquirerID);
+            }
+            else if (this.isFormPaymentRadio($checkedRadio[0])) {
+                $acquirerForm = this.$('#o_payment_form_acq_' + acquirerID);
+            }
 
             if ($checkedRadio.length === 0) {
                 return new Dialog(null, {

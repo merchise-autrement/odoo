@@ -88,7 +88,7 @@
         <field name="arch" type="xml">
             <form string="Meetings">
                 <sheet>
-                    <button string="Document" class="oe_stat_button pull-right" icon="fa-bars" type="object" name="action_open_calendar_event" attrs="{'invisible': ['|', ('res_model', '=', False), ('res_id', '=', False)]}"/>
+                    <button string="Document" class="oe_stat_button float-right" icon="fa-bars" type="object" name="action_open_calendar_event" attrs="{'invisible': ['|', ('res_model', '=', False), ('res_id', '=', False)]}"/>
                     <field name="res_model" invisible="1" />
                     <field name="res_id" invisible="1" />
                     <field name="state" invisible="1"/>
@@ -112,7 +112,7 @@
                     <notebook>
                         <page name="page_details" string="Meeting Details">
                             <group attrs="{'invisible': [('recurrency','==',False)]}" class="oe_edit_only ">
-                                <p class='alert alert-warning'> This event is linked to a recurrence...<br/>
+                                <p class='alert alert-warning' role="status"> This event is linked to a recurrence...<br/>
                                     <button type="object" name="action_detach_recurring_event"  string="Update only this instance"  help="Click here to update only this instance and not all recurrences. " class="oe_link"/>
                                 </p>
                             </group>
@@ -194,7 +194,6 @@
                                 <group>
                                     <field name="privacy"/>
                                     <field name="show_as"/>
-                                    <field name="rrule" invisible="1" readonly="0" />
                                     <field name="recurrent_id" invisible="1" />
                                 </group>
                             </group>
@@ -236,7 +235,7 @@
         <field name="priority" eval="2"/>
         <field name="arch" type="xml">
             <form string="Meetings">
-                <button string="Document" class="oe_stat_button pull-right" icon="fa-bars" type="object" name="action_open_calendar_event" attrs="{'invisible': ['|', ('res_model', '=', False), ('res_id', '=', False)]}"/>
+                <button string="Document" class="oe_stat_button float-right" icon="fa-bars" type="object" name="action_open_calendar_event" attrs="{'invisible': ['|', ('res_model', '=', False), ('res_id', '=', False)]}"/>
                 <field name="res_model" invisible="1" />
                 <field name="res_id" invisible="1" />
                 <field name="state" invisible="1"/>

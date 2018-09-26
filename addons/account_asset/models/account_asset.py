@@ -7,7 +7,6 @@ from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
-from odoo.tools import DEFAULT_SERVER_DATE_FORMAT as DF
 from odoo.tools import float_compare, float_is_zero
 
 
@@ -18,6 +17,7 @@ class AccountAssetCategory(models.Model):
     active = fields.Boolean(default=True)
     name = fields.Char(required=True, index=True, string="Asset Type")
     account_analytic_id = fields.Many2one('account.analytic.account', string='Analytic Account')
+    analytic_tag_ids = fields.Many2many('account.analytic.tag', string='Analytic Tag')
     account_asset_id = fields.Many2one('account.account', string='Asset Account', required=True, domain=[('internal_type','=','other'), ('deprecated', '=', False)], help="Account used to record the purchase of the asset at its original price.")
     account_depreciation_id = fields.Many2one('account.account', string='Depreciation Entries: Asset Account', required=True, domain=[('internal_type','=','other'), ('deprecated', '=', False)], help="Account used in the depreciation entries, to decrease the asset value.")
     account_depreciation_expense_id = fields.Many2one('account.account', string='Depreciation Entries: Expense Account', required=True, domain=[('internal_type','=','other'), ('deprecated', '=', False)], oldname='account_income_recognition_id', help="Account used in the periodical entries, to record a part of the asset as expense.")
@@ -110,6 +110,8 @@ class AccountAssetAsset(models.Model):
         help="It is the amount you plan to have that you cannot depreciate.")
     invoice_id = fields.Many2one('account.invoice', string='Invoice', states={'draft': [('readonly', False)]}, copy=False)
     type = fields.Selection(related="category_id.type", string='Type', required=True)
+    account_analytic_id = fields.Many2one('account.analytic.account', string='Analytic Account')
+    analytic_tag_ids = fields.Many2many('account.analytic.tag', string='Analytic Tag')
     date_first_depreciation = fields.Selection([
         ('last_day_period', 'Based on Last Day of Purchase Period'),
         ('manual', 'Manual')],
@@ -128,7 +130,7 @@ class AccountAssetAsset(models.Model):
     def unlink(self):
         for asset in self:
             if asset.state in ['open', 'close']:
-                raise UserError(_('You cannot delete a document is in %s state.') % (asset.state,))
+                raise UserError(_('You cannot delete a document that is in %s state.') % (asset.state,))
             for depreciation_line in asset.depreciation_line_ids:
                 if depreciation_line.move_id:
                     raise UserError(_('You cannot delete a document that contains posted entries.'))
@@ -164,7 +166,7 @@ class AccountAssetAsset(models.Model):
                 if self.prorata:
                     amount = amount_to_depr / self.method_number
                     if sequence == 1:
-                        date = datetime.strptime(self.date, DF)
+                        date = self.date
                         if self.method_period % 12 != 0:
                             month_days = calendar.monthrange(date.year, date.month)[1]
                             days = month_days - date.day + 1
@@ -176,7 +178,7 @@ class AccountAssetAsset(models.Model):
                 amount = residual_amount * self.method_progress_factor
                 if self.prorata:
                     if sequence == 1:
-                        date = datetime.strptime(self.date, DF)
+                        date = self.date
                         if self.method_period % 12 != 0:
                             month_days = calendar.monthrange(date.year, date.month)[1]
                             days = month_days - date.day + 1
@@ -189,7 +191,7 @@ class AccountAssetAsset(models.Model):
     def _compute_board_undone_dotation_nb(self, depreciation_date, total_days):
         undone_dotation_number = self.method_number
         if self.method_time == 'end':
-            end_date = datetime.strptime(self.method_end, DF).date()
+            end_date = self.method_end
             undone_dotation_number = 0
             while depreciation_date <= end_date:
                 depreciation_date = date(depreciation_date.year, depreciation_date.month, depreciation_date.day) + relativedelta(months=+self.method_period)
@@ -213,12 +215,11 @@ class AccountAssetAsset(models.Model):
 
             # if we already have some previous validated entries, starting date is last entry + method period
             if posted_depreciation_line_ids and posted_depreciation_line_ids[-1].depreciation_date:
-                last_depreciation_date = datetime.strptime(posted_depreciation_line_ids[-1].depreciation_date, DF).date()
+                last_depreciation_date = fields.Date.from_string(posted_depreciation_line_ids[-1].depreciation_date)
                 depreciation_date = last_depreciation_date + relativedelta(months=+self.method_period)
             else:
                 # depreciation_date computed from the purchase date
                 depreciation_date = self.date
-                depreciation_date = datetime.strptime(depreciation_date, DF)
                 if self.date_first_depreciation == 'last_day_period':
                     # depreciation_date = the last day of the month
                     depreciation_date = depreciation_date + relativedelta(day=31)
@@ -226,14 +227,12 @@ class AccountAssetAsset(models.Model):
                     if self.method_period == 12:
                         depreciation_date = depreciation_date + relativedelta(month=self.company_id.fiscalyear_last_month)
                         depreciation_date = depreciation_date + relativedelta(day=self.company_id.fiscalyear_last_day)
-                        if datetime.strftime(depreciation_date, DF) < self.date:
+                        if depreciation_date < self.date:
                             depreciation_date = depreciation_date + relativedelta(years=1)
                 elif self.first_depreciation_manual_date and self.first_depreciation_manual_date != self.date:
                     # depreciation_date set manually from the 'first_depreciation_manual_date' field
                     depreciation_date = self.first_depreciation_manual_date
-                    depreciation_date = datetime.strptime(depreciation_date, DF)
 
-            depreciation_date = depreciation_date.date()
             total_days = (depreciation_date.year % 4) and 365 or 366
             month_day = depreciation_date.day
             undone_dotation_number = self._compute_board_undone_dotation_nb(depreciation_date, total_days)
@@ -252,7 +251,7 @@ class AccountAssetAsset(models.Model):
                     'name': (self.code or '') + '/' + str(sequence),
                     'remaining_value': residual_amount,
                     'depreciated_value': self.value - (self.salvage_value + residual_amount),
-                    'depreciation_date': depreciation_date.strftime(DF),
+                    'depreciation_date': depreciation_date,
                 }
                 commands.append((0, False, vals))
 
@@ -327,7 +326,7 @@ class AccountAssetAsset(models.Model):
 
                 # Create a new depr. line with the residual amount and post it
                 sequence = len(asset.depreciation_line_ids) - len(unposted_depreciation_line_ids) + 1
-                today = datetime.today().strftime(DF)
+                today = fields.Datetime.today()
                 vals = {
                     'amount': asset.value_residual,
                     'asset_id': asset.id,
@@ -351,7 +350,9 @@ class AccountAssetAsset(models.Model):
     def set_to_close(self):
         move_ids = self._get_disposal_moves()
         if move_ids:
-            self._return_disposal_view(move_ids)
+            return self._return_disposal_view(move_ids)
+        # Fallback, as if we just clicked on the smartbutton
+        return self.open_entries()
 
     @api.multi
     def set_to_draft(self):
@@ -388,7 +389,7 @@ class AccountAssetAsset(models.Model):
     @api.constrains('prorata', 'method_time')
     def _check_prorata(self):
         if self.prorata and self.method_time != 'number':
-            raise ValidationError(_('Prorata temporis can be applied only for time method "number of depreciations".'))
+            raise ValidationError(_('Prorata temporis can be applied only for the "number of depreciations" time method.'))
 
     @api.onchange('category_id')
     def onchange_category_id(self):
@@ -411,6 +412,8 @@ class AccountAssetAsset(models.Model):
                     'method_end': category.method_end,
                     'prorata': category.prorata,
                     'date_first_depreciation': category.date_first_depreciation,
+                    'account_analytic_id': category.account_analytic_id.id,
+                    'analytic_tag_ids': [(6, 0, category.analytic_tag_ids.ids)],
                 }
             }
 
@@ -438,7 +441,7 @@ class AccountAssetAsset(models.Model):
     @api.model
     def create(self, vals):
         asset = super(AccountAssetAsset, self.with_context(mail_create_nolog=True)).create(vals)
-        asset.compute_depreciation_board()
+        asset.sudo().compute_depreciation_board()
         return asset
 
     @api.multi
@@ -500,7 +503,7 @@ class AccountAssetDepreciationLine(models.Model):
         created_moves = self.env['account.move']
         for line in self:
             if line.move_id:
-                raise UserError(_('This depreciation is already linked to a journal entry! Please post or delete it.'))
+                raise UserError(_('This depreciation is already linked to a journal entry. Please post or delete it.'))
             move_vals = self._prepare_move(line)
             move = self.env['account.move'].create(move_vals)
             line.write({'move_id': move.id, 'move_check': True})
@@ -511,12 +514,15 @@ class AccountAssetDepreciationLine(models.Model):
         return [x.id for x in created_moves]
 
     def _prepare_move(self, line):
-        prec = self.env['decimal.precision'].precision_get('Account')
         category_id = line.asset_id.category_id
+        account_analytic_id = line.asset_id.account_analytic_id
+        analytic_tag_ids = line.asset_id.analytic_tag_ids
         depreciation_date = self.env.context.get('depreciation_date') or line.depreciation_date or fields.Date.context_today(self)
         company_currency = line.asset_id.company_id.currency_id
         current_currency = line.asset_id.currency_id
-        amount = current_currency.with_context(date=depreciation_date).compute(line.amount, company_currency)
+        prec = company_currency.decimal_places
+        amount = current_currency._convert(
+            line.amount, company_currency, line.asset_id.company_id, depreciation_date)
         asset_name = line.asset_id.name + ' (%s/%s)' % (line.sequence, len(line.asset_id.depreciation_line_ids))
         move_line_1 = {
             'name': asset_name,
@@ -524,7 +530,8 @@ class AccountAssetDepreciationLine(models.Model):
             'debit': 0.0 if float_compare(amount, 0.0, precision_digits=prec) > 0 else -amount,
             'credit': amount if float_compare(amount, 0.0, precision_digits=prec) > 0 else 0.0,
             'partner_id': line.asset_id.partner_id.id,
-            'analytic_account_id': category_id.account_analytic_id.id if category_id.type == 'sale' else False,
+            'analytic_account_id': account_analytic_id.id if category_id.type == 'sale' else False,
+            'analytic_tag_ids': [(6, 0, analytic_tag_ids.ids)] if category_id.type == 'sale' else False,
             'currency_id': company_currency != current_currency and current_currency.id or False,
             'amount_currency': company_currency != current_currency and - 1.0 * line.amount or 0.0,
         }
@@ -534,7 +541,8 @@ class AccountAssetDepreciationLine(models.Model):
             'credit': 0.0 if float_compare(amount, 0.0, precision_digits=prec) > 0 else -amount,
             'debit': amount if float_compare(amount, 0.0, precision_digits=prec) > 0 else 0.0,
             'partner_id': line.asset_id.partner_id.id,
-            'analytic_account_id': category_id.account_analytic_id.id if category_id.type == 'purchase' else False,
+            'analytic_account_id': account_analytic_id.id if category_id.type == 'purchase' else False,
+            'analytic_tag_ids': [(6, 0, analytic_tag_ids.ids)] if category_id.type == 'purchase' else False,
             'currency_id': company_currency != current_currency and current_currency.id or False,
             'amount_currency': company_currency != current_currency and line.amount or 0.0,
         }
@@ -547,14 +555,18 @@ class AccountAssetDepreciationLine(models.Model):
         return move_vals
 
     def _prepare_move_grouped(self):
-        category_id = self[0].asset_id.category_id  # we can suppose that all lines have the same category
+        asset_id = self[0].asset_id
+        category_id = asset_id.category_id  # we can suppose that all lines have the same category
+        account_analytic_id = asset_id.account_analytic_id
+        analytic_tag_ids = asset_id.analytic_tag_ids
         depreciation_date = self.env.context.get('depreciation_date') or fields.Date.context_today(self)
         amount = 0.0
         for line in self:
             # Sum amount of all depreciation lines
             company_currency = line.asset_id.company_id.currency_id
             current_currency = line.asset_id.currency_id
-            amount += current_currency.compute(line.amount, company_currency)
+            company = line.asset_id.company_id
+            amount += current_currency._convert(line.amount, company_currency, company, fields.Date.today())
 
         name = category_id.name + _(' (grouped)')
         move_line_1 = {
@@ -563,7 +575,8 @@ class AccountAssetDepreciationLine(models.Model):
             'debit': 0.0,
             'credit': amount,
             'journal_id': category_id.journal_id.id,
-            'analytic_account_id': category_id.account_analytic_id.id if category_id.type == 'sale' else False,
+            'analytic_account_id': account_analytic_id.id if category_id.type == 'sale' else False,
+            'analytic_tag_ids': [(6, 0, analytic_tag_ids.ids)] if category_id.type == 'sale' else False,
         }
         move_line_2 = {
             'name': name,
@@ -571,7 +584,8 @@ class AccountAssetDepreciationLine(models.Model):
             'credit': 0.0,
             'debit': amount,
             'journal_id': category_id.journal_id.id,
-            'analytic_account_id': category_id.account_analytic_id.id if category_id.type == 'purchase' else False,
+            'analytic_account_id': account_analytic_id.id if category_id.type == 'purchase' else False,
+            'analytic_tag_ids': [(6, 0, analytic_tag_ids.ids)] if category_id.type == 'purchase' else False,
         }
         move_vals = {
             'ref': category_id.name,

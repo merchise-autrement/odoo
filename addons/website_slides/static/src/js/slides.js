@@ -109,11 +109,12 @@ var page_widgets = {};
         },
     });
 
-    $('iframe').ready(function() {
+    $('iframe.o_wslides_iframe_viewer').ready(function() {
         // TODO : make it work. For now, once the iframe is loaded, the value of #page_count is
         // still now set (the pdf is still loading)
-        var max_page = $('iframe').contents().find('#page_count').val();
-        new SlideSocialEmbed($(this), max_page).setElement($('.oe_slide_js_embed_code_widget'));
+        var $iframe = $(this);
+        var max_page = $iframe.contents().find('#page_count').val();
+        new SlideSocialEmbed($iframe, max_page).setElement($('.oe_slide_js_embed_code_widget'));
     });
 
 
@@ -129,7 +130,7 @@ var page_widgets = {};
             var input = this.$('input');
             var slide_id = this.$('button').data('slide-id');
             if(input.val() && input[0].checkValidity()){
-                this.$el.removeClass('has-error');
+                this.$el.removeClass('o_has_error').find('.form-control, .custom-select').removeClass('is-invalid');
                 ajax.jsonRpc('/slides/slide/send_share_email', 'call', {
                     slide_id: slide_id,
                     email: input.val(),
@@ -137,7 +138,7 @@ var page_widgets = {};
                     self.$el.html($('<div class="alert alert-info" role="alert"><strong>Thank you!</strong> Mail has been sent.</div>'));
                 });
             }else{
-                this.$el.addClass('has-error');
+                this.$el.addClass('o_has_error').find('.form-control, .custom-select').addClass('is-invalid');
                 input.focus();
             }
         },

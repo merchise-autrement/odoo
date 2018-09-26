@@ -5,7 +5,7 @@ import os
 import re
 
 from odoo import api, fields, models, tools, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 
 
 class Company(models.Model):
@@ -15,16 +15,7 @@ class Company(models.Model):
 
     @api.multi
     def copy(self, default=None):
-        """
-        Duplicating a company without specifying a partner duplicate the partner
-        """
-        self.ensure_one()
-        default = dict(default or {})
-        if not default.get('name') and not default.get('partner_id'):
-            copy_partner = self.partner_id.copy()
-            default['partner_id'] = copy_partner.id
-            default['name'] = copy_partner.name
-        return super(Company, self).copy(default)
+        raise UserError(_('Duplicating a company is not allowed. Please create a new company instead.'))
 
     def _get_logo(self):
         return base64.b64encode(open(os.path.join(tools.config['root_path'], 'addons', 'base', 'static', 'img', 'res_company_logo.png'), 'rb') .read())
@@ -62,19 +53,16 @@ class Company(models.Model):
     email = fields.Char(related='partner_id.email', store=True)
     phone = fields.Char(related='partner_id.phone', store=True)
     website = fields.Char(related='partner_id.website')
-    vat = fields.Char(related='partner_id.vat', string="TIN")
+    vat = fields.Char(related='partner_id.vat', string="Tax ID")
     company_registry = fields.Char()
     paperformat_id = fields.Many2one('report.paperformat', 'Paper format', default=lambda self: self.env.ref('base.paperformat_euro', raise_if_not_found=False))
-    external_report_layout = fields.Selection([
-        ('background', 'Background'),
-        ('boxed', 'Boxed'),
-        ('clean', 'Clean'),
-        ('standard', 'Standard'),
-    ], string='Document Template')
-
+    external_report_layout_id = fields.Many2one('ir.ui.view', 'Document Template')
     _sql_constraints = [
         ('name_uniq', 'unique (name)', 'The company name must be unique !')
     ]
+
+    base_onboarding_company_state = fields.Selection([
+        ('not_done', "Not done"), ('just_done', "Just done"), ('done', "Done")], string="State of the onboarding company step", default='not_done')
 
     @api.model_cr
     def init(self):
@@ -158,7 +146,7 @@ class Company(models.Model):
         return res
 
     @api.model
-    def name_search(self, name='', args=None, operator='ilike', limit=100):
+    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
         context = dict(self.env.context)
         newself = self
         if context.pop('user_preference', None):
@@ -169,7 +157,7 @@ class Company(models.Model):
             companies = self.env.user.company_id + self.env.user.company_ids
             args = (args or []) + [('id', 'in', companies.ids)]
             newself = newself.sudo()
-        return super(Company, newself.with_context(context)).name_search(name=name, args=args, operator=operator, limit=limit)
+        return super(Company, newself.with_context(context))._name_search(name=name, args=args, operator=operator, limit=limit, name_get_uid=name_get_uid)
 
     @api.model
     @api.returns('self', lambda value: value.id)
@@ -230,17 +218,29 @@ class Company(models.Model):
         # The write is made on the user to set it automatically in the multi company group.
         self.env.user.write({'company_ids': [(4, company.id)]})
         partner.write({'company_id': company.id})
+
+        # Make sure that the selected currency is enabled
+        if vals.get('currency_id'):
+            currency = self.env['res.currency'].browse(vals['currency_id'])
+            if not currency.active:
+                currency.write({'active': True})
         return company
 
     @api.multi
     def write(self, values):
         self.clear_caches()
+        # Make sure that the selected currency is enabled
+        if values.get('currency_id'):
+            currency = self.env['res.currency'].browse(values['currency_id'])
+            if not currency.active:
+                currency.write({'active': True})
+
         return super(Company, self).write(values)
 
     @api.constrains('parent_id')
     def _check_parent_id(self):
         if not self._check_recursion():
-            raise ValidationError(_('Error ! You cannot create recursive companies.'))
+            raise ValidationError(_('You cannot create recursive companies.'))
 
     @api.multi
     def open_company_edit_report(self):
@@ -261,3 +261,38 @@ class Company(models.Model):
                         .report_action(docids))
         else:
             return res
+
+    @api.model
+    def action_open_base_onboarding_company(self):
+        """ Onboarding step for company basic information. """
+        action = self.env.ref('base.action_open_base_onboarding_company').read()[0]
+        action['res_id'] = self.env.user.company_id.id
+        return action
+
+    def set_onboarding_step_done(self, step_name):
+        if self[step_name] == 'not_done':
+            self[step_name] = 'just_done'
+
+    def get_and_update_onbarding_state(self, onboarding_state, steps_states):
+        """ Needed to display onboarding animations only one time. """
+        old_values = {}
+        all_done = True
+        for step_state in steps_states:
+            old_values[step_state] = self[step_state]
+            if self[step_state] == 'just_done':
+                self[step_state] = 'done'
+            all_done = all_done and self[step_state] == 'done'
+
+        if all_done:
+            if self[onboarding_state] == 'not_done':
+                # string `onboarding_state` instead of variable name is not an error
+                old_values['onboarding_state'] = 'just_done'
+            else:
+                old_values['onboarding_state'] = 'done'
+            self[onboarding_state] = 'done'
+        return old_values
+
+    @api.multi
+    def action_save_onboarding_company_step(self):
+        if bool(self.street):
+            self.set_onboarding_step_done('base_onboarding_company_state')

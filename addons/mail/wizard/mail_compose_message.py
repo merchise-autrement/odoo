@@ -123,7 +123,7 @@ class MailComposer(models.TransientModel):
         domain="[('model', '=', model)]")
     # mail_message updated fields
     message_type = fields.Selection(default="comment")
-    subtype_id = fields.Many2one(default=lambda self: self.sudo().env.ref('mail.mt_comment', raise_if_not_found=False).id)
+    subtype_id = fields.Many2one(default=lambda self: self.env['ir.model.data'].xmlid_to_res_id('mail.mt_comment'))
 
     @api.multi
     def check_access_rule(self, operation):
@@ -147,7 +147,7 @@ class MailComposer(models.TransientModel):
         return super(MailComposer, self).check_access_rule(operation)
 
     @api.multi
-    def _notify(self, layout=False, force_send=False, send_after_commit=True, values=None):
+    def _notify(self, **kwargs):
         """ Override specific notify method of mail.message, because we do
             not want that feature in the wizard. """
         return
@@ -189,9 +189,10 @@ class MailComposer(models.TransientModel):
     # action buttons call with positionnal arguments only, so we need an intermediary function
     # to ensure the context is passed correctly
     @api.multi
-    def send_mail_action(self):
-        # TDE/ ???
-        return self.send_mail()
+    def action_send_mail(self):
+        self.send_mail()
+        return {'type': 'ir.actions.act_window_close', 'infos': 'mail_sent'}
+
 
     @api.multi
     def send_mail(self, auto_commit=False):
@@ -210,15 +211,13 @@ class MailComposer(models.TransientModel):
                         new_attachment_ids.append(attachment.copy({'res_model': 'mail.compose.message', 'res_id': wizard.id}).id)
                     else:
                         new_attachment_ids.append(attachment.id)
-                    wizard.write({'attachment_ids': [(6, 0, new_attachment_ids)]})
+                wizard.write({'attachment_ids': [(6, 0, new_attachment_ids)]})
 
             # Mass Mailing
             mass_mode = wizard.composition_mode in ('mass_mail', 'mass_post')
 
             Mail = self.env['mail.mail']
-            ActiveModel = self.env[wizard.model if wizard.model else 'mail.thread']
-            if not hasattr(ActiveModel, 'message_post'):
-                ActiveModel = self.env['mail.thread'].with_context(thread_model=wizard.model)
+            ActiveModel = self.env[wizard.model] if wizard.model and hasattr(self.env[wizard.model], 'message_post') else self.env['mail.thread']
             if wizard.composition_mode == 'mass_post':
                 # do not send emails directly but use the queue instead
                 # add context key to avoid subscribing the author
@@ -239,7 +238,7 @@ class MailComposer(models.TransientModel):
             elif wizard.subtype_id:
                 subtype_id = wizard.subtype_id.id
             else:
-                subtype_id = self.sudo().env.ref('mail.mt_comment', raise_if_not_found=False).id
+                subtype_id = self.env['ir.model.data'].xmlid_to_res_id('mail.mt_comment')
 
             for res_ids in sliced_res_ids:
                 batch_mails = Mail
@@ -248,20 +247,19 @@ class MailComposer(models.TransientModel):
                     if wizard.composition_mode == 'mass_mail':
                         batch_mails |= Mail.create(mail_values)
                     else:
-                        ActiveModel.browse(res_id).message_post(
+                        post_params = dict(
                             message_type=wizard.message_type,
                             subtype_id=subtype_id,
                             notif_layout=notif_layout,
-                            notif_values={
-                                'add_sign': not bool(wizard.template_id),
-                                'mail_auto_delete': wizard.template_id.auto_delete if wizard.template_id else False,
-                            },
+                            add_sign=not bool(wizard.template_id),
+                            mail_auto_delete=wizard.template_id.auto_delete if wizard.template_id else False,
                             **mail_values)
+                        if ActiveModel._name == 'mail.thread' and wizard.model:
+                            post_params['model'] = wizard.model
+                        ActiveModel.browse(res_id).message_post(**post_params)
 
                 if wizard.composition_mode == 'mass_mail':
                     batch_mails.send(auto_commit=auto_commit)
-
-        return {'type': 'ir.actions.act_window_close'}
 
     @api.multi
     def get_mail_values(self, res_ids):
@@ -278,9 +276,19 @@ class MailComposer(models.TransientModel):
         # compute alias-based reply-to in batch
         reply_to_value = dict.fromkeys(res_ids, None)
         if mass_mail_mode and not self.no_auto_thread:
-            # reply_to_value = self.env['mail.thread'].with_context(thread_model=self.model).browse(res_ids)._notify_get_reply_to(default=self.email_from)
-            reply_to_value = self.env['mail.thread'].with_context(thread_model=self.model)._notify_get_reply_to(res_ids, default=self.email_from)
+            records = self.env[self.model].browse(res_ids)
+            reply_to_value = self.env['mail.thread']._notify_get_reply_to_on_records(default=self.email_from, records=records)
 
+        blacklisted_rec_ids = []
+        if mass_mail_mode and hasattr(self.env[self.model], "_primary_email"):
+            blacklist = self.env['mail.blacklist'].sudo().search([]).mapped('email')
+            if blacklist:
+                [email_field] = self.env[self.model]._primary_email
+                sql = """ SELECT id from %s WHERE LOWER(%s) = any (array[%s]) AND id in (%s)""" % \
+                      (self.env[self.model]._table, email_field, ', '.join("'" + rec + "'" for rec in blacklist),
+                       ', '.join(str(res_id) for res_id in res_ids))
+                self._cr.execute(sql)
+                blacklisted_rec_ids = [rec[0] for rec in self._cr.fetchall()]
         for res_id in res_ids:
             # static wizard (mail.message) values
             mail_values = {
@@ -299,8 +307,7 @@ class MailComposer(models.TransientModel):
 
             # mass mailing: rendering override wizard static values
             if mass_mail_mode and self.model:
-                if self.model in self.env and hasattr(self.env[self.model], '_notify_specific_email_values'):
-                    mail_values.update(self.env[self.model].browse(res_id)._notify_specific_email_values(False))
+                mail_values.update(self.env['mail.thread']._notify_specific_email_values_on_records(False, records=self.env[self.model].browse(res_id)))
                 # keep a copy unless specifically requested, reset record name (avoid browsing records)
                 mail_values.update(notification=not self.auto_delete_message, model=self.model, res_id=res_id, record_name=False)
                 # auto deletion of mail_mail
@@ -331,6 +338,11 @@ class MailComposer(models.TransientModel):
                     attachment_ids,
                     {'model': 'mail.message', 'res_id': 0}
                 )
+                # Filter out the blacklisted records by setting the mail state to cancel -> Used for Mass Mailing stats
+                if res_id in blacklisted_rec_ids:
+                    mail_values['state'] = 'cancel'
+                    # Do not post the mail into the recipient's chatter
+                    mail_values['notification'] = False
 
             results[res_id] = mail_values
         return results

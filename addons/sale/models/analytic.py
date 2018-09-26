@@ -14,12 +14,12 @@ class AccountAnalyticLine(models.Model):
         """
         return [('qty_delivered_method', '=', 'analytic')]
 
-    so_line = fields.Many2one('sale.order.line', string='Sales Order Line', domain=lambda self: self._default_sale_line_domain())
+    so_line = fields.Many2one('sale.order.line', string='Sales Order Item', domain=lambda self: self._default_sale_line_domain())
 
     @api.model
     def create(self, values):
         result = super(AccountAnalyticLine, self).create(values)
-        if 'so_line' not in values and not result.so_line and result.product_id and result.product_id.expense_policy != 'no':  # allow to force a False value for so_line
+        if 'so_line' not in values and not result.so_line and result.product_id and result.product_id.expense_policy != 'no' and result.amount <= 0:  # allow to force a False value for so_line
             result.sudo()._sale_determine_order_line()
         return result
 
@@ -27,8 +27,8 @@ class AccountAnalyticLine(models.Model):
     def write(self, values):
         result = super(AccountAnalyticLine, self).write(values)
         if 'so_line' not in values:  # allow to force a False value for so_line
-            self.sudo().filtered(lambda aal: not aal.so_line and aal.product_id and aal.product_id.expense_policy != 'no')._sale_determine_order_line()
-        return result
+            # only take the AAL from expense or vendor bill, meaning having a negative amount
+            self.sudo().filtered(lambda aal: not aal.so_line and aal.product_id and aal.product_id.expense_policy != 'no' and aal.amount <= 0)._sale_determine_order_line()
 
     # ----------------------------------------------------------
     # Vendor Bill / Expense : determine the Sale Order to reinvoice
@@ -55,7 +55,8 @@ class AccountAnalyticLine(models.Model):
         price_unit = abs(self.amount / self.unit_amount)
         currency_id = self.company_id.currency_id
         if currency_id and currency_id != order.currency_id:
-            price_unit = currency_id.compute(price_unit, order.currency_id)
+            price_unit = currency_id._convert(
+                price_unit, order.currency_id, order.company_id, order.date_order or fields.Date.today())
         return price_unit
 
     @api.multi
@@ -107,7 +108,14 @@ class AccountAnalyticLine(models.Model):
                 continue
 
             if sale_order.state != 'sale':
-                raise UserError(_('The Sales Order %s linked to the Analytic Account must be validated before registering expenses.') % sale_order.name)
+                message_unconfirmed = _('The Sales Order %s linked to the Analytic Account %s must be validated before registering expenses.')
+                messages = {
+                    'draft': message_unconfirmed,
+                    'sent': message_unconfirmed,
+                    'done': _('The Sales Order %s linked to the Analytic Account %s is currently locked. You cannot register an expense on a locked Sales Order. Please create a new SO linked to this Analytic Account.'),
+                    'cancel': _('The Sales Order %s linked to the Analytic Account %s is cancelled. You cannot register an expense on a cancelled Sales Order.'),
+                }
+                raise UserError(messages[sale_order.state] % (sale_order.name, analytic_line.account_id.name))
 
             so_line = None
             price = analytic_line._sale_get_invoice_price(sale_order)

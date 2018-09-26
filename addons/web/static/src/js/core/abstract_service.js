@@ -7,11 +7,14 @@ var ServicesMixin = require('web.ServicesMixin');
 
 var AbstractService = Class.extend(Mixins.EventDispatcherMixin, ServicesMixin, {
     dependencies: [],
-    name: null,
     init: function (parent) {
         Mixins.EventDispatcherMixin.init.call(this, arguments);
         this.setParent(parent);
     },
+    /**
+     * @abstract
+     */
+    start: function () {},
 });
 
 return AbstractService;

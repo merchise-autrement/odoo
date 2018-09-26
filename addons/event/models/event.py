@@ -220,6 +220,11 @@ class EventEvent(models.Model):
         else:
             self.date_end_located = False
 
+    @api.onchange('is_online')
+    def _onchange_is_online(self):
+        if self.is_online:
+            self.address_id = False
+
     @api.onchange('event_type_id')
     def _onchange_type(self):
         if self.event_type_id:
@@ -261,7 +266,7 @@ class EventEvent(models.Model):
     @api.constrains('date_begin', 'date_end')
     def _check_closing_date(self):
         if self.date_end < self.date_begin:
-            raise ValidationError(_('Closing Date cannot be set before Beginning Date.'))
+            raise ValidationError(_('The closing date cannot be earlier than the beginning date.'))
 
     @api.multi
     @api.depends('name', 'date_begin', 'date_end')
@@ -342,7 +347,7 @@ class EventRegistration(models.Model):
     partner_id = fields.Many2one(
         'res.partner', string='Contact',
         states={'done': [('readonly', True)]})
-    date_open = fields.Datetime(string='Registration Date', readonly=True, default=lambda self: fields.datetime.now())  # weird crash is directly now
+    date_open = fields.Datetime(string='Registration Date', readonly=True, default=lambda self: fields.Datetime.now())  # weird crash is directly now
     date_closed = fields.Datetime(string='Attended Date', readonly=True)
     event_begin_date = fields.Datetime(string="Event Start Date", related='event_id.date_begin', readonly=True)
     event_end_date = fields.Datetime(string="Event End Date", related='event_id.date_end', readonly=True)
@@ -439,9 +444,14 @@ class EventRegistration(models.Model):
     @api.multi
     def message_get_suggested_recipients(self):
         recipients = super(EventRegistration, self).message_get_suggested_recipients()
+        public_users = self.env['res.users'].sudo()
+        public_groups = self.env.ref("base.group_public", raise_if_not_found=False)
+        if public_groups:
+            public_users = public_groups.sudo().with_context(active_test=False).mapped("users")
         try:
             for attendee in self:
-                if attendee.partner_id:
+                is_public = attendee.sudo().with_context(active_test=False).partner_id.user_ids in public_users if public_users else False
+                if attendee.partner_id and not is_public:
                     attendee._message_add_suggested_recipient(recipients, partner=attendee.partner_id, reason=_('Customer'))
                 elif attendee.email:
                     attendee._message_add_suggested_recipient(recipients, email=attendee.email, reason=_('Customer Email'))
@@ -449,7 +459,18 @@ class EventRegistration(models.Model):
             pass
         return recipients
 
-    def _message_post_after_hook(self, message, values, notif_layout, notif_values):
+    @api.multi
+    def message_get_default_recipients(self):
+        # Prioritize registration email over partner_id, which may be shared when a single
+        # partner booked multiple seats
+        return {
+            r.id: {'partner_ids': [],
+                   'email_to': r.email,
+                   'email_cc': False}
+            for r in self
+        }
+
+    def _message_post_after_hook(self, message, *args, **kwargs):
         if self.email and not self.partner_id:
             # we consider that posting a message with a specified recipient (not a follower, a specific one)
             # on a document without customer means that it was created through the chatter using
@@ -461,7 +482,7 @@ class EventRegistration(models.Model):
                     ('email', '=', new_partner.email),
                     ('state', 'not in', ['cancel']),
                 ]).write({'partner_id': new_partner.id})
-        return super(EventRegistration, self)._message_post_after_hook(message, values, notif_layout, notif_values)
+        return super(EventRegistration, self)._message_post_after_hook(message, *args, **kwargs)
 
     @api.multi
     def action_send_badge_email(self):
@@ -477,6 +498,7 @@ class EventRegistration(models.Model):
             default_use_template=bool(template),
             default_template_id=template.id,
             default_composition_mode='comment',
+            custom_layout="mail.mail_notification_light",
         )
         return {
             'name': _('Compose Email'),
@@ -493,8 +515,8 @@ class EventRegistration(models.Model):
     @api.multi
     def get_date_range_str(self):
         self.ensure_one()
-        today = fields.Datetime.from_string(fields.Datetime.now())
-        event_date = fields.Datetime.from_string(self.event_begin_date)
+        today = fields.Datetime.now()
+        event_date = self.event_begin_date
         diff = (event_date.date() - today.date())
         if diff.days <= 0:
             return _('today')

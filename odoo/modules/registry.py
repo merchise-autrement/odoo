@@ -95,16 +95,11 @@ class Registry(Mapping):
                 # load_modules() above can replace the registry by calling
                 # indirectly new() again (when modules have to be uninstalled).
                 # Yeah, crazy.
-                init_parent = registry._init_parent
                 registry = cls.registries[db_name]
-                registry._init_parent.update(init_parent)
 
-                with closing(registry.cursor()) as cr:
-                    registry.do_parent_store(cr)
-                    cr.commit()
-
-        registry.ready = True
-        registry.registry_invalidated = bool(update_module)
+            registry._init = False
+            registry.ready = True
+            registry.registry_invalidated = bool(update_module)
 
         return registry
 
@@ -112,7 +107,6 @@ class Registry(Mapping):
         self.models = {}    # model name/model instance mapping
         self._sql_error = {}
         self._init = True
-        self._init_parent = set()
         self._assertion_report = assertion_report.assertion_report()
         self._fields_by_model = None
         self._post_init_queue = deque()
@@ -132,7 +126,7 @@ class Registry(Mapping):
         self.loaded = False             # whether all modules are loaded
         self.ready = False              # whether everything is set up
 
-        # Inter-process signaling (used only when odoo.multi_process is True):
+        # Inter-process signaling:
         # The `base_registry_signaling` sequence indicates the whole registry
         # must be reloaded.
         # The `base_cache_signaling sequence` indicates all caches must be
@@ -155,9 +149,7 @@ class Registry(Mapping):
         """ Delete the registry linked to a given database. """
         with cls._lock:
             if db_name in cls.registries:
-                registry = cls.registries.pop(db_name)
-                registry.clear_caches()
-                registry.registry_invalidated = True
+                cls.registries.pop(db_name)
 
     @classmethod
     def delete_all(cls):
@@ -208,13 +200,6 @@ class Registry(Mapping):
             for num, field in enumerate(reversed(topological_sort(dependents)))
         }
         return mapping.get
-
-    def do_parent_store(self, cr):
-        env = odoo.api.Environment(cr, SUPERUSER_ID, {})
-        for model_name in self._init_parent:
-            if model_name in env:
-                env[model_name]._parent_store_compute()
-        self._init = False
 
     def descendants(self, model_names, *kinds):
         """ Return the models corresponding to ``model_names`` and all those
@@ -300,6 +285,8 @@ class Registry(Mapping):
         """
         if 'module' in context:
             _logger.info('module %s: creating or updating database tables', context['module'])
+        elif context.get('models_to_check', False):
+            _logger.info("verifying fields for every extended model")
 
         env = odoo.api.Environment(cr, SUPERUSER_ID, context)
         models = [env[model_name] for model_name in model_names]
@@ -316,8 +303,16 @@ class Registry(Mapping):
             models[0].recompute()
 
         # make sure all tables are present
+        self.check_tables_exist(cr)
+
+    def check_tables_exist(self, cr):
+        """
+        Verify that all tables are present and try to initialize those that are missing.
+        """
+        env = odoo.api.Environment(cr, SUPERUSER_ID, {})
         table2model = {model._table: name for name, model in env.items() if not model._abstract}
         missing_tables = set(table2model).difference(existing_tables(cr, table2model))
+
         if missing_tables:
             missing = {table2model[table] for table in missing_tables}
             _logger.warning("Models have no table: %s.", ", ".join(missing))
@@ -352,7 +347,7 @@ class Registry(Mapping):
 
     def setup_signaling(self):
         """ Setup the inter-process signaling on this registry. """
-        if not odoo.multi_process:
+        if self.in_test_mode():
             return
 
         with self.cursor() as cr:
@@ -378,7 +373,7 @@ class Registry(Mapping):
         """ Check whether the registry has changed, and performs all necessary
         operations to update the registry. Return an up-to-date registry.
         """
-        if not odoo.multi_process:
+        if self.in_test_mode():
             return self
 
         with closing(self.cursor()) as cr:
@@ -404,7 +399,7 @@ class Registry(Mapping):
 
     def signal_changes(self):
         """ Notifies other processes if registry or cache has been invalidated. """
-        if odoo.multi_process and self.registry_invalidated:
+        if self.registry_invalidated and not self.in_test_mode():
             _logger.info("Registry changed, signaling through the database")
             with closing(self.cursor()) as cr:
                 cr.execute("select nextval('base_registry_signaling')")
@@ -412,7 +407,7 @@ class Registry(Mapping):
 
         # no need to notify cache invalidation in case of registry invalidation,
         # because reloading the registry implies starting with an empty cache
-        elif odoo.multi_process and self.cache_invalidated:
+        elif self.cache_invalidated and not self.in_test_mode():
             _logger.info("At least one model cache has been invalidated, signaling through the database.")
             with closing(self.cursor()) as cr:
                 cr.execute("select nextval('base_cache_signaling')")

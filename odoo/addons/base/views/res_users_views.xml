@@ -11,7 +11,7 @@
                     <field name="user_ids"/>
                     <footer>
                         <button string="Change Password" name="change_password_button" type="object" class="btn-primary"/>
-                        <button string="Cancel" class="btn-default" special="cancel" />
+                        <button string="Cancel" class="btn-secondary" special="cancel" />
                     </footer>
                 </form>
             </field>
@@ -64,7 +64,7 @@
                             <field name="users" context="{'search_default_no_share':1}"/>
                         </page>
                         <page string="Inherited">
-                            <label string="Users added to this group are automatically added in the following groups."/>
+                            <label for="implied_ids" string="Users added to this group are automatically added in the following groups."/>
                             <field name="implied_ids"/>
                         </page>
                         <page string="Menus">
@@ -124,8 +124,8 @@
                 <form string="Users">
                     <sheet>
                         <field name="id" invisible="1"/>
-                        <div class="oe_form_box_info oe_text_center" style="margin-bottom: 10px" attrs="{'invisible': [('id', '>', 0)]}">
-                            You are creating a new user. After saving, the user will receive an invite email containing a link to set its password.
+                        <div class="alert alert-info text-center mb-3" attrs="{'invisible': [('id', '>', 0)]}" role="alert">
+                            You are inviting a new user.
                         </div>
                         <field name="image" widget='image' class="oe_avatar" options='{"preview_image": "image_medium"}'/>
                         <div class="oe_title">
@@ -166,6 +166,15 @@
                             <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-check">
                                 <field name="active" widget="boolean_button" options='{"terminology": "active"}'/>
                             </button>
+                        </div>
+                        <div class="alert alert-info text-center o_form_header" attrs="{'invisible': [('active', '=', True)]}" role="alert">
+                          <a class="close" data-dismiss="alert" href="#">x</a>
+                          <div>
+                            <strong>The contact linked to this user is still active</strong>
+                          </div>
+                          <div>You can archive the contact
+                            <field name="partner_id" required="0" readonly="1"/>
+                          </div>
                         </div>
                         <field name="image" widget='image' class="oe_avatar" options='{"preview_image": "image_medium"}'/>
                         <div class="oe_title">
@@ -236,17 +245,17 @@
                         <t t-name="kanban-box">
                             <div t-attf-class="oe_kanban_global_click">
                                 <div class="o_kanban_image">
-                                    <img t-att-src="kanban_image('res.users', 'image_medium', record.id.value)"/>
+                                    <img alt="Avatar" t-att-src="kanban_image('res.users', 'image_medium', record.id.raw_value)"/>
                                 </div>
                                 <div class="oe_kanban_details">
                                     <ul>
-                                        <li class="text-success pull-right mb4" t-if="record.active.raw_value"><i class="fa fa-circle" aria-hidden="true"></i></li>
-                                        <li class="text-danger pull-right mb4" t-if="!record.active.raw_value"><i class="fa fa-circle"></i></li>
+                                        <li class="text-success float-right mb4" t-if="record.active.raw_value"><i class="fa fa-circle" role="img" aria-label="Ok" title="Ok"></i></li>
+                                        <li class="text-danger float-right mb4" t-if="!record.active.raw_value"><i class="fa fa-circle" role="img" aria-label="Invalid" title="Invalid"></i></li>
                                         <li class="mb4">
                                             <strong><field name="name"/></strong>
                                         </li>
-                                        <li class="badge pull-right mb4" t-if="record.lang.raw_value"><field name="lang"/></li>
-                                        <li class="mb4" t-if="record.login.raw_value"><i class="fa fa-envelope"/> <field name="login"/></li>
+                                        <li class="badge badge-pill float-right mb4" t-if="record.lang.raw_value"><field name="lang"/></li>
+                                        <li class="mb4" t-if="record.login.raw_value" title="Login"><i class="fa fa-envelope" role="img" aria-label="Login"/> <field name="login"/></li>
                                     </ul>
                                 </div>
                             </div>
@@ -333,7 +342,7 @@
                     </group>
                     <footer>
                         <button name="preference_save" type="object" string="Save" class="btn-primary"/>
-                        <button name="preference_cancel" string="Cancel" special="cancel" class="btn-default"/>
+                        <button name="preference_cancel" string="Cancel" special="cancel" class="btn-secondary"/>
                     </footer>
                 </form>
             </field>

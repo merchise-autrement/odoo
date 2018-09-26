@@ -38,6 +38,7 @@
                    <group>
                     <field name="resource_type" />
                     <field name="calendar_id"/>
+                    <field name="tz"/>
                     <field name="time_efficiency"/>
                    </group>
                 </group>
@@ -93,7 +94,7 @@
                 <group expand="0" string="Group By">
                     <filter string="Resource" name="resource" domain="[]" context="{'group_by':'resource_id'}"/>
                     <filter string="Company" name="company" domain="[]" context="{'group_by':'company_id'}" groups="base.group_multi_company"/>
-                    <filter string="Leave Month" name="leave_month" domain="[]" context="{'group_by':'date_from'}" help="Starting Date of Leave by Month"/>
+                    <filter string="Leave Date" name="leave_month" domain="[]" context="{'group_by':'date_from'}" help="Starting Date of Leave"/>
                 </group>
            </search>
         </field>
@@ -192,6 +193,7 @@
                 <field name="hour_to" widget="float_time"/>
                 <field name="date_from"/>
                 <field name="date_to"/>
+                <field name="day_period"/>
             </tree>
         </field>
     </record>
@@ -211,6 +213,7 @@
                         <field name="hour_from" widget="float_time" class="oe_inline"/> -
                         <field name="hour_to" widget="float_time" class="oe_inline"/>
                     </div>
+                    <field name="day_period"/>
                 </group>
             </form>
         </field>
@@ -250,6 +253,7 @@
                     <group>
                         <field name="company_id" groups="base.group_multi_company"/>
                         <field name="hours_per_day"/>
+                        <field name="tz"/>
                     </group>
                     <notebook>
                         <page string="Working Hours">
@@ -261,7 +265,6 @@
                                     <field name="name"/>
                                     <field name="date_from"/>
                                     <field name="date_to"/>
-                                    <field name="tz"/>
                                 </tree>
                             </field>
                         </page>
@@ -276,14 +279,14 @@
         <field name="model">resource.calendar</field>
         <field name="arch" type="xml">
             <tree string="Working Time">
-                <field name="name"/>
+                <field name="name" string="Working Time"/>
                 <field name="company_id" groups="base.group_multi_company"/>
             </tree>
         </field>
     </record>
 
     <record id="action_resource_calendar_form" model="ir.actions.act_window">
-        <field name="name">Working Time</field>
+        <field name="name">Working Times</field>
         <field name="res_model">resource.calendar</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>

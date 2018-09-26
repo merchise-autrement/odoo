@@ -66,13 +66,14 @@ def _configure_journals(cr, registry):
                     'company_id': company_id.id,
                     'fields_id': field_id,
                     'value': value,
-                    'res_id': 'product.category,'+str(env.ref('product.product_category_all').id),
                 }
                 properties = env['ir.property'].search([
                     ('name', '=', record),
                     ('company_id', '=', company_id.id),
-                    ('value_reference', '!=', False)])
-                if not properties:
+                ])
+                if properties:
+                    properties.write(vals)
+                else:
                     # create the property
                     env['ir.property'].create(vals)
 
@@ -83,10 +84,11 @@ def _configure_journals(cr, registry):
         if not account_id:
             account_id = env['account.account'].search([('user_type_id', '=', env.ref('account.data_account_type_current_assets').id)], limit=1).id
         if account_id:
+            xml_id = 'stock_account.property_stock_valuation_account_id'
             vals = {
                 'name': 'property_stock_valuation_account_id',
                 'fields_id': fields_id,
                 'value': 'account.account,'+str(account_id),
                 'company_id': env.ref('base.main_company').id,
             }
-            env['ir.model.data']._update('ir.property', 'stock_account', vals, 'property_stock_valuation_account_id')
+            env['ir.property']._load_records([dict(xml_id=xml_id, values=vals)])

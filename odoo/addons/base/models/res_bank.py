@@ -4,10 +4,11 @@ import re
 
 import collections
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.osv import expression
 from odoo.tools import pycompat
 
+import werkzeug.urls
 
 def sanitize_account_number(acc_number):
     if acc_number:
@@ -42,15 +43,15 @@ class Bank(models.Model):
         return result
 
     @api.model
-    def name_search(self, name, args=None, operator='ilike', limit=100):
+    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
         args = args or []
         domain = []
         if name:
             domain = ['|', ('bic', '=ilike', name + '%'), ('name', operator, name)]
             if operator in expression.NEGATIVE_TERM_OPERATORS:
                 domain = ['&'] + domain
-        banks = self.search(domain + args, limit=limit)
-        return banks.name_get()
+        bank_ids = self._search(domain + args, limit=limit, access_rights_uid=name_get_uid)
+        return self.browse(bank_ids).name_get()
 
 
 class ResPartnerBank(models.Model):
@@ -59,16 +60,26 @@ class ResPartnerBank(models.Model):
     _description = 'Bank Accounts'
     _order = 'sequence'
 
-    acc_type = fields.Char(compute='_compute_acc_type', help='Bank account type, inferred from account number')
+    @api.model
+    def get_supported_account_types(self):
+        return self._get_supported_account_types()
+
+    @api.model
+    def _get_supported_account_types(self):
+        return [('bank', _('Normal'))]
+
+    acc_type = fields.Selection(selection=lambda x: x.env['res.partner.bank'].get_supported_account_types(), compute='_compute_acc_type', string='Type', help='Bank account type: Normal or IBAN. Inferred from the bank account number.')
     acc_number = fields.Char('Account Number', required=True)
     sanitized_acc_number = fields.Char(compute='_compute_sanitized_acc_number', string='Sanitized Account Number', readonly=True, store=True)
-    partner_id = fields.Many2one('res.partner', 'Account Holder', ondelete='cascade', index=True, domain=['|', ('is_company', '=', True), ('parent_id', '=', False)], default=lambda self: self.env.user.company_id.partner_id)
+    acc_holder_name = fields.Char(string='Account Holder Name', help="Account holder name, in case it is different than the name of the Account Holder")
+    partner_id = fields.Many2one('res.partner', 'Account Holder', ondelete='cascade', index=True, domain=['|', ('is_company', '=', True), ('parent_id', '=', False)], required=True)
     bank_id = fields.Many2one('res.bank', string='Bank')
     bank_name = fields.Char(related='bank_id.name')
     bank_bic = fields.Char(related='bank_id.bic')
     sequence = fields.Integer()
     currency_id = fields.Many2one('res.currency', string='Currency')
     company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env.user.company_id, ondelete='cascade')
+    qr_code_valid = fields.Boolean(string="Has all required arguments", compute="_validate_qr_code_arguments")
 
     _sql_constraints = [
         ('unique_number', 'unique(sanitized_acc_number, company_id)', 'Account Number must be unique'),
@@ -79,13 +90,19 @@ class ResPartnerBank(models.Model):
         for bank in self:
             bank.sanitized_acc_number = sanitize_account_number(bank.acc_number)
 
-    @api.multi
+    @api.depends('acc_number')
     def _compute_acc_type(self):
         for bank in self:
-            bank.acc_type = 'bank'
+            bank.acc_type = self.retrieve_acc_type(bank.acc_number)
 
     @api.model
-    def search(self, args, offset=0, limit=None, order=None, count=False):
+    def retrieve_acc_type(self, acc_number):
+        """ To be overridden by subclasses in order to support other account_types.
+        """
+        return 'bank'
+
+    @api.model
+    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         pos = 0
         while pos < len(args):
             if args[pos][0] == 'acc_number':
@@ -99,4 +116,25 @@ class ResPartnerBank(models.Model):
                     value = '%' + value + '%'
                 args[pos] = ('sanitized_acc_number', op, value)
             pos += 1
-        return super(ResPartnerBank, self).search(args, offset, limit, order, count=count)
+        return super(ResPartnerBank, self)._search(args, offset, limit, order, count=count, access_rights_uid=access_rights_uid)
+
+    @api.model
+    def build_qr_code_url(self, amount, comment):
+        communication = ""
+        if comment:
+            communication = (comment[:137] + '...') if len(comment) > 140 else comment
+        qr_code_string = 'BCD\n001\n1\nSCT\n%s\n%s\n%s\nEUR%s\n\n\n%s' % (self.bank_bic, self.company_id.name, self.acc_number, amount, communication)
+        qr_code_url = '/report/barcode/?type=%s&value=%s&width=%s&height=%s&humanreadable=1' % ('QR', werkzeug.url_quote_plus(qr_code_string), 128, 128)
+        return qr_code_url
+
+    @api.multi
+    def _validate_qr_code_arguments(self):
+        for bank in self:            
+            if bank.currency_id.name == False:
+                currency = bank.company_id.currency_id
+            else:
+                currency = bank.currency_id            
+            bank.qr_code_valid = (bank.bank_bic
+                                            and bank.company_id.name
+                                            and bank.acc_number
+                                            and (currency.name == 'EUR'))

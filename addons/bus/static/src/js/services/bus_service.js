@@ -1,53 +1,54 @@
 odoo.define('bus.BusService', function (require) {
 "use strict";
 
-var bus = require('bus.bus').bus;
-
-var AbstractService = require('web.AbstractService');
+var CrossTab = require('bus.CrossTab');
 var core = require('web.core');
+var ServicesMixin = require('web.ServicesMixin');
 
-var BusService =  AbstractService.extend({
-    name: 'bus_service',
+var BusService =  CrossTab.extend(ServicesMixin, {
+    dependencies : ['local_storage'],
+
+    // properties
+    _audio: null,
+
     /**
-     * @override
+     * This method is necessary in order for this Class to be used to instantiate services
+     *
+     * @abstract
      */
-    init: function () {
-        this._super.apply(this, arguments);
-        this.bus = bus;
-        this._audio = null;
-    },
+    start: function () {},
 
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
 
     /**
-     * Get the bus
-     *
-     * @return {web.Bus} the longpoll bus
-     */
-    getBus: function () {
-        return this.bus;
-    },
-
-    /**
      * Send a notification, and notify once per browser's tab
      *
-     * @param {web.Widget} widget the widget that called sendNotification
      * @param {string} title
      * @param {string} content
+     * @param {function} [callback] if given callback will be called when user clicks on notification
      */
-    sendNotification: function (widget, title, content) {
+    sendNotification: function (title, content, callback) {
         if (window.Notification && Notification.permission === "granted") {
-            if (this.bus.is_master) {
-                this._sendNativeNotification(title, content);
+            if (this.isMasterTab()) {
+                this._sendNativeNotification(title, content, callback);
             }
         } else {
-            widget.do_notify(title, content);
-            if (this.bus.is_master) {
-                this._beep(widget);
+            this.do_notify(title, content);
+            if (this.isMasterTab()) {
+                this._beep();
             }
         }
+    },
+    /**
+     * Register listeners on notifications received on this bus service
+     *
+     * @param {Object} receiver
+     * @param {function} func
+     */
+    onNotification: function () {
+        this.on.apply(this, ["notification"].concat(Array.prototype.slice.call(arguments)));
     },
 
     //--------------------------------------------------------------------------
@@ -58,14 +59,13 @@ var BusService =  AbstractService.extend({
      * Lazily play the 'beep' audio on sent notification
      *
      * @private
-     * @param {web.Widget} widget
      */
-    _beep: function (widget) {
+    _beep: function () {
         if (typeof(Audio) !== "undefined") {
             if (!this._audio) {
                 this._audio = new Audio();
                 var ext = this._audio.canPlayType("audio/ogg; codecs=vorbis") ? ".ogg" : ".mp3";
-                var session = widget.getSession();
+                var session = this.getSession();
                 this._audio.src = session.url("/mail/static/src/audio/ting" + ext);
             }
             this._audio.play();
@@ -77,15 +77,19 @@ var BusService =  AbstractService.extend({
      * @private
      * @param {string} title
      * @param {string} content
+     * @param {function} [callback] if given callback will be called when user clicks on notification
      */
-    _sendNativeNotification: function (title, content) {
-        var notification = new Notification(title, {body: content, icon: "/mail/static/src/img/odoo_o.png"});
+    _sendNativeNotification: function (title, content, callback) {
+        var notification = new Notification(title, {body: content, icon: "/mail/static/src/img/odoobot.png"});
         notification.onclick = function () {
             window.focus();
             if (this.cancel) {
                 this.cancel();
             } else if (this.close) {
                 this.close();
+            }
+            if (callback) {
+                callback();
             }
         };
     },

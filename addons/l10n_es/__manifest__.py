@@ -3,6 +3,7 @@
 
 # List of contributors:
 # Jordi Esteve <jesteve@zikzakmedia.com>
+# Ignacio Ibeas <ignacio@acysos.com>
 # Dpto. Consultoría Grupo Opentia <consultoria@opentia.es>
 # Pedro M. Baeza <pedro.baeza@tecnativa.com>
 # Carlos Liébana <carlos.liebana@factorlibre.com>
@@ -15,7 +16,6 @@
     "name" : "Spain - Accounting (PGCE 2008)",
     "version" : "4.0",
     "author" : "Spanish Localization Team",
-    'website' : 'https://launchpad.net/openerp-spain',
     'category': 'Localization',
     "description": """
 Spanish charts of accounts (PGCE 2008).

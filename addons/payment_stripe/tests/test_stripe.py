@@ -56,31 +56,14 @@ class StripeTest(StripeCommon):
         # ----------------------------------------
         # Test: button direct rendering
         # ----------------------------------------
-        form_values = {
-            'amount': 320.0,
-            'currency': 'EUR',
-            'address_line1': 'Huge Street 2/543',
-            'address_city': 'Sin City',
-            'address_country': 'Belgium',
-            'email': 'norbert.buyer@example.com',
-            'address_zip': '1000',
-            'name': 'Norbert Buyer',
-            'phone': '0032 12 34 56 78'
-        }
 
         # render the button
-        res = self.stripe.render('SO404', 320.0, self.currency_euro.id, values=self.buyer_values)
-        post_url = "https://checkout.stripe.com/checkout.js"
-        email = "norbert.buyer@example.com"
+        res = self.stripe.render('SO404', 320.0, self.currency_euro.id, values=self.buyer_values).decode('utf-8')
+        popup_script_src = 'script src="https://checkout.stripe.com/checkout.js"'
         # check form result
-        if "https://checkout.stripe.com/checkout.js" in res[0]:
-            self.assertEqual(post_url, 'https://checkout.stripe.com/checkout.js', 'Stripe: wrong form POST url')
+        self.assertIn(popup_script_src, res, "Stripe: popup script not found in template render")
         # Generated and received
-        if email in res[0]:
-            self.assertEqual(
-                email, form_values.get('email'),
-                'Stripe: wrong value for input %s: received %s instead of %s' % (email, email, form_values.get('email'))
-            )
+        self.assertIn(self.buyer_values.get('partner_email'), res, 'Stripe: email input not found in rendered template')
 
     def test_30_stripe_form_management(self):
         self.assertEqual(self.stripe.environment, 'test', 'test without test environment')
@@ -146,7 +129,7 @@ class StripeTest(StripeCommon):
             'amount': 4700,
             'acquirer_id': self.stripe.id,
             'currency_id': self.currency_euro.id,
-            'reference': 'SO100',
+            'reference': 'SO100-1',
             'partner_name': 'Norbert Buyer',
             'partner_country_id': self.country_france.id})
 
@@ -155,11 +138,17 @@ class StripeTest(StripeCommon):
         self.assertEqual(tx.state, 'done', 'Stripe: validation did not put tx into done state')
         self.assertEqual(tx.acquirer_reference, stripe_post_data.get('id'), 'Stripe: validation did not update tx id')
         # reset tx
-        tx.write({'state': 'draft', 'date_validate': False, 'acquirer_reference': False})
+        tx = self.env['payment.transaction'].create({
+            'amount': 4700,
+            'acquirer_id': self.stripe.id,
+            'currency_id': self.currency_euro.id,
+            'reference': 'SO100-2',
+            'partner_name': 'Norbert Buyer',
+            'partner_country_id': self.country_france.id})
         # simulate an error
         stripe_post_data['status'] = 'error'
         stripe_post_data.update({u'error': {u'message': u"Your card's expiration year is invalid.", u'code': u'invalid_expiry_year', u'type': u'card_error', u'param': u'exp_year'}})
         with mute_logger('odoo.addons.payment_stripe.models.payment'):
             tx.form_feedback(stripe_post_data, 'stripe')
         # check state
-        self.assertEqual(tx.state, 'error', 'Stipe: erroneous validation did not put tx into error state')
+        self.assertEqual(tx.state, 'cancel', 'Stipe: erroneous validation did not put tx into error state')

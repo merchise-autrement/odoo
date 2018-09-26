@@ -227,9 +227,8 @@ class Survey(models.Model):
 
         # Calculate and return statistics for choice
         if question.type in ['simple_choice', 'multiple_choice']:
-            answers = {}
             comments = []
-            [answers.update({label.id: {'text': label.value, 'count': 0, 'answer_id': label.id}}) for label in question.labels_ids]
+            answers = OrderedDict((label.id, {'text': label.value, 'count': 0, 'answer_id': label.id}) for label in question.labels_ids)
             for input_line in question.user_input_line_ids:
                 if input_line.answer_type == 'suggestion' and answers.get(input_line.value_suggested.id) and (not(current_filters) or input_line.user_input_id.id in current_filters):
                     answers[input_line.value_suggested.id]['count'] += 1
@@ -327,7 +326,8 @@ class Survey(models.Model):
             default_survey_id=self.id,
             default_use_template=bool(template),
             default_template_id=template and template.id or False,
-            default_composition_mode='comment'
+            default_composition_mode='comment',
+            notif_layout='mail.mail_notification_light',
         )
         return {
             'type': 'ir.actions.act_window',
@@ -680,11 +680,12 @@ class SurveyLabel(models.Model):
     value = fields.Char('Suggested value', translate=True, required=True)
     quizz_mark = fields.Float('Score for this choice', help="A positive score indicates a correct choice; a negative or null score indicates a wrong answer")
 
+    @api.one
     @api.constrains('question_id', 'question_id_2')
     def _check_question_not_empty(self):
         """Ensure that field question_id XOR field question_id_2 is not null"""
         if not bool(self.question_id) != bool(self.question_id_2):
-            raise ValidationError(_("A label must be attached to one and only one question"))
+            raise ValidationError(_("A label must be attached to only one question."))
 
 
 class SurveyUserInput(models.Model):
@@ -727,7 +728,6 @@ class SurveyUserInput(models.Model):
 
     _sql_constraints = [
         ('unique_token', 'UNIQUE (token)', 'A token must be unique!'),
-        ('deadline_in_the_past', 'CHECK (deadline >= date_create)', 'The deadline cannot be in the past')
     ]
 
     @api.model
@@ -803,7 +803,7 @@ class SurveyUserInputLine(models.Model):
     def _answered_or_skipped(self):
         for uil in self:
             if not uil.skipped != bool(uil.answer_type):
-                raise ValidationError(_('A question cannot be unanswered and skipped'))
+                raise ValidationError(_('This question cannot be unanswered or skipped.'))
 
     @api.constrains('answer_type')
     def _check_answer_type(self):
@@ -823,12 +823,13 @@ class SurveyUserInputLine(models.Model):
         mark = label.quizz_mark if label.exists() else 0.0
         return mark
 
-    @api.model
-    def create(self, vals):
-        value_suggested = vals.get('value_suggested')
-        if value_suggested:
-            vals.update({'quizz_mark': self._get_mark(value_suggested)})
-        return super(SurveyUserInputLine, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            value_suggested = vals.get('value_suggested')
+            if value_suggested:
+                vals.update({'quizz_mark': self._get_mark(value_suggested)})
+        return super(SurveyUserInputLine, self).create(vals_list)
 
     @api.multi
     def write(self, vals):

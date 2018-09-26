@@ -79,3 +79,4 @@ class test_ir_http_mimetype(common.TransactionCase):
         )
         mimetype = dict(headers).get('Content-Type')
         self.assertEqual(mimetype, 'image/gif')
+

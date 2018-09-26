@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tools.safe_eval import safe_eval
 
 from odoo.addons import decimal_precision as dp
@@ -33,7 +33,7 @@ class HrPayrollStructure(models.Model):
     @api.constrains('parent_id')
     def _check_parent_id(self):
         if not self._check_recursion():
-            raise ValidationError(_('Error ! You cannot create a recursive Salary Structure.'))
+            raise ValidationError(_('You cannot create a recursive salary structure.'))
 
     @api.multi
     @api.returns('self', lambda value: value.id)
@@ -77,7 +77,7 @@ class HrSalaryRuleCategory(models.Model):
     _name = 'hr.salary.rule.category'
     _description = 'Salary Rule Category'
 
-    name = fields.Char(required=True)
+    name = fields.Char(required=True, translate=True)
     code = fields.Char(required=True)
     parent_id = fields.Many2one('hr.salary.rule.category', string='Parent',
         help="Linking a salary category to its parent is used only for the reporting purpose.")
@@ -86,11 +86,17 @@ class HrSalaryRuleCategory(models.Model):
     company_id = fields.Many2one('res.company', string='Company',
         default=lambda self: self.env['res.company']._company_default_get())
 
+    @api.constrains('parent_id')
+    def _check_parent_id(self):
+        if not self._check_recursion():
+            raise ValidationError(_('Error! You cannot create recursive hierarchy of Salary Rule Category.'))
+
 
 class HrSalaryRule(models.Model):
     _name = 'hr.salary.rule'
+    _order = 'sequence, id'
 
-    name = fields.Char(required=True)
+    name = fields.Char(required=True, translate=True)
     code = fields.Char(required=True,
         help="The code of salary rules can be used as reference in computation of other rules. "
              "In that case, it is case sensitive.")
@@ -166,6 +172,11 @@ class HrSalaryRule(models.Model):
     input_ids = fields.One2many('hr.rule.input', 'input_id', string='Inputs', copy=True)
     note = fields.Text(string='Description')
 
+    @api.constrains('parent_rule_id')
+    def _check_parent_rule_id(self):
+        if not self._check_recursion(parent='parent_rule_id'):
+            raise ValidationError(_('Error! You cannot create recursive hierarchy of Salary Rules.'))
+
     @api.multi
     def _recursive_search_of_rules(self):
         """
@@ -188,21 +199,21 @@ class HrSalaryRule(models.Model):
         if self.amount_select == 'fix':
             try:
                 return self.amount_fix, float(safe_eval(self.quantity, localdict)), 100.0
-            except:
-                raise UserError(_('Wrong quantity defined for salary rule %s (%s).') % (self.name, self.code))
+            except Exception as e:
+                raise UserError(_('Wrong quantity defined for salary rule %s (%s).\nError: %s') % (self.name, self.code, e))
         elif self.amount_select == 'percentage':
             try:
                 return (float(safe_eval(self.amount_percentage_base, localdict)),
                         float(safe_eval(self.quantity, localdict)),
                         self.amount_percentage)
-            except:
-                raise UserError(_('Wrong percentage base or quantity defined for salary rule %s (%s).') % (self.name, self.code))
+            except Exception as e:
+                raise UserError(_('Wrong percentage base or quantity defined for salary rule %s (%s).\nError: %s') % (self.name, self.code, e))
         else:
             try:
                 safe_eval(self.amount_python_compute, localdict, mode='exec', nocopy=True)
                 return float(localdict['result']), 'result_qty' in localdict and localdict['result_qty'] or 1.0, 'result_rate' in localdict and localdict['result_rate'] or 100.0
-            except:
-                raise UserError(_('Wrong python code defined for salary rule %s (%s).') % (self.name, self.code))
+            except Exception as e:
+                raise UserError(_('Wrong python code defined for salary rule %s (%s).\nError: %s') % (self.name, self.code, e))
 
     @api.multi
     def _satisfy_condition(self, localdict):

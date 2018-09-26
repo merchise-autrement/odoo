@@ -69,7 +69,7 @@
                         <t t-name="kanban-box">
                             <div class="oe_kanban_global_click">
                                 <div class="o_kanban_image">
-                                    <img t-attf-src="/rating/static/src/img/rating_#{record.rating.raw_value}.png" />
+                                    <img t-attf-src="/rating/static/src/img/rating_#{record.rating.raw_value}.png" t-att-alt="record.rating.name"/>
                                 </div>
                                 <div class="oe_kanban_details">
                                     <strong>
@@ -96,7 +96,7 @@
                                             on <field name="create_date" />
                                         </li>
                                     </ul>
-                                    <i t-if="record.feedback.raw_value" class="fa fa-comment pull-right mt4" t-attf-title="Feedback:\n#{record.feedback.raw_value}" />
+                                    <i t-if="record.feedback.raw_value" class="fa fa-comment float-right mt4" t-att-title="record.feedback.raw_value"  t-att-aria-label="record.feedback.raw_value" role="img"/>
                                 </div>
                             </div>
                         </t>
@@ -149,9 +149,7 @@
                         <filter string="Customer" name="customer" context="{'group_by':'partner_id'}"/>
                         <filter string="Rating" name="rating_text" context="{'group_by':'rating_text'}"/>
                         <filter string="Resource" name="resource" context="{'group_by':'res_name'}"/>
-                        <filter string="Day" name="day" context="{'group_by':'create_date:day'}"/>
-                        <filter string="Month" name="month" context="{'group_by':'create_date:month'}"/>
-                        <filter string="Year" name="year" context="{'group_by':'create_date:year'}"/>
+                        <filter string="Date" name="month" context="{'group_by':'create_date:month'}"/>
                     </group>
                 </search>
             </field>

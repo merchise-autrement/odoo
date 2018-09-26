@@ -6,7 +6,7 @@
 Installing Odoo
 ===============
 
-There are mutliple ways to install Odoo, or not install it at all, depending
+There are multiple ways to install Odoo, or not install it at all, depending
 on the intended use case.
 
 This documents attempts to describe most of the installation options.
@@ -369,50 +369,6 @@ Source installation requires manually installing dependencies:
         C:\> cd \YourOdooPath
         C:\YourOdooPath> C:\Python35\Scripts\pip.exe install -r requirements.txt
 
-* *Less CSS* via nodejs
-
-  - on Linux, use your distribution's package manager to install nodejs and
-    npm.
-
-    .. warning::
-
-        In debian wheezy and Ubuntu 13.10 and before you need to install
-        nodejs manually:
-
-        .. code-block:: console
-
-            $ wget -qO- https://deb.nodesource.com/setup | bash -
-            $ apt-get install -y nodejs
-
-        In later debian (>jessie) and ubuntu (>14.04) you may need to add a
-        symlink as npm packages call ``node`` but debian calls the binary
-        ``nodejs``
-
-        .. code-block:: console
-
-            $ apt-get install -y npm
-            $ sudo ln -s /usr/bin/nodejs /usr/bin/node
-
-    Once npm is installed, use it to install less:
-
-    .. code-block:: console
-
-        $ sudo npm install -g less
-
-  - on OS X, install nodejs via your preferred package manager (homebrew_,
-    macports_) then install less:
-
-    .. code-block:: console
-
-        $ sudo npm install -g less
-
-  - on Windows, `install nodejs <http://nodejs.org/download/>`_, reboot (to
-    update the :envvar:`PATH`) and install less:
-
-    .. code-block:: doscon
-
-        C:\> npm install -g less
-
 Fetch the sources
 -----------------
 
@@ -588,7 +544,7 @@ Docker
 ======
 
 The full documentation on how to use Odoo with Docker can be found on the
-offcial Odoo `docker image <https://registry.hub.docker.com/_/odoo/>`_ page.
+official Odoo `docker image <https://registry.hub.docker.com/_/odoo/>`_ page.
 
 .. _demo: https://demo.odoo.com
 .. _docker: https://www.docker.com

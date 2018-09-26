@@ -17,7 +17,7 @@ class TestSale(AccountingTestCase):
             'email': 'a.m@example.com',
             'signature': '--\nAndreww',
             'notification_type': 'email',
-            'groups_id': [(6, 0, [group_manager.id])]
+            'groups_id': [(6, 0, [group_manager.id, self.env.ref('base.group_user').id])]
         })
         self.user = self.env['res.users'].create({
             'name': 'Mark User',
@@ -28,10 +28,35 @@ class TestSale(AccountingTestCase):
             'groups_id': [(6, 0, [group_user.id])]
         })
         # create quotation with differend kinds of products (all possible combinations)
+        service_delivery = self.env['product.product'].create({
+            'name': 'Cost-plus Contract',
+            'categ_id': self.env.ref('product.product_category_5').id,
+            'standard_price': 200.0,
+            'list_price': 180.0,
+            'type': 'service',
+            'uom_id': self.env.ref('uom.product_uom_unit').id,
+            'uom_po_id': self.env.ref('uom.product_uom_unit').id,
+            'default_code': 'SERV_DEL',
+            'invoice_policy': 'delivery',
+        })
+        service_order_01 = self.env['product.product'].create({
+            'name': 'Remodeling Service',
+            'categ_id': self.env.ref('product.product_category_3').id,
+            'standard_price': 40.0,
+            'list_price': 90.0,
+            'type': 'service',
+            'uom_id': self.env.ref('uom.product_uom_hour').id,
+            'uom_po_id': self.env.ref('uom.product_uom_hour').id,
+            'description': 'Example of product to invoice on order',
+            'default_code': 'PRE-PAID',
+            'invoice_policy': 'order',
+        })
+        product_order_01 = self.env.ref('product.product_order_01')
+        product_order_01.type = 'consu'
         self.products = OrderedDict([
-            ('prod_order', self.env.ref('product.product_order_01')),
-            ('serv_del', self.env.ref('product.service_delivery')),
-            ('serv_order', self.env.ref('product.service_order_01')),
+            ('prod_order', product_order_01),
+            ('serv_del', service_delivery),
+            ('serv_order', service_order_01),
             ('prod_del', self.env.ref('product.product_delivery_01')),
         ])
 
@@ -72,8 +97,8 @@ class TestCommonSaleNoChart(TestAccountNoChartCommon):
             'property_account_income_categ_id': cls.account_income_product.id
         })
         # Products
-        uom_unit = cls.env.ref('product.product_uom_unit')
-        uom_hour = cls.env.ref('product.product_uom_hour')
+        uom_unit = cls.env.ref('uom.product_uom_unit')
+        uom_hour = cls.env.ref('uom.product_uom_hour')
         cls.product_order = cls.env['product.product'].create({
             'name': "Zed+ Antivirus",
             'standard_price': 235.0,
@@ -111,7 +136,7 @@ class TestCommonSaleNoChart(TestAccountNoChartCommon):
             'uom_po_id': uom_hour.id,
             'invoice_policy': 'order',
             'expense_policy': 'no',
-            'default_code': 'SERV_ORDER',
+            'default_code': 'PRE-PAID',
             'service_type': 'manual',
             'taxes_id': False,
             'categ_id': cls.product_category.id,

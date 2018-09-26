@@ -15,7 +15,7 @@ var BasicController = require('web.BasicController');
 var BasicModel = require('web.BasicModel');
 var config = require('web.config');
 var fieldRegistry = require('web.field_registry');
-var pyeval = require('web.pyeval');
+var pyUtils = require('web.py_utils');
 var utils = require('web.utils');
 
 var BasicView = AbstractView.extend({
@@ -45,7 +45,7 @@ var BasicView = AbstractView.extend({
         this.rendererParams.viewType = this.viewType;
 
         this.controllerParams.confirmOnDelete = true;
-        this.controllerParams.archiveEnabled = 'active' in viewInfo.fields;
+        this.controllerParams.archiveEnabled = 'active' in this.fields;
         this.controllerParams.hasButtons =
                 'action_buttons' in params ? params.action_buttons : true;
 
@@ -161,7 +161,12 @@ var BasicView = AbstractView.extend({
                 // (because those fields were unknow at that time). So we ask
                 // the model to process them.
                 def = this.model.applyRawChanges(record.id, viewType).then(function () {
-                    if (!self.model.isNew(record.id)) {
+                    if (self.model.isNew(record.id)) {
+                        return self.model.applyDefaultValues(record.id, {}, {
+                            fieldNames: fieldNames,
+                            viewType: viewType,
+                        });
+                    } else {
                         return self.model.reload(record.id, {
                             fieldNames: fieldNames,
                             keepChanges: true,
@@ -177,6 +182,20 @@ var BasicView = AbstractView.extend({
         return this._super.apply(this, arguments);
     },
     /**
+     * Traverses the arch and calls '_processNode' on each of its nodes.
+     *
+     * @private
+     * @param {Object} arch a parsed arch
+     * @param {Object} fv the fieldsView Object, in which _processNode can
+     *   access and add information (like the fields' attributes in the arch)
+     */
+    _processArch: function (arch, fv) {
+        var self = this;
+        utils.traverse(arch, function (node) {
+            return self._processNode(node, fv);
+        });
+    },
+    /**
      * Processes a field node, in particular, put a flag on the field to give
      * special directives to the BasicModel.
      *
@@ -190,8 +209,20 @@ var BasicView = AbstractView.extend({
         var self = this;
         attrs.Widget = this._getFieldWidgetClass(viewType, field, attrs);
 
+        // process decoration attributes
+        _.each(attrs, function (value, key) {
+            var splitKey = key.split('-');
+            if (splitKey[0] === 'decoration') {
+                attrs.decorations = attrs.decorations || [];
+                attrs.decorations.push({
+                    className: 'text-' + splitKey[1],
+                    expression: pyUtils._getPyJSAST(value),
+                });
+            }
+        });
+
         if (!_.isObject(attrs.options)) { // parent arch could have already been processed (TODO this should not happen)
-            attrs.options = attrs.options ? pyeval.py_eval(attrs.options) : {};
+            attrs.options = attrs.options ? pyUtils.py_eval(attrs.options) : {};
         }
 
         if (attrs.on_change && !field.onChange) {
@@ -257,33 +288,7 @@ var BasicView = AbstractView.extend({
                 attrs.mode = mode;
                 if (mode in attrs.views) {
                     var view = attrs.views[mode];
-                    var defaultOrder = view.arch.attrs.default_order;
-                    if (defaultOrder) {
-                        // process the default_order, which is like 'name,id desc'
-                        // but we need it like [{name: 'name', asc: true}, {name: 'id', asc: false}]
-                        attrs.orderedBy = _.map(defaultOrder.split(','), function (order) {
-                            order = order.trim().split(' ');
-                            return {name: order[0], asc: order[1] !== 'desc'};
-                        });
-                    } else {
-                        // if there is a field with widget `handle`, the x2many
-                        // needs to be ordered by this field to correctly display
-                        // the records
-                        var handleField = _.find(view.arch.children, function (child) {
-                            return child.attrs && child.attrs.widget === 'handle';
-                        });
-                        if (handleField) {
-                            attrs.orderedBy = [{name: handleField.attrs.name, asc: true}];
-                        }
-                    }
-
-                    attrs.columnInvisibleFields = {};
-                    _.each(view.arch.children, function (child) {
-                        if (child.attrs && child.attrs.modifiers) {
-                            attrs.columnInvisibleFields[child.attrs.name] =
-                                child.attrs.modifiers.column_invisible || false;
-                        }
-                    });
+                    this._processSubViewAttrs(view, attrs);
                 }
             }
             if (attrs.Widget.prototype.fieldsToFetch) {
@@ -309,50 +314,6 @@ var BasicView = AbstractView.extend({
         return attrs;
     },
     /**
-     * Visits all nodes in the arch and processes each fields.
-     *
-     * @private
-     * @param {string} viewType
-     * @param {Object} arch
-     * @param {Object} fields
-     * @returns {Object} fieldsInfo
-     */
-    _processFields: function (viewType, arch, fields) {
-        var self = this;
-        var fieldsInfo = Object.create(null);
-        utils.traverse(arch, function (node) {
-            if (typeof node === 'string') {
-                return false;
-            }
-            if (!_.isObject(node.attrs.modifiers)) {
-                node.attrs.modifiers = node.attrs.modifiers ? JSON.parse(node.attrs.modifiers) : {};
-            }
-            if (!_.isObject(node.attrs.options) && node.tag === 'button') {
-                node.attrs.options = node.attrs.options ? JSON.parse(node.attrs.options) : {};
-            }
-            if (node.tag === 'field') {
-                fieldsInfo[node.attrs.name] = self._processField(viewType,
-                    fields[node.attrs.name], node.attrs ? _.clone(node.attrs) : {});
-
-                if (fieldsInfo[node.attrs.name].fieldDependencies) {
-                    var deps = fieldsInfo[node.attrs.name].fieldDependencies;
-                    for (var dependency_name in deps) {
-                        var dependency_dict = {name: dependency_name, type: deps[dependency_name].type};
-                        if (!(dependency_name in fieldsInfo)) {
-                            fieldsInfo[dependency_name] = _.extend({}, dependency_dict, {options: deps[dependency_name].options || {}});
-                        }
-                        if (!(dependency_name in fields)) {
-                            fields[dependency_name] = dependency_dict;
-                        }
-                    }
-                }
-                return false;
-            }
-            return node.tag !== 'arch';
-        });
-        return fieldsInfo;
-    },
-    /**
      * Overrides to process the fields, and generate fieldsInfo which contains
      * the description of the fields in view, with their attrs in the arch.
      *
@@ -368,12 +329,97 @@ var BasicView = AbstractView.extend({
         var fv = this._super.apply(this, arguments);
 
         viewType = viewType || this.viewType;
-        var viewFields = this._processFields(viewType, fv.arch, fv.viewFields);
-        fv.fieldsInfo = {};
-        fv.fieldsInfo[viewType] = viewFields;
         fv.type = viewType;
+        fv.fieldsInfo = Object.create(null);
+        fv.fieldsInfo[viewType] = Object.create(null);
+
+        this._processArch(fv.arch, fv);
 
         return fv;
+    },
+    /**
+     * Processes a node of the arch (mainly nodes with tagname 'field'). Can
+     * be overriden to handle other tagnames.
+     *
+     * @private
+     * @param {Object} node
+     * @param {Object} fv the fieldsView
+     * @param {Object} fv.fieldsInfo
+     * @param {Object} fv.fieldsInfo[viewType] fieldsInfo of the current viewType
+     * @param {Object} fv.viewFields the result of a fields_get extend with the
+     *   fields returned with the fields_view_get for the current viewType
+     * @param {string} fv.viewType
+     * @returns {boolean} false iff subnodes must not be visited.
+     */
+    _processNode: function (node, fv) {
+        if (typeof node === 'string') {
+            return false;
+        }
+        if (!_.isObject(node.attrs.modifiers)) {
+            node.attrs.modifiers = node.attrs.modifiers ? JSON.parse(node.attrs.modifiers) : {};
+        }
+        if (!_.isObject(node.attrs.options) && node.tag === 'button') {
+            node.attrs.options = node.attrs.options ? JSON.parse(node.attrs.options) : {};
+        }
+        if (node.tag === 'field') {
+            var viewType = fv.type;
+            var fieldsInfo = fv.fieldsInfo[viewType];
+            var fields = fv.viewFields;
+            fieldsInfo[node.attrs.name] = this._processField(viewType,
+                fields[node.attrs.name], node.attrs ? _.clone(node.attrs) : {});
+
+            if (fieldsInfo[node.attrs.name].fieldDependencies) {
+                var deps = fieldsInfo[node.attrs.name].fieldDependencies;
+                for (var dependency_name in deps) {
+                    var dependency_dict = {name: dependency_name, type: deps[dependency_name].type};
+                    if (!(dependency_name in fieldsInfo)) {
+                        fieldsInfo[dependency_name] = _.extend({}, dependency_dict, {options: deps[dependency_name].options || {}});
+                    }
+                    if (!(dependency_name in fields)) {
+                        fields[dependency_name] = dependency_dict;
+                    }
+                }
+            }
+            return false;
+        }
+        return node.tag !== 'arch';
+    },
+    /**
+     * Processes in place the subview attributes (in particular,
+     * `default_order``and `column_invisible`).
+     *
+     * @private
+     * @param {Object} view - the field subview
+     * @param {Object} attrs - the field attributes (from the xml)
+     */
+    _processSubViewAttrs: function (view, attrs) {
+        var defaultOrder = view.arch.attrs.default_order;
+        if (defaultOrder) {
+            // process the default_order, which is like 'name,id desc'
+            // but we need it like [{name: 'name', asc: true}, {name: 'id', asc: false}]
+            attrs.orderedBy = _.map(defaultOrder.split(','), function (order) {
+                order = order.trim().split(' ');
+                return {name: order[0], asc: order[1] !== 'desc'};
+            });
+        } else {
+            // if there is a field with widget `handle`, the x2many
+            // needs to be ordered by this field to correctly display
+            // the records
+            var handleField = _.find(view.arch.children, function (child) {
+                return child.attrs && child.attrs.widget === 'handle';
+            });
+            if (handleField) {
+                attrs.orderedBy = [{name: handleField.attrs.name, asc: true}];
+            }
+        }
+
+        attrs.columnInvisibleFields = {};
+        _.each(view.arch.children, function (child) {
+            if (child.attrs && child.attrs.modifiers) {
+                attrs.columnInvisibleFields[child.attrs.name] =
+                    child.attrs.modifiers.column_invisible || false;
+            }
+        });
     },
 });
 

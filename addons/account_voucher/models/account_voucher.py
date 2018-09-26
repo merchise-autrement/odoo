@@ -129,7 +129,7 @@ class AccountVoucher(models.Model):
             for line in voucher.line_ids:
                 tax_info = line.tax_ids.compute_all(line.price_unit, voucher.currency_id, line.quantity, line.product_id, voucher.partner_id)
                 total += tax_info.get('total_included', 0.0)
-                tax_amount += sum([t.get('amount',0.0) for t in tax_info.get('taxes', False)]) 
+                tax_amount += sum([t.get('amount',0.0) for t in tax_info.get('taxes', False)])
             voucher.amount = total + voucher.tax_correction
             voucher.tax_amount = tax_amount
 
@@ -139,9 +139,16 @@ class AccountVoucher(models.Model):
 
     @api.onchange('partner_id', 'pay_now')
     def onchange_partner_id(self):
+        pay_journal_domain = [('type', 'in', ['cash', 'bank'])]
         if self.partner_id:
             self.account_id = self.partner_id.property_account_receivable_id \
                 if self.voucher_type == 'sale' else self.partner_id.property_account_payable_id
+        else:
+            if self.voucher_type == 'purchase':
+                pay_journal_domain.append(('outbound_payment_method_ids', '!=', False))
+            else:
+                pay_journal_domain.append(('inbound_payment_method_ids', '!=', False))
+        return {'domain': {'payment_journal_id': pay_journal_domain}}
 
     @api.multi
     def proforma_voucher(self):
@@ -169,9 +176,9 @@ class AccountVoucher(models.Model):
     def first_move_line_get(self, move_id, company_currency, current_currency):
         debit = credit = 0.0
         if self.voucher_type == 'purchase':
-            credit = self._convert_amount(self.amount)
+            credit = self._convert(self.amount)
         elif self.voucher_type == 'sale':
-            debit = self._convert_amount(self.amount)
+            debit = self._convert(self.amount)
         if debit < 0.0: debit = 0.0
         if credit < 0.0: credit = 0.0
         sign = debit - credit < 0 and -1 or 1
@@ -213,7 +220,7 @@ class AccountVoucher(models.Model):
         return move
 
     @api.multi
-    def _convert_amount(self, amount):
+    def _convert(self, amount):
         '''
         This function convert the amount given in company currency. It takes either the rate in the voucher (if the
         payment_rate_currency_id is relevant) either the rate encoded in the system.
@@ -225,7 +232,7 @@ class AccountVoucher(models.Model):
         :rtype: float
         '''
         for voucher in self:
-            return voucher.currency_id.compute(amount, voucher.company_id.currency_id)
+            return voucher.currency_id._convert(amount, voucher.company_id.currency_id, voucher.company_id, voucher.account_date)
 
     @api.multi
     def voucher_pay_now_payment_create(self):
@@ -271,28 +278,59 @@ class AccountVoucher(models.Model):
             #create one move line per voucher line where amount is not 0.0
             if not line.price_subtotal:
                 continue
+            line_subtotal = line.price_subtotal
+            if self.voucher_type == 'sale':
+                line_subtotal = -1 * line.price_subtotal
             # convert the amount set on the voucher line into the currency of the voucher's company
-            # this calls res_curreny.compute() with the right context,
-            # so that it will take either the rate on the voucher if it is relevant or will use the default behaviour
-            amount = self._convert_amount(line.price_unit*line.quantity)
+            amount = self._convert(line.price_unit*line.quantity)
             move_line = {
                 'journal_id': self.journal_id.id,
                 'name': line.name or '/',
                 'account_id': line.account_id.id,
                 'move_id': move_id,
+                'quantity': line.quantity,
+                'product_id': line.product_id.id,
                 'partner_id': self.partner_id.commercial_partner_id.id,
                 'analytic_account_id': line.account_analytic_id and line.account_analytic_id.id or False,
                 'analytic_tag_ids': [(6, 0, line.analytic_tag_ids.ids)],
-                'quantity': 1,
                 'credit': abs(amount) if self.voucher_type == 'sale' else 0.0,
                 'debit': abs(amount) if self.voucher_type == 'purchase' else 0.0,
                 'date': self.account_date,
                 'tax_ids': [(4,t.id) for t in line.tax_ids],
-                'amount_currency': line.price_subtotal if current_currency != company_currency else 0.0,
+                'amount_currency': line_subtotal if current_currency != company_currency else 0.0,
                 'currency_id': company_currency != current_currency and current_currency or False,
                 'payment_id': self._context.get('payment_id'),
             }
-            self.env['account.move.line'].with_context(apply_taxes=True).create(move_line)
+            # Create one line per tax and fix debit-credit for the move line if there are tax included
+            if (line.tax_ids):
+                tax_group = line.tax_ids.compute_all(line.price_unit, line.currency_id, line.quantity, line.product_id, self.partner_id)
+                if move_line['debit']: move_line['debit'] = tax_group['total_excluded']
+                if move_line['credit']: move_line['credit'] = tax_group['total_excluded']
+                for tax_vals in tax_group['taxes']:
+                    if tax_vals['amount']:
+                        tax = self.env['account.tax'].browse([tax_vals['id']])
+                        account_id = (amount > 0 and tax_vals['account_id'] or tax_vals['refund_account_id'])
+                        if not account_id: account_id = line.account_id.id
+                        temp = {
+                            'account_id': account_id,
+                            'name': line.name + ' ' + tax_vals['name'],
+                            'tax_line_id': tax_vals['id'],
+                            'move_id': move_id,
+                            'date': self.account_date,
+                            'partner_id': self.partner_id.id,
+                            'debit': self.voucher_type != 'sale' and tax_vals['amount'] or 0.0,
+                            'credit': self.voucher_type == 'sale' and tax_vals['amount'] or 0.0,
+                            'analytic_account_id': line.account_analytic_id and line.account_analytic_id.id or False,
+                        }
+                        if company_currency != current_currency:
+                            ctx = {}
+                            if self.account_date:
+                                ctx['date'] = self.account_date
+                            temp['currency_id'] = current_currency.id
+                            temp['amount_currency'] = company_currency._convert(tax_vals['amount'], current_currency, line.company_id, self.account_date or fields.Date.today(), round=True)
+                        self.env['account.move.line'].create(temp)
+
+            self.env['account.move.line'].create(move_line)
         return line_total
 
     @api.multi
@@ -307,7 +345,7 @@ class AccountVoucher(models.Model):
             company_currency = voucher.journal_id.company_id.currency_id.id
             current_currency = voucher.currency_id.id or company_currency
             # we select the context to use accordingly if it's a multicurrency case or not
-            # But for the operations made by _convert_amount, we always need to give the date in the context
+            # But for the operations made by _convert, we always need to give the date in the context
             ctx = local_context.copy()
             ctx['date'] = voucher.account_date
             ctx['check_move_validity'] = False
@@ -318,9 +356,9 @@ class AccountVoucher(models.Model):
             move_line = self.env['account.move.line'].with_context(ctx).create(voucher.with_context(ctx).first_move_line_get(move.id, company_currency, current_currency))
             line_total = move_line.debit - move_line.credit
             if voucher.voucher_type == 'sale':
-                line_total = line_total - voucher._convert_amount(voucher.tax_amount)
+                line_total = line_total - voucher._convert(voucher.tax_amount)
             elif voucher.voucher_type == 'purchase':
-                line_total = line_total + voucher._convert_amount(voucher.tax_amount)
+                line_total = line_total + voucher._convert(voucher.tax_amount)
             # Create one move line per voucher line where amount is not 0.0
             line_total = voucher.with_context(ctx).voucher_move_line_create(line_total, move.id, company_currency, current_currency)
 
@@ -416,7 +454,7 @@ class AccountVoucherLine(models.Model):
         company = self.env['res.company'].browse(company_id)
         currency = self.env['res.currency'].browse(currency_id)
         if not partner_id:
-            raise UserError(_("You must first select a partner!"))
+            raise UserError(_("You must first select a partner."))
         part = self.env['res.partner'].browse(partner_id)
         if part.lang:
             self = self.with_context(lang=part.lang)

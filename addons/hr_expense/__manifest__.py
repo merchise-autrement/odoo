@@ -7,7 +7,7 @@
     'version': '2.0',
     'category': 'Human Resources',
     'sequence': 95,
-    'summary': 'Expenses Validation, Invoicing',
+    'summary': 'Submit, validate and reinvoice employee expenses',
     'description': """
 Manage expenses by Employees
 ============================
@@ -30,11 +30,13 @@ This module also uses analytic accounting and is compatible with the invoice on 
     'data': [
         'security/hr_expense_security.xml',
         'security/ir.model.access.csv',
+        'data/mail_data.xml',
         'data/hr_expense_data.xml',
         'data/hr_expense_sequence.xml',
         'wizard/hr_expense_refuse_reason_views.xml',
         'wizard/hr_expense_sheet_register_payment.xml',
         'views/hr_expense_views.xml',
+        'views/mail_activity_views.xml',
         'security/ir_rule.xml',
         'report/hr_expense_report.xml',
         'views/hr_department_views.xml',

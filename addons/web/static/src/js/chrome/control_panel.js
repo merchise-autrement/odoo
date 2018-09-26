@@ -80,6 +80,9 @@ var ControlPanel = Widget.extend({
         }
 
         this.bus = new Bus(this);
+        // the updateIndex is used to prevent concurrent updates of the control
+        // panel depending on asynchronous code to be executed in the wrong order
+        this.bus.updateIndex = 0;
         this.bus.on("update", this, this.update);
     },
     /**
@@ -126,6 +129,8 @@ var ControlPanel = Widget.extend({
      * elements that are not in status.cp_content
      */
     update: function(status, options) {
+        this.bus.updateIndex++;
+
         this._toggle_visibility(!status.hidden);
 
         // Don't update the ControlPanel in headless mode as the views have
@@ -143,18 +148,30 @@ var ControlPanel = Widget.extend({
             }
 
             // Detach control_panel old content and attach new elements
+            var toDetach = this.nodes;
+            if (status.searchview && this.searchview === status.searchview) {
+                // If the searchview is the same as before, don't detach it s.t.
+                // we don't loose any floating content, nor the focus
+                toDetach = _.omit(toDetach, '$searchview');
+                new_cp_content = _.omit(new_cp_content, '$searchview');
+            }
             if (options.clear) {
-                this._detach_content(this.nodes);
+                this._detach_content(toDetach);
                 // Show the searchview buttons area, which might have been hidden by
                 // the searchview, as client actions may insert elements into it
                 this.nodes.$searchview_buttons.show();
             } else {
-                this._detach_content(_.pick(this.nodes, _.keys(new_cp_content)));
+                this._detach_content(_.pick(toDetach, _.keys(new_cp_content)));
             }
             this._attach_content(new_cp_content);
+            if (options.clear || status.searchview) {
+                this.searchview = status.searchview;
+            }
 
             // Update the searchview and switch buttons
-            this._update_search_view(status.searchview, status.search_view_hidden, status.groupable);
+            if (status.searchview || options.clear) {
+                this._update_search_view(status.searchview, status.search_view_hidden, status.groupable, status.enableTimeRangeMenu);
+            }
             if (status.active_view_selector) {
                 this._update_switch_buttons(status.active_view_selector);
             }
@@ -228,11 +245,12 @@ var ControlPanel = Widget.extend({
         var self = this;
         var is_last = (index === length-1);
         var li_content = bc.title && _.escape(bc.title.trim()) || data.noDisplayContent;
-        var $bc = $('<li>')
-            .append(is_last ? li_content : $('<a>').html(li_content))
+        var $bc = $('<li>', {class: 'breadcrumb-item'})
+            .append(is_last ? li_content : $('<a>', {href: '#'}).html(li_content))
             .toggleClass('active', is_last);
         if (!is_last) {
-            $bc.click(function () {
+            $bc.click(function (ev) {
+                ev.preventDefault();
                 self.trigger_up('breadcrumb_clicked', {controllerID: bc.controllerID});
             });
         }
@@ -248,14 +266,14 @@ var ControlPanel = Widget.extend({
      * @param {boolean} [groupable] visibility of the groupable menu (only
      *      relevant if searchview is visible)
      */
-    _update_search_view: function (searchview, isHidden, groupable) {
+    _update_search_view: function (searchview, isHidden, groupable, enableTimeRangeMenu) {
         if (searchview) {
-            // Set the $buttons div (in the DOM) of the searchview as the $buttons
-            // have been appended to a jQuery node not in the DOM at SearchView initialization
-            searchview.$buttons = this.nodes.$searchview_buttons;
             searchview.toggle_visibility(!isHidden);
             if (groupable !== undefined){
                 searchview.groupby_menu.do_toggle(groupable);
+            }
+            if (enableTimeRangeMenu !== undefined){
+                searchview.displayTimeRangeMenu(enableTimeRangeMenu);
             }
         }
         this.nodes.$searchview.toggle(!isHidden);

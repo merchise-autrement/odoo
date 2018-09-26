@@ -223,7 +223,7 @@ class MergePartnerAutomatic(models.TransientModel):
         """
         _logger.debug('_update_values for dst_partner: %s for src_partners: %r', dst_partner.id, src_partners.ids)
 
-        model_fields = dst_partner._fields
+        model_fields = dst_partner.fields_get().keys()
 
         def write_serializer(item):
             if isinstance(item, models.BaseModel):
@@ -232,7 +232,8 @@ class MergePartnerAutomatic(models.TransientModel):
                 return item
         # get all fields that are not computed or x2many
         values = dict()
-        for column, field in model_fields.items():
+        for column in model_fields:
+            field = dst_partner._fields[column]
             if field.type not in ('many2many', 'one2many') and field.compute is None:
                 for item in itertools.chain(src_partners, [dst_partner]):
                     if item[column]:
@@ -248,11 +249,16 @@ class MergePartnerAutomatic(models.TransientModel):
             except ValidationError:
                 _logger.info('Skip recursive partner hierarchies for parent_id %s of partner: %s', parent_id, dst_partner.id)
 
-    def _merge(self, partner_ids, dst_partner=None):
+    def _merge(self, partner_ids, dst_partner=None, extra_checks=True):
         """ private implementation of merge partner
             :param partner_ids : ids of partner to merge
             :param dst_partner : record of destination res.partner
+            :param extra_checks: pass False to bypass extra sanity check (e.g. email address)
         """
+        # super-admin can be used to bypass extra checks
+        if self.env.uid == SUPERUSER_ID:
+            extra_checks = False
+
         Partner = self.env['res.partner']
         partner_ids = Partner.browse(partner_ids).exists()
         if len(partner_ids) < 2:
@@ -268,8 +274,7 @@ class MergePartnerAutomatic(models.TransientModel):
         if partner_ids & child_ids:
             raise UserError(_("You cannot merge a contact with one of his parent."))
 
-        # check only admin can merge partners with different emails
-        if SUPERUSER_ID != self.env.uid and len(set(partner.email for partner in partner_ids)) > 1:
+        if extra_checks and len(set(partner.email for partner in partner_ids)) > 1:
             raise UserError(_("All contacts must have the same email. Only the Administrator can merge contacts with different emails."))
 
         # remove dst_partner from partners to merge
@@ -282,8 +287,13 @@ class MergePartnerAutomatic(models.TransientModel):
         _logger.info("dst_partner: %s", dst_partner.id)
 
         # FIXME: is it still required to make and exception for account.move.line since accounting v9.0 ?
-        if SUPERUSER_ID != self.env.uid and 'account.move.line' in self.env and self.env['account.move.line'].sudo().search([('partner_id', 'in', [partner.id for partner in src_partners])]):
+        if extra_checks and 'account.move.line' in self.env and self.env['account.move.line'].sudo().search([('partner_id', 'in', [partner.id for partner in src_partners])]):
             raise UserError(_("Only the destination contact may be linked to existing Journal Items. Please ask the Administrator if you need to merge several contacts linked to existing Journal Items."))
+
+        # Make the company of all related users consistent
+        for user in partner_ids.mapped('user_ids'):
+            user.sudo().write({'company_ids': [(6, 0, [dst_partner.company_id.id])],
+                        'company_id': dst_partner.company_id.id})
 
         # call sub methods to do the merge
         self._update_foreign_keys(src_partners, dst_partner)
@@ -361,7 +371,7 @@ class MergePartnerAutomatic(models.TransientModel):
                     groups.append(field_name[len(group_by_prefix):])
 
         if not groups:
-            raise UserError(_("You have to specify a filter for your selection"))
+            raise UserError(_("You have to specify a filter for your selection."))
 
         return groups
 
@@ -382,7 +392,7 @@ class MergePartnerAutomatic(models.TransientModel):
             :param partner_ids : list of partner ids to sort
         """
         return self.env['res.partner'].browse(partner_ids).sorted(
-            key=lambda p: (p.active, p.create_date),
+            key=lambda p: (p.active, (p.create_date or '')),
             reverse=True,
         )
 

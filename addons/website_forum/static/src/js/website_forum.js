@@ -13,8 +13,8 @@ odoo.define('website_forum.website_forum', function (require) {
         return $.Deferred().reject("DOM doesn't contain '.website_forum'");
     }
 
-    // pull-left class messes up the post layout OPW 769721
-    $('span[data-oe-model="forum.post"][data-oe-field="content"]').find('img.pull-left').removeClass('pull-left');
+    // float-left class messes up the post layout OPW 769721
+    $('span[data-oe-model="forum.post"][data-oe-field="content"]').find('img.float-left').removeClass('float-left');
 
     $("[data-toggle='popover']").popover();
     $('.karma_required').on('click', function (ev) {
@@ -25,13 +25,14 @@ odoo.define('website_forum.website_forum', function (require) {
             if ($('a[href*="/login"]').length) {
                 msg = _t('Sorry you must be logged in to perform this action');
             }
-            var $warning = $('<div class="alert alert-danger alert-dismissable oe_forum_alert" id="karma_alert">'+
+            var $warning = $('<div class="alert alert-danger alert-dismissable oe_forum_alert mt8" id="karma_alert">'+
                 '<button type="button" class="close notification_close" data-dismiss="alert" aria-hidden="true">&times;</button>'+
                 msg + '</div>');
-            var vote_alert = $(ev.currentTarget).parent().find("#vote_alert");
-            if (vote_alert.length === 0) {
-                $(ev.currentTarget).parent().append($warning);
+            var $voteAlert = $('#karma_alert');
+            if ($voteAlert.length) {
+                $voteAlert.remove();
             }
+            $(ev.currentTarget).after($warning);
         }
     });
 
@@ -176,12 +177,12 @@ odoo.define('website_forum.website_forum', function (require) {
         $(this).parents('.post_to_validate').hide();
         $.get($link.attr('href'))
             .fail(function() {
-                self.parents('.o_js_validation_queue > div').addClass('panel-danger').css('background-color', '#FAA');
+                self.parents('.o_js_validation_queue > div').addClass('bg-danger text-white').css('background-color', '#FAA');
                 self.parents('.post_to_validate').show();
             })
             .done(function() {
                 var left = $('.o_js_validation_queue:visible').length;
-                var type = $('h2.page-header li.active a').data('type');
+                var type = $('h2.o_page_header a.active').data('type');
                 $('#count_post').text(left);
                 $('#moderation_tools a[href*="/'+type+'_"]').find('strong').text(left);
             });
@@ -356,7 +357,7 @@ odoo.define('website_forum.website_forum', function (require) {
         },
         formatResult: function(term) {
             if (term.isNew) {
-                return '<span class="label label-primary">New</span> ' + _.escape(term.text);
+                return '<span class="badge badge-primary">New</span> ' + _.escape(term.text);
             }
             else {
                 return _.escape(term.text);
@@ -414,8 +415,8 @@ odoo.define('website_forum.website_forum', function (require) {
                 styleWithSpan: false
             });
 
-        // pull-left class messes up the post layout OPW 769721
-        $form.find('.note-editable').find('img.pull-left').removeClass('pull-left');
+        // float-left class messes up the post layout OPW 769721
+        $form.find('.note-editable').find('img.float-left').removeClass('float-left');
         $form.on('click', 'button, .a-submit', function () {
             $textarea.html($form.find('.note-editable').code());
         });

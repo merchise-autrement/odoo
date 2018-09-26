@@ -7,7 +7,7 @@ from uuid import uuid4
 import pprint
 import logging
 
-from odoo import _
+from odoo.addons.payment.models.payment_acquirer import _partner_split_name
 from odoo.exceptions import ValidationError, UserError
 from odoo import _
 
@@ -153,15 +153,21 @@ class AuthorizeAPI():
         payment_profile = etree.SubElement(profile, "paymentProfiles")
         etree.SubElement(payment_profile, "customerType").text = 'business' if partner.is_company else 'individual'
         billTo = etree.SubElement(payment_profile, "billTo")
+        if partner.is_company:
+            etree.SubElement(billTo, "firstName").text = ' '
+            etree.SubElement(billTo, "lastName").text = partner.name
+        else:
+            etree.SubElement(billTo, "firstName").text = _partner_split_name(partner.name)[0]
+            etree.SubElement(billTo, "lastName").text = _partner_split_name(partner.name)[1]
         etree.SubElement(billTo, "address").text = (partner.street or '' + (partner.street2 if partner.street2 else '')) or None
         
-        missing_fields = [partner._fields[field].string for field in ['city', 'country_id', 'zip'] if not partner[field]]
+        missing_fields = [partner._fields[field].string for field in ['city', 'country_id'] if not partner[field]]
         if missing_fields:
             raise ValidationError({'missing_fields': missing_fields})
         
         etree.SubElement(billTo, "city").text = partner.city
         etree.SubElement(billTo, "state").text = partner.state_id.name or None
-        etree.SubElement(billTo, "zip").text = partner.zip
+        etree.SubElement(billTo, "zip").text = partner.zip or ''
         etree.SubElement(billTo, "country").text = partner.country_id.name or None
         payment = etree.SubElement(payment_profile, "payment")
         creditCard = etree.SubElement(payment, "creditCard")
@@ -277,7 +283,7 @@ class AuthorizeAPI():
         payment_profile = etree.SubElement(profile, "paymentProfile")
         etree.SubElement(payment_profile, "paymentProfileId").text = token.acquirer_ref
         order = etree.SubElement(tx, "order")
-        etree.SubElement(order, "invoiceNumber").text = reference
+        etree.SubElement(order, "invoiceNumber").text = reference[:20]
         response = self._authorize_request(root)
         res = dict()
         (has_error, error_msg) = error_check(response)
@@ -312,7 +318,7 @@ class AuthorizeAPI():
         payment_profile = etree.SubElement(profile, "paymentProfile")
         etree.SubElement(payment_profile, "paymentProfileId").text = token.acquirer_ref
         order = etree.SubElement(tx, "order")
-        etree.SubElement(order, "invoiceNumber").text = reference
+        etree.SubElement(order, "invoiceNumber").text = reference[:20]
         response = self._authorize_request(root)
         res = dict()
         (has_error, error_msg) = error_check(response)

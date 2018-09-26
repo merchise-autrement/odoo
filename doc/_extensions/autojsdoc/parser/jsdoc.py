@@ -62,6 +62,11 @@ class CommentDoc(pyjsdoc.CommentDoc):
         d['name'] = self.name
         return d
 
+    # don't resolve already resolved docs (e.g. a literal dict being
+    # include-ed in two different classes because I don't even care anymore
+    def become(self, modules):
+        return self
+
 class PropertyDoc(CommentDoc):
     @classmethod
     def from_param(cls, s, sourcemodule=None):
@@ -232,6 +237,12 @@ class ModuleDoc(NSDoc):
         vars['dependencies'] = self.dependencies
         vars['exports'] = self.exports
         return vars
+
+    def __str__(self):
+        s = super().__str__()
+        if self['sourcefile']:
+            s += " in file " + self['sourcefile']
+        return s
 
 class ClassDoc(NSDoc):
     namekey = 'class'

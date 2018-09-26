@@ -29,13 +29,23 @@ class TestCommonSaleTimesheetNoChart(TestCommonSaleNoChart):
             'user_type_id': cls.env.ref('account.data_account_type_revenue').id,
         })
 
+        # Create projects
         cls.project_global = cls.env['project.project'].create({
             'name': 'Project for selling timesheets',
             'allow_timesheets': True,
         })
+        cls.project_template = cls.env['project.project'].create({
+            'name': 'Project TEMPLATE for services',
+            'allow_timesheets': True,
+        })
+        cls.project_template_state = cls.env['project.task.type'].create({
+            'name': 'Only stage in project template',
+            'sequence': 1,
+            'project_ids': [(4, cls.project_template.id)]
+        })
 
         # Create service products
-        uom_hour = cls.env.ref('product.product_uom_hour')
+        uom_hour = cls.env.ref('uom.product_uom_hour')
 
         # -- ordered quantities (ordered, timesheet)
         cls.product_order_timesheet1 = cls.env['product.product'].create({
@@ -95,6 +105,22 @@ class TestCommonSaleTimesheetNoChart(TestCommonSaleNoChart):
             'service_type': 'timesheet',
             'service_tracking': 'project_only',
             'project_id': False,
+            'taxes_id': False,
+            'property_account_income_id': cls.account_sale.id,
+        })
+        cls.product_order_timesheet5 = cls.env['product.product'].create({
+            'name': "Service Ordered, create project only based on template",
+            'standard_price': 17,
+            'list_price': 34,
+            'type': 'service',
+            'invoice_policy': 'order',
+            'uom_id': cls.env.ref('uom.product_uom_hour').id,
+            'uom_po_id': cls.env.ref('uom.product_uom_hour').id,
+            'default_code': 'SERV-ORDERED4',
+            'service_type': 'timesheet',
+            'service_tracking': 'project_only',
+            'project_id': False,
+            'project_template_id': cls.project_template.id,
             'taxes_id': False,
             'property_account_income_id': cls.account_sale.id,
         })
@@ -160,6 +186,22 @@ class TestCommonSaleTimesheetNoChart(TestCommonSaleNoChart):
             'taxes_id': False,
             'property_account_income_id': cls.account_sale.id,
         })
+        cls.product_delivery_timesheet5 = cls.env['product.product'].create({
+            'name': "Service delivered, create project only based on template",
+            'standard_price': 17,
+            'list_price': 34,
+            'type': 'service',
+            'invoice_policy': 'delivery',
+            'uom_id': cls.env.ref('uom.product_uom_hour').id,
+            'uom_po_id': cls.env.ref('uom.product_uom_hour').id,
+            'default_code': 'SERV-DELI4',
+            'service_type': 'timesheet',
+            'service_tracking': 'project_only',
+            'project_template_id': cls.project_template.id,
+            'project_id': False,
+            'taxes_id': False,
+            'property_account_income_id': cls.account_sale.id,
+        })
 
         # -- milestones (delivered, manual)
         cls.product_delivery_manual1 = cls.env['product.product'].create({
@@ -219,6 +261,22 @@ class TestCommonSaleTimesheetNoChart(TestCommonSaleNoChart):
             'service_type': 'manual',
             'service_tracking': 'project_only',
             'project_id': False,
+            'taxes_id': False,
+            'property_account_income_id': cls.account_sale.id,
+        })
+        cls.product_delivery_manual5 = cls.env['product.product'].create({
+            'name': "Service delivered, create project only with template",
+            'standard_price': 17,
+            'list_price': 34,
+            'type': 'service',
+            'invoice_policy': 'delivery',
+            'uom_id': cls.env.ref('uom.product_uom_hour').id,
+            'uom_po_id': cls.env.ref('uom.product_uom_hour').id,
+            'default_code': 'SERV-DELI4',
+            'service_type': 'manual',
+            'service_tracking': 'project_only',
+            'project_id': False,
+            'project_template_id': cls.project_template.id,
             'taxes_id': False,
             'property_account_income_id': cls.account_sale.id,
         })

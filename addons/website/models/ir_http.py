@@ -6,6 +6,7 @@ import traceback
 import os
 import unittest
 
+import pytz
 import werkzeug
 import werkzeug.routing
 import werkzeug.utils
@@ -17,9 +18,10 @@ from odoo.http import request
 from odoo.tools import config
 from odoo.exceptions import QWebException
 from odoo.tools.safe_eval import safe_eval
-from odoo.osv.expression import FALSE_DOMAIN
+from odoo.osv.expression import FALSE_DOMAIN, OR
 
 from odoo.addons.http_routing.models.ir_http import ModelConverter, _guess_mimetype
+from odoo.addons.portal.controllers.portal import _build_url_w_params
 
 logger = logging.getLogger(__name__)
 
@@ -70,15 +72,19 @@ class Http(models.AbstractModel):
     @classmethod
     def _add_dispatch_parameters(cls, func):
 
-        context = dict(request.context)
-        if not context.get('tz'):
+        context = {}
+        if not request.context.get('tz'):
             context['tz'] = request.session.get('geoip', {}).get('time_zone')
+            try:
+                pytz.timezone(context['tz'] or '')
+            except pytz.UnknownTimeZoneError:
+                context.pop('tz')
 
         request.website = request.env['website'].get_current_website()  # can use `request.env` since auth methods are called
         context['website_id'] = request.website.id
 
-        # bind modified context
-        request.context = context
+        # modify bound context
+        request.context = dict(request.context, **context)
 
         super(Http, cls)._add_dispatch_parameters(func)
 
@@ -104,11 +110,20 @@ class Http(models.AbstractModel):
         return super(Http, cls)._get_default_lang()
 
     @classmethod
+    def _get_translation_frontend_modules_domain(cls):
+        domain = super(Http, cls)._get_translation_frontend_modules_domain()
+        return OR([domain, [('name', 'ilike', 'website')]])
+
+    @classmethod
     def _serve_page(cls):
         req_page = request.httprequest.path
+        page_domain = [('url', '=', req_page)] + request.website.website_domain()
 
-        domain = [('url', '=', req_page), '|', ('website_ids', 'in', request.website.id), ('website_ids', '=', False)]
-        pages = request.env['website.page'].search(domain)
+        published_domain = page_domain
+        # need to bypass website_published, to apply is_most_specific
+        # filter later if not publisher
+        pages = request.env['website.page'].sudo().search(published_domain, order='website_id')
+        pages = pages.filtered(pages._is_most_specific_page)
 
         if not request.website.is_publisher():
             pages = pages.filtered('is_visible')
@@ -116,7 +131,7 @@ class Http(models.AbstractModel):
         mypage = pages[0] if pages else False
         _, ext = os.path.splitext(req_page)
         if mypage:
-            return request.render(mypage.view_id.id, {
+            return request.render(mypage.get_view_identifier(), {
                 # 'path': req_page[1:],
                 'deletable': True,
                 'main_object': mypage,
@@ -126,10 +141,7 @@ class Http(models.AbstractModel):
     @classmethod
     def _serve_redirect(cls):
         req_page = request.httprequest.path
-        domain = [
-            '|', ('website_id', '=', request.website.id), ('website_id', '=', False),
-            ('url_from', '=', req_page)
-        ]
+        domain = [('url_from', '=', req_page)] + request.website.website_domain()
         return request.env['website.redirect'].search(domain, limit=1)
 
     @classmethod
@@ -145,7 +157,7 @@ class Http(models.AbstractModel):
 
         redirect = cls._serve_redirect()
         if redirect:
-            return request.redirect(redirect.url_to, code=redirect.type)
+            return request.redirect(_build_url_w_params(redirect.url_to, request.params), code=redirect.type)
 
         return False
 
@@ -167,7 +179,7 @@ class Http(models.AbstractModel):
                     return response
             except Exception as e:
                 if 'werkzeug' in config['dev_mode'] and (not isinstance(exception, QWebException) or not exception.qweb.get('cause')):
-                    raise
+                    raise e
                 exception = e
 
             values = dict(
@@ -224,11 +236,11 @@ class Http(models.AbstractModel):
     def binary_content(cls, xmlid=None, model='ir.attachment', id=None, field='datas',
                        unique=False, filename=None, filename_field='datas_fname', download=False,
                        mimetype=None, default_mimetype='application/octet-stream',
-                       access_token=None, env=None):
+                       access_token=None, share_id=None, share_token=None, env=None):
         env = env or request.env
         obj = None
         if xmlid:
-            obj = env.ref(xmlid, False)
+            obj = cls._xmlid_to_obj(env, xmlid)
         elif id and model in env:
             obj = env[model].browse(int(id))
         if obj and 'website_published' in obj._fields:
@@ -237,13 +249,26 @@ class Http(models.AbstractModel):
         return super(Http, cls).binary_content(
             xmlid=xmlid, model=model, id=id, field=field, unique=unique, filename=filename,
             filename_field=filename_field, download=download, mimetype=mimetype,
-            default_mimetype=default_mimetype, access_token=access_token, env=env)
+            default_mimetype=default_mimetype, access_token=access_token, share_id=share_id, share_token=share_token,
+            env=env)
+
+    @classmethod
+    def _xmlid_to_obj(cls, env, xmlid):
+        website_id = env['website'].get_current_website()
+        if website_id and website_id.theme_id:
+            obj = env['ir.attachment'].search([('key', '=', xmlid), ('website_id', '=', website_id.id)])
+            if obj:
+                return obj[0]
+
+        return super(Http, cls)._xmlid_to_obj(env, xmlid)
 
 
 class ModelConverter(ModelConverter):
 
     def generate(self, uid, dom=None, args=None):
         Model = request.env[self.model].sudo(uid)
+        # Allow to current_website_id directly in route domain
+        args.update(current_website_id=request.env['website'].get_current_website().id)
         domain = safe_eval(self.domain, (args or {}).copy())
         if dom:
             domain += dom

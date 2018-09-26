@@ -4,7 +4,7 @@
          <field name="name">report.all.channels.sales.pivot</field>
          <field name="model">report.all.channels.sales</field>
          <field name="arch" type="xml">
-            <pivot string="Sales by Channel Analysis">
+            <pivot string="Sales by Channel Analysis" disable_linking="True">
                 <field name="name" type="row"/>
                 <field name="price_total" string="Total Price" type="measure"/>
             </pivot>
@@ -17,9 +17,11 @@
         <field name="arch" type="xml">
             <search string="Sales by Channel Analysis">
                 <field name="date_order"/>
-                <filter string="Current Year Sales" name="current_year" domain="[('date_order','&gt;=',time.strftime('%%Y-01-01'))]"/>
+                <field name="product_id"/>
+                <filter string="Date" name="current_year" date="date_order" default_period="this_year"/>
+                <filter string="Last 365 Days" name="last_year" domain="[('date_order', '&gt;=', (context_today() - datetime.timedelta(days=365)).strftime('%Y-%m-%d'))]"/>
                 <group expand="1" string="Group By">
-                    <filter string="Sales Channel" name="team_id" context="{'group_by':'team_id'}"/>
+                    <filter string="Sales Team" name="team_id" context="{'group_by':'team_id'}"/>
                 </group>
             </search>
         </field>

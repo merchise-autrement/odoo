@@ -1,25 +1,43 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+import contextlib
+
 import pytz
 import datetime
+import ipaddress
 import itertools
 import logging
+import hmac
 
 from collections import defaultdict
+from hashlib import sha256
 from itertools import chain, repeat
 from lxml import etree
 from lxml.builder import E
+import passlib.context
 
-from odoo import api, fields, models, tools, SUPERUSER_ID, _
+from odoo import api, fields, models, tools, SUPERUSER_ID, ADMINUSER_ID, _
 from odoo.exceptions import AccessDenied, AccessError, UserError, ValidationError
+from odoo.http import request
 from odoo.osv import expression
 from odoo.service.db import check_super
-from odoo.tools import partition, pycompat
+from odoo.tools import partition, pycompat, collections
 
 _logger = logging.getLogger(__name__)
 
 # Only users who can modify the user (incl. the user herself) see the real contents of these fields
-USER_PRIVATE_FIELDS = ['password']
+USER_PRIVATE_FIELDS = []
+
+DEFAULT_CRYPT_CONTEXT = passlib.context.CryptContext(
+    # kdf which can be verified by the context. The default encryption kdf is
+    # the first of the list
+    ['pbkdf2_sha512', 'plaintext'],
+    # deprecated algorithms are still verified as usual, but ``needs_update``
+    # will indicate that the stored hash should be replaced by a more recent
+    # algorithm. Passlib 1.6 supports an `auto` value which deprecates any
+    # algorithm but the default, but Ubuntu LTS only provides 1.5 so far.
+    deprecated=['plaintext'],
+)
 
 concat = chain.from_iterable
 
@@ -129,19 +147,21 @@ class Groups(models.Model):
         return where
 
     @api.model
-    def search(self, args, offset=0, limit=None, order=None, count=False):
+    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         # add explicit ordering if search is sorted on full_name
         if order and order.startswith('full_name'):
             groups = super(Groups, self).search(args)
             groups = groups.sorted('full_name', reverse=order.endswith('DESC'))
             groups = groups[offset:offset+limit] if limit else groups[offset:]
             return len(groups) if count else groups.ids
-        return super(Groups, self).search(args, offset=offset, limit=limit, order=order, count=count)
+        return super(Groups, self)._search(args, offset=offset, limit=limit, order=order, count=count, access_rights_uid=access_rights_uid)
 
     @api.multi
     def copy(self, default=None):
         self.ensure_one()
-        default = dict(default or {}, name=_('%s (copy)') % self.name)
+        chosen_name = default.get('name') if default else ''
+        default_name = chosen_name or _('%s (copy)') % self.name
+        default = dict(default or {}, name=default_name)
         return super(Groups, self).copy(default)
 
     @api.multi
@@ -192,10 +212,12 @@ class Users(models.Model):
     partner_id = fields.Many2one('res.partner', required=True, ondelete='restrict', auto_join=True,
         string='Related Partner', help='Partner-related data of the user')
     login = fields.Char(required=True, help="Used to log into the system")
-    password = fields.Char(default='', invisible=True, copy=False,
+    password = fields.Char(
+        compute='_compute_password', inverse='_set_password',
+        invisible=True, copy=False,
         help="Keep empty if you don't want the user to be able to connect on the system.")
     new_password = fields.Char(string='Set Password',
-        compute='_compute_password', inverse='_inverse_password',
+        compute='_compute_password', inverse='_set_new_password',
         help="Specify a value only when creating a user or if you're "\
              "changing the user's password, otherwise leave empty. After "\
              "a change of password, the user has to login again.")
@@ -232,11 +254,72 @@ class Users(models.Model):
         ('login_key', 'UNIQUE (login)',  'You can not have two users with the same login !')
     ]
 
+    def init(self):
+        cr = self.env.cr
+
+        # allow setting plaintext passwords via SQL and have them
+        # automatically encrypted at startup: look for passwords which don't
+        # match the "extended" MCF and pass those through passlib.
+        # Alternative: iterate on *all* passwords and use CryptContext.identify
+        cr.execute("""
+        SELECT id, password FROM res_users
+        WHERE password IS NOT NULL
+          AND password !~ '^\$[^$]+\$[^$]+\$.'
+        """)
+        if self.env.cr.rowcount:
+            Users = self.sudo()
+            for uid, pw in cr.fetchall():
+                Users.browse(uid).password = pw
+
+    def _set_password(self):
+        ctx = self._crypt_context()
+        for user in self:
+            self._set_encrypted_password(user.id, ctx.encrypt(user.password))
+
+    def _set_encrypted_password(self, uid, pw):
+        assert self._crypt_context().identify(pw) != 'plaintext'
+
+        self.env.cr.execute(
+            'UPDATE res_users SET password=%s WHERE id=%s',
+            (pw, uid)
+        )
+        self.invalidate_cache(['password'], [uid])
+
+    def _check_credentials(self, password):
+        """ Validates the current user's password.
+
+        Override this method to plug additional authentication methods.
+
+        Overrides should:
+
+        * call `super` to delegate to parents for credentials-checking
+        * catch AccessDenied and perform their own checking
+        * (re)raise AccessDenied if the credentials are still invalid
+          according to their own validation method
+
+        When trying to check for credentials validity, call _check_credentials
+        instead.
+        """
+        """ Override this method to plug additional authentication methods"""
+        assert password
+        self.env.cr.execute(
+            "SELECT COALESCE(password, '') FROM res_users WHERE id=%s",
+            [self.env.user.id]
+        )
+        [hashed] = self.env.cr.fetchone()
+        valid, replacement = self._crypt_context()\
+            .verify_and_update(password, hashed)
+        if replacement is not None:
+            self._set_encrypted_password(self.env.user.id, replacement)
+        if not valid:
+            raise AccessDenied()
+
     def _compute_password(self):
         for user in self:
             user.password = ''
+            user.new_password = ''
 
-    def _inverse_password(self):
+    def _set_new_password(self):
         for user in self:
             if not user.new_password:
                 # Do not update the password if no value is provided, ignore silently.
@@ -275,6 +358,19 @@ class Users(models.Model):
     def onchange_parent_id(self):
         return self.mapped('partner_id').onchange_parent_id()
 
+    def _read_from_database(self, field_names, inherited_field_names=[]):
+        super(Users, self)._read_from_database(field_names, inherited_field_names)
+        canwrite = self.check_access_rights('write', raise_exception=False)
+        if not canwrite and set(USER_PRIVATE_FIELDS).intersection(field_names):
+            for record in self:
+                for f in USER_PRIVATE_FIELDS:
+                    try:
+                        record._cache[f]
+                        record._cache[f] = '********'
+                    except Exception:
+                        # skip SpecialValue (e.g. for missing record or access right)
+                        pass
+
     @api.multi
     @api.constrains('company_id', 'company_ids')
     def _check_company(self):
@@ -289,6 +385,13 @@ class Users(models.Model):
             raise ValidationError(_('The "App Switcher" action cannot be selected as home action.'))
 
     @api.multi
+    def toggle_active(self):
+        for user in self:
+            if not user.active and not user.partner_id.active:
+                user.partner_id.toggle_active()
+        super(Users, self).toggle_active()
+
+    @api.multi
     def read(self, fields=None, load='_classic_read'):
         if fields and self == self.env.user:
             for key in fields:
@@ -298,17 +401,7 @@ class Users(models.Model):
                 # safe fields only, so we read as super-user to bypass access rights
                 self = self.sudo()
 
-        result = super(Users, self).read(fields=fields, load=load)
-
-        canwrite = self.env['ir.model.access'].check('res.users', 'write', False)
-        if not canwrite:
-            for vals in result:
-                if vals['id'] != self._uid:
-                    for key in USER_PRIVATE_FIELDS:
-                        if key in vals:
-                            vals[key] = '********'
-
-        return result
+        return super(Users, self).read(fields=fields, load=load)
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
@@ -326,13 +419,14 @@ class Users(models.Model):
         return super(Users, self)._search(args, offset=offset, limit=limit, order=order, count=count,
                                           access_rights_uid=access_rights_uid)
 
-    @api.model
-    def create(self, vals):
-        user = super(Users, self).create(vals)
-        user.partner_id.active = user.active
-        if user.partner_id.company_id:
-            user.partner_id.write({'company_id': user.company_id.id})
-        return user
+    @api.model_create_multi
+    def create(self, vals_list):
+        users = super(Users, self.with_context(default_customer=False)).create(vals_list)
+        for user in users:
+            user.partner_id.active = user.active
+            if user.partner_id.company_id:
+                user.partner_id.write({'company_id': user.company_id.id})
+        return users
 
     @api.multi
     def write(self, values):
@@ -343,6 +437,10 @@ class Users(models.Model):
                 elif user.id == self._uid:
                     raise UserError(_("You cannot deactivate the user you're currently logged in as."))
 
+        if values.get('active'):
+            for user in self:
+                if not user.active and not user.partner_id.active:
+                    user.partner_id.toggle_active()
         if self == self.env.user:
             for key in list(values):
                 if not (key in self.SELF_WRITEABLE_FIELDS or key.startswith('context_')):
@@ -374,6 +472,8 @@ class Users(models.Model):
             db = self._cr.dbname
             for id in self.ids:
                 self.__uid_cache[db].pop(id, None)
+        if any(key in values for key in self._get_session_token_fields()):
+            self._invalidate_session_cache()
 
         return res
 
@@ -384,18 +484,19 @@ class Users(models.Model):
         db = self._cr.dbname
         for id in self.ids:
             self.__uid_cache[db].pop(id, None)
+        self._invalidate_session_cache()
         return super(Users, self).unlink()
 
     @api.model
-    def name_search(self, name='', args=None, operator='ilike', limit=100):
+    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
         if args is None:
             args = []
-        users = self.browse()
+        user_ids = []
         if name and operator in ['=', 'ilike']:
-            users = self.search([('login', '=', name)] + args, limit=limit)
-        if not users:
-            users = self.search([('name', operator, name)] + args, limit=limit)
-        return users.name_get()
+            user_ids = self._search([('login', '=', name)] + args, limit=limit, access_rights_uid=name_get_uid)
+        if not user_ids:
+            user_ids = self._search([('name', operator, name)] + args, limit=limit, access_rights_uid=name_get_uid)
+        return self.browse(user_ids).name_get()
 
     @api.multi
     def copy(self, default=None):
@@ -435,35 +536,37 @@ class Users(models.Model):
         return check_super(passwd)
 
     @api.model
-    def check_credentials(self, password):
-        """ Override this method to plug additional authentication methods"""
-        user = self.sudo().search([('id', '=', self._uid), ('password', '=', password)])
-        if not user:
-            raise AccessDenied()
-
-    @api.model
     def _update_last_login(self):
         # only create new records to avoid any side-effect on concurrent transactions
         # extra records will be deleted by the periodical garbage collection
         self.env['res.users.log'].create({}) # populated by defaults
 
+    @api.model
+    def _get_login_domain(self, login):
+        return [('login', '=', login)]
+
     @classmethod
     def _login(cls, db, login, password):
         if not password:
-            return False
-        user_id = False
+            raise AccessDenied()
+        ip = request.httprequest.environ['REMOTE_ADDR'] if request else 'n/a'
         try:
             with cls.pool.cursor() as cr:
                 self = api.Environment(cr, SUPERUSER_ID, {})[cls._name]
-                user = self.search([('login', '=', login)])
-                if user:
-                    user_id = user.id
-                    user.sudo(user_id).check_credentials(password)
-                    user.sudo(user_id)._update_last_login()
+                with self._assert_can_auth():
+                    user = self.search(self._get_login_domain(login))
+                    if not user:
+                        raise AccessDenied()
+                    user = user.sudo(user.id)
+                    user._check_credentials(password)
+                    user._update_last_login()
         except AccessDenied:
-            _logger.info("Login failed for db:%s login:%s", db, login)
-            user_id = False
-        return user_id
+            _logger.info("Login failed for db:%s login:%s from %s", db, login, ip)
+            raise
+
+        _logger.info("Login successful for db:%s login:%s from %s", db, login, ip)
+
+        return user.id
 
     @classmethod
     def authenticate(cls, db, login, password, user_agent_env):
@@ -477,7 +580,7 @@ class Users(models.Model):
                relevant environment attributes
         """
         uid = cls._login(db, login, password)
-        if uid == SUPERUSER_ID:
+        if uid == ADMINUSER_ID:
             # Successfully logged in as admin!
             # Attempt to guess the web base url...
             if user_agent_env and user_agent_env.get('base_location'):
@@ -504,10 +607,39 @@ class Users(models.Model):
         cr = cls.pool.cursor()
         try:
             self = api.Environment(cr, uid, {})[cls._name]
-            self.check_credentials(passwd)
-            cls.__uid_cache[db][uid] = passwd
+            with self._assert_can_auth():
+                self._check_credentials(passwd)
+                cls.__uid_cache[db][uid] = passwd
         finally:
             cr.close()
+
+    def _get_session_token_fields(self):
+        return {'id', 'login', 'password', 'active'}
+
+    @tools.ormcache('sid')
+    def _compute_session_token(self, sid):
+        """ Compute a session token given a session id and a user id """
+        # retrieve the fields used to generate the session token
+        session_fields = ', '.join(sorted(self._get_session_token_fields()))
+        self.env.cr.execute("""SELECT %s, (SELECT value FROM ir_config_parameter WHERE key='database.secret')
+                                FROM res_users
+                                WHERE id=%%s""" % (session_fields), (self.id,))
+        if self.env.cr.rowcount != 1:
+            self._invalidate_session_cache()
+            return False
+        data_fields = self.env.cr.fetchone()
+        # generate hmac key
+        key = (u'%s' % (data_fields,)).encode('utf-8')
+        # hmac the session id
+        data = sid.encode('utf-8')
+        h = hmac.new(key, data, sha256)
+        # keep in the cache the token
+        return h.hexdigest()
+
+    @api.multi
+    def _invalidate_session_cache(self):
+        """ Clear the sessions cache """
+        self._compute_session_token.clear_cache(self)
 
     @api.model
     def change_password(self, old_passwd, new_passwd):
@@ -558,7 +690,7 @@ class Users(models.Model):
         :return: True if the current user is a member of the group with the
            given external ID (XML ID), else False.
         """
-        assert group_ext_id and '.' in group_ext_id, "External ID must be fully qualified"
+        assert group_ext_id and '.' in group_ext_id, "External ID '%s' must be fully qualified" % group_ext_id
         module, ext_id = group_ext_id.split('.')
         self._cr.execute("""SELECT 1 FROM res_groups_users_rel WHERE uid=%s AND gid IN
                             (SELECT res_id FROM ir_model_data WHERE module=%s AND name=%s)""",
@@ -591,6 +723,112 @@ class Users(models.Model):
     def get_company_currency_id(self):
         return self.env.user.company_id.currency_id.id
 
+    def _crypt_context(self):
+        """ Passlib CryptContext instance used to encrypt and verify
+        passwords. Can be overridden if technical, legal or political matters
+        require different kdfs than the provided default.
+
+        Requires a CryptContext as deprecation and upgrade notices are used
+        internally
+        """
+        return DEFAULT_CRYPT_CONTEXT
+
+    @contextlib.contextmanager
+    def _assert_can_auth(self):
+        """ Checks that the current environment even allows the current auth
+        request to happen.
+
+        The baseline implementation is a simple linear login cooldown: after
+        a number of failures trying to log-in, the user (by login) is put on
+        cooldown. During the cooldown period, login *attempts* are ignored
+        and logged.
+
+        .. warning::
+
+            The login counter is not shared between workers and not
+            specifically thread-safe, the feature exists mostly for
+            rate-limiting on large number of login attempts (brute-forcing
+            passwords) so that should not be much of an issue.
+
+            For a more complex strategy (e.g. database or distribute storage)
+            override this method. To simply change the cooldown criteria
+            (configuration, ...) override _on_login_cooldown instead.
+
+        .. note::
+
+            This is a *context manager* so it can be called around the login
+            procedure without having to call it itself.
+        """
+        # needs request for remote address
+        if not request:
+            yield
+            return
+
+        reg = self.env.registry
+        failures_map = getattr(reg, '_login_failures', None)
+        if failures_map is None:
+            failures_map = reg._login_failures = collections.defaultdict(lambda : (0, datetime.datetime.min))
+
+        source = request.httprequest.remote_addr
+        (failures, previous) = failures_map[source]
+        if self._on_login_cooldown(failures, previous):
+            _logger.warn(
+                "Login attempt ignored for %s on %s: "
+                "%d failures since last success, last failure at %s. "
+                "You can configure the number of login failures before a "
+                "user is put on cooldown as well as the duration in the "
+                "System Parameters. Disable this feature by setting "
+                "\"base.login_cooldown_after\" to 0.",
+                source, self.env.cr.dbname, failures, previous)
+            if ipaddress.ip_address(source).is_private:
+                _logger.warn(
+                    "The rate-limited IP address %s is classified as private "
+                    "and *might* be a proxy. If your Odoo is behind a proxy, "
+                    "it may be mis-configured. Check that you are running "
+                    "Odoo in Proxy Mode and that the proxy is properly configured, see "
+                    "https://www.odoo.com/documentation/11.0/setup/deploy.html#https for details.",
+                    source
+                )
+            raise AccessDenied(_("Too many login failures, please wait a bit before trying again."))
+
+        try:
+            yield
+        except AccessDenied:
+            (failures, __) = reg._login_failures[source]
+            reg._login_failures[source] = (failures + 1, datetime.datetime.now())
+            raise
+        else:
+            reg._login_failures.pop(source, None)
+
+    def _on_login_cooldown(self, failures, previous):
+        """ Decides whether the user trying to log in is currently
+        "on cooldown" and not even allowed to attempt logging in.
+
+        The default cooldown function simply puts the user on cooldown for
+        <login_cooldown_duration> seconds after each failure following the
+        <login_cooldown_after>th (0 to disable).
+
+        Can be overridden to implement more complex backoff strategies, or
+        e.g. wind down or reset the cooldown period as the previous failure
+        recedes into the far past.
+
+        :param int failures: number of recorded failures (since last success)
+        :param previous: timestamp of previous failure
+        :type previous:  datetime.datetime
+        :returns: whether the user is currently in cooldown phase (true if cooldown, false if no cooldown and login can continue)
+        :rtype: bool
+        """
+        cfg = self.env['ir.config_parameter'].sudo()
+        min_failures = int(cfg.get_param('base.login_cooldown_after', 5))
+        if min_failures == 0:
+            return True
+
+        delay = int(cfg.get_param('base.login_cooldown_duration', 60))
+        return failures >= min_failures and (datetime.datetime.now() - previous) < datetime.timedelta(seconds=delay)
+
+    def _register_hook(self):
+        if hasattr(self, 'check_credentials'):
+            _logger.warn("The check_credentials method of res.users has been renamed _check_credentials. One of your installed modules defines one, but it will not be called anymore.")
 #
 # Implied groups
 #
@@ -615,14 +853,15 @@ class GroupsImplied(models.Model):
         for g in self:
             g.trans_implied_ids = g.implied_ids | g.mapped('implied_ids.trans_implied_ids')
 
-    @api.model
-    def create(self, values):
-        user_ids = values.pop('users', None)
-        group = super(GroupsImplied, self).create(values)
-        if user_ids:
-            # delegate addition of users to add implied groups
-            group.write({'users': user_ids})
-        return group
+    @api.model_create_multi
+    def create(self, vals_list):
+        user_ids_list = [vals.pop('users', None) for vals in vals_list]
+        groups = super(GroupsImplied, self).create(vals_list)
+        for group, user_ids in pycompat.izip(groups, user_ids_list):
+            if user_ids:
+                # delegate addition of users to add implied groups
+                group.write({'users': user_ids})
+        return groups
 
     @api.multi
     def write(self, values):
@@ -634,18 +873,18 @@ class GroupsImplied(models.Model):
                 super(GroupsImplied, group.trans_implied_ids).write(vals)
         return res
 
-
 class UsersImplied(models.Model):
     _inherit = 'res.users'
 
-    @api.model
-    def create(self, values):
-        if 'groups_id' in values:
-            # complete 'groups_id' with implied groups
-            user = self.new(values)
-            gs = user.groups_id | user.groups_id.mapped('trans_implied_ids')
-            values['groups_id'] = type(self).groups_id.convert_to_write(gs, user.groups_id)
-        return super(UsersImplied, self).create(values)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for values in vals_list:
+            if 'groups_id' in values:
+                # complete 'groups_id' with implied groups
+                user = self.new(values)
+                gs = user.groups_id | user.groups_id.mapped('trans_implied_ids')
+                values['groups_id'] = type(self).groups_id.convert_to_write(gs, user.groups_id)
+        return super(UsersImplied, self).create(vals_list)
 
     @api.multi
     def write(self, values):
@@ -653,9 +892,12 @@ class UsersImplied(models.Model):
         if values.get('groups_id'):
             # add implied groups for all users
             for user in self.with_context({}):
-                gs = set(concat(g.trans_implied_ids for g in user.groups_id))
-                vals = {'groups_id': [(4, g.id) for g in gs]}
-                super(UsersImplied, self).write(vals)
+                if not user.has_group('base.group_user'):
+                    vals = {'groups_id': [(5, 0, 0)] + values['groups_id']}
+                else:
+                    gs = set(concat(g.trans_implied_ids for g in user.groups_id))
+                    vals = {'groups_id': [(4, g.id) for g in gs]}
+                super(UsersImplied, user).write(vals)
         return res
 
 #
@@ -722,36 +964,63 @@ class GroupsView(models.Model):
         view = self.env.ref('base.user_groups_view', raise_if_not_found=False)
         if view and view.exists() and view._name == 'ir.ui.view':
             group_no_one = view.env.ref('base.group_no_one')
-            xml1, xml2 = [], []
-            xml1.append(E.separator(string=_('Application Accesses'), colspan="2"))
+            group_employee = view.env.ref('base.group_user')
+            xml1, xml2, xml3 = [], [], []
+            xml1.append(E.separator(string=_('User Type'), colspan="2", groups='base.group_no_one'))
+            xml2.append(E.separator(string=_('Application Accesses'), colspan="2"))
+
+            user_type_field_name = ''
             for app, kind, gs in self.get_groups_by_application():
-                # hide groups in categories 'Hidden' and 'Extra' (except for group_no_one)
                 attrs = {}
+                # hide groups in categories 'Hidden' and 'Extra' (except for group_no_one)
                 if app.xml_id in ('base.module_category_hidden', 'base.module_category_extra', 'base.module_category_usability'):
                     attrs['groups'] = 'base.group_no_one'
 
-                if kind == 'selection':
+                # User type (employee, portal or public) is a separated group. This is the only 'selection'
+                # group of res.groups without implied groups (with each other).
+                if app.xml_id == 'base.module_category_user_type':
                     # application name with a selection field
                     field_name = name_selection_groups(gs.ids)
+                    user_type_field_name = field_name
+                    attrs['widget'] = 'radio'
+                    attrs['groups'] = 'base.group_no_one'
                     xml1.append(E.field(name=field_name, **attrs))
                     xml1.append(E.newline())
+
+                elif kind == 'selection':
+                    # application name with a selection field
+                    field_name = name_selection_groups(gs.ids)
+                    xml2.append(E.field(name=field_name, **attrs))
+                    xml2.append(E.newline())
                 else:
                     # application separator with boolean fields
                     app_name = app.name or _('Other')
-                    xml2.append(E.separator(string=app_name, colspan="4", **attrs))
+                    xml3.append(E.separator(string=app_name, colspan="4", **attrs))
                     for g in gs:
                         field_name = name_boolean_group(g.id)
                         if g == group_no_one:
                             # make the group_no_one invisible in the form view
-                            xml2.append(E.field(name=field_name, invisible="1", **attrs))
+                            xml3.append(E.field(name=field_name, invisible="1", **attrs))
                         else:
-                            xml2.append(E.field(name=field_name, **attrs))
+                            xml3.append(E.field(name=field_name, **attrs))
 
-            xml2.append({'class': "o_label_nowrap"})
-            xml = E.field(E.group(*(xml1), col="2"), E.group(*(xml2), col="4"), name="groups_id", position="replace")
+            xml3.append({'class': "o_label_nowrap"})
+            if user_type_field_name:
+                user_type_attrs = {'invisible': [(user_type_field_name, '!=', group_employee.id)]}
+            else:
+                user_type_attrs = {}
+
+            xml = E.field(
+                E.group(*(xml1), col="2"),
+                E.group(*(xml2), col="2", attrs=str(user_type_attrs)),
+                E.group(*(xml3), col="4", attrs=str(user_type_attrs)), name="groups_id", position="replace")
             xml.addprevious(etree.Comment("GENERATED AUTOMATICALLY BY GROUPS"))
             xml_content = etree.tostring(xml, pretty_print=True, encoding="unicode")
-            view.with_context(lang=None).write({'arch': xml_content, 'arch_fs': False})
+
+            new_context = dict(view._context)
+            new_context.pop('install_mode_data', None)  # don't set arch_fs for this computed view
+            new_context['lang'] = None
+            view.with_context(new_context).write({'arch': xml_content})
 
     def get_application_groups(self, domain):
         """ Return the non-share groups that satisfy ``domain``. """
@@ -769,6 +1038,9 @@ class GroupsView(models.Model):
             reverse implication order.
         """
         def linearize(app, gs):
+            # 'User Type' is an exception
+            if app.xml_id == 'base.module_category_user_type':
+                return (app, 'selection', gs)
             # determine sequence order: a group appears after its implied groups
             order = {g: len(g.trans_implied_ids & gs) for g in gs}
             # check whether order is total, i.e., sequence orders are distinct
@@ -894,12 +1166,19 @@ class UsersView(models.Model):
         # add reified groups fields
         for app, kind, gs in self.env['res.groups'].sudo().get_groups_by_application():
             if kind == 'selection':
+                # 'User Type' should not be 'False'. A user is either 'employee', 'portal' or 'public' (required).
+                selection_vals = [(False, '')]
+                if app.xml_id == 'base.module_category_user_type':
+                    selection_vals = []
+                field_name = name_selection_groups(gs.ids)
+                if allfields and field_name not in allfields:
+                    continue
                 # selection group field
                 tips = ['%s: %s' % (g.name, g.comment) for g in gs if g.comment]
-                res[name_selection_groups(gs.ids)] = {
+                res[field_name] = {
                     'type': 'selection',
                     'string': app.name or _('Other'),
-                    'selection': [(False, '')] + [(g.id, g.name) for g in gs],
+                    'selection': selection_vals + [(g.id, g.name) for g in gs],
                     'help': '\n'.join(tips),
                     'exportable': False,
                     'selectable': False,
@@ -907,7 +1186,10 @@ class UsersView(models.Model):
             else:
                 # boolean group fields
                 for g in gs:
-                    res[name_boolean_group(g.id)] = {
+                    field_name = name_boolean_group(g.id)
+                    if allfields and field_name not in allfields:
+                        continue
+                    res[field_name] = {
                         'type': 'boolean',
                         'string': g.name,
                         'help': g.comment,

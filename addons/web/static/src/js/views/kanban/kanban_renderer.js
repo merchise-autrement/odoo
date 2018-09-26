@@ -81,12 +81,19 @@ function transformQwebTemplate(node, fields) {
 
 var KanbanRenderer = BasicRenderer.extend({
     className: 'o_kanban_view',
+    config: { // the KanbanRecord and KanbanColumn classes to use (may be overriden)
+        KanbanColumn: KanbanColumn,
+        KanbanRecord: KanbanRecord,
+    },
     custom_events: _.extend({}, BasicRenderer.prototype.custom_events || {}, {
         close_quick_create: '_onCloseQuickCreate',
         cancel_quick_create: '_onCloseQuickCreate',
         set_progress_bar_state: '_onSetProgressBarState',
         start_quick_create: '_onStartQuickCreate',
         quick_create_column_updated: '_onQuickCreateColumnUpdated',
+    }),
+    events:_.extend({}, BasicRenderer.prototype.events || {}, {
+        'keydown .o_kanban_record' : '_onRecordKeyDown'
     }),
 
     /**
@@ -105,7 +112,7 @@ var KanbanRenderer = BasicRenderer.extend({
             qweb: this.qweb,
             viewType: 'kanban',
         });
-        this.columnOptions = _.extend({}, params.column_options);
+        this.columnOptions = _.extend({KanbanRecord: this.KanbanRecord}, params.column_options);
         if (this.columnOptions.hasProgressBar) {
             this.columnOptions.progressBarStates = {};
         }
@@ -115,9 +122,16 @@ var KanbanRenderer = BasicRenderer.extend({
      * Called each time the renderer is attached into the DOM.
      */
     on_attach_callback: function () {
+        _.invoke(this.widgets, 'on_attach_callback');
         if (this.quickCreate) {
             this.quickCreate.on_attach_callback();
         }
+    },
+    /**
+     * Called each time the renderer is detached from the DOM.
+     */
+    on_detach_callback: function () {
+        _.invoke(this.widgets, 'on_detach_callback');
     },
 
     //--------------------------------------------------------------------------
@@ -131,6 +145,9 @@ var KanbanRenderer = BasicRenderer.extend({
      */
     addQuickCreate: function () {
         return this.widgets[0].addQuickCreate();
+    },
+    giveFocus:function() {
+        this.$('.o_kanban_record:first').focus();
     },
     /**
      * Toggle fold/unfold the Column quick create widget
@@ -162,6 +179,7 @@ var KanbanRenderer = BasicRenderer.extend({
      */
     updateColumn: function (localID, columnState, options) {
         var self = this;
+        var KanbanColumn = this.config.KanbanColumn;
         var newColumn = new KanbanColumn(this, columnState, this.columnOptions, this.recordOptions);
         var index = _.findIndex(this.widgets, {db_id: localID});
         var column = this.widgets[index];
@@ -191,6 +209,7 @@ var KanbanRenderer = BasicRenderer.extend({
      * Updates a given record with its new state.
      *
      * @param {Object} recordState
+     * @returns {Deferred}
      */
     updateRecord: function (recordState) {
         var isGrouped = !!this.state.groupedBy.length;
@@ -209,8 +228,9 @@ var KanbanRenderer = BasicRenderer.extend({
         }
 
         if (record) {
-            record.update(recordState);
+            return record.update(recordState);
         }
+        return $.when();
     },
     /**
      * @override
@@ -224,7 +244,26 @@ var KanbanRenderer = BasicRenderer.extend({
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
-
+    /**
+    * @private
+    * @param {DOMElement} currentColumn
+    */
+    _focusOnNextCard: function(currentCardElement) {
+        var nextCard = currentCardElement.nextElementSibling;
+        if (nextCard) {
+            nextCard.focus();
+        }
+    },
+    /**
+    * @private
+    * @param {DOMElement} currentColumn
+    */
+    _focusOnPreviousCard: function(currentCardElement) {
+        var previousCard = currentCardElement.previousElementSibling;
+        if (previousCard && previousCard.classList.contains("o_kanban_record")) { //previous element might be column title
+            previousCard.focus();
+        }
+    },
     /**
      * Renders empty invisible divs in a document fragment.
      *
@@ -248,15 +287,21 @@ var KanbanRenderer = BasicRenderer.extend({
         var self = this;
 
         // Render columns
+        var KanbanColumn = this.config.KanbanColumn;
         _.each(this.state.data, function (group) {
             var column = new KanbanColumn(self, group, self.columnOptions, self.recordOptions);
+            var def;
             if (!group.value) {
-                column.prependTo(fragment); // display the 'Undefined' group first
+                def = column.prependTo(fragment); // display the 'Undefined' group first
                 self.widgets.unshift(column);
             } else {
-                column.appendTo(fragment);
+                def = column.appendTo(fragment);
                 self.widgets.push(column);
             }
+            if (def.state() === 'pending') {
+                self.defs.push(def);
+            }
+
         });
 
         // remove previous sorting
@@ -302,16 +347,6 @@ var KanbanRenderer = BasicRenderer.extend({
         }
     },
     /**
-     * @private
-     * @override
-     * adds a specific class to the kanban helper so that it can be targetted by specific css
-     */
-    _renderNoContentHelper: function() {
-        var $el = this._super.apply(this, arguments);
-        $el.toggleClass('o_kanban_view_nocontent',true)
-        return $el;
-    },
-    /**
      * Renders an ungrouped kanban view in a fragment.
      *
      * @private
@@ -319,10 +354,14 @@ var KanbanRenderer = BasicRenderer.extend({
      */
     _renderUngrouped: function (fragment) {
         var self = this;
+        var KanbanRecord = this.config.KanbanRecord;
         _.each(this.state.data, function (record) {
             var kanbanRecord = new KanbanRecord(self, record, self.recordOptions);
             self.widgets.push(kanbanRecord);
-            kanbanRecord.appendTo(fragment);
+            var def = kanbanRecord.appendTo(fragment);
+            if (def.state() === 'pending') {
+                self.defs.push(def);
+            }
         });
 
         // append ghost divs to ensure that all kanban records are left aligned
@@ -342,6 +381,7 @@ var KanbanRenderer = BasicRenderer.extend({
         this.$el.toggleClass('o_kanban_ungrouped', !isGrouped);
         var fragment = document.createDocumentFragment();
         // render the kanban view
+        this.defs = [];
         if (isGrouped) {
             this._renderGrouped(fragment);
         } else {
@@ -349,7 +389,11 @@ var KanbanRenderer = BasicRenderer.extend({
         }
         this.$el.append(fragment);
         this._toggleNoContentHelper();
-        return this._super.apply(this, arguments).then(_.invoke.bind(_, oldWidgets, 'destroy'));
+        var defs = this.defs;
+        return this._super.apply(this, arguments).then(function () {
+            _.invoke(oldWidgets, 'destroy');
+            return $.when.apply(null, defs);
+        });
     },
     /**
      * @param {boolean} [remove] if true, the nocontent helper is always removed
@@ -360,7 +404,8 @@ var KanbanRenderer = BasicRenderer.extend({
             !remove &&
             !this._hasContent() &&
             !!this.noContentHelp &&
-            !(this.quickCreate && !this.quickCreate.folded);
+            !(this.quickCreate && !this.quickCreate.folded) &&
+            !this.state.isGroupedByM2ONoColumn;
 
         var $noContentHelper = this.$('.o_view_nocontent');
 
@@ -411,11 +456,44 @@ var KanbanRenderer = BasicRenderer.extend({
         });
         this.createColumnEnabled = this.groupedByM2O && this.columnOptions.group_creatable;
     },
+    /**
+     * Moves the focus on the first card of the next column in a given direction
+     * This ignores the folded columns and skips over the empty columns.
+     * In ungrouped kanban, moves the focus to the next/previous card
+     *
+     * @param {DOMElement} eventTarget  the target of the keydown event
+     * @param {string} direction  contains either 'LEFT' or 'RIGHT'
+     */
+    _focusOnCardInColumn: function(eventTarget, direction) {
+        var currentColumn = eventTarget.parentElement;
+        var hasSelectedACard = false;
+        var cannotSelectAColumn = false;
+        while (!hasSelectedACard && !cannotSelectAColumn) {
+            var candidateColumn = direction === 'LEFT' ?
+                                    currentColumn.previousElementSibling :
+                                    currentColumn.nextElementSibling ;
+            currentColumn = candidateColumn;
+            if (candidateColumn) {
+                var allCardsOfCandidateColumn =
+                    candidateColumn.getElementsByClassName('o_kanban_record');
+                if (allCardsOfCandidateColumn.length) {
+                    allCardsOfCandidateColumn[0].focus();
+                    hasSelectedACard = true;
+                }
+            }
+            else { // either there are no more columns in the direction or
+                   // this is not a grouped kanban
+                direction === 'LEFT' ?
+                    this._focusOnPreviousCard(eventTarget) :
+                    this._focusOnNextCard(eventTarget);
+                cannotSelectAColumn = true;
+            }
+        }
+    },
 
     //--------------------------------------------------------------------------
     // Handlers
     //--------------------------------------------------------------------------
-
     /**
      * Closes the opened quick create widgets in columns
      *
@@ -434,6 +512,34 @@ var KanbanRenderer = BasicRenderer.extend({
     _onQuickCreateColumnUpdated: function (event) {
         event.stopPropagation();
         this._toggleNoContentHelper();
+    },
+    /**
+     * @private
+     * @param {KeyboardEvent} e
+     */
+    _onRecordKeyDown: function(e) {
+        switch(e.which) {
+            case $.ui.keyCode.DOWN:
+                this._focusOnNextCard(e.currentTarget);
+                e.stopPropagation();
+                e.preventDefault();
+                break;
+            case $.ui.keyCode.UP:
+                this._focusOnPreviousCard(e.currentTarget);
+                e.stopPropagation();
+                e.preventDefault();
+                break;
+            case $.ui.keyCode.RIGHT:
+                this._focusOnCardInColumn(e.currentTarget, 'RIGHT');
+                e.stopPropagation();
+                e.preventDefault();
+                break;
+            case $.ui.keyCode.LEFT:
+                this._focusOnCardInColumn(e.currentTarget, 'LEFT');
+                e.stopPropagation();
+                e.preventDefault();
+                break;
+        }
     },
     /**
      * Updates progressbar internal states (necessary for animations) with

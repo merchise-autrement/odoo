@@ -24,6 +24,7 @@ ListRenderer.include({
     }),
     events: _.extend({}, ListRenderer.prototype.events, {
         'click .o_field_x2many_list_row_add a': '_onAddRecord',
+        'keydown .o_field_x2many_list_row_add a': '_onKeyDownAddRecord',
         'click tbody td.o_data_cell': '_onCellClick',
         'click tbody tr:not(.o_data_row)': '_onEmptyRowClick',
         'click tfoot': '_onFooterClick',
@@ -36,11 +37,48 @@ ListRenderer.include({
      * @param {boolean} params.addTrashIcon
      */
     init: function (parent, state, params) {
+        var self = this;
         this._super.apply(this, arguments);
 
-        // if addCreateLine is true, the renderer will add a 'Add an item' link
+        // if addCreateLine is true, the renderer will add a 'Add a line' link
         // at the bottom of the list view
         this.addCreateLine = params.addCreateLine;
+
+        // Controls allow overriding "add a line" by custom controls.
+
+        // Each <control> (only one is actually needed) is a container for (multiple) <create>.
+        // Each <create> will be a "add a line" button with custom text and context.
+
+        // The following code will browse the arch to find
+        // all the <create> that are inside <control>
+
+        if (this.addCreateLine) {
+            this.creates = [];
+
+            _.each(this.arch.children, function (child) {
+                if (child.tag !== 'control') {
+                    return;
+                }
+
+                _.each(child.children, function (child) {
+                    if (child.tag !== 'create') {
+                        return;
+                    }
+
+                    self.creates.push({
+                        context: child.attrs.context,
+                        string: child.attrs.string,
+                    });
+                });
+            });
+
+            // Add the default button if we didn't find any custom button.
+            if (this.creates.length === 0) {
+                this.creates.push({
+                    string: _t("Add a line"),
+                });
+            }
+        }
 
         // if addTrashIcon is true, there will be a small trash icon at the end
         // of each line, so the user can delete a record.
@@ -58,8 +96,13 @@ ListRenderer.include({
      * @returns {Deferred}
      */
     start: function () {
-        if (this._isEditable()) {
-            this.$el.css({height: '100%'});
+        // deliberately use the 'editable' attribute instead of '_isEditable'
+        // function, because the groupBy must not be taken into account to
+        // enable the '_onWindowClicked' handler (otherwise, an editable grouped
+        // list which is reloaded without groupBy wouldn't have this handler
+        // bound, and edited rows couldn't be left by clicking outside the list)
+        if (this.editable) {
+            this.$el.css({height: '100%'}); // seems useless: to remove in master
             core.bus.on('click', this, this._onWindowClicked.bind(this));
         }
         return this._super();
@@ -140,9 +183,11 @@ ListRenderer.include({
         if (self.currentRow !== null) {
             currentRowID = this.state.data[this.currentRow].id;
             currentWidget = this.allFieldWidgets[currentRowID][this.currentFieldIndex];
-            focusedElement = currentWidget.getFocusableElement().get(0);
-            if (currentWidget.formatType !== 'boolean') {
-                selectionRange = dom.getSelectionRange(focusedElement);
+            if (currentWidget) {
+                focusedElement = currentWidget.getFocusableElement().get(0);
+                if (currentWidget.formatType !== 'boolean') {
+                    selectionRange = dom.getSelectionRange(focusedElement);
+                }
             }
         }
 
@@ -185,9 +230,11 @@ ListRenderer.include({
                     // restore the cursor position
                     currentRowID = self.state.data[newRowIndex].id;
                     currentWidget = self.allFieldWidgets[currentRowID][self.currentFieldIndex];
-                    focusedElement = currentWidget.getFocusableElement().get(0);
-                    if (selectionRange) {
-                        dom.setSelectionRange(focusedElement, selectionRange);
+                    if (currentWidget) {
+                        focusedElement = currentWidget.getFocusableElement().get(0);
+                        if (selectionRange) {
+                            dom.setSelectionRange(focusedElement, selectionRange);
+                        }
                     }
                 });
             }
@@ -222,7 +269,6 @@ ListRenderer.include({
      * @param {string} recordID
      */
     removeLine: function (state, recordID) {
-        var self = this;
         var rowIndex = _.findIndex(this.state.data, {id: recordID});
         this.state = state;
         if (rowIndex === -1) {
@@ -287,10 +333,12 @@ ListRenderer.include({
         // When switching to edit mode, force the dimensions of all cells to
         // their current value so that they won't change if their content
         // changes, to prevent the view from flickering.
+        // We need to use getBoundingClientRect instead of outerWidth to
+        // prevent a rounding issue on Firefox.
         if (editMode) {
             $tds.each(function () {
                 var $td = $(this);
-                $td.css({width: $td.outerWidth()});
+                $td.css({width: $td[0].getBoundingClientRect().width});
             });
         }
 
@@ -335,8 +383,12 @@ ListRenderer.include({
 
         // Toggle selected class here so that style is applied at the end
         $row.toggleClass('o_selected_row', editMode);
+        $row.find('.o_list_record_selector input').prop('disabled', !record.res_id);
 
-        return $.when.apply($, defs);
+        return $.when.apply($, defs).then(function () {
+            // necessary to trigger resize on fieldtexts
+            core.bus.trigger('DOM_updated');
+        });
     },
     /**
      * This method is called whenever we click/move outside of a row that was
@@ -438,22 +490,24 @@ ListRenderer.include({
      * @private
      */
     _moveToNextLine: function () {
+        var self = this;
         var record = this.state.data[this.currentRow];
-        var fieldNames = this.canBeSaved(record.id);
-        if (fieldNames.length) {
-            return;
-        }
+        this.commitChanges(record.id).then(function () {
+            var fieldNames = self.canBeSaved(record.id);
+            if (fieldNames.length) {
+                return;
+            }
 
-        if (this.currentRow < this.state.data.length - 1) {
-            this._selectCell(this.currentRow + 1, 0);
-        } else {
-            var self = this;
-            this.unselectRow().then(function () {
-                self.trigger_up('add_record', {
-                    onFail: self._selectCell.bind(self, 0, 0, {}),
+            if (self.currentRow < self.state.data.length - 1) {
+                self._selectCell(self.currentRow + 1, 0);
+            } else {
+                self.unselectRow().then(function () {
+                    self.trigger_up('add_record', {
+                        onFail: self._selectCell.bind(self, 0, 0, {}),
+                    });
                 });
-            });
-        }
+            }
+        });
     },
     /**
      * @override
@@ -466,7 +520,7 @@ ListRenderer.include({
     },
     /**
      * The renderer needs to support reordering lines.  This is only active in
-     * edit mode. The hasHandle attribute is used when there is a sequence
+     * edit mode. The handleField attribute is set when there is a sequence
      * widget.
      *
      * @override
@@ -499,8 +553,8 @@ ListRenderer.include({
         var $row = this._super.apply(this, arguments);
         if (this.addTrashIcon) {
             var $icon = this.isMany2Many ?
-                            $('<i>', {class: 'fa fa-times', name: 'unlink'}) :
-                            $('<i>', {class: 'fa fa-trash-o', name: 'delete'});
+                            $('<button>', {class: 'fa fa-times', name: 'unlink', 'aria-label': _t('Unlink row ') + (index+1)}) :
+                            $('<button>', {class: 'fa fa-trash-o', name: 'delete', 'aria-label': _t('Delete row ') + (index+1)});
             var $td = $('<td>', {class: 'o_list_record_remove'}).append($icon);
             $row.append($td);
         }
@@ -510,19 +564,40 @@ ListRenderer.include({
      * If the editable list view has the parameter addCreateLine, we need to
      * add a last row with the necessary control.
      *
+     * If the list has a handleField, we want to left-align the first button
+     * on the first real column.
+     *
      * @override
      * @returns {jQueryElement}
      */
     _renderRows: function () {
+        var self = this;
         var $rows = this._super();
+
         if (this.addCreateLine) {
-            var $a = $('<a href="#">').text(_t("Add an item"));
+            var $tr = $('<tr>');
+            var colspan = self._getNumberOfCols();
+
+            if (this.handleField) {
+                colspan = colspan - 1;
+                $tr.append('<td>');
+            }
+
             var $td = $('<td>')
-                        .attr('colspan', this._getNumberOfCols())
-                        .addClass('o_field_x2many_list_row_add')
-                        .append($a);
-            var $tr = $('<tr>').append($td);
+                .attr('colspan', colspan)
+                .addClass('o_field_x2many_list_row_add');
+            $tr.append($td);
             $rows.push($tr);
+
+            _.each(self.creates, function (create, index) {
+                var $a = $('<a href="#" role="button">')
+                    .attr('data-context', create.context)
+                    .text(create.string);
+                if (index > 0) {
+                    $a.addClass('ml16');
+                }
+                $td.append($a);
+            });
         }
         return $rows;
     },
@@ -532,8 +607,13 @@ ListRenderer.include({
      * @returns {Deferred} this deferred is resolved immediately
      */
     _renderView: function () {
+        var self = this;
         this.currentRow = null;
-        return this._super.apply(this, arguments);
+        return this._super.apply(this, arguments).then(function () {
+            if (self._isEditable()) {
+                self.$('table').addClass('o_editable_list');
+            }
+        });
     },
     /**
      * Force the resequencing of the items in the list.
@@ -682,23 +762,23 @@ ListRenderer.include({
     //--------------------------------------------------------------------------
 
     /**
-     * This method is called when we click on the 'Add an Item' button in a sub
+     * This method is called when we click on the 'Add a line' button in a sub
      * list such as a one2many in a form view.
      *
-     * @param {MouseEvent} event
+     * @param {MouseEvent} ev
      */
-    _onAddRecord: function (event) {
+    _onAddRecord: function (ev) {
         // we don't want the browser to navigate to a the # url
-        event.preventDefault();
+        ev.preventDefault();
 
         // we don't want the click to cause other effects, such as unselecting
         // the row that we are creating, because it counts as a click on a tr
-        event.stopPropagation();
+        ev.stopPropagation();
 
         // but we do want to unselect current row
         var self = this;
         this.unselectRow().then(function () {
-            self.trigger_up('add_record'); // TODO write a test, the deferred was not considered
+            self.trigger_up('add_record', {context: ev.currentTarget.dataset.context}); // TODO write a test, the deferred was not considered
         });
     },
     /**
@@ -733,6 +813,37 @@ ListRenderer.include({
     _onFooterClick: function () {
         this.unselectRow();
     },
+    _onKeyDownAddRecord: function(e) {
+        switch(e.keyCode) {
+            case $.ui.keyCode.ENTER:
+                e.stopPropagation();
+                e.preventDefault();
+                this._onAddRecord(e);
+                break;
+        }
+    },
+    /**
+     * It will returns the first visible widget that is editable
+     *
+     * @private
+     * @returns {Class} Widget returns first widget
+     */
+    _getFirstWidget: function () {
+        var record = this.state.data[this.currentRow];
+        var recordWidgets = this.allFieldWidgets[record.id];
+        var firstWidget = _.find(recordWidgets, function (widget) {
+            var isFirst =
+                widget.$el.is(':visible') &&
+                (
+                    widget.$('input').length > 0 || widget.tagName === 'input' ||
+                    widget.$('textarea').length > 0 || widget.tagName === 'textarea'
+                ) &&
+                !widget.$el.hasClass('o_readonly_modifier');
+            return isFirst;
+        });
+        return firstWidget;
+    },
+
     /**
      * Handles the keyboard navigation according to events triggered by field
      * widgets.
@@ -786,12 +897,20 @@ ListRenderer.include({
                 }
                 break;
             case 'next':
-                if (this.currentFieldIndex + 1 < this.columns.length) {
-                    this._selectCell(this.currentRow, this.currentFieldIndex + 1, {wrap: false})
-                        .fail(this._moveToNextLine.bind(this));
+                // When navigating with the keyboard, we want to get out of the list editable if the
+                // first field is left empty.
+                var column = this.columns[this.currentFieldIndex];
+                var firstWidget = this._getFirstWidget();
+                if (column.attrs.name === firstWidget.name && !firstWidget.$input.val()) {
+                    this.trigger_up('activate_next_widget');
                 } else {
-                    this._moveToNextLine();
-                }
+                    if (this.currentFieldIndex + 1 < this.columns.length) {
+                        this._selectCell(this.currentRow, this.currentFieldIndex + 1, {wrap: false})
+                            .fail(this._moveToNextLine.bind(this));
+                    } else {
+                        this._moveToNextLine();
+                    }
+                 }
                 break;
             case 'next_line':
                 this._moveToNextLine();
@@ -814,8 +933,16 @@ ListRenderer.include({
      */
     _onRemoveIconClick: function (event) {
         event.stopPropagation();
-        var id = $(event.target).closest('tr').data('id');
-        this.trigger_up('list_record_remove', {id: id});
+        var $row = $(event.target).closest('tr');
+        var id = $row.data('id');
+        if ($row.hasClass('o_selected_row')) {
+            this.trigger_up('list_record_remove', {id: id});
+        } else {
+            var self = this;
+            this.unselectRow().then(function () {
+                self.trigger_up('list_record_remove', {id: id});
+            });
+        }
     },
     /**
      * If the list view editable, just let the event bubble. We don't want to

@@ -157,7 +157,7 @@ var History = function History($editable) {
 
         if (aUndo[pos]) {
             pos = Math.min(pos, aUndo.length);
-            aUndo.splice(Math.max(pos,1), aUndo.length);
+            aUndo.splice(pos, aUndo.length);
         }
 
         // => make a snap when the user change editable zone (because: don't make snap for each keydown)
@@ -269,6 +269,20 @@ var RTEWidget = Widget.extend({
 
         $.fn.carousel = this.edit_bootstrap_carousel;
 
+        $(document).on('click.rte keyup.rte', function () {
+            var current_range = {};
+            try {
+                current_range = range.create() || {};
+            } catch (e) {
+                // if range is on Restricted element ignore error
+            }
+            var $popover = $(current_range.sc).closest('[contenteditable]');
+            var popover_history = ($popover.data()||{}).NoteHistory;
+            if (!popover_history || popover_history === history) return;
+            var editor = $popover.parent('.note-editor');
+            $('button[data-event="undo"]', editor).attr('disabled', !popover_history.hasUndo());
+            $('button[data-event="redo"]', editor).attr('disabled', !popover_history.hasRedo());
+        });
         $(document).on('mousedown.rte activate.rte', this, this._onMousedown.bind(this));
         $(document).on('mouseup.rte', this, this._onMouseup.bind(this));
 
@@ -290,16 +304,19 @@ var RTEWidget = Widget.extend({
         });
 
         // start element observation
-        $(document).on('content_changed', '.o_editable', function (event) {
-            self.trigger_up('rte_change', {target: event.target});
-            $(this).addClass('o_dirty');
+        $(document).on('content_changed', '.o_editable', function (ev) {
+            self.trigger_up('rte_change', {target: ev.target});
+            if (!ev.__isDirtyHandled) {
+                $(this).addClass('o_dirty');
+                ev.__isDirtyHandled = true;
+            }
         });
 
         $('#wrapwrap, .o_editable').on('click.rte', '*', this, this._onClick.bind(this));
 
         $('body').addClass('editor_enable');
 
-        $(document)
+        $(document.body)
             .tooltip({
                 selector: '[data-oe-readonly]',
                 container: 'body',
@@ -344,8 +361,10 @@ var RTEWidget = Widget.extend({
         $('#wrapwrap, .o_editable').off('.rte');
 
         $('.o_not_editable').removeAttr('contentEditable');
+
+        $(document).off('click.rte keyup.rte mousedown.rte activate.rte mouseup.rte');
         $(document).off('content_changed').removeClass('o_is_inline_editable').removeData('rte');
-        $(document).tooltip('destroy');
+        $(document).tooltip('dispose');
         $('body').removeClass('editor_enable');
         this.trigger('rte:stop');
     },
@@ -407,6 +426,10 @@ var RTEWidget = Widget.extend({
      */
     save: function (context) {
         var self = this;
+
+        $('.o_editable')
+            .destroy()
+            .removeClass('o_editable o_is_inline_editable');
 
         var $dirty = $('.o_dirty');
         $dirty

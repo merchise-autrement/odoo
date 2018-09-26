@@ -36,7 +36,7 @@ class SaleOrderLine(models.Model):
             if components.get(product, False):
                 if uom.id != components[product]['uom']:
                     from_uom = uom
-                    to_uom = self.env['product.uom'].browse(components[product]['uom'])
+                    to_uom = self.env['uom.uom'].browse(components[product]['uom'])
                     qty = from_uom._compute_quantity(qty, to_uom)
                 components[product]['qty'] += qty
             else:
@@ -60,11 +60,10 @@ class AccountInvoiceLine(models.Model):
         if self.product_id.invoice_policy == "delivery":
             for s_line in self.sale_line_ids:
                 # qtys already invoiced
-                qty_done = sum([x.uom_id._compute_quantity(x.quantity, x.product_id.uom_id) for x in s_line.invoice_lines if x.invoice_id.state in ('open', 'paid')])
+                qty_done = sum([x.uom_id._compute_quantity(x.quantity, x.product_id.uom_id) for x in s_line.invoice_lines if x.invoice_id.state in ('open', 'in_payment', 'paid')])
                 quantity = self.uom_id._compute_quantity(self.quantity, self.product_id.uom_id)
                 # Put moves in fixed order by date executed
-                moves = s_line.move_ids
-                moves.sorted(lambda x: x.date)
+                moves = s_line.move_ids.sorted(lambda x: x.date)
                 # Go through all the moves and do nothing until you get to qty_done
                 # Beyond qty_done we need to calculate the average of the price_unit
                 # on the moves we encounter.

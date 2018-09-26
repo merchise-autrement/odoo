@@ -6,7 +6,7 @@ var Context = require('web.Context');
 var core = require('web.core');
 var Domain = require('web.Domain');
 var FavoriteMenu = require('web.FavoriteMenu');
-var pyeval = require('web.pyeval');
+var pyUtils = require('web.py_utils');
 
 var _t = core._t;
 var QWeb = core.qweb;
@@ -64,16 +64,20 @@ FavoriteMenu.include({
         });
 
         context.add({
-            group_by: pyeval.eval('groupbys', search_data.groupbys || [])
+            group_by: pyUtils.eval('groupbys', search_data.groupbys || [])
         });
         // AAB: trigger_up an event that will be intercepted by the controller,
         // as soon as the controller is the parent of the control panel
         var am = this.findAncestor(function (a) {
             return a instanceof ActionManager;
         });
+        // with options 'keepSearchView', it may happen that the action_id of
+        // the searchview (received in init) is not the one of the current
+        // action, which corresponds to the one we want to add to dashboard
+        var currentAction = am.getCurrentAction();
         var controller = am.getCurrentController();
         context.add(controller.widget.getContext());
-        var c = pyeval.eval('context', context);
+        var c = pyUtils.eval('context', context);
         for (var k in c) {
             if (c.hasOwnProperty(k) && /^search_default_/.test(k)) {
                 delete c[k];
@@ -86,7 +90,7 @@ FavoriteMenu.include({
         return self._rpc({
                 route: '/board/add_to_dashboard',
                 params: {
-                    action_id: self.action_id || false,
+                    action_id: currentAction.id || false,
                     context_to_save: c,
                     domain: domain,
                     view_mode: controller.viewType,
@@ -95,7 +99,10 @@ FavoriteMenu.include({
             })
             .then(function (r) {
                 if (r) {
-                    self.do_notify(_.str.sprintf(_t("'%s' added to dashboard"), name), '');
+                    self.do_notify(
+                        _.str.sprintf(_t("'%s' added to dashboard"), name),
+                        _t('Please refresh your browser for the changes to take effect.')
+                    );
                 } else {
                     self.do_warn(_t("Could not add filter to dashboard"));
                 }

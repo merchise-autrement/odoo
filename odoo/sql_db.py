@@ -26,12 +26,6 @@ psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 
 _logger = logging.getLogger(__name__)
 
-types_mapping = {
-    'date': (1082,),
-    'time': (1083,),
-    'datetime': (1114,),
-}
-
 def unbuffer(symb, cr):
     if symb is None:
         return None
@@ -42,8 +36,6 @@ def undecimalize(symb, cr):
         return None
     return float(symb)
 
-for name, typeoid in types_mapping.items():
-    psycopg2.extensions.register_type(psycopg2.extensions.new_type(typeoid, name, lambda x, cr: x))
 psycopg2.extensions.register_type(psycopg2.extensions.new_type((700, 701, 1700,), 'float', undecimalize))
 
 
@@ -226,9 +218,9 @@ class Cursor(object):
             raise ValueError("SQL query parameters should be a tuple, list or dict; got %r" % (params,))
 
         if self.sql_log:
-            now = time.time()
-            _logger.debug("query: %s", query)
-
+            encoding = psycopg2.extensions.encodings[self.connection.encoding]
+            _logger.debug("query: %s", self._obj.mogrify(query, params).decode(encoding, 'replace'))
+        now = time.time()
         try:
             params = params or None
             res = self._obj.execute(query, params)
@@ -239,10 +231,14 @@ class Cursor(object):
 
         # simple query count is always computed
         self.sql_log_count += 1
+        delay = (time.time() - now)
+        if hasattr(threading.current_thread(), 'query_count'):
+            threading.current_thread().query_count += 1
+            threading.current_thread().query_time += delay
 
         # advanced stats only if sql_log is enabled
         if self.sql_log:
-            delay = (time.time() - now) * 1E6
+            delay *= 1E6
 
             res_from = re_from.match(query.lower())
             if res_from:

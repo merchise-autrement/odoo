@@ -188,8 +188,9 @@ class Module(models.Model):
                     'doctitle_xform': False,
                     'output_encoding': 'unicode',
                     'xml_declaration': False,
+                    'file_insertion_enabled': False,
                 }
-                output = publish_string(source=module.description or '', settings_overrides=overrides, writer=MyWriter())
+                output = publish_string(source=module.description if not module.application and module.description else '', settings_overrides=overrides, writer=MyWriter())
                 module.description_html = tools.html_sanitize(output)
 
     @api.depends('name')
@@ -292,6 +293,7 @@ class Module(models.Model):
     application = fields.Boolean('Application', readonly=True)
     icon = fields.Char('Icon URL')
     icon_image = fields.Binary(string='Icon', compute='_get_icon_image')
+    to_buy = fields.Boolean('Odoo Enterprise Module', default=False)
 
     _sql_constraints = [
         ('name_uniq', 'UNIQUE (name)', 'The name of the module must be unique!'),
@@ -303,16 +305,8 @@ class Module(models.Model):
             return True
         for module in self:
             if module.state in ('installed', 'to upgrade', 'to remove', 'to install'):
-                raise UserError(_('You try to remove a module that is installed or will be installed'))
+                raise UserError(_('You are trying to remove a module that is installed or will be installed.'))
         self.clear_caches()
-        # Installing a module creates entries in base.module.uninstall, during
-        # the unlink process of ir.module.module we try to update the
-        # base.module.uninstall table's module_id to null, which violates a
-        # non-null constraint, effectively raising an Exception.
-        # V11-only !!DO NOT FORWARD-PORT!!
-        self.env['base.module.uninstall'].search(
-            [('module_id', 'in', self.ids)]
-        ).unlink()
         return super(Module, self).unlink()
 
     @staticmethod
@@ -524,7 +518,7 @@ class Module(models.Model):
         _logger.info('getting next %s', Todos)
         active_todo = Todos.search([('state', '=', 'open')], limit=1)
         if active_todo:
-            _logger.info('next action is %s', active_todo)
+            _logger.info('next action is "%s"', active_todo.name)
             return active_todo.action_launch()
         return {
             'type': 'ir.actions.act_url',
@@ -654,6 +648,7 @@ class Module(models.Model):
             'icon': terp.get('icon', False),
             'summary': terp.get('summary', ''),
             'url': terp.get('url') or terp.get('live_test_url', ''),
+            'to_buy': False
         }
 
     @api.model
@@ -676,7 +671,7 @@ class Module(models.Model):
         res = [0, 0]    # [update, add]
 
         default_version = modules.adapt_version('1.0')
-        known_mods = self.search([])
+        known_mods = self.with_context(lang=None).search([])
         known_mods_names = {mod.name: mod for mod in known_mods}
 
         # iterate through detected modules and update/create them in db

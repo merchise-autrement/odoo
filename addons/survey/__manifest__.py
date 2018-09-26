@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
-    'name': 'Survey',
+    'name': 'Surveys',
     'version': '3.0',
     'category': 'Marketing',
     'description': """
@@ -14,7 +14,7 @@ each question may have multiple answers. Different users may give different
 answers of question and according to that survey is done. Partners are also
 sent mails with personal token for the invitation of the survey.
     """,
-    'summary': 'Create surveys, collect answers and print statistics',
+    'summary': 'Create surveys and analyze answers',
     'website': 'https://www.odoo.com/page/survey',
     'depends': ['http_routing', 'mail'],
     'data': [
@@ -23,6 +23,7 @@ sent mails with personal token for the invitation of the survey.
         'views/survey_views.xml',
         'views/survey_templates.xml',
         'views/survey_result.xml',
+        'data/mail_template_data.xml',
         'wizard/survey_email_compose_message.xml',
         'data/survey_stages.xml',
     ],

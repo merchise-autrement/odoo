@@ -6,14 +6,17 @@ import itertools
 import logging
 import mimetypes
 import os
+import io
 import re
 from collections import defaultdict
 import uuid
 
-from odoo import api, fields, models, tools, SUPERUSER_ID, _
-from odoo.exceptions import AccessError
+from odoo import api, fields, models, tools, SUPERUSER_ID, exceptions, _
+from odoo.exceptions import AccessError, ValidationError
 from odoo.tools import config, human_size, ustr, html_escape
 from odoo.tools.mimetypes import guess_mimetype
+from odoo.tools import crop_image, image_resize_image
+from PyPDF2 import PdfFileWriter, PdfFileReader
 
 _logger = logging.getLogger(__name__)
 
@@ -41,6 +44,14 @@ class IrAttachment(models.Model):
             if attachment.res_model and attachment.res_id:
                 record = self.env[attachment.res_model].browse(attachment.res_id)
                 attachment.res_name = record.display_name
+
+    @api.depends('res_model')
+    def _compute_res_model_name(self):
+        for record in self:
+            if record.res_model:
+                model = self.env['ir.model'].search([('model', '=', record.res_model)], limit=1)
+                if model:
+                    record.res_model_name = model[0].name
 
     @api.model
     def _storage(self):
@@ -272,15 +283,23 @@ class IrAttachment(models.Model):
                 index_content = b"\n".join(words).decode('ascii')
         return index_content
 
-    name = fields.Char('Attachment Name', required=True)
-    datas_fname = fields.Char('File Name')
+    @api.model
+    def get_serving_groups(self):
+        """ An ir.attachment record may be used as a fallback in the
+        http dispatch if its type field is set to "binary" and its url
+        field is set as the request's url. Only the groups returned by
+        this method are allowed to create and write on such records.
+        """
+        return ['base.group_system']
+
+    name = fields.Char('Name', required=True)
+    datas_fname = fields.Char('Filename')
     description = fields.Text('Description')
     res_name = fields.Char('Resource Name', compute='_compute_res_name', store=True)
     res_model = fields.Char('Resource Model', readonly=True, help="The database object this attachment will be attached to.")
+    res_model_name = fields.Char(compute='_compute_res_model_name', store=True, index=True)
     res_field = fields.Char('Resource Field', readonly=True)
     res_id = fields.Integer('Resource ID', readonly=True, help="The record id this is attached to.")
-    create_date = fields.Datetime('Date Created', readonly=True)
-    create_uid = fields.Many2one('res.users', string='Owner', readonly=True)
     company_id = fields.Many2one('res.company', string='Company', change_default=True,
                                  default=lambda self: self.env['res.company']._company_default_get('ir.attachment'))
     type = fields.Selection([('url', 'URL'), ('binary', 'File')],
@@ -300,6 +319,8 @@ class IrAttachment(models.Model):
     checksum = fields.Char("Checksum/SHA1", size=40, index=True, readonly=True)
     mimetype = fields.Char('Mime Type', readonly=True)
     index_content = fields.Text('Indexed Content', readonly=True, prefetch=False)
+    active = fields.Boolean(default=True, string="Active", oldname='archived')
+    thumbnail = fields.Binary(readonly=1, attachment=True)
 
     # merchise: This allows to serve .less.css files (when using SPDY or
     # HTTP/2) with a Cache-Control header properly set.
@@ -316,6 +337,18 @@ class IrAttachment(models.Model):
         tools.create_index(self._cr, 'ir_attachment_res_idx',
                            self._table, ['res_model', 'res_id'])
         return res
+
+    @api.one
+    @api.constrains('type', 'url')
+    def _check_serving_attachments(self):
+        # restrict writing on attachments that could be served by the
+        # ir.http's dispatch exception handling
+        if self.env.user._is_admin():
+            return
+        if self.type == 'binary' and self.url:
+            has_group = self.env.user.has_group
+            if not any([has_group(g) for g in self.get_serving_groups()]):
+                raise ValidationError("Sorry, you are not allowed to write on this document")
 
     @api.model
     def check(self, mode, values=None):
@@ -346,6 +379,11 @@ class IrAttachment(models.Model):
             # was not)
             if res_model not in self.env:
                 require_employee = True
+                continue
+            elif res_model == 'res.users' and len(res_ids) == 1 and self._uid == list(res_ids)[0]:
+                # by default a user cannot write on itself, despite the list of writeable fields
+                # e.g. in the case of a user inserting an image into his image signature
+                # we need to bypass this check which would needlessly throw us away
                 continue
             records = self.env[res_model].browse(res_ids).exists()
             if len(records) < len(res_ids):
@@ -418,6 +456,18 @@ class IrAttachment(models.Model):
         self.check('read')
         return super(IrAttachment, self).read(fields, load=load)
 
+    def _make_thumbnail(self, vals):
+        if vals.get('datas') and not vals.get('res_field'):
+            vals['thumbnail'] = False
+            if vals.get('mimetype') and re.match('image.*(gif|jpeg|jpg|png)', vals['mimetype']):
+                try:
+                    temp_image = crop_image(vals['datas'], type='center', size=(80, 80), ratio=(1, 1))
+                    vals['thumbnail'] = image_resize_image(base64_source=temp_image, size=(80, 80),
+                                                           encoding='base64')
+                except Exception:
+                    pass
+        return vals
+
     @api.multi
     def write(self, vals):
         self.check('write', values=vals)
@@ -426,6 +476,9 @@ class IrAttachment(models.Model):
             vals.pop(field, False)
         if 'mimetype' in vals or 'datas' in vals:
             vals = self._check_contents(vals)
+            vals = self._make_thumbnail(vals)
+            if all([not attachment.res_field for attachment in self]):
+                vals = self._make_thumbnail(vals)
         return super(IrAttachment, self).write(vals)
 
     @api.multi
@@ -435,6 +488,8 @@ class IrAttachment(models.Model):
 
     @api.multi
     def unlink(self):
+        if not self:
+            return True
         self.check('unlink')
 
         # First delete in the database, *then* in the filesystem if the
@@ -448,14 +503,16 @@ class IrAttachment(models.Model):
 
         return res
 
-    @api.model
-    def create(self, values):
-        # remove computed field depending of datas
-        for field in ('file_size', 'checksum'):
-            values.pop(field, False)
-        values = self._check_contents(values)
-        self.browse().check('write', values=values)
-        return super(IrAttachment, self).create(values)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for values in vals_list:
+            # remove computed field depending of datas
+            for field in ('file_size', 'checksum'):
+                values.pop(field, False)
+            values = self._check_contents(values)
+            values = self._make_thumbnail(values)
+            self.browse().check('write', values=values)
+        return super(IrAttachment, self).create(vals_list)
 
     @api.one
     def generate_access_token(self):
@@ -468,3 +525,80 @@ class IrAttachment(models.Model):
     @api.model
     def action_get(self):
         return self.env['ir.actions.act_window'].for_xml_id('base', 'action_attachment')
+
+    def _make_pdf(self, output, name_ext):
+        """
+        :param output: PdfFileWriter object.
+        :param name_ext: the additional name of the new attachment (page count).
+        :return: the id of the attachment.
+        """
+        self.ensure_one()
+        try:
+            stream = io.BytesIO()
+            output.write(stream)
+            return self.copy({
+                'name': self.name+'-'+name_ext,
+                'datas_fname': os.path.splitext(self.datas_fname or self.name)[0]+'-'+name_ext+".pdf",
+                'datas': base64.b64encode(stream.getvalue()),
+            })
+        except Exception:
+            raise Exception
+
+    def _split_pdf_groups(self, pdf_groups, remainder=False):
+        """
+        calls _make_pdf to create the a new attachment for each page section.
+        :param pdf_groups: a list of lists representing the pages to split:  pages = [[1,1], [4,5], [7,7]]
+        :returns the list of the ID's of the new PDF attachments.
+
+        """
+        self.ensure_one()
+        with io.BytesIO(base64.b64decode(self.datas)) as stream:
+            try:
+                input_pdf = PdfFileReader(stream)
+            except Exception:
+                raise exceptions.ValidationError(_("ERROR: Invalid PDF file!"))
+            max_page = input_pdf.getNumPages()
+            remainder_set = set(range(0, max_page))
+            new_pdf_ids = []
+            for pages in pdf_groups:
+                pages[1] = min(max_page, pages[1])
+                pages[0] = min(max_page, pages[0])
+                if pages[0] == pages[1]:
+                    name_ext = "%s" % (pages[0],)
+                else:
+                    name_ext = "%s-%s" % (pages[0], pages[1])
+                output = PdfFileWriter()
+                for i in range(pages[0]-1, pages[1]):
+                    output.addPage(input_pdf.getPage(i))
+                new_pdf_id = self._make_pdf(output, name_ext)
+                new_pdf_ids.append(new_pdf_id)
+                remainder_set = remainder_set.difference(set(range(pages[0] - 1, pages[1])))
+            if remainder:
+                for i in remainder_set:
+                    output_page = PdfFileWriter()
+                    name_ext = "%s" % (i + 1,)
+                    output_page.addPage(input_pdf.getPage(i))
+                    new_pdf_id = self._make_pdf(output_page, name_ext)
+                    new_pdf_ids.append(new_pdf_id)
+            return new_pdf_ids
+
+    def split_pdf(self, indices, remainder=False):
+        """
+        called by the Document Viewer's Split PDF button.
+        evaluates the input string and turns it into a list of lists to be processed by _split_pdf_groups
+
+        :param indices: the formatted string of pdf split (e.g. 1,5-10, 8-22, 29-34) o_page_number_input
+        :param remainder: bool, if true splits the non specified pages, one by one. form checkbox o_remainder_input
+        :returns the list of the ID's of the newly created pdf attachments.
+        """
+        self.ensure_one()
+        if 'pdf' not in self.mimetype:
+            raise exceptions.ValidationError(_("ERROR: the file must be a PDF"))
+        try:
+            pages = [[int(x) for x in x.split('-')] for x in indices.split(',')]
+        except ValueError:
+            raise exceptions.ValidationError(_("ERROR: Invalid list of pages to split. Example: 1,5-9,10"))
+        return self._split_pdf_groups([[min(x), max(x)] for x in pages], remainder=remainder)
+
+
+

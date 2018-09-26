@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from operator import itemgetter
-
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
-from odoo.tools import pycompat
+from odoo.tools import pycompat, ormcache
 
 TYPE2FIELD = {
     'char': 'value_text',
@@ -87,11 +85,43 @@ class Property(models.Model):
 
     @api.multi
     def write(self, values):
-        return super(Property, self).write(self._update_values(values))
+        # if any of the records we're writing on has a res_id=False *or*
+        # we're writing a res_id=False on any record
+        default_set = False
+        if self._ids:
+            self.env.cr.execute(
+                'SELECT EXISTS (SELECT 1 FROM ir_property WHERE id in %s AND res_id IS NULL)', [self._ids])
+            default_set = self.env.cr.rowcount == 1 or any(
+                v.get('res_id') is False
+                for v in values
+            )
+        r = super(Property, self).write(self._update_values(values))
+        if default_set:
+            self.clear_caches()
+        return r
 
-    @api.model
-    def create(self, values):
-        return super(Property, self).create(self._update_values(values))
+    @api.model_create_multi
+    def create(self, vals_list):
+        vals_list = [self._update_values(vals) for vals in vals_list]
+        created_default = any(not v.get('res_id') for v in vals_list)
+        r = super(Property, self).create(vals_list)
+        if created_default:
+            self.clear_caches()
+        return r
+
+    @api.multi
+    def unlink(self):
+        default_deleted = False
+        if self._ids:
+            self.env.cr.execute(
+                'SELECT EXISTS (SELECT 1 FROM ir_property WHERE id in %s)',
+                [self._ids]
+            )
+            default_deleted = self.env.cr.rowcount == 1
+        r = super().unlink()
+        if default_deleted:
+            self.clear_caches()
+        return r
 
     @api.multi
     def get_by_record(self):
@@ -121,14 +151,39 @@ class Property(models.Model):
 
     @api.model
     def get(self, name, model, res_id=False):
+        if not res_id:
+            t, v = self._get_default_property(name, model)
+            if not v or t != 'many2one':
+                return v
+            return self.env[v[0]].browse(v[1])
+
+        p = self._get_property(name, model, res_id=res_id)
+        if p:
+            return p.get_by_record()
+        return False
+
+    # only cache Property.get(res_id=False) as that's
+    # sub-optimally, we can only call _company_default_get without a field
+    # unless we want to create a more complete helper which does the
+    # returning-a-company-id-from-a-model-and-name
+    COMPANY_KEY = "self.env.context.get('force_company') or self.env['res.company']._company_default_get(model).id"
+    @ormcache(COMPANY_KEY, 'name', 'model')
+    def _get_default_property(self, name, model):
+        prop = self._get_property(name, model, res_id=False)
+        if not prop:
+            return None, False
+        v = prop.get_by_record()
+        if prop.type != 'many2one':
+            return prop.type, v
+        return 'many2one', v and (v._name, v.id)
+
+    def _get_property(self, name, model, res_id):
         domain = self._get_domain(name, model)
         if domain is not None:
             domain = [('res_id', '=', res_id)] + domain
             #make the search with company_id asc to make sure that properties specific to a company are given first
-            prop = self.search(domain, limit=1, order='company_id')
-            if prop:
-                return prop.get_by_record()
-        return False
+            return self.search(domain, limit=1, order='company_id')
+        return self.browse(())
 
     def _get_domain(self, prop_name, model):
         self._cr.execute("SELECT id FROM ir_model_fields WHERE name=%s AND model=%s", (prop_name, model))
@@ -159,17 +214,36 @@ class Property(models.Model):
         # note: order by 'company_id asc' will return non-null values first
         props = self.search(domain, order='company_id asc')
         result = {}
-        for prop in props:
-            # for a given res_id, take the first property only
-            id = refs.pop(prop.res_id, None)
-            if id is not None:
-                result[id] = prop.get_by_record()
+
+        field = self.env[model]._fields[name]
+        if field.type == 'many2one':
+            # optimization for many2one fields
+            Comodel = self.env[field.comodel_name]
+            co_ids = set()
+            for prop in props:
+                # for a given res_id, take the first property only
+                id = refs.pop(prop.res_id, None)
+                if id is not None:
+                    val = prop.value_reference
+                    if val:
+                        val = int(val.split(',')[1])
+                        co_ids.add(val)
+                    result[id] = val
+            # check for existence in batch, and update result accordingly
+            existing = {rec.id: rec for rec in Comodel.browse(co_ids).exists()}
+            result = {id: existing.get(val, Comodel) for id, val in result.items()}
+
+        else:
+            for prop in props:
+                # for a given res_id, take the first property only
+                id = refs.pop(prop.res_id, None)
+                if id is not None:
+                    result[id] = prop.get_by_record()
 
         # set the default value to the ids that are not in result
         default_value = result.pop(False, False)
         for id in ids:
             result.setdefault(id, default_value)
-
         return result
 
     @api.model
@@ -189,7 +263,7 @@ class Property(models.Model):
         if not values:
             return
 
-        if not default_value:
+        if default_value is None:
             domain = self._get_domain(name, model)
             if domain is None:
                 raise Exception()
@@ -221,10 +295,11 @@ class Property(models.Model):
                 prop.write({'value': value})
 
         # create new properties for records that do not have one yet
+        vals_list = []
         for ref, id in refs.items():
             value = clean(values[id])
             if value != default_value:
-                self.create({
+                vals_list.append({
                     'fields_id': field_id,
                     'company_id': company_id,
                     'res_id': ref,
@@ -232,6 +307,7 @@ class Property(models.Model):
                     'value': value,
                     'type': self.env[model]._fields[name].type,
                 })
+        self.create(vals_list)
 
     @api.model
     def search_multi(self, name, model, operator, value):

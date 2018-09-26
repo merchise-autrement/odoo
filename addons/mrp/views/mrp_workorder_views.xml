@@ -6,15 +6,13 @@
         <field name="arch" type="xml">
             <search>
                 <field name="workcenter_id"/>
-                <filter string="Today" name="today" domain="[('date_start','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
-                <filter string="This Month" name="thismonth" domain="[('date_start','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
-                <filter string="This Year" name="thisyear" domain="[('date_start','&gt;=',time.strftime('%%Y-01-01'))]"/>
-                <separator/>
                 <filter string="Ready" name="ready" domain="[('state','=','ready')]"/>
                 <filter string="Pending" name="pending" domain="[('state','=','pending')]"/>
                 <filter string="In Progress" name="progress" domain="[('state','=','progress')]"/>
                 <filter string="Done" name="done" domain="[('state','=', 'done')]"/>
                 <filter string="Late" name="late" domain="[('date_planned_start','&lt;=',time.strftime('%%Y-%%m-%%d'))]"/>
+                <separator/>
+                <filter string="Start Date" name="date_start_filter" date="date_start"/>
                 <separator/>
             </search>
         </field>
@@ -75,7 +73,7 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="mrp_production_workcenter_tree_view_inherit">
+    <record model="ir.ui.view" id="mrp_production_workorder_tree_view_inherit">
         <field name="name">mrp.production.work.order.tree</field>
         <field name="model">mrp.workorder</field>
         <field name="arch" type="xml">
@@ -92,7 +90,7 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="mrp_production_workcenter_form_view_inherit">
+    <record model="ir.ui.view" id="mrp_production_workorder_form_view_inherit">
         <field name="name">mrp.production.work.order.form</field>
         <field name="model">mrp.workorder</field>
         <field name="arch" type="xml">
@@ -134,10 +132,6 @@
                         </div>
                         <field name="is_produced" invisible="1"/>
                     </group>
-                    <div class="alert alert-danger alert-dismissible text-left" role="alert" attrs="{'invisible': [('production_messages', '=', False)]}">
-                        <a href="#" class="close" data-dismiss="alert" aria-label="close">x</a>
-                        <field name="production_messages"/>
-                    </div>
                 </group>
                 <notebook>
                 <page string="Work Instruction" attrs="{'invisible': [('worksheet', '=', False)]}">
@@ -155,7 +149,7 @@
                     <field name="active_move_line_ids" attrs="{'invisible': [('active_move_line_ids', '=', [])]}">
                         <tree editable="bottom" create="0" delete="0">
                             <field name="product_id"/>
-                            <field name="product_uom_qty" readonly="1" string="To Consume"/>
+                            <field name="product_uom_qty" readonly="1" invisible="1" string="To Consume"/>
                             <field name="lot_id" domain="[('product_id', '=', product_id)]" context="{'default_product_id': product_id}"/>
                             <field name="qty_done"/>
                             <field name="product_uom_id" invisible="1"/>
@@ -195,20 +189,21 @@
                             </div>
                             <label for="duration"/>
                             <div>
-                                <button style="pointer-events: none;" class="oe_inline label label-default">
-                                    <field name="duration" widget="mrp_time_counter"/>
+                                <button style="pointer-events: none;" class="oe_inline badge badge-secondary">
+                                    <field name="duration" widget="mrp_time_counter" help="Time the currently logged user spent on this workorder."/>
                                 </button>
                             </div>
                         </group>
                     </group>
                     <group>
-                        <field name="time_ids" nolabel="1">
+                        <field name="time_ids" nolabel="1" context="{'default_workcenter_id': workcenter_id}">
                             <tree>
                                 <field name="date_start"/>
                                 <field name="date_end"/>
                                 <field name="duration" widget="float_time" sum="Total duration"/>
                                 <field name="user_id"/>
-                                <field name="loss_id" string="Efficiency"/>
+                                <field name="workcenter_id" invisible="1"/>
+                                <field name="loss_id" string="Productivity"/>
                             </tree>
                             <form>
                                 <group>
@@ -219,6 +214,7 @@
                                     </group>
                                     <group>
                                         <field name="user_id"/>
+                                        <field name="workcenter_id"/>
                                         <field name="loss_id"/>
                                     </group>
                                 </group>
@@ -245,7 +241,7 @@
         </field>
     </record>
 
-    <record id="view_mrp_production_workcenter_form_view_filter" model="ir.ui.view">
+    <record id="view_mrp_production_workorder_form_view_filter" model="ir.ui.view">
         <field name="name">mrp.production.work.order.select</field>
         <field name="model">mrp.workorder</field>
         <field name="arch" type="xml">
@@ -267,7 +263,7 @@
                     <filter string="Work Center" name="work_center" domain="[]" context="{'group_by':'workcenter_id'}"/>
                     <filter string="Production" name="production" domain="[]" context="{'group_by':'production_id'}"/>
                     <filter string="Status" name="status" domain="[]" context="{'group_by':'state'}"/>
-                    <filter string="Scheduled Month" name="scheduled_month" domain="[]" context="{'group_by':'date_planned_start'}" help="Scheduled Date by Month"/>
+                    <filter string="Scheduled Date" name="scheduled_month" domain="[]" context="{'group_by':'date_planned_start'}"/>
                 </group>
              </search>
         </field>
@@ -356,11 +352,11 @@
                                         <span><t t-esc="record.product_id.value"/></span> <span><t t-esc="record.qty_production.value"/> <t t-esc="record.product_uom_id.value"/></span>
                                     </div>
                                     <div class="oe_kanban_bottom_right" t-if="record.state.raw_value == 'progress'">
-                                        <span t-if="record.working_state.raw_value != 'blocked' and record.working_user_ids.raw_value.length > 0"><i class="fa fa-play"/></span>
-                                        <span t-if="record.working_state.raw_value != 'blocked' and record.working_user_ids.raw_value.length == 0 and record.last_working_user_id.raw_value"><i class="fa fa-pause"/></span>
-                                        <span t-if="record.working_state.raw_value == 'blocked' and (record.working_user_ids.raw_value.length == 0 or record.last_working_user_id.raw_value)"><i class="fa fa-stop"/></span>
+                                        <span t-if="record.working_state.raw_value != 'blocked' and record.working_user_ids.raw_value.length > 0"><i class="fa fa-play" role="img" aria-label="Run" title="Run"/></span>
+                                        <span t-if="record.working_state.raw_value != 'blocked' and record.working_user_ids.raw_value.length == 0 and record.last_working_user_id.raw_value"><i class="fa fa-pause" role="img" aria-label="Pause" title="Pause"/></span>
+                                        <span t-if="record.working_state.raw_value == 'blocked' and (record.working_user_ids.raw_value.length == 0 or record.last_working_user_id.raw_value)"><i class="fa fa-stop" role="img" aria-label="Stop" title="Stop"/></span>
                                         <t t-if="record.last_working_user_id.raw_value">
-                                            <img t-att-src="kanban_image('res.users', 'image_small', record.last_working_user_id.raw_value)" width="24" height="24" class="oe_kanban_avatar"/>
+                                            <img t-att-src="kanban_image('res.users', 'image_small', record.last_working_user_id.raw_value)" width="24" height="24" class="oe_kanban_avatar" alt="Avatar"/>
                                         </t>
                                     </div>
                                 </div>
@@ -373,12 +369,12 @@
     </record>
 
     <record model="ir.actions.act_window" id="action_mrp_workorder_workcenter">
-        <field name="name">Work Orders</field>
+        <field name="name">Work Orders Planning</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">mrp.workorder</field>
         <field name="view_type">form</field>
         <field name="view_mode">gantt,tree,form,calendar,pivot,graph</field>
-        <field name="search_view_id" ref="view_mrp_production_workcenter_form_view_filter"/>
+        <field name="search_view_id" ref="view_mrp_production_workorder_form_view_filter"/>
         <field name="view_id" ref="mrp_workorder_view_gantt"/>
         <field name="context">{'search_default_work_center': True}</field>
         <field name="help" type="html">
@@ -399,7 +395,7 @@
         <field name="view_type">form</field>
         <field name="domain">[('production_state','not in',('done','cancel'))]</field>
         <field name="view_mode">gantt,tree,form,calendar,pivot,graph</field>
-        <field name="search_view_id" ref="view_mrp_production_workcenter_form_view_filter"/>
+        <field name="search_view_id" ref="view_mrp_production_workorder_form_view_filter"/>
         <field name="view_id" ref="workcenter_line_gantt_production"/>
         <field name="context">{'search_default_production': True}</field>
         <field name="help" type="html">
@@ -421,7 +417,7 @@
         <field name="res_model">mrp.workorder</field>
         <field name="view_type">form</field>
         <field name="view_mode">kanban,tree,form,calendar,pivot,graph</field>
-        <field name="search_view_id" ref="view_mrp_production_workcenter_form_view_filter"/>
+        <field name="search_view_id" ref="view_mrp_production_workorder_form_view_filter"/>
         <field name="context">{'search_default_ready': True, 'search_default_progress': True}</field>
         <field name="help" type="html">
           <p class="o_view_nocontent_smiling_face">

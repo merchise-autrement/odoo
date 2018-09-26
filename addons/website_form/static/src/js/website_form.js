@@ -15,12 +15,16 @@ odoo.define('website_form.animation', function (require) {
         willStart: function () {
             var def;
             if (!$.fn.datetimepicker) {
-                def = ajax.loadJS("/web/static/lib/bootstrap-datetimepicker/src/js/bootstrap-datetimepicker.js");
+                def = ajax.loadJS("/web/static/lib/tempusdominus/tempusdominus.js");
             }
             return $.when(this._super.apply(this, arguments), def);
         },
 
-        start: function () {
+        start: function (editable_mode) {
+            if (editable_mode) {
+                this.stop();
+                return;
+            }
             var self = this;
             this.templates_loaded = ajax.loadXML('/website_form/static/src/xml/website_form.xml', qweb);
             this.$target.find('.o_website_form_send').on('click',function (e) {self.send(e);});
@@ -58,7 +62,7 @@ odoo.define('website_form.animation', function (require) {
 
         send: function (e) {
             e.preventDefault();  // Prevent the default submit behavior
-            this.$target.find('.o_website_form_send').off();  // Prevent users from crazy clicking
+            this.$target.find('.o_website_form_send').off().addClass('disabled');  // Prevent users from crazy clicking
 
             var self = this;
 
@@ -146,7 +150,7 @@ odoo.define('website_form.animation', function (require) {
             // Loop on all fields
             this.$target.find('.form-field').each(function (k, field){
                 var $field = $(field);
-                var field_name = $field.find('.control-label').attr('for');
+                var field_name = $field.find('.col-form-label').attr('for');
 
                 // Validate inputs for this field
                 var inputs = $field.find('.o_website_form_input:not(#editable_select)');
@@ -179,9 +183,9 @@ odoo.define('website_form.animation', function (require) {
                 });
 
                 // Update field color if invalid or erroneous
-                $field.removeClass('has-error');
+                $field.removeClass('o_has_error').find('.form-control, .custom-select').removeClass('is-invalid');
                 if (invalid_inputs.length || error_fields[field_name]){
-                    $field.addClass('has-error');
+                    $field.addClass('o_has_error').find('.form-control, .custom-select').addClass('is-invalid')
                     if (_.isString(error_fields[field_name])){
                         $field.popover({content: error_fields[field_name], trigger: 'hover', container: 'body', placement: 'top'});
                         // update error message and show it.
@@ -231,7 +235,7 @@ odoo.define('website_form.animation', function (require) {
         update_status: function (status) {
             var self = this;
             if (status !== 'success') {  // Restore send button behavior if result is an error
-                this.$target.find('.o_website_form_send').on('click',function (e) {self.send(e);});
+                this.$target.find('.o_website_form_send').on('click',function (e) {self.send(e);}).removeClass('disabled');
             }
             var $result = this.$('#o_website_form_result');
             this.templates_loaded.done(function () {

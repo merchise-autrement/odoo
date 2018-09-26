@@ -5,7 +5,7 @@ from babel.dates import format_datetime, format_date
 
 from odoo import models, api, _, fields
 from odoo.release import version
-from odoo.tools import DEFAULT_SERVER_DATE_FORMAT as DF
+from odoo.tools import DEFAULT_SERVER_DATE_FORMAT as DF, safe_eval
 from odoo.tools.misc import formatLang
 
 class account_journal(models.Model):
@@ -26,13 +26,10 @@ class account_journal(models.Model):
     kanban_dashboard_graph = fields.Text(compute='_kanban_dashboard_graph')
     show_on_dashboard = fields.Boolean(string='Show journal on dashboard', help="Whether this journal should be displayed on the dashboard or not", default=True)
     color = fields.Integer("Color Index", default=0)
-    account_setup_bank_data_done = fields.Boolean(string='Bank setup marked as done', related='company_id.account_setup_bank_data_done', help="Technical field used in the special view for the setup bar step.")
 
     def _graph_title_and_key(self):
-        if self.type == 'sale':
-            return ['', _('Sales: Untaxed Total')]
-        elif self.type == 'purchase':
-            return ['', _('Purchase: Untaxed Total')]
+        if self.type in ['sale', 'purchase']:
+            return ['', _('Residual amount')]
         elif self.type == 'cash':
             return ['', _('Cash: Balance')]
         elif self.type == 'bank':
@@ -78,7 +75,7 @@ class account_journal(models.Model):
                         """
         self.env.cr.execute(query, (self.id, last_month, today))
         for val in self.env.cr.dictfetchall():
-            date = datetime.strptime(val['date'], DF)
+            date = val['date']
             if val['date'] != today.strftime(DF):  # make sure the last point in the graph is today
                 data[:0] = [build_graph_data(date, amount)]
             amount -= val['amount']
@@ -94,7 +91,7 @@ class account_journal(models.Model):
     @api.multi
     def get_bar_graph_datas(self):
         data = []
-        today = datetime.strptime(fields.Date.context_today(self), DF)
+        today = fields.Date.context_today(self)
         data.append({'label': _('Past'), 'value':0.0, 'type': 'past'})
         day_of_week = int(format_datetime(today, 'e', locale=self._context.get('lang') or 'en_US'))
         first_day_of_week = today + timedelta(days=-day_of_week+1)
@@ -118,12 +115,12 @@ class account_journal(models.Model):
         start_date = (first_day_of_week + timedelta(days=-7))
         for i in range(0,6):
             if i == 0:
-                query += "("+select_sql_clause+" and date < '"+start_date.strftime(DF)+"')"
+                query += "("+select_sql_clause+" and date_due < '"+start_date.strftime(DF)+"')"
             elif i == 5:
-                query += " UNION ALL ("+select_sql_clause+" and date >= '"+start_date.strftime(DF)+"')"
+                query += " UNION ALL ("+select_sql_clause+" and date_due >= '"+start_date.strftime(DF)+"')"
             else:
                 next_date = start_date + timedelta(days=7)
-                query += " UNION ALL ("+select_sql_clause+" and date >= '"+start_date.strftime(DF)+"' and date < '"+next_date.strftime(DF)+"')"
+                query += " UNION ALL ("+select_sql_clause+" and date_due >= '"+start_date.strftime(DF)+"' and date_due < '"+next_date.strftime(DF)+"')"
                 start_date = next_date
 
         self.env.cr.execute(query, query_args)
@@ -141,7 +138,7 @@ class account_journal(models.Model):
         the bar graph's data as its first element, and the arguments dictionary
         for it as its second.
         """
-        return ("""SELECT sum(residual_company_signed) as total, min(date) as aggr_date
+        return ("""SELECT sum(residual_company_signed) as total, min(date_due) as aggr_date
                FROM account_invoice
                WHERE journal_id = %(journal_id)s and state = 'open'""", {'journal_id':self.id})
 
@@ -189,7 +186,7 @@ class account_journal(models.Model):
             query_results_drafts = self.env.cr.dictfetchall()
 
             today = datetime.today()
-            query = """SELECT amount_total, currency_id AS currency, type FROM account_invoice WHERE journal_id = %s AND date <= %s AND state = 'open';"""
+            query = """SELECT amount_total, currency_id AS currency, type, date_invoice, company_id FROM account_invoice WHERE journal_id = %s AND date <= %s AND state = 'open';"""
             self.env.cr.execute(query, (self.id, today))
             late_query_results = self.env.cr.dictfetchall()
             (number_waiting, sum_waiting) = self._count_results_and_sum_amounts(query_results_to_pay, currency)
@@ -219,7 +216,7 @@ class account_journal(models.Model):
         data as its first element, and the arguments dictionary to use to run
         it as its second.
         """
-        return ("""SELECT state, residual_signed as amount_total, currency_id AS currency
+        return ("""SELECT state, residual_signed as amount_total, currency_id AS currency, type, date_invoice, company_id
                   FROM account_invoice
                   WHERE journal_id = %(journal_id)s AND state = 'open';""", {'journal_id':self.id})
 
@@ -229,7 +226,7 @@ class account_journal(models.Model):
         gather the bills in draft state data, and the arguments
         dictionary to use to run it as its second.
         """
-        return ("""SELECT state, amount_total, currency_id AS currency
+        return ("""SELECT state, amount_total, currency_id AS currency, type, date_invoice, company_id
                   FROM account_invoice
                   WHERE journal_id = %(journal_id)s AND state = 'draft';""", {'journal_id':self.id})
 
@@ -241,8 +238,11 @@ class account_journal(models.Model):
         rslt_sum = 0.0
         for result in results_dict:
             cur = self.env['res.currency'].browse(result.get('currency'))
+            company = self.env['res.company'].browse(result.get('company_id')) or self.env.user.company_id
             rslt_count += 1
-            rslt_sum += cur.compute(result.get('amount_total'), target_currency)
+            type_factor = result.get('type') in ('in_refund', 'out_refund') and -1 or 1
+            rslt_sum += type_factor * cur._convert(
+                result.get('amount_total'), target_currency, company, result.get('date_invoice') or fields.Date.today())
         return (rslt_count, rslt_sum)
 
     @api.multi
@@ -320,8 +320,10 @@ class account_journal(models.Model):
                 action_name = 'action_view_bank_statement_tree'
             elif self.type == 'sale':
                 action_name = 'action_invoice_tree1'
+                self = self.with_context(use_domain=[('type', '=', 'out_invoice')])
             elif self.type == 'purchase':
-                action_name = 'action_invoice_tree2'
+                action_name = 'action_vendor_bill_template'
+                self = self.with_context(use_domain=[('type', '=', 'in_invoice')])
             else:
                 action_name = 'action_move_journal_line'
 
@@ -341,20 +343,24 @@ class account_journal(models.Model):
         ctx.update({
             'journal_type': self.type,
             'default_journal_id': self.id,
-            'search_default_journal_id': self.id,
             'default_type': invoice_type,
             'type': invoice_type
         })
 
         [action] = self.env.ref('account.%s' % action_name).read()
+        if not self.env.context.get('use_domain'):
+            ctx['search_default_journal_id'] = self.id
         action['context'] = ctx
         action['domain'] = self._context.get('use_domain', [])
         account_invoice_filter = self.env.ref('account.view_account_invoice_filter', False)
-        if action_name in ['action_invoice_tree1', 'action_invoice_tree2']:
+        if action_name in ['action_invoice_tree1', 'action_vendor_bill_template']:
             action['search_view_id'] = account_invoice_filter and account_invoice_filter.id or False
         if action_name in ['action_bank_statement_tree', 'action_view_bank_statement_tree']:
             action['views'] = False
             action['view_id'] = False
+        if self.type == 'purchase':
+            new_help = self.env['account.invoice'].with_context(ctx).complete_empty_list_help()
+            action.update({'help': action.get('help', '') + new_help})
         return action
 
     @api.multi
@@ -370,19 +376,18 @@ class account_journal(models.Model):
         return self.open_payments_action('transfer')
 
     @api.multi
-    def open_payments_action(self, payment_type):
-        ctx = self._context.copy()
-        ctx.update({
-            'default_payment_type': payment_type,
-            'default_journal_id': self.id
-        })
-        ctx.pop('group_by', None)
-        action_rec = self.env['ir.model.data'].xmlid_to_object('account.action_account_payments')
-        if action_rec:
-            action = action_rec.read([])[0]
-            action['context'] = ctx
-            action['domain'] = [('journal_id','=',self.id),('payment_type','=',payment_type)]
-            return action
+    def open_payments_action(self, payment_type, mode='tree'):
+        if payment_type == 'outbound':
+            action_ref = 'account.action_account_payments_payable'
+        elif payment_type == 'transfer':
+            action_ref = 'account.action_account_payments_transfer'
+        else:
+            action_ref = 'account.action_account_payments'
+        [action] = self.env.ref(action_ref).read()
+        action['context'] = dict(safe_eval(action.get('context')), default_journal_id=self.id, search_default_journal_id=self.id)
+        if mode == 'form':
+            action['views'] = [[False, 'form']]
+        return action
 
     @api.multi
     def open_action_with_context(self):
@@ -405,7 +410,6 @@ class account_journal(models.Model):
     @api.multi
     def create_bank_statement(self):
         """return action to create a bank statements. This button should be called only on journals with type =='bank'"""
-        self.bank_statements_source = 'manual'
         action = self.env.ref('account.action_bank_statement_tree').read()[0]
         action.update({
             'views': [[False, 'form']],
@@ -413,26 +417,28 @@ class account_journal(models.Model):
         })
         return action
 
+    @api.multi
+    def create_customer_payment(self):
+        """return action to create a customer payment"""
+        return self.open_payments_action('inbound', mode='form')
+
+    @api.multi
+    def create_supplier_payment(self):
+        """return action to create a supplier payment"""
+        return self.open_payments_action('outbound', mode='form')
+
+    @api.multi
+    def create_internal_transfer(self):
+        """return action to create a internal transfer"""
+        return self.open_payments_action('transfer', mode='form')
+
     #####################
     # Setup Steps Stuff #
     #####################
-    @api.model
-    def retrieve_account_dashboard_setup_bar(self):
-        """ Returns the data used by the setup bar on the Accounting app dashboard."""
-        company = self.env.user.company_id
-        return {
-            'show_setup_bar': not company.account_setup_bar_closed,
-            'company': company.account_setup_company_data_done,
-            'bank': company.account_setup_bank_data_done,
-            'fiscal_year': company.account_setup_fy_data_done,
-            'chart_of_accounts': company.account_setup_coa_done,
-            'initial_balance': company.opening_move_posted(),
-        }
-
     def mark_bank_setup_as_done_action(self):
         """ Marks the 'bank setup' step as done in the setup bar and in the company."""
-        self.company_id.account_setup_bank_data_done = True
+        self.company_id.set_onboarding_step_done('account_setup_bank_data_state')
 
     def unmark_bank_setup_as_done_action(self):
         """ Marks the 'bank setup' step as not done in the setup bar and in the company."""
-        self.company_id.account_setup_bank_data_done = False
+        self.company_id.account_setup_bank_data_state = 'not_done'

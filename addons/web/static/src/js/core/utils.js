@@ -52,20 +52,6 @@ var utils = {
         return Math.max(min, Math.min(max, val));
     },
     /**
-     * computes (Math.floor(a/b), a%b and passes that to the callback.
-     *
-     * returns the callback's result
-     */
-    divmod: function (a, b, fn) {
-        var mod = a%b;
-        // in python, sign(a % b) === sign(b). Not in JS. If wrong side, add a
-        // round of b
-        if (mod > 0 && b < 0 || mod < 0 && b > 0) {
-            mod += b;
-        }
-        return fn(Math.floor(a/b), mod);
-    },
-    /**
      * @param {number} value
      * @param {integer} decimals
      * @returns {boolean}
@@ -228,7 +214,7 @@ var utils = {
      * @returns {boolean}
      */
     is_bin_size: function (v) {
-        return (/^\d+(\.\d*)? \w+$/).test(v);
+        return (/^\d+(\.\d*)? [^0-9]+$/).test(v);
     },
     /**
      * @param {any} node
@@ -288,17 +274,6 @@ var utils = {
     lpad: function (str, size) {
         str = "" + str;
         return new Array(size - str.length + 1).join('0') + str;
-    },
-    /**
-     * Passes the fractional and integer parts of x to the callback, returns
-     * the callback's result
-     */
-    modf: function (x, fn) {
-        var mod = x%1;
-        if (mod < 0) {
-            mod += 1;
-        }
-        return fn(mod, Math.floor(x));
     },
     /**
      * performs a half up rounding with a fixed amount of decimals, correcting for float loss of precision
@@ -392,6 +367,23 @@ var utils = {
         array[i2] = elem1;
         array[i1] = elem2;
     },
+
+    /**
+     * @param {string} value
+     * @param {boolean} allow_mailto
+     * @returns boolean
+     */
+    is_email: function (value, allow_mailto) {
+        // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
+        var re;
+        if (allow_mailto) {
+            re = /^(mailto:)?(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+        } else {
+            re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+        }
+        return re.test(value);
+    },
+
     /**
      * @param {any} str
      * @param {any} elseValues
@@ -517,6 +509,26 @@ var utils = {
           utils.deepFreeze(prop);
       });
       return Object.freeze(obj);
+    },
+
+    /**
+     * Find the closest value of the given one in the provided array
+     *
+     * @param {Number} num
+     * @param {Array} arr
+     * @returns {Number|undefined}
+     */
+    closestNumber: function (num, arr) {
+        var curr = arr[0];
+        var diff = Math.abs (num - curr);
+        for (var val = 0; val < arr.length; val++) {
+            var newdiff = Math.abs (num - arr[val]);
+            if (newdiff < diff) {
+                diff = newdiff;
+                curr = arr[val];
+            }
+        }
+        return curr;
     },
 
 };
