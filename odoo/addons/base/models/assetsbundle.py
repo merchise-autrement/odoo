@@ -429,7 +429,7 @@ class AssetsBundle(object):
                 asset = next(asset for asset in self.stylesheets if asset.id == asset_id)
                 asset._content = fragments.pop(0)
 
-                if debug:
+                if debug or spdy:
                     try:
                         fname = os.path.basename(asset.url)
                         url = asset.html_url
