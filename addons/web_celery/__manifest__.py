@@ -17,6 +17,6 @@ dict(
     data=['views/assets.xml', ],
     qweb=['static/src/xml/*.xml', ],
     auto_install=True,
-    installable=True,
+    installable=False,
     application=False,
 )
