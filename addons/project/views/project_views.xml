@@ -886,7 +886,7 @@
               </p>
             </field>
         </record>
-        <menuitem action="project_tags_action" id="menu_project_tags_act" parent="menu_project_config"/>
+        <menuitem action="project_tags_action" id="menu_project_tags_act" parent="menu_project_config" groups="project.group_project_manager"/>
 
         <!-- Reporting menus -->
         <menuitem id="menu_project_report" name="Reporting"

@@ -126,7 +126,10 @@ class IrHttp(models.AbstractModel):
     @classmethod
     def _serve_attachment(cls):
         env = api.Environment(request.cr, SUPERUSER_ID, request.context)
-        attach = env['ir.attachment'].get_serve_attachment(request.httprequest.path, extra_fields=['name', 'checksum'])
+        attach = env['ir.attachment'].get_serve_attachment(
+            request.httprequest.path,
+            extra_fields=['name', 'checksum', 'cache_control_header']
+        )
         if attach:
             wdate = attach[0]['__last_update']
             datas = attach[0]['datas'] or b''
@@ -145,6 +148,10 @@ class IrHttp(models.AbstractModel):
 
             if response.status_code == 304:
                 return response
+
+            # merchise: some attatchments are technically-driven (bundles).
+            if attach[0]['cache_control_header']:
+                response.headers['Cache-Control'] = attach[0]['cache_control_header']
 
             response.mimetype = attach[0]['mimetype'] or 'application/octet-stream'
             response.data = base64.b64decode(datas)

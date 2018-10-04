@@ -216,6 +216,9 @@ def init_logger():
     for logconfig_item in logging_configurations:
         _logger.debug('logger level set: "%s"', logconfig_item)
 
+    from .sentrylog import patch_logging
+    patch_logging()
+
 
 DEFAULT_LOG_CONFIGURATION = [
     'odoo.http.rpc.request:INFO',
@@ -227,6 +230,7 @@ PSEUDOCONFIG_MAPPER = {
     'debug_rpc': ['odoo:DEBUG', 'odoo.sql_db:INFO', 'odoo.http.rpc.request:DEBUG'],
     'debug': ['odoo:DEBUG', 'odoo.sql_db:INFO'],
     'debug_sql': ['odoo.sql_db:DEBUG'],
+    'debug_signals': ['odoo:DEBUG', 'odoo.signals:DEBUG'],
     'info': [],
     'warn': ['odoo:WARNING', 'werkzeug:WARNING'],
     'error': ['odoo:ERROR', 'werkzeug:ERROR'],

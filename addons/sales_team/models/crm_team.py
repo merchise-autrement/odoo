@@ -53,7 +53,13 @@ class CrmTeam(models.Model):
         "res.currency", related='company_id.currency_id',
         string="Currency", readonly=True)
     user_id = fields.Many2one('res.users', string='Team Leader')
-    member_ids = fields.One2many('res.users', 'sale_team_id', string='Channel Members')
+    member_ids = fields.Many2many(
+        'res.users',
+        string='Team Members',
+        relation='sale_member_rel',
+        column1='team_id',
+        column2='user_id',
+    )
     favorite_user_ids = fields.Many2many(
         'res.users', 'team_favorite_user_rel', 'team_id', 'user_id',
         string='Favorite Members',

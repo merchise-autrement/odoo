@@ -24,6 +24,9 @@ from .qweb import escape
 import psycopg2
 from odoo.tools import func, misc
 
+from rjsmin import jsmin as rjsmin
+
+
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -31,49 +34,7 @@ MAX_CSS_RULES = 4095
 
 
 class CompileError(RuntimeError): pass
-def rjsmin(script):
-    """ Minify js with a clever regex.
-    Taken from http://opensource.perlig.de/rjsmin
-    Apache License, Version 2.0 """
-    def subber(match):
-        """ Substitution callback """
-        groups = match.groups()
-        return (
-            groups[0] or
-            groups[1] or
-            groups[2] or
-            groups[3] or
-            (groups[4] and '\n') or
-            (groups[5] and ' ') or
-            (groups[6] and ' ') or
-            (groups[7] and ' ') or
-            ''
-        )
 
-    result = re.sub(
-        r'([^\047"/\000-\040]+)|((?:(?:\047[^\047\\\r\n]*(?:\\(?:[^\r\n]|\r?'
-        r'\n|\r)[^\047\\\r\n]*)*\047)|(?:"[^"\\\r\n]*(?:\\(?:[^\r\n]|\r?\n|'
-        r'\r)[^"\\\r\n]*)*"))[^\047"/\000-\040]*)|(?:(?<=[(,=:\[!&|?{};\r\n]'
-        r')(?:[\000-\011\013\014\016-\040]|(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/'
-        r'))*((?:/(?![\r\n/*])[^/\\\[\r\n]*(?:(?:\\[^\r\n]|(?:\[[^\\\]\r\n]*'
-        r'(?:\\[^\r\n][^\\\]\r\n]*)*\]))[^/\\\[\r\n]*)*/)[^\047"/\000-\040]*'
-        r'))|(?:(?<=[\000-#%-,./:-@\[-^`{-~-]return)(?:[\000-\011\013\014\01'
-        r'6-\040]|(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/))*((?:/(?![\r\n/*])[^/'
-        r'\\\[\r\n]*(?:(?:\\[^\r\n]|(?:\[[^\\\]\r\n]*(?:\\[^\r\n][^\\\]\r\n]'
-        r'*)*\]))[^/\\\[\r\n]*)*/)[^\047"/\000-\040]*))|(?<=[^\000-!#%&(*,./'
-        r':-@\[\\^`{|~])(?:[\000-\011\013\014\016-\040]|(?:/\*[^*]*\*+(?:[^/'
-        r'*][^*]*\*+)*/))*(?:((?:(?://[^\r\n]*)?[\r\n]))(?:[\000-\011\013\01'
-        r'4\016-\040]|(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/))*)+(?=[^\000-\040"#'
-        r'%-\047)*,./:-@\\-^`|-~])|(?<=[^\000-#%-,./:-@\[-^`{-~-])((?:[\000-'
-        r'\011\013\014\016-\040]|(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)))+(?=[^'
-        r'\000-#%-,./:-@\[-^`{-~-])|(?<=\+)((?:[\000-\011\013\014\016-\040]|'
-        r'(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)))+(?=\+)|(?<=-)((?:[\000-\011\0'
-        r'13\014\016-\040]|(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)))+(?=-)|(?:[\0'
-        r'00-\011\013\014\016-\040]|(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/))+|(?:'
-        r'(?:(?://[^\r\n]*)?[\r\n])(?:[\000-\011\013\014\016-\040]|(?:/\*[^*'
-        r']*\*+(?:[^/*][^*]*\*+)*/))*)+', subber, '\n%s\n' % script
-    ).strip()
-    return result
 
 class AssetError(Exception):
     pass
@@ -114,8 +75,10 @@ class AssetsBundle(object):
                 self.javascripts.append(JavascriptAsset(self, url=f['url'], filename=f['filename'], inline=f['content']))
 
     # depreciated and will remove after v11
-    def to_html(self, sep=None, css=True, js=True, debug=False, async_load=False, url_for=(lambda url: url)):
-        nodes = self.to_node(css=css, js=js, debug=debug, async_load=async_load)
+    def to_html(self, sep=None, css=True, js=True, debug=False,
+                async_load=False, url_for=(lambda url: url), spdy=False):
+        nodes = self.to_node(css=css, js=js, debug=debug,
+                             async_load=async_load, spdy=spdy)
 
         if sep is None:
             sep = u'\n            '
@@ -133,27 +96,31 @@ class AssetsBundle(object):
 
         return sep + sep.join(response)
 
-    def to_node(self, css=True, js=True, debug=False, async_load=False):
+    def to_node(self, css=True, js=True, debug=False, async_load=False, spdy=False):
         """
         :returns [(tagName, attributes, content)] if the tag is auto close
         """
         response = []
-        if debug == 'assets':
+        if debug == 'assets' or spdy:
             if css and self.stylesheets:
                 is_css_preprocessed, old_attachments = self.is_css_preprocessed()
                 if not is_css_preprocessed:
-                    self.preprocess_css(debug=debug, old_attachments=old_attachments)
+                    self.preprocess_css(
+                        debug=debug,
+                        old_attachments=old_attachments,
+                        spdy=spdy
+                    )
                     if self.css_errors:
                         msg = '\n'.join(self.css_errors)
-                        response.append(JavascriptAsset(self, inline=self.dialog_message(msg)).to_node())
-                        response.append(StylesheetAsset(self, url="/web/static/lib/bootstrap/css/bootstrap.css").to_node())
+                        response.append(JavascriptAsset(self, inline=self.dialog_message(msg)).to_node(spdy=spdy))
+                        response.append(StylesheetAsset(self, url="/web/static/lib/bootstrap/css/bootstrap.css").to_node(spdy=spdy))
                 if not self.css_errors:
                     for style in self.stylesheets:
-                        response.append(style.to_node())
+                        response.append(style.to_node(spdy=spdy))
 
             if js:
                 for jscript in self.javascripts:
-                    response.append(jscript.to_node())
+                    response.append(jscript.to_node(spdy=spdy))
         else:
             if css and self.stylesheets:
                 css_attachments = self.css() or []
@@ -166,7 +133,7 @@ class AssetsBundle(object):
                     response.append(("link", attr, None))
                 if self.css_errors:
                     msg = '\n'.join(self.css_errors)
-                    response.append(JavascriptAsset(self, inline=self.dialog_message(msg)).to_node())
+                    response.append(JavascriptAsset(self, inline=self.dialog_message(msg)).to_node(spdy=spdy))
             if js and self.javascripts:
                 attr = OrderedDict([
                     ["async", "async" if async_load else None],
@@ -426,13 +393,14 @@ class AssetsBundle(object):
 
         return preprocessed, attachments
 
-    def preprocess_css(self, debug=False, old_attachments=None):
+    def preprocess_css(self, debug=False, old_attachments=None, spdy=False):
         """
             Checks if the bundle contains any sass/less content, then compiles it to css.
             If user language direction is Right to Left then consider css files to call run_rtlcss,
             css files are also stored in ir.attachment after processing done by rtlcss.
             Returns the bundle's flat css.
         """
+        from odoo.http import STATIC_CACHE
         if self.stylesheets:
             compiled = ""
             for atype in (SassStylesheetAsset, ScssStylesheetAsset, LessStylesheetAsset):
@@ -475,6 +443,7 @@ class AssetsBundle(object):
                                 datas_fname=fname,
                                 res_model=False,
                                 res_id=False,
+                                cache_control_header='max-age=%d, public' % STATIC_CACHE
                             ))
 
                         if self.env.context.get('commit_assetsbundle') is True:
@@ -620,8 +589,8 @@ class WebAsset(object):
                 raise AssetNotFound("Could not find %s" % self.name)
 
     # depreciated and will remove after v11
-    def to_html(self):
-        tagName, attributes, content = self.to_node()
+    def to_html(self, spdy=False):
+        tagName, attributes, content = self.to_node(spdy=spdy)
         html = u"<%s " % tagName
         for name, value in attributes.items():
             if value or isinstance(value, string_types):
@@ -632,7 +601,7 @@ class WebAsset(object):
             html += u'>%s</%s>' % (escape(to_text(content)), tagName)
         return html
 
-    def to_node(self):
+    def to_node(self, spdy=False):
         raise NotImplementedError()
 
     @func.lazy_property
@@ -677,6 +646,21 @@ class WebAsset(object):
             content = self.content
         return '\n/* %s */\n%s' % (self.name, content)
 
+    @property
+    def versionhash(self):
+        self.stat()
+        if self._filename:
+            try:
+                return os.path.getmtime(self._filename)
+            except:
+                _logger.exception(
+                    "Error while hashing asset '%s'",
+                    self._filename
+                )
+                return None
+        else:
+            return None
+
 
 class JavascriptAsset(WebAsset):
     def minify(self):
@@ -688,7 +672,7 @@ class JavascriptAsset(WebAsset):
         except AssetError as e:
             return u"console.error(%s);" % json.dumps(to_text(e))
 
-    def to_node(self):
+    def to_node(self, spdy=False):
         if self.url:
             return ("script", OrderedDict([
                 ["type", "text/javascript"],
@@ -763,7 +747,7 @@ class StylesheetAsset(WebAsset):
         content = re.sub(r' *([{}]) *', r'\1', content)
         return self.with_header(content)
 
-    def to_node(self):
+    def to_node(self, spdy=False):
         if self.url:
             attr = OrderedDict([
                 ["type", "text/css"],

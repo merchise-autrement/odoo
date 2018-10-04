@@ -234,7 +234,7 @@
                     <field name="name" filter_domain="['|', ('name','ilike',self), ('code','ilike',self)]" string="Analytic Account"/>
                     <field name="partner_id"/>
                     <filter string="Archived" domain="[('active', '=', False)]" name="inactive"/>
-                    <group expand="0" string="Group By...">
+                    <group expand="0" name="group_by" string="Group By...">
                         <filter string="Associated Partner" name="associatedpartner" domain="[]" context="{'group_by':'partner_id'}"/>
                     </group>
                 </search>

@@ -725,6 +725,10 @@
                     </group>
                     <div class="oe_clear"/>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
                 </form>
             </field>
         </record>
@@ -1485,7 +1489,7 @@
                     <field name="move_id" string="Number (Move)"/>
                     <field name="tax_line_id"/>
                     <field name="tax_ids" />
-                    <group expand="0" string="Group By">
+                    <group expand="0" name="group_by" string="Group By">
                         <filter string="Partner" name="partner" domain="[]" context="{'group_by':'partner_id'}"/>
                         <filter string="Journal" name="journal" domain="[]" context="{'group_by':'journal_id'}"/>
                         <filter string="Account" name="account" context="{'group_by':'account_id'}"/>
@@ -1683,6 +1687,10 @@
                         </page>
                     </notebook>
                     </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
                 </form>
             </field>
         </record>

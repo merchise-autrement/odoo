@@ -11,7 +11,7 @@ import time
 import netifaces as ni
 import traceback
 
-try: 
+try:
     from .. escpos import *
     from .. escpos.exceptions import *
     from .. escpos.printer import Usb
@@ -100,9 +100,9 @@ class EscposDriver(Thread):
             if not self.isAlive():
                 self.daemon = True
                 self.start()
-    
+
     def get_escpos_printer(self):
-  
+
         printers = self.connected_usb_devices()
         if len(printers) > 0:
             print_dev = Usb(printers[0]['vendor'], printers[0]['product'])
@@ -123,8 +123,7 @@ class EscposDriver(Thread):
         printer.cashdraw(2)
         printer.cashdraw(5)
 
-    def set_status(self, status, message = None):
-        _logger.info(status+' : '+ (message or 'no message'))
+    def set_status(self, status, message=None):
         if status == self.status['status']:
             if message != None and (len(self.status['messages']) == 0 or message != self.status['messages'][-1]):
                 self.status['messages'].append(message)
@@ -138,7 +137,10 @@ class EscposDriver(Thread):
         if status == 'error' and message:
             _logger.error('ESC/POS Error: %s', message)
         elif status == 'disconnected' and message:
-            _logger.warning('ESC/POS Device Disconnected: %s', message)
+            import warnings
+            warnings.warn('ESC/POS Device Disconnected: ' + message)
+        else:
+            _logger.info(status+' : '+ (message or 'no message'))
 
     def run(self):
         printer = None
@@ -158,7 +160,7 @@ class EscposDriver(Thread):
                     error = False
                     time.sleep(5)
                     continue
-                elif task == 'receipt': 
+                elif task == 'receipt':
                     if timestamp >= time.time() - 1 * 60 * 60:
                         self.print_receipt_body(printer,data)
                         printer.cut()
@@ -243,10 +245,10 @@ class EscposDriver(Thread):
 
         def check(string):
             return string != True and bool(string) and string.strip()
-        
+
         def price(amount):
             return ("{0:."+str(receipt['precision']['price'])+"f}").format(amount)
-        
+
         def money(amount):
             return ("{0:."+str(receipt['precision']['money'])+"f}").format(amount)
 
@@ -257,10 +259,10 @@ class EscposDriver(Thread):
                 return str(amount)
 
         def printline(left, right='', width=40, ratio=0.5, indent=0):
-            lwidth = int(width * ratio) 
-            rwidth = width - lwidth 
+            lwidth = int(width * ratio)
+            rwidth = width - lwidth
             lwidth = lwidth - indent
-            
+
             left = left[:lwidth]
             if len(left) != lwidth:
                 left = left + ' ' * (lwidth - len(left))
@@ -270,7 +272,7 @@ class EscposDriver(Thread):
                 right = ' ' * (rwidth - len(right)) + right
 
             return ' ' * indent + left + right + '\n'
-        
+
         def print_taxes():
             taxes = receipt['tax_details']
             for tax in taxes:
@@ -333,7 +335,7 @@ class EscposDriver(Thread):
         eprint.set(align='center',height=2)
         eprint.text(printline(_('         TOTAL'),money(receipt['total_with_tax']),width=40, ratio=0.6))
         eprint.text('\n\n');
-        
+
         # Paymentlines
         eprint.set(align='center')
         for line in receipt['paymentlines']:
@@ -370,18 +372,18 @@ driver.push_task('printstatus')
 hw_proxy.drivers['escpos'] = driver
 
 class EscposProxy(hw_proxy.Proxy):
-    
+
     @http.route('/hw_proxy/open_cashbox', type='json', auth='none', cors='*')
     def open_cashbox(self):
-        _logger.info('ESC/POS: OPEN CASHBOX') 
+        _logger.info('ESC/POS: OPEN CASHBOX')
         driver.push_task('cashbox')
-        
+
     @http.route('/hw_proxy/print_receipt', type='json', auth='none', cors='*')
     def print_receipt(self, receipt):
-        _logger.info('ESC/POS: PRINT RECEIPT') 
+        _logger.info('ESC/POS: PRINT RECEIPT')
         driver.push_task('receipt',receipt)
 
     @http.route('/hw_proxy/print_xml_receipt', type='json', auth='none', cors='*')
     def print_xml_receipt(self, receipt):
-        _logger.info('ESC/POS: PRINT XML RECEIPT') 
+        _logger.info('ESC/POS: PRINT XML RECEIPT')
         driver.push_task('xml_receipt',receipt)

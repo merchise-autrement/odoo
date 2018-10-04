@@ -2,7 +2,7 @@
 :types: api
 
 
-:code-column:
+.. :code-column:
 
 .. _reference/upgrade-api:
 
@@ -88,7 +88,11 @@ See a sample output aside.
 
 .. rst-class:: setup doc-aside
 
-.. switcher::
+.. container::
+
+    .. switcher : :
+
+    **json**:
 
     .. code-block:: json
 
@@ -141,7 +145,11 @@ Here are 2 examples of database upgrade request creation using:
 
 .. rst-class:: setup doc-aside
 
-.. switcher::
+.. container::
+
+    .. switcher : :
+
+    **python**:
 
     .. code-block:: python
 
@@ -179,6 +187,8 @@ Here are 2 examples of database upgrade request creation using:
         # get http status:
         http_code = c.getinfo(pycurl.HTTP_CODE)
         c.close()
+
+    **bash**:
 
     .. code-block:: bash
 
@@ -231,7 +241,11 @@ should be empty if everything went fine.
 
 .. rst-class:: setup doc-aside
 
-.. switcher::
+.. container::
+
+    .. switcher : :
+
+    **python**:
 
     .. code-block:: python
 
@@ -263,6 +277,8 @@ should be empty if everything went fine.
         c.perform()
         c.close()
 
+    **bash**:
+
     .. code-block:: bash
 
         UPLOAD_URL="https://upgrade.odoo.com/database/v1/upload"
@@ -272,6 +288,7 @@ should be empty if everything went fine.
         URL_PARAMS="key=${KEY}&request=${REQUEST_ID}"
         HEADER="Content-Type: application/octet-stream"
         curl -H $HEADER --data-binary "@${DUMPFILE}" "${UPLOAD_URL}?${URL_PARAMS}"
+
 
 .. _upgrade-api-request-sftp-access-method:
 
@@ -307,7 +324,11 @@ The ``request_sftp_access`` method returns a JSON dictionary containing the foll
 
 .. rst-class:: setup doc-aside
 
-.. switcher::
+.. container::
+
+    .. switcher : :
+
+    **python**:
 
     .. code-block:: python
 
@@ -334,6 +355,8 @@ The ``request_sftp_access`` method returns a JSON dictionary containing the foll
 
         c.perform()
         c.close()
+
+    **bash**:
 
     .. code-block:: bash
 
@@ -438,7 +461,11 @@ should be empty if everything went fine.
 
 .. rst-class:: setup doc-aside
 
-.. switcher::
+.. container::
+
+    .. switcher : :
+
+    **python**:
 
     .. code-block:: python
 
@@ -468,6 +495,8 @@ should be empty if everything went fine.
         # get http status:
         http_code = c.getinfo(pycurl.HTTP_CODE)
         c.close()
+
+    **bash**:
 
     .. code-block:: bash
 
@@ -504,7 +533,11 @@ database upgrade request.
 
 .. rst-class:: setup doc-aside
 
-.. switcher::
+.. container::
+
+    .. switcher : :
+
+    **python**:
 
     .. code-block:: python
 
@@ -533,6 +566,8 @@ database upgrade request.
 
         c.close()
 
+    **bash**:
+
     .. code-block:: bash
 
         STATUS_URL="https://upgrade.odoo.com/database/v1/status"
@@ -540,6 +575,7 @@ database upgrade request.
         REQUEST_ID="10534"
         URL_PARAMS="key=${KEY}&request=${REQUEST_ID}"
         curl -sS "${STATUS_URL}?${URL_PARAMS}"
+
 
 Sample output
 -------------
@@ -605,7 +641,11 @@ The ``request`` key contains various useful information about your request:
 
 .. rst-class:: setup doc-aside
 
-.. switcher::
+.. container::
+
+    .. switcher : :
+
+    **json**:
 
     .. code-block:: json
 
@@ -670,4 +710,3 @@ your database dump. Here is a sample session using the 'sftp' client:
     Connected to upgrade.odoo.com.
     sftp> get upgraded_openchs.70.cdump /path/to/upgraded_openchs.70.cdump
     Downloading /upgraded_openchs.70.cdump to /path/to/upgraded_openchs.70.cdump
-

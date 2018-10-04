@@ -32,6 +32,8 @@ import odoo
 
 unsafe_eval = eval
 
+from celery.exceptions import SoftTimeLimitExceeded
+
 __all__ = ['test_expr', 'safe_eval', 'const_eval']
 
 # The time module is usually already provided in the safe_eval environment
@@ -368,9 +370,13 @@ def safe_eval(expr, globals_dict=None, locals_dict=None, mode="eval", nocopy=Fal
         raise
     except odoo.exceptions.MissingError:
         raise
+    except SoftTimeLimitExceeded:
+        raise
     except Exception as e:
         exc_info = sys.exc_info()
         pycompat.reraise(ValueError, ValueError('%s: "%s" while evaluating\n%r' % (ustr(type(e)), ustr(e), expr)), exc_info[2])
+
+
 def test_python_expr(expr, mode="eval"):
     try:
         test_expr(expr, _SAFE_OPCODES, mode=mode)

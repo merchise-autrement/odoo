@@ -107,15 +107,17 @@ class AccountAnalyticLine(models.Model):
             if not sale_order:
                 continue
 
-            if sale_order.state != 'sale':
-                message_unconfirmed = _('The Sales Order %s linked to the Analytic Account %s must be validated before registering expenses.')
-                messages = {
-                    'draft': message_unconfirmed,
-                    'sent': message_unconfirmed,
-                    'done': _('The Sales Order %s linked to the Analytic Account %s is currently locked. You cannot register an expense on a locked Sales Order. Please create a new SO linked to this Analytic Account.'),
-                    'cancel': _('The Sales Order %s linked to the Analytic Account %s is cancelled. You cannot register an expense on a cancelled Sales Order.'),
-                }
-                raise UserError(messages[sale_order.state] % (sale_order.name, analytic_line.account_id.name))
+            # XXX [merchise]: The following restriction simply gets in the
+            # way we do things right now.  TODO: Analyze the impact.
+            # if sale_order.state != 'sale':
+            #     message_unconfirmed = _('The Sales Order %s linked to the Analytic Account %s must be validated before registering expenses.')
+            #     messages = {
+            #         'draft': message_unconfirmed,
+            #         'sent': message_unconfirmed,
+            #         'done': _('The Sales Order %s linked to the Analytic Account %s is currently locked. You cannot register an expense on a locked Sales Order. Please create a new SO linked to this Analytic Account.'),
+            #         'cancel': _('The Sales Order %s linked to the Analytic Account %s is cancelled. You cannot register an expense on a cancelled Sales Order.'),
+            #     }
+            #     raise UserError(messages[sale_order.state] % (sale_order.name, analytic_line.account_id.name))
 
             so_line = None
             price = analytic_line._sale_get_invoice_price(sale_order)

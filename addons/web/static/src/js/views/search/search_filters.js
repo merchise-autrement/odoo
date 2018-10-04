@@ -130,6 +130,11 @@ var Field = Widget.extend({
         switch (operator.value) {
         case '∃': return [[field.name, '!=', false]];
         case '∄': return [[field.name, '=', false]];
+        case '=ilike': return this.make_domain(
+            field.name,
+            operator.value,
+            this.get_value() + '%'
+        );
         default: return [[field.name, operator.value, this.get_value()]];
         }
     },
@@ -166,6 +171,7 @@ var Char = Field.extend({
     },
     operators: [
         {value: "ilike", text: _lt("contains")},
+        {value: "=ilike", text: _lt("starts with")},
         {value: "not ilike", text: _lt("doesn't contain")},
         {value: "=", text: _lt("is equal to")},
         {value: "!=", text: _lt("is not equal to")},

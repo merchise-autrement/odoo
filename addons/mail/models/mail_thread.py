@@ -260,7 +260,13 @@ class MailThread(models.AbstractModel):
             - log a creation message
         """
         if self._context.get('tracking_disable'):
-            return super(MailThread, self).create(vals_list)
+            thread = super(MailThread, self).create(vals_list)
+            # merchise: Ensure to have the unique index before trying to
+            # create notifications, so that those notification have the proper
+            # thread index.
+            if thread:
+                thread._ensure_index()
+            return thread
 
         # subscribe uid unless asked not to
         if not self._context.get('mail_create_nosubscribe'):
@@ -270,6 +276,11 @@ class MailThread(models.AbstractModel):
                 values['message_follower_ids'] = message_follower_ids
 
         threads = super(MailThread, self).create(vals_list)
+        # merchise: Ensure to have the unique index before trying to
+        # create notifications, so that those notification have the proper
+        # thread index.
+        if threads:
+            threads._ensure_index()
 
         # automatic logging unless asked not to (mainly for various testing purpose)
         if not self._context.get('mail_create_nolog'):
@@ -303,6 +314,11 @@ class MailThread(models.AbstractModel):
     def write(self, values):
         if self._context.get('tracking_disable'):
             return super(MailThread, self).write(values)
+
+        # merchise: Ensure to have the unique index before trying to
+        # create notifications, so that those notification have the proper
+        # thread index.
+        self._ensure_index()
 
         # Track initial values of tracked fields
         if 'lang' not in self._context:
@@ -889,6 +905,9 @@ class MailThread(models.AbstractModel):
         self.ensure_one()
         return {'headers': repr({
             'X-Odoo-Objects': "%s-%s" % (self._name, self.id),
+            # merchise: This should be in xopgi/index.py but it's far more
+            # easier here, because of the whole repr-ing and eval for headers.
+            'X-Odoo-Index': self.thread_index,
         })}
 
     @api.model
@@ -1604,9 +1623,31 @@ class MailThread(models.AbstractModel):
                         body = tools.append_content_to_html(body, html, plaintext=False)
                     # we only strip_classes here everything else will be done in by html field of mail.message
                     body = tools.html_sanitize(body, sanitize_tags=False, strip_classes=True)
-                # 4) Anything else -> attachment
+
+                # 4) if message/* we will do mostly like text/plain but Python
+                # handles message/* as multipart and thus
+                # get_payload(decode=True) is None.  Letting the "attachment"
+                # catch-all facility to proceed would only result in several
+                # 4-bytes attachments with "None".
+                elif part.get_content_maintype() == 'message':
+                    payload = ''.join(
+                        subpart.as_string() for subpart in part.get_payload()
+                    )
+                    body = tools.append_content_to_html(
+                        body, tools.ustr(payload, encoding, errors='replace'),
+                        preserve=True
+                    )
+
+                # *) Anything else is ignored. Some MUAs don't include the
+                # "Content-Disposition: inline", but simply omit it.  The
+                # "Content-Disposition: attachment" is already dealt in the
+                # item 1) and other stuff like message/reports should not be
+                # considered attachments.  Furthermore, message/ parts are
+                # "is_multipart()", and the payload is None.
+                #
+                # TODO: Validate the previous None with Python 3.6+.
                 else:
-                    attachments.append(self._Attachment(filename or 'attachment', part.get_payload(decode=True), {}))
+                    pass
 
         body, attachments = self._message_extract_payload_postprocess(message, body, attachments)
         return body, attachments

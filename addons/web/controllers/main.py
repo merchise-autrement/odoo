@@ -485,6 +485,11 @@ class Home(http.Controller):
         except odoo.exceptions.AccessDenied:
             values['databases'] = None
 
+        values['disable_database_manager'] = odoo.tools.config.get(
+            'disable_database_manager',
+            False
+        )
+
         if request.httprequest.method == 'POST':
             old_uid = request.uid
             try:
@@ -779,23 +784,75 @@ class Database(http.Controller):
             if data_file:
                 os.unlink(data_file.name)
 
-    @http.route('/web/database/change_password', type='http', auth="none", methods=['POST'], csrf=False)
-    def change_password(self, master_pwd, master_pwd_new):
-        try:
-            dispatch_rpc('db', 'change_admin_password', [master_pwd, master_pwd_new])
-            return http.local_redirect('/web/database/manager')
-        except Exception as e:
-            error = "Master password update error: %s" % (str(e) or repr(e))
-            return self._render_template(error=error)
+        @http.route('/web/database/duplicate', type='http', auth="none", methods=['POST'], csrf=False)
+        def duplicate(self, master_pwd, name, new_name):
+            try:
+                if not re.match(DBNAME_PATTERN, new_name):
+                    raise Exception(_('Invalid database name. Only alphanumerical characters, underscore, hyphen and dot are allowed.'))
+                dispatch_rpc('db', 'duplicate_database', [master_pwd, name, new_name])
+                return http.local_redirect('/web/database/manager')
+            except Exception as e:
+                error = "Database duplication error: %s" % (str(e) or repr(e))
+                return self._render_template(error=error)
 
-    @http.route('/web/database/list', type='json', auth='none')
-    def list(self):
-        """
-        Used by Mobile application for listing database
-        :return: List of databases
-        :rtype: list
-        """
-        return http.db_list()
+        @http.route('/web/database/drop', type='http', auth="none", methods=['POST'], csrf=False)
+        def drop(self, master_pwd, name):
+            try:
+                dispatch_rpc('db','drop', [master_pwd, name])
+                request._cr = None  # dropping a database leads to an unusable cursor
+                return http.local_redirect('/web/database/manager')
+            except Exception as e:
+                error = "Database deletion error: %s" % (str(e) or repr(e))
+                return self._render_template(error=error)
+
+        @http.route('/web/database/backup', type='http', auth="none", methods=['POST'], csrf=False)
+        def backup(self, master_pwd, name, backup_format = 'zip'):
+            try:
+                odoo.service.db.check_super(master_pwd)
+                ts = datetime.datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S")
+                filename = "%s_%s.%s" % (name, ts, backup_format)
+                headers = [
+                    ('Content-Type', 'application/octet-stream; charset=binary'),
+                    ('Content-Disposition', content_disposition(filename)),
+                ]
+                dump_stream = odoo.service.db.dump_db(name, None, backup_format)
+                response = werkzeug.wrappers.Response(dump_stream, headers=headers, direct_passthrough=True)
+                return response
+            except Exception as e:
+                _logger.exception('Database.backup')
+                error = "Database backup error: %s" % (str(e) or repr(e))
+                return self._render_template(error=error)
+
+        @http.route('/web/database/restore', type='http', auth="none", methods=['POST'], csrf=False)
+        def restore(self, master_pwd, backup_file, name, copy=False):
+            try:
+                with tempfile.NamedTemporaryFile(delete=False) as data_file:
+                    backup_file.save(data_file)
+                db.restore_db(name, data_file.name, str2bool(copy))
+                return http.local_redirect('/web/database/manager')
+            except Exception as e:
+                error = "Database restore error: %s" % (str(e) or repr(e))
+                return self._render_template(error=error)
+            finally:
+                os.unlink(data_file.name)
+
+        @http.route('/web/database/change_password', type='http', auth="none", methods=['POST'], csrf=False)
+        def change_password(self, master_pwd, master_pwd_new):
+            try:
+                dispatch_rpc('db', 'change_admin_password', [master_pwd, master_pwd_new])
+                return http.local_redirect('/web/database/manager')
+            except Exception as e:
+                error = "Master password update error: %s" % (str(e) or repr(e))
+                return self._render_template(error=error)
+
+        @http.route('/web/database/list', type='json', auth='none')
+        def list(self):
+            """
+            Used by Mobile application for listing database
+            :return: List of databases
+            :rtype: list
+            """
+            return http.db_list()
 
 class Session(http.Controller):
 

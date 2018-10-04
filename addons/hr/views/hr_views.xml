@@ -56,7 +56,7 @@
                         <notebook>
                             <page name="public" string="Work Information">
                                 <group>
-                                    <group string="Contact Information">
+                                    <group name="contact" string="Contact Information">
                                         <field name="address_id"
                                             context="{'show_address': 1}"
                                             options='{"always_reload": True, "highlight_first_line": True}'/>
@@ -65,7 +65,7 @@
                                         <field name="mobile_phone" widget="phone"/>
                                         <field name="work_phone" widget="phone"/>
                                     </group>
-                                    <group string="Position">
+                                    <group name="position" string="Position">
                                         <field name="department_id"/>
                                         <field name="job_id"/>
                                         <field name="job_title"/>

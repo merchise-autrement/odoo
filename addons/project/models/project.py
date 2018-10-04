@@ -967,7 +967,9 @@ class ProjectTags(models.Model):
     _name = "project.tags"
     _description = "Project Tags"
 
-    name = fields.Char(required=True)
+    # merchise: Introduced the translate; TODO: What about the _sql_contraints
+    # below?
+    name = fields.Char(required=True, translate=True)
     color = fields.Integer(string='Color Index')
 
     _sql_constraints = [

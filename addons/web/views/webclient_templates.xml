@@ -138,6 +138,9 @@
         <script type="text/javascript" src="/web/static/src/js/core/ram_storage.js"></script>
         <script type="text/javascript" src="/web/static/src/js/widgets/rainbow_man.js"></script>
         <script type="text/javascript" src="/web/static/src/js/widgets/colorpicker.js"/>
+
+        <!-- Merchise's lib -->
+        <script type="text/javascript" src="/web/static/lib/xopgi/js/xopgi.js"></script>
     </template>
 
     <template id="assets_backend" name="Backend Assets (used in backend interface)">

@@ -21,6 +21,8 @@ from os.path import join as opj
 
 import odoo
 import odoo.tools as tools
+from odoo.tools.safe_eval import safe_eval
+
 import odoo.release as release
 from odoo import SUPERUSER_ID, api
 from odoo.tools import pycompat
@@ -147,6 +149,11 @@ def initialize_sys_path():
         ad = os.path.abspath(ad)
         if ad not in ad_paths and os.path.isdir(ad):
             ad_paths.append(ad)
+
+    if not _xoeuf_external_addons:
+        _xoeuf_external_addons.extend(find_external_addons())
+        ad_paths.extend(_xoeuf_external_addons)
+        ad_paths[:] = list(set(ad_paths))
 
     if not hooked:
         sys.meta_path.insert(0, OdooHook())
@@ -328,9 +335,15 @@ def load_information_from_description_file(module, mod_path=None):
             'depends data demo test init_xml update_xml demo_xml'.split(),
             iter(list, None)))
 
+        globals_dict = {
+            'ODOO_VERSION_INFO': release.version_info,
+            'MAJOR_ODOO_VERSION': release.version_info[0],
+        }
+
         f = tools.file_open(manifest_file, mode='rb')
         try:
-            info.update(ast.literal_eval(pycompat.to_native(f.read())))
+            # merchise: use safe_eval to allow the ODOO_VERSION_INFO stuff.
+            info.update(safe_eval(f.read(), globals_dict=globals_dict))
         finally:
             f.close()
 
@@ -533,3 +546,49 @@ def unwrap_suite(test):
     for item in itertools.chain.from_iterable(
             unwrap_suite(t) for t in subtests):
         yield item
+
+
+from xoutil.future.functools import lru_cache
+
+XOEUF_EXTERNAL_ADDON_GROUP = 'xoeuf.addons'
+__xoeuf_patched__ = True
+_xoeuf_external_addons = []
+
+
+@lru_cache(1)
+def find_external_addons():
+    '''Finds all externally installed addons.
+
+    Externally installed addons are modules that are distributed with
+    setuptools' distributions.
+
+    An externally addon is defined in a package that defines an `entry
+    point`__ in the group "xoeuf.addons" which points to a standard package
+    (i.e loadable without any specific loader).
+
+    :returns:  A dictionary from addons to it's a tuple of `(container's path,
+               entry_point)`.
+
+    Example::
+
+       [xoeuf.addons]
+       xopgi_account = xopgi.addons.xopgi_account
+
+    '''
+    import os
+    from pkg_resources import iter_entry_points
+    from xoutil.future.itertools import delete_duplicates
+    res = []
+    for entry in iter_entry_points(XOEUF_EXTERNAL_ADDON_GROUP):
+        if not entry.attrs:
+            # The entry-point is a whole module.  We can't load the module
+            # here, cause the whole point is to grab the paths before openerp
+            # is configured, but if you load an OpenERP addon you will be
+            # importing openerp somehow and enacting configuration
+            loc = entry.dist.location
+            relpath = entry.module_name.replace('.', os.path.sep)
+            # The parent directory is the one!
+            abspath = os.path.abspath(os.path.join(loc, relpath, '..'))
+            if os.path.isdir(abspath):
+                res.append(abspath)
+    return delete_duplicates(res)

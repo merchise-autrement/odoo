@@ -7,16 +7,21 @@ from odoo import api, fields, models
 class ResUsers(models.Model):
     _inherit = 'res.users'
 
-    sale_team_id = fields.Many2one(
-        'crm.team', "User's Sales Team",
-        help='Sales Team the user is member of. Used to compute the members of a Sales Team through the inverse one2many')
+    sale_teams = fields.Many2many(
+        'crm.team',
+        string="Sales Teams",
+        relation='sale_member_rel',
+        column1='user_id',
+        column2='team_id',
+        help="Sales Teams the user is member of."
+    )
 
     @api.model
     def create(self, vals):
         # Assign the new user in the sales team if there's only one sales team of type `Sales`
         user = super(ResUsers, self).create(vals)
-        if user.has_group('sales_team.group_sale_salesman') and not user.sale_team_id:
+        if user.has_group('sales_team.group_sale_salesman') and not user.sale_teams:
             teams = self.env['crm.team'].search([('team_type', '=', 'sales')])
             if len(teams.ids) == 1:
-                user.sale_team_id = teams.id
+                user.sale_teams |= teams
         return user

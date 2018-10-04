@@ -15,6 +15,9 @@ from odoo.tools.translate import _
 
 from . import security
 
+from xoutil.future.codecs import safe_encode
+
+
 _logger = logging.getLogger(__name__)
 
 PG_CONCURRENCY_ERRORS_TO_RETRY = (errorcodes.LOCK_NOT_AVAILABLE, errorcodes.SERIALIZATION_FAILURE, errorcodes.DEADLOCK_DETECTED)
@@ -106,16 +109,23 @@ def check(f):
                 if e.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
                     raise
                 if tries >= MAX_TRIES_ON_CONCURRENCY_FAILURE:
-                    _logger.info("%s, maximum number of tries reached" % errorcodes.lookup(e.pgcode))
+                    _logger.warn("%s, maximum number of tries reached" % errorcodes.lookup(e.pgcode))
                     raise
                 wait_time = random.uniform(0.0, 2 ** tries)
                 tries += 1
-                _logger.info("%s, retry %d/%d in %.04f sec..." % (errorcodes.lookup(e.pgcode), tries, MAX_TRIES_ON_CONCURRENCY_FAILURE, wait_time))
+                if tries > 3:
+                    _logger.warn(
+                        "%s, retry %d/%d in %.04f sec...",
+                        errorcodes.lookup(e.pgcode),
+                        tries,
+                        MAX_TRIES_ON_CONCURRENCY_FAILURE,
+                        wait_time
+                    )
                 time.sleep(wait_time)
             except IntegrityError as inst:
                 registry = odoo.registry(dbname)
                 for key in registry._sql_error.keys():
-                    if key in inst.pgerror:
+                    if safe_encode(key) in safe_encode(inst.pgerror):
                         raise ValidationError(tr(registry._sql_error[key], 'sql_constraint') or inst.pgerror)
                 if inst.pgcode in (errorcodes.NOT_NULL_VIOLATION, errorcodes.FOREIGN_KEY_VIOLATION, errorcodes.RESTRICT_VIOLATION):
                     msg = _('The operation cannot be completed, probably due to the following:\n- deletion: you may be trying to delete a record while other records still reference it\n- creation/update: a mandatory field is not correctly set')
