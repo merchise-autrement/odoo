@@ -8,11 +8,12 @@ OpenERP Web Gantt chart view.
 """,
     'version': '2.0',
     'depends': ['web'],
-    'data' : [
+    'data': [
         'views/web_gantt.xml',
     ],
     'qweb': [
         'static/src/xml/*.xml',
     ],
-    'auto_install': True
+    'auto_install': False,
+    'installable': False,
 }
