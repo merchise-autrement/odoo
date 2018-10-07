@@ -640,7 +640,6 @@ class PreforkServer(CommonServer):
             self.socket.listen(8 * self.population)
 
     def stop(self, graceful=True):
-        from itertools import chain
         if self.long_polling_pid is not None:
             # FIXME make longpolling process handle SIGTERM correctly
             self.worker_kill(self.long_polling_pid, signal.SIGKILL)
