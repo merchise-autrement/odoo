@@ -24,7 +24,7 @@ run all Odoo tests:
   stage: test
   script:
     - cd ~/src/
-    - ls | grep wt-odoo- | xargs rm -rf
+    - ls | grep wt-odoo- | xargs rm -rf || true
     - cd ~/src/odoo$ODOO_VERSION
     - git fetch --all
     - git clean -fdx
