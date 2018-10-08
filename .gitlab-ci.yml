@@ -19,28 +19,29 @@ check signature:
 run all Odoo tests:
   variables:
     PYTHON: python3
-    ODOO_WORKTREE: odoo11
+    ODOO_VERSION: 11
     GIT_STRATEGY: none
   stage: test
   script:
-    - cd ~/src/$ODOO_WORKTREE
+    - cd ~/src/
+    - ls | grep wt-odoo- | xargs rm -rf
+    - cd ~/src/odoo$ODOO_VERSION
     - git fetch --all
     - git clean -fdx
+    - git checkout merchise-develop-$ODOO_VERSION.0  || true
     - git pull
-    - git checkout $CI_COMMIT_SHA
+    - git worktree prune
+    - git worktree add ../wt-odoo-$CI_COMMIT_SHA $CI_COMMIT_SHA
+    - cd ../wt-odoo-$CI_COMMIT_SHA
     - mkdir -p ~/virtualenvs
-    - rm -rf ~/virtualenvs/$CI_PROJECT_NAME-$ODOO_WORKTREE || true
-    - virtualenv -p `which $PYTHON` ~/virtualenvs/$CI_PROJECT_NAME-$ODOO_WORKTREE
-    - source ~/virtualenvs/$CI_PROJECT_NAME-$ODOO_WORKTREE/bin/activate
+    - rm -rf ~/virtualenvs/$CI_PROJECT_NAME-$ODOO_VERSION || true
+    - virtualenv -p `which $PYTHON` ~/virtualenvs/$CI_PROJECT_NAME-$ODOO_VERSION
+    - source ~/virtualenvs/$CI_PROJECT_NAME-$ODOO_VERSION/bin/activate
     - pip install -r requirements.txt
     - pip install -U "six>=1.9.0" "decorator>=4.0,<4.2" "hypothesis>=3.24"
     - pip install -e .
     - export ADDONS=`find -L addons/ -type f -name '__manifest__.py' | xargs dirname | while read d; do basename $d; done | egrep -v '^(hw_|l10n_|theme_|auth_ldap$|document_ftp$|base_gengo$|website_gengo$|website_instantclick$|pad$|pad_project$|note_pad$|pos_cache$|pos_blackbox_be$|test_performance$|google_calendar$)' | sort -u | xargs | tr " " ","`
     - runtests-odoo.sh -i $ADDONS
-    - export RES=$?
-    - git clean -fdx
-    - git checkout merchise-develop-11.0
-    - exit $RES
   tags:
     - virtualenv
     - xoeuf-tester
