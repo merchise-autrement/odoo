@@ -479,7 +479,7 @@ class PreforkServer(CommonServer):
             sys.exit(0)
 
     def long_polling_spawn(self):
-        nargs = stripped_sys_argv()
+        nargs = stripped_sys_argv('--dev')
         cmd = [sys.executable, sys.argv[0], 'gevent'] + nargs[1:]
         _logger.info('Spawning longpolling server %s', cmd)
         popen = subprocess.Popen(cmd)
