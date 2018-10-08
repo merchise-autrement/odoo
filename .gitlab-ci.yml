@@ -37,6 +37,7 @@ run all Odoo tests:
     - rm -rf ~/virtualenvs/$CI_PROJECT_NAME-$ODOO_VERSION || true
     - virtualenv -p `which $PYTHON` ~/virtualenvs/$CI_PROJECT_NAME-$ODOO_VERSION
     - source ~/virtualenvs/$CI_PROJECT_NAME-$ODOO_VERSION/bin/activate
+    - pip install 'futures<3'
     - pip install -r requirements.txt
     - pip install -U "six>=1.9.0" "decorator>=4.0,<4.2" "hypothesis>=3.24"
     - pip install -e .
