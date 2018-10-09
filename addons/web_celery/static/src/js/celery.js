@@ -1,7 +1,6 @@
 odoo.define('web_celery', function(require){
-    var Bus = require('bus.bus');
     var pending_jobs = 0;
-    var Widget = require('web.Widget');
+    var AbstractAction = require('web.AbstractAction');
     var core = require('web.core');
     var _t = core._t;
     var framework = require('web.framework');
@@ -17,65 +16,69 @@ odoo.define('web_celery', function(require){
 
     var isOk = function(v) {return _.isNumber(v) && !_.isNaN(v);};
 
-    /**
-     *  Basic poller for background jobs.
-     *
-     *  You must use the subclasses of this poller.  See the provided
-     *  `celery.rst` for the specification.
-     *
-     */
-    var JobThrobber = Widget.extend({
+    var JobThrobber = AbstractAction.extend({
+        xmlDependencies: [],
+
+        canBeRemoved: function(){
+            return this.finished;
+        },
+
+        on_attach_callback: function() {
+            this.start_waiting();
+        },
+
         init: function(parent, options) {
-            this._super(parent);
-            var uuid, bus,
-                self = this;
-            var finished = this.finished = $.Deferred();
-            this.percent = 0;
-            this.uuid = uuid = options.params.uuid;
+            var res = this._super.apply(this, arguments);
+            this.uuid = options.params.uuid;
             this.title = _t('Working');
             this.message = _t('Your request is being processed (or about '+
                               'to be processed.)  Please wait.');
-            var channel = this.channel = get_progress_channel(options.params);
-            // The CrossTabBus cannot be used cause it's implemented to be
-            // a singleton.
-            bus = this.bus = new Bus.Bus();
-            bus.add_channel(channel);
-            bus.on('notification', this, this.on_job_notification);
-            pending_jobs += 1;
-            this.show().done(_.bind(this.start_waiting, this));
-            $.when(finished)
-                .done(function(message){
-                    self.show_success(message);
-                })
-                .fail(function(message){
-                    self.show_failure(message);
-                });
+            this.channel = get_progress_channel(options.params);
+            this.finished = $.Deferred();
+        },
+
+        willStart: function() {
+            console.debug('willStart', arguments);
+            var self = this;
+            var res = this._super.apply(this, arguments);
+            res.done(function(){
+                self.call('bus_service', 'addChannel', self.channel);
+                self.call('bus_service', 'onNotification', self,
+                          self.on_job_notification);
+                pending_jobs += 1;
+                $.when(self.finished)
+                    .done(function(message){
+                        self.show_success(message);
+                    })
+                    .fail(function(message){
+                        self.show_failure(message);
+                    });
+            });
+            return res;
         },
 
         update: function(progress, valuemin, valuemax, message) {
-            if (isOk(progress))
-                if (!this.progress || this.progress < progress)
-                    this.progress = progress;
+            if (isOk(progress) && (!this.progress || this.progress < progress))
+                this.progress = progress;
             // Once set, the valuemin and valuemax cannot be updated.
             if (isOk(valuemin) && !isOk(this.valuemin))
                 this.valuemin = valuemin;
             if (isOk(valuemax) && !isOk(this.valuemax))
                 this.valuemax = valuemax;
-            if (isOk(this.progress) && isOk(this.valuemax) && isOk(this.valuemin))
-                try {
-                    var p = this.percent = Math.round(this.progress/(this.valuemax-this.valuemin)*100);
-                    if (p < 0 || p > 100)
-                        throw ('AssertionError: percent makes no sense');
-                } catch (error) {
+            if (isOk(this.progress) && isOk(this.valuemax) && isOk(this.valuemin)) {
+                var p = this.percent = Math.round(this.progress/(this.valuemax-this.valuemin)*100);
+                if (p < 0 || p > 100) {
                     // Safely avoid any non-sensible value
                     this.progress = this.valuemin = this.valuemax = null;
                     this.percent = 0;
                 }
+            }
             this.message = message;
             this.updateView();
         },
 
         on_job_notification: function(notifications){
+            console.debug('Celery job notifications', notifications);
             var self = this;
             _.each(notifications, function (params) {
                 var channel = params[0];
@@ -98,7 +101,6 @@ odoo.define('web_celery', function(require){
         },
 
         start_waiting: function() {
-            this.bus.start_polling();
             var timer = $.elapsed(JOB_TIME_LIMIT);
             var finished = this.finished;
             var self = this;
@@ -108,21 +110,20 @@ odoo.define('web_celery', function(require){
                         type: "warning",
                         kind: "timeout"
                     });
-                    self.bus.stop_polling();
-                } else {
-                    self.stop_waiting();
                 }
+                self.stop_waiting();
             });
         },
 
         stop_waiting: function() {
-            this.bus.stop_polling();
+            this.call('bus_service', 'deleteChannel', this.channel);
             this.finished.resolve();
         },
 
         destroy: function() {
+            console.trace('Destroying');
             pending_jobs -= 1;
-            this._super();
+            this._super.apply(this, arguments);
         },
 
         show_failure: function() {
@@ -135,26 +136,32 @@ odoo.define('web_celery', function(require){
     });
 
     var FailureSuccessReporting = JobThrobber.extend({
+        do_close: function(){
+            var self = this;
+            _.defer(function(){
+                self.trigger_up('history_back');
+                self.destroy();
+                self.trigger_up('reload');
+            });
+        },
+
+        do_close_with_action: function(action){
+            var self = this;
+            _.defer(function(){
+                self.trigger_up('history_back');
+                self.do_action(action);
+                self.destroy();
+            });
+        },
+
         show_success: function(message) {
             var next_action = message.result,
                 parent = this.getParent(),
                 self = this;
-            if (next_action) {
-                _.defer(function() {
-                    // First go back to remove the progress bar level from
-                    // the breadcumbs, and then go the specified action.
-                    parent.do_action('history_back').then(
-                        function(){
-                            parent.do_action(next_action);
-                            self.destroy();
-                        }
-                    );
-                });
+            if (!!next_action) {
+                this.do_close_with_action(next_action);
             } else {
-                _.defer(function(){
-                    parent.do_action('history_back');
-                    self.destroy();
-                });
+                this.do_close();
             }
         },
 
@@ -169,41 +176,30 @@ odoo.define('web_celery', function(require){
                 );
             }
             else {
-                var cm = new CrashManager();
-                // Our 'message' has the error data in 'message.message'. This
-                // can be passed to the CrashManager as the 'data' attribute
-                // of the error object.
                 var error = message;
                 var data = error.data = _.clone(message.message);
                 // We need to copy the 'message' title of the error.
                 if (!!data.message) {
                     error.message = data.message;
                 }
-                cm.rpc_error(error);
+                core.bus.trigger('rpc_error', error);
             }
-            var self = this,
-                parent = this.getParent();
-            _.defer(function(){
-                parent.do_action('history_back');
-                self.destroy();
-            });
+            this.do_close();
         }
     });
 
     var ProgressBarThrobber = FailureSuccessReporting.extend({
+        xmlDependencies: ['/web_celery/static/src/xml/templates.xml'],
         template: "BackgroundJobProgress",
 
-        show: function() {
-            return this.appendTo($("body"));
+        on_attach_callback: function() {
+            this._super.apply(this, arguments);
+            this.$el.modal('show');
         },
 
-        start: function() {
-            var res = $.Deferred();
-            this.$el.on('show.bs.modal', function(){
-                res.resolve();
-            });
-            this.$el.modal('show');
-            return res.promise();
+        on_detach_callback: function() {
+            this._super.apply(this, arguments);
+            this.$el.modal('hide');
         },
 
         updateView: function() {
@@ -243,18 +239,13 @@ odoo.define('web_celery', function(require){
                 $('body .modal-backdrop.in').detach();
             });
             this.$el.modal('hide');
-            this._super();
+            this._super.apply(this, arguments);
         }
     });
 
     var SpinnerThrobber = FailureSuccessReporting.extend({
         SPINNER_WAIT: 250,
-
-        show: function() {
-            var res = $.Deferred();
-            res.resolve();
-            return res.promise();
-        },
+        xmlDependencies: ['/web_celery/static/src/xml/templates.xml'],
 
         start_waiting: function() {
             this._super.apply(this, arguments);
