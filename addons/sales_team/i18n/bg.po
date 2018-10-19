@@ -7,8 +7,6 @@
 # Martin Trigaux, 2016
 # kalatchev, 2016
 # Kaloyan Naumov <kaloyan@lumnus.net>, 2016
-# Radina <radis.choice@gmail.com>, 2016
-# preslav <hackerz99999@gmail.com>, 2016
 # Ivan Ivanov, 2017
 # Albena Mincheva <albena_vicheva@abv.bg>, 2018
 # Boris Stefanov <borkata@gmail.com>, 2018
@@ -31,28 +29,28 @@ msgstr ""
 #: code:addons/sales_team/static/src/xml/sales_team_dashboard.xml:91
 #, python-format
 msgid "3 exp. closing"
-msgstr ""
+msgstr "3 срок на годност - затваряне"
 
 #. module: sales_team
 #. openerp-web
 #: code:addons/sales_team/static/src/xml/sales_team_dashboard.xml:137
 #, python-format
 msgid "35,029.39€"
-msgstr ""
+msgstr "35,029.39 евро"
 
 #. module: sales_team
 #. openerp-web
 #: code:addons/sales_team/static/src/xml/sales_team_dashboard.xml:124
 #, python-format
 msgid "78,140.03€"
-msgstr ""
+msgstr "78,140.03 евро"
 
 #. module: sales_team
 #. openerp-web
 #: code:addons/sales_team/static/src/xml/sales_team_dashboard.xml:169
 #, python-format
 msgid "80.000€"
-msgstr ""
+msgstr "80.000 евро"
 
 #. module: sales_team
 #: model:ir.ui.view,arch_db:sales_team.crm_team_salesteams_view_kanban
@@ -67,7 +65,7 @@ msgstr "<span>Отчети</span>"
 #. module: sales_team
 #: model:ir.ui.view,arch_db:sales_team.crm_team_salesteams_view_kanban
 msgid "<span>View</span>"
-msgstr "<span>Прегледай</span>"
+msgstr "<span>Изглед</span>"
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_active
@@ -79,17 +77,17 @@ msgstr "Активен"
 #: code:addons/sales_team/static/src/xml/sales_team_dashboard.xml:114
 #, python-format
 msgid "Activities Done"
-msgstr ""
+msgstr "Извършени дейности"
 
 #. module: sales_team
 #: model:ir.ui.view,arch_db:sales_team.view_sale_config_settings
 msgid "Apply"
-msgstr "Приложи"
+msgstr "Приложете"
 
 #. module: sales_team
 #: model:ir.ui.view,arch_db:sales_team.crm_team_salesteams_search
 msgid "Archived"
-msgstr "Архивирани"
+msgstr "Архивиран"
 
 #. module: sales_team
 #: model:ir.ui.menu,name:sales_team.menu_action_res_partner_bank_form
@@ -105,7 +103,7 @@ msgstr "Банки"
 #. module: sales_team
 #: model:ir.ui.view,arch_db:sales_team.view_sale_config_settings
 msgid "Cancel"
-msgstr "Отказ"
+msgstr "Отменете"
 
 #. module: sales_team
 #: model:ir.actions.act_window,help:sales_team.crm_team_act
@@ -125,12 +123,12 @@ msgstr "Натиснете тук, за да определите нов тър�
 #: code:addons/sales_team/static/src/xml/sales_team_dashboard.xml:182
 #, python-format
 msgid "Click to set"
-msgstr ""
+msgstr "Натиснете, за да настроите"
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_color
 msgid "Color Index"
-msgstr "Индекс на Цветовете."
+msgstr "Индекс на цветове"
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_company_id
@@ -147,17 +145,17 @@ msgstr "Настройка"
 #: model:ir.actions.act_window,name:sales_team.action_sale_config
 #: model:ir.ui.view,arch_db:sales_team.view_sale_config_settings
 msgid "Configure Sales"
-msgstr ""
+msgstr "Конфигурирайте продажби"
 
 #. module: sales_team
 #: model:ir.ui.menu,name:sales_team.menu_partner_category_form
 msgid "Contact Tags"
-msgstr "Тагове на контактите"
+msgstr "Маркери на контакти"
 
 #. module: sales_team
 #: model:ir.ui.menu,name:sales_team.menu_partner_title_contact
 msgid "Contact Titles"
-msgstr "Обръщения"
+msgstr "Обръщения към контакти"
 
 #. module: sales_team
 #: model:ir.ui.menu,name:sales_team.menu_config_address_book
@@ -179,7 +177,7 @@ msgstr "Група Държави"
 #: code:addons/sales_team/static/src/xml/sales_team_dashboard.xml:215
 #, python-format
 msgid "Create a few opportunities in it."
-msgstr ""
+msgstr "Създайте няколко възможности в него."
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_create_uid
@@ -210,23 +208,23 @@ msgstr "Клиенти"
 #: model:ir.ui.menu,name:sales_team.menu_sales_team_act
 #, python-format
 msgid "Dashboard"
-msgstr "Табло"
+msgstr "Табло за управление"
 
 #. module: sales_team
 #: model:crm.team,name:sales_team.team_sales_department
 msgid "Direct Sales"
-msgstr ""
+msgstr "Директни продажби"
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_display_name
 #: model:ir.model.fields,field_description:sales_team.field_sale_config_settings_display_name
 msgid "Display Name"
-msgstr "Име за показване"
+msgstr "Покажете име"
 
 #. module: sales_team
 #: model:ir.ui.menu,name:sales_team.menu_country_state_partner
 msgid "Fed. States"
-msgstr "Област/Щат"
+msgstr "Федерални щати"
 
 #. module: sales_team
 #: model:ir.ui.view,arch_db:sales_team.crm_team_view_form
@@ -234,18 +232,20 @@ msgid ""
 "Follow this salesteam to automatically track the events associated to users "
 "of this team."
 msgstr ""
+"Следвайте този търговски отдел, за да проследявате автоматично събитията, "
+"свързани с потребителите на този отдел."
 
 #. module: sales_team
 #. openerp-web
 #: code:addons/sales_team/static/src/xml/sales_team_dashboard.xml:214
 #, python-format
 msgid "Great sales journeys start with a clean pipeline."
-msgstr ""
+msgstr "Пътешествията на големите продажби започват с чист пайплайн."
 
 #. module: sales_team
 #: model:ir.ui.view,arch_db:sales_team.crm_team_salesteams_search
 msgid "Group By..."
-msgstr "Групиране по..."
+msgstr "Групирайте по"
 
 #. module: sales_team
 #. openerp-web
@@ -267,7 +267,7 @@ msgid ""
 "If set, sale team used notably for sales and assignations related to this "
 "partner"
 msgstr ""
-"Ако е настроено, търговският екип, използван предимно за продажби и "
+"Ако е настроено, търговският отдел използва предимно продажби и "
 "разпределения, свързани с този контрагент"
 
 #. module: sales_team
@@ -276,13 +276,13 @@ msgid ""
 "If the active field is set to false, it will allow you to hide the sales "
 "team without removing it."
 msgstr ""
-"Ако активното поле е зададено като 'грешно', то ще Ви позволи да скриете "
+"Ако активното поле е настроено на 'Грешно', това ще Ви позволи да скриете "
 "търговския отдел без да го отстранявате."
 
 #. module: sales_team
 #: model:crm.team,name:sales_team.crm_team_1
 msgid "Indirect Sales"
-msgstr ""
+msgstr "Индиректни продажби"
 
 #. module: sales_team
 #. openerp-web
@@ -295,7 +295,7 @@ msgstr "Фактуриран"
 #: model:ir.model.fields,field_description:sales_team.field_crm_team___last_update
 #: model:ir.model.fields,field_description:sales_team.field_sale_config_settings___last_update
 msgid "Last Modified on"
-msgstr "Последно променено на"
+msgstr "Последно коригирано на"
 
 #. module: sales_team
 #. openerp-web
@@ -308,13 +308,13 @@ msgstr "Миналия месец"
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_write_uid
 #: model:ir.model.fields,field_description:sales_team.field_sale_config_settings_write_uid
 msgid "Last Updated by"
-msgstr "Последно обновено от"
+msgstr "Последно актуализирано от"
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_write_date
 #: model:ir.model.fields,field_description:sales_team.field_sale_config_settings_write_date
 msgid "Last Updated on"
-msgstr "Последно обновено на"
+msgstr "Последно актуализирано на"
 
 #. module: sales_team
 #: model:ir.ui.menu,name:sales_team.menu_localisation
@@ -324,14 +324,14 @@ msgstr "Локализация"
 #. module: sales_team
 #: model:res.groups,name:sales_team.group_sale_manager
 msgid "Manager"
-msgstr "Управител"
+msgstr "Мениджър"
 
 #. module: sales_team
 #. openerp-web
 #: code:addons/sales_team/static/src/xml/sales_team_dashboard.xml:25
 #, python-format
 msgid "Meetings"
-msgstr "Срещи"
+msgstr "Заседания"
 
 #. module: sales_team
 #: model:ir.ui.view,arch_db:sales_team.crm_team_salesteams_view_kanban
@@ -362,7 +362,7 @@ msgstr "Моите търговски отдели"
 #: code:addons/sales_team/static/src/xml/sales_team_dashboard.xml:50
 #, python-format
 msgid "Next 7 days"
-msgstr ""
+msgstr "Следващите 7 дни"
 
 #. module: sales_team
 #. openerp-web
@@ -388,7 +388,7 @@ msgstr "Контрагент"
 #: code:addons/sales_team/static/src/xml/sales_team_dashboard.xml:102
 #, python-format
 msgid "Performance"
-msgstr ""
+msgstr "Производителност"
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_reply_to
@@ -464,24 +464,24 @@ msgstr "Настройки"
 #: code:addons/sales_team/static/src/xml/sales_team_dashboard.xml:146
 #, python-format
 msgid "Target"
-msgstr ""
+msgstr "Цел"
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_user_id
 #: model:ir.ui.view,arch_db:sales_team.crm_team_salesteams_search
 msgid "Team Leader"
-msgstr "Тийм лидер"
+msgstr "Ръководител екип"
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_member_ids
 #: model:ir.ui.view,arch_db:sales_team.crm_team_view_form
 msgid "Team Members"
-msgstr "Членове на отбора"
+msgstr "Членове екип"
 
 #. module: sales_team
 #: model:ir.model.fields,help:sales_team.field_crm_team_color
 msgid "The color of the team"
-msgstr ""
+msgstr "Цветът на екипа"
 
 #. module: sales_team
 #: model:ir.model.fields,help:sales_team.field_crm_team_reply_to
@@ -515,7 +515,7 @@ msgstr ""
 #: code:addons/sales_team/static/src/xml/sales_team_dashboard.xml:76
 #, python-format
 msgid "To Activities"
-msgstr ""
+msgstr "Към дейности"
 
 #. module: sales_team
 #. openerp-web
@@ -523,7 +523,7 @@ msgstr ""
 #: code:addons/sales_team/static/src/xml/sales_team_dashboard.xml:189
 #, python-format
 msgid "To Activity Report"
-msgstr ""
+msgstr "Към отчет на дейности"
 
 #. module: sales_team
 #. openerp-web
@@ -531,7 +531,7 @@ msgstr ""
 #: code:addons/sales_team/static/src/xml/sales_team_dashboard.xml:51
 #, python-format
 msgid "To Calendar"
-msgstr ""
+msgstr "Към календар"
 
 #. module: sales_team
 #. openerp-web
@@ -539,14 +539,14 @@ msgstr ""
 #: code:addons/sales_team/static/src/xml/sales_team_dashboard.xml:199
 #, python-format
 msgid "To Invoice Report"
-msgstr ""
+msgstr "Към отчет на фактури"
 
 #. module: sales_team
 #. openerp-web
 #: code:addons/sales_team/static/src/xml/sales_team_dashboard.xml:86
 #, python-format
 msgid "To Opportunities"
-msgstr ""
+msgstr "Към възможности"
 
 #. module: sales_team
 #. openerp-web
@@ -554,14 +554,14 @@ msgstr ""
 #: code:addons/sales_team/static/src/xml/sales_team_dashboard.xml:194
 #, python-format
 msgid "To Opportunity Report"
-msgstr ""
+msgstr "Към отчет на възможности"
 
 #. module: sales_team
 #. openerp-web
 #: code:addons/sales_team/static/src/xml/sales_team_dashboard.xml:13
 #, python-format
 msgid "To do"
-msgstr ""
+msgstr "За извършване"
 
 #. module: sales_team
 #. openerp-web
@@ -586,12 +586,12 @@ msgstr ""
 #. module: sales_team
 #: model:res.groups,name:sales_team.group_sale_salesman_all_leads
 msgid "User: All Documents"
-msgstr "Потребител: Всички документи"
+msgstr "Потребител: всички документи"
 
 #. module: sales_team
 #: model:res.groups,name:sales_team.group_sale_salesman
 msgid "User: Own Documents Only"
-msgstr "Потребител: само собствените документи"
+msgstr "Потребител: само собствени документи"
 
 #. module: sales_team
 #: model:ir.model,name:sales_team.model_res_users
@@ -601,14 +601,14 @@ msgstr "Потребители"
 #. module: sales_team
 #: model:crm.team,name:sales_team.salesteam_website_sales
 msgid "Website Sales"
-msgstr "Уебсайт Продажби"
+msgstr "Уебсайт продажби"
 
 #. module: sales_team
 #. openerp-web
 #: code:addons/sales_team/static/src/xml/sales_team_dashboard.xml:127
 #, python-format
 msgid "Won in Opportunities"
-msgstr ""
+msgstr "Спечелен във възможности"
 
 #. module: sales_team
 #. openerp-web
@@ -622,7 +622,7 @@ msgstr "Въведена грешна стойност!"
 #: code:addons/sales_team/static/src/xml/sales_team_dashboard.xml:89
 #, python-format
 msgid "exp. closing"
-msgstr ""
+msgstr "затваряне на разходи"
 
 #. module: sales_team
 #: model:ir.model,name:sales_team.model_ir_ui_view
@@ -634,7 +634,7 @@ msgstr "ir.ui.view"
 #: code:addons/sales_team/static/src/xml/sales_team_dashboard.xml:79
 #, python-format
 msgid "overdue"
-msgstr ""
+msgstr "просрочен"
 
 #. module: sales_team
 #: model:ir.model,name:sales_team.model_sale_config_settings
@@ -647,14 +647,15 @@ msgid ""
 "the user will have access to all records of everyone in the sales "
 "application."
 msgstr ""
-"Потребителят ще има достъп до всички записи,на всички потребители, в модул "
-"Продажби."
+"потребителят ще има достъп до записите на всички потребители в приложението "
+"'Продажби'."
 
 #. module: sales_team
 #: model:res.groups,comment:sales_team.group_sale_salesman
 msgid "the user will have access to his own data in the sales application."
 msgstr ""
-"Потребителят ще има достъп само до своите лични данни в модул Продажби"
+"потребителят ще има достъп само до своите лични данни в приложението "
+"'Продажби'."
 
 #. module: sales_team
 #: model:res.groups,comment:sales_team.group_sale_manager
@@ -662,5 +663,5 @@ msgid ""
 "the user will have an access to the sales configuration as well as statistic"
 " reports."
 msgstr ""
-"Потребителят ще има достъп за конфигурация на Продажби, както и до "
-"статистически доклади."
+"Потребителят ще има достъп до конфигурацията 'Продажби', както и до "
+"статистически отчети."

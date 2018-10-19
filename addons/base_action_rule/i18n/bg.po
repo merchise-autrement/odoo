@@ -78,7 +78,7 @@ msgstr "Автоматизирани действия"
 #. module: base_action_rule
 #: selection:base.action.rule,kind:0
 msgid "Based on Form Modification"
-msgstr "Въз основа на промяна на форма"
+msgstr "Въз основа на корекция на форма"
 
 #. module: base_action_rule
 #: selection:base.action.rule,kind:0
@@ -165,7 +165,7 @@ msgid ""
 msgstr ""
 "Забавяне след пусковата дата.\n"
 "                                    Можете да поставите отрицателно число, ако се нуждаете от забавяне преди\n"
-"                                    пусковата дата, като изпратите напомняне, което да се активира 15 минути преди дадена среща."
+"                                    пусковата дата, като изпратите напомняне, което да се активира 15 минути преди дадено заседание."
 
 #. module: base_action_rule
 #: model:ir.model.fields,field_description:base_action_rule.field_base_action_rule_trg_date_range
@@ -290,14 +290,14 @@ msgstr "Последно коригирано на"
 #: model:ir.model.fields,field_description:base_action_rule.field_base_action_rule_line_test_write_uid
 #: model:ir.model.fields,field_description:base_action_rule.field_base_action_rule_write_uid
 msgid "Last Updated by"
-msgstr "Последно обновено от"
+msgstr "Последно актуализирано от"
 
 #. module: base_action_rule
 #: model:ir.model.fields,field_description:base_action_rule.field_base_action_rule_lead_test_write_date
 #: model:ir.model.fields,field_description:base_action_rule.field_base_action_rule_line_test_write_date
 #: model:ir.model.fields,field_description:base_action_rule.field_base_action_rule_write_date
 msgid "Last Updated on"
-msgstr "Последно обновено на"
+msgstr "Последно актуализирано на"
 
 #. module: base_action_rule
 #: model:ir.model.fields,field_description:base_action_rule.field_base_action_rule_last_run
@@ -372,7 +372,7 @@ msgstr "Контрагент"
 #. module: base_action_rule
 #: selection:base.action.rule.lead.test,state:0
 msgid "Pending"
-msgstr "Предстоящ"
+msgstr "Чакащ"
 
 #. module: base_action_rule
 #: model:ir.model.fields,field_description:base_action_rule.field_base_action_rule_lead_test_priority
@@ -387,7 +387,7 @@ msgstr "Модел на сродни документи"
 #. module: base_action_rule
 #: model:ir.model.fields,field_description:base_action_rule.field_base_action_rule_lead_test_user_id
 msgid "Responsible"
-msgstr "Отговорник"
+msgstr "Отговорно лице"
 
 #. module: base_action_rule
 #: model:ir.model.fields,field_description:base_action_rule.field_base_action_rule_name
@@ -422,12 +422,12 @@ msgstr "Сървърни действия за изпълняване"
 #. module: base_action_rule
 #: model:ir.model.fields,field_description:base_action_rule.field_base_action_rule_act_user_id
 msgid "Set Responsible"
-msgstr "Настройте отговорен"
+msgstr "Настройте отговорно лице"
 
 #. module: base_action_rule
 #: model:ir.ui.view,arch_db:base_action_rule.view_base_action_rule_form
 msgid "Set selection based on a search filter:"
-msgstr "Настройте подбор въз основа на филтър за търсене:"
+msgstr "Настройте селекция въз основа на филтър за търсене:"
 
 #. module: base_action_rule
 #: model:ir.model.fields,field_description:base_action_rule.field_base_action_rule_lead_test_state
@@ -452,17 +452,17 @@ msgstr "Тествайте контекст на дейност на сървъ�
 #. module: base_action_rule
 #: model:ir.filters,name:base_action_rule.test_filter_done
 msgid "Test lead in state 'done'"
-msgstr "Изпробвайте лийд в състояние 'извършен'"
+msgstr "Тествайте лийд в състояние 'извършен'"
 
 #. module: base_action_rule
 #: model:ir.filters,name:base_action_rule.test_filter_draft
 msgid "Test lead in state 'draft'"
-msgstr "Изпробвайте лийд в състояние 'чернова'"
+msgstr "Тествайте лийд в състояние 'чернова'"
 
 #. module: base_action_rule
 #: model:ir.filters,name:base_action_rule.test_filter_open
 msgid "Test lead in state 'open'"
-msgstr "Изпробвайте лийд в състояние 'отворен'"
+msgstr "Тествайте лийд в състояние 'отворен'"
 
 #. module: base_action_rule
 #: model:ir.model.fields,field_description:base_action_rule.field_base_action_rule_trg_date_id
@@ -486,7 +486,7 @@ msgstr ""
 "Използвайте автоматизирани действия, за да задействате автоматично действия за\n"
 "                различни екрани. Пример: лийд, създаден от конкретен потребител може да\n"
 "                бъде автоматично зададен на конкретен търговски отдел или\n"
-"                възможност, която все още е със статус 'предстоящя', след 14 дни би могла да\n"
+"                възможност, която все още е в състояние 'чакаща', след 14 дни би могла да\n"
 "                задейства автоматично напомнящ имейл."
 
 #. module: base_action_rule

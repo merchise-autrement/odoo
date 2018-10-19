@@ -87,6 +87,11 @@ class AccountInvoice(models.Model):
         'move_id.line_ids.amount_residual',
         'move_id.line_ids.currency_id')
     def _compute_residual(self):
+        # merchise: catching a bug
+        was_reconciled = self.reconciled
+        old_residuals = (self.residual_company_signed,
+                         self.residual_signed,
+                         self.residual)
         residual = 0.0
         residual_company_signed = 0.0
         sign = self.type in ['in_refund', 'out_refund'] and -1 or 1
@@ -106,6 +111,13 @@ class AccountInvoice(models.Model):
             self.reconciled = True
         else:
             self.reconciled = False
+        if self.date < '2018-02-01' and was_reconciled and not self.reconciled:
+            logger.error(
+                'Reopening old invoices %r: UID: %r',
+                self.mapped('number'),
+                self.env.uid,
+                extra=dict(stack=True)
+            )
 
     @api.one
     def _get_outstanding_info_JSON(self):

@@ -64,7 +64,7 @@ msgstr ""
 "\n"
 "=======================\n"
 "\n"
-"Този модул добавя няколко функции за ресторанти към Център за продажби:\n"
+"Този модул добавя няколко функции за ресторанти към център за продажби:\n"
 "- Печат фактура за покупка: Позволява да отпечатате касовата бележка преди поръчката да е платена\n"
 "- Разделяне фактура за покупка: Позволява да разделите една поръчка на няколко различни поръчки\n"
 "- Разпечатване на поръчки за кухнята: позволява да разпечатате актуализираните поръчки на принтера в кухнята или бара.\n"
@@ -106,7 +106,7 @@ msgstr ""
 "=======================\n"
 "\n"
 "Този модул Ви позволява да определите програма за лоялност в\n"
-"Центъра за продажби, където клиентите набират точки за лоялност\n"
+"центъра за продажби, където клиентите набират точки за лоялност\n"
 "и получават награди.\n"
 "\n"
 
@@ -329,7 +329,7 @@ msgstr ""
 "\n"
 "Признаване на приходи\n"
 "===================\n"
-"Управлявайте признаването на приходи в продажбите на продукти.\n"
+"Управлявайте признаването на приходи на продажбите на продукти.\n"
 "Проследява вноските за признаване на приходи и създава съответстващи записи в журнал.\n"
 "\n"
 "    "
@@ -612,7 +612,7 @@ msgid ""
 "        Enable a cache on products for a lower POS loading time."
 msgstr ""
 "\n"
-"        Позволете кеш на продукти, за да намалите времето за зареждане в център за продажби."
+"        Позволете кеш памет за продукти, за да намалите времето за зареждане в център за продажби."
 
 #. module: base
 #: model:ir.module.module,description:base.module_hr_expense_sepa
@@ -947,7 +947,7 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"    PayuMoney разплащателен приобретател за Индия.\n"
+"    PayuMoney обработчик на плащане за Индия.\n"
 "\n"
 "  Порталът за плащане PayUmoney поддържа единствено валута в индийски рупии.\n"
 "    "
@@ -1419,11 +1419,11 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"Добавя подобрена поддръжка за приставки (Ether)Pad в уеб клиента.\n"
+"Добавя подобрена поддръжка за прикачени файлове (Ether)Pad в уеб клиента.\n"
 "===================================================================\n"
 "\n"
-"Позволява на компанията да персонализира коя инсталация за подложки да се използва, за да се свърже към новите\n"
-"подложки (по подразбиране, http://etherpad.com/).\n"
+"Позволява на компанията да персонализира коя Pad инсталация да се използва, за да се свърже с новите\n"
+"документи (по подразбиране, http://etherpad.com/).\n"
 "    "
 
 #. module: base
@@ -1987,7 +1987,7 @@ msgstr ""
 "* Потребителска комуникация чрез новинарската страница \n"
 "* Проектиране на поредица дискусии, свързани с документи\n"
 "* Разчита на глобалния сървър за изходяща поща - интегрирана система за управление на имейли - позволяваща да се изпращат имейли с конфигурируема обработваща машина на базата на планьора\n"
-"* Включва разшируем универсален помощник за съставяне на имейли, който може да се превърне в помощник за масова поща и който е способен да интерпретира прости *изрази-текстови заместители*, които ще бъдат подменени с динамични данни, когато всеки имейл е действително изпратен.\n"
+"* Включва разшируем универсален помощник за съставяне на имейли, който може да се превърне в помощник за масов мейлинг и който е способен да интерпретира прости *изрази-заместители*, които ще бъдат подменени с динамични данни, когато всеки имейл е действително изпратен.\n"
 "    "
 
 #. module: base
@@ -2148,7 +2148,7 @@ msgstr ""
 "Зависи от отговорите или прегледите на някои въпроси от различни потребители. Дадено\n"
 "проучване може да има множество страници. Всяка страница може да съдържа множество въпроси, а\n"
 "всеки въпрос може да има множество отговори. Различните потребители могат да дават различни\n"
-"отговори на въпроси и проучването е извършено съобразно това. Контрагентите също изпращат имейли с персонално означение за поканата на проучването.\n"
+"отговори на въпроси и проучването е извършено съобразно това. Контрагентите също изпращат имейли с персонален токен за поканата на проучването.\n"
 "    "
 
 #. module: base
@@ -2555,7 +2555,7 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"Изпращайте лесно масова поща до Вашите лийдове, възможности или клиенти. Проследявайте\n"
+"Изпращайте лесно масов мейлинг до Вашите лийдове, възможности или клиенти. Проследявайте\n"
 "производителността на маркетинговите кампании, за да подобрите степента на реализация. Съставяйте\n"
 "професионални имейли и използвайте повторно шаблони с няколко натискания на бутони.\n"
 "    "
@@ -2824,7 +2824,7 @@ msgstr ""
 "Този модул позволява да се изпраща FCM известие на регистрирани мобилни телефони\n"
 "за всяко съобщение в разговор.\n"
 "\n"
-"**Конфигурирайте API клучовете от Общи настройки**\n"
+"**Конфигурирайте API клучовете си от Общи настройки**\n"
 "    "
 
 #. module: base
@@ -2899,7 +2899,7 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"Скрийте точките от менюто hr_timesheet_sheet.\n"
+"Скрийте редове от менюто hr_timesheet_sheet.\n"
 "    "
 
 #. module: base
@@ -3124,7 +3124,7 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"Управление на доставни разходи\n"
+"Управление на разтоварни разходи\n"
 "=======================\n"
 "Този модул Ви позволява лесно да добавяте допълнителни разходи върху пикингите и да преценявате разпределянето на тези разходи сред техните движения в склада, за да ги имате предвид при остойностяването на Вашата наличност.\n"
 "    "
@@ -3180,7 +3180,7 @@ msgstr ""
 "==================\n"
 "* Превантивна срещу корективна поддръжка\n"
 "* Определете различните етапи за заявките Ви за поддръжка\n"
-"* Планирайте заявките си за поддръжка (също повтарящи се превантивно)\n"
+"* Планирайте заявките си за поддръжка (също превантивно периодични)\n"
 "* Оборудване, свързано с работни центрове\n"
 "* MTBF, MTTR, ...\n"
 
@@ -3347,7 +3347,7 @@ msgstr ""
 "* Отпуски по отдел\n"
 "* Анализ на отпуските\n"
 "\n"
-"Синхронизация с вътрешния дневен ред (срещи на CRM модула) е също възможна, за да създава автоматично среща, когато молбата за излизане в отпуск е приета чрез настройка на вида среща във Вид отпуск.\n"
+"Синхронизация с вътрешния дневен ред (срещи на CRM модула) е също възможна, за да създава автоматично среща, когато молбата за излизане в отпуск е приета чрез настройка на вида среща във 'Вид отпуск'.\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_stock
@@ -3459,7 +3459,7 @@ msgstr ""
 "\n"
 "* Шипинг: избор на доставка при еднократно или частично доставяне\n"
 "* Фактуриране: изберете как ще бъдат плащани фактурите\n"
-"* Incoterms: международни търговски условия\n"
+"* Инкотермс: международни търговски условия\n"
 "\n"
 "Можете да изберете гъвкави методи на фактуриране:\n"
 "\n"
@@ -3507,7 +3507,7 @@ msgstr ""
 "-----------\n"
 "* Шипинг: избор на доставка при еднократно или частично доставяне\n"
 "* Фактуриране: изберете как ще бъдат платени фактурите\n"
-"* Incoterms: международни търговски укловия\n"
+"* Инкотермс: международни търговски укловия\n"
 "\n"
 "Можете да изберете гъвкави методи за фактуриране:\n"
 "\n"
@@ -4117,7 +4117,7 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"Odoo пощенска група : архиви на пощенски списъци\n"
+"Odoo пощенска група : архиви на мейлинг списъци\n"
 "==========================================\n"
 "\n"
 "        "
@@ -4489,14 +4489,14 @@ msgstr ""
 "\n"
 "На всеки служител може да бъде дадена схема за оценка. Схемата задава честотата и начинът, по който да управлявате периодичното си оценяване.\n"
 "\n"
-"Ключови функции\n"
+"Ключови характеристики\n"
 "------------\n"
 "* Способност да извършвате оценяване на служител(и).\n"
 "* Оценяване може да се извърши от от мениджъра на служителя или автоматично въз основа на списък, поместен във формата на служителя.\n"
 "* Оценяването се извършва по този списък, в който могат да се създадат множество услуги. Всяко проучване може да съответства на конкретно ниво в йерархията на служителите. Последният преглед и оценка се извършват от мениджъра.\n"
 "* Мениджър, помощник мениджър, сътрудник и самият служител получават имейл по който да извършват периодично оценяване.\n"
 "* Всяка форма за оценяване, попълнена от служител, мениджър или сътрудник може да бъде видяна в PDF форма.\n"
-"* Заявки за срещи се създават механично според оценките на служителите.\n"
+"* Заявки за заседания се създават механично според оценките на служителите.\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_pe
@@ -4579,8 +4579,8 @@ msgstr ""
 "PosBox софтуеърен актуализатор\n"
 "========================\n"
 "\n"
-"Този модул позволява дистанционно да се актуализира софтуеърът PosBox към\n"
-"нова версия. Този модул е специфичен за PosBox настройке и среда\n"
+"Този модул позволява PosBox софтуеърът да преминава дистанционно към\n"
+"по-нова версия. Този модул е специфичен за PosBox настройке и среда\n"
 "и не трябва да се инсталира на регулярни openerp сървъри.\n"
 "\n"
 
@@ -4716,10 +4716,10 @@ msgstr ""
 "Бърз и лесен процес по продажби\n"
 "===========================\n"
 "\n"
-"Този модул Ви позволява да управлявате много лесно продажбите в магазина си с тачскрийн интерфейс, базиран изцяло онлайн.\n"
+"Този модул Ви позволява да управлявате много лесно продажбите в магазина си с интерфейс на сензорни екрани, базиран изцяло онлайн.\n"
 "Той е съвместим с всички PC таблети и iPad, предлагащи разнообразни методи за плащане.\n"
 "\n"
-"Подборът продукти може да бъде извършен по няколко начина:\n"
+"Селекцеята продукти може да бъде извършен по няколко начина:\n"
 "\n"
 "* Използвайки четец за баркодове\n"
 "* Търсейки в интернет по категории продукти или чрез търсене на текст.\n"
@@ -5046,7 +5046,7 @@ msgstr ""
 "\n"
 "Отчет - CRM (мостов модул)\n"
 "=================================================================================\n"
-"Този модул добавя бутон за масово изпращане на имейли в изгледите на повечето опции лийд/клиенти\n"
+"Този модул добавя бутон за масови мейлинги  за проучвания в изгледите на повечето опции лийд/клиенти\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_ch
@@ -5275,7 +5275,7 @@ msgstr ""
 "Универсално Odoo управление на взаимоотношенията с клиенти\n"
 "====================================================\n"
 "\n"
-"Това приложение позволява на група хора интелигентно и ефикасно да управляват лийдове, възможности, срещи и дейности.\n"
+"Това приложение позволява на група хора интелигентно и ефикасно да управляват лийдове, възможности, заседания и дейности.\n"
 "То управлява ключови задачи като комуникация, приоритетност, идентификация, разпределение, анализиране и известяване.\n"
 "\n"
 "Odoo гарантира, че всички случаи се проследяват успешно от потребителите, клиентите и доставчиците. То може автоматично да изпраща подсещащи писма, да задейства специфични методи и много други дейности въз основа на собствените Ви правила за инициатива и предприемачество. \n"
@@ -5343,7 +5343,7 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"Това създава склад за продукти за конфигурацията център за продажби. Драстично намалява\n"
+"Това създава кеш памет за продукти за конфигурация на център за продажби. Драстично намалява\n"
 "времето, отнемащо му да зареди сесия на център за продажби с множество продукти.\n"
 "    "
 
@@ -5369,7 +5369,7 @@ msgstr ""
 "Тя поддържа:\n"
 "------------\n"
 "    - Календар на събитията\n"
-"    - Повтарящи се събития\n"
+"    - Периодични събития\n"
 "\n"
 "Ако се налага да управлявате срещите и заседанията си, трябва да инсталирате модула за Управление на взаимоотношенията с клиенти - CRM.\n"
 "    "
@@ -5602,7 +5602,7 @@ msgstr ""
 "\n"
 "Бележки:\n"
 "    * Данъчния план от 2015 е разработен до голяма степен,\n"
-"      за подробности относно покритието вижте първия лист от tax.xls\n"
+"      за подробности относно покритието вижте първия график от tax.xls\n"
 "    * За актуализирате плана на данъчния шаблон, актуализирайте tax.xls и стартирайте tax2csv.py\n"
 
 #. module: base
@@ -5695,8 +5695,8 @@ msgstr ""
 "\n"
 "Този модул за доставкие пряко свързан с продуктовия модул и не е практичен\n"
 "сам по себе си.  Доставките представляват нужди, които трябва да бъдат решени посредством правило за възлагане на доставки.  Една доставка се потвърждава още със създаването си.  Когато се създаде правило,\n"
-"то ще бъде въведено в работен режим.  Впоследствие то ще провери дали е извършено всичко необходимо,\n"
-"така че провилото да бъде приложено, след което ще премине в режим 'Извършено'. Една поръчка \n"
+"то ще бъде въведено в състояние 'текущо'.  Впоследствие то ще провери дали е извършено всичко необходимо,\n"
+"така че провилото да бъде приложено, след което ще премине в състояние 'извършено'. Една поръчка \n"
 "също може да има изключения, напр. когато не може да разпознае правило и да бъде отменена.\n"
 "\n"
 "Механизмът ще бъде разширен с няколко модула. Правилото за наличност в доставките ще\n"
@@ -5924,7 +5924,7 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"Този модул добавя документ за оценка на проекта - PAD във всички изгледи на проестните форми.\n"
+"Този модул добавя Документ за оценка на проекта - PAD във всички изгледи на проектните форми.\n"
 "=================================================\n"
 "    "
 
@@ -6272,8 +6272,8 @@ msgstr ""
 "\n"
 "Използвайте автоматизирани дейности, които да задействат автоматично действия за множество екрани.\n"
 "\n"
-"**Пример:** Лийд, създаден от специфичен потребител може автоматично да се възложи на  специфичен \n"
-"екип продажби или възможност, която все още е в етап висяща след 14 дни може \n"
+"**Пример:** Лийд, създаден от специфичен потребител, може автоматично да се настрои за конкретен\n"
+"екип продажби или пък възможност, която все още е в състояние 'чакаща', след 14 дни може \n"
 "да задейства автоматичен имейл с напомняне.\n"
 "    "
 
@@ -6756,7 +6756,7 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"Този модул актуализира бележки в Odoo за използване на външна подложка\n"
+"Този модул актуализира бележки в Odoo за използване на външен документ - PAD\n"
 "=================================================================\n"
 "\n"
 "Използвайте го, за да актуализирате текстовата си бележка в реално време със следващия поканен от Вас потребител.\n"
@@ -6954,7 +6954,7 @@ msgstr ""
 "Функции:\n"
 "    - Създавайте и редактирайте абонаменти със поръчки за продажби (автоматично създаване на потвърждение)\n"
 "    - Създавайте автоматично плащания на фактури и кредитни карти на определени интервали\n"
-"    - Позволене на клиентите си да редактират сами абонаментите си (възможности, да закрият договора си) с щателен контрол\n"
+"    - Позволене на клиентите си да редактират сами абонаментите си (опции, да закрият договора си) с щателен контрол\n"
 "        "
 
 #. module: base
@@ -7518,7 +7518,7 @@ msgstr "- връзка ="
 #. module: base
 #: model:ir.ui.view,arch_db:base.report_irmodeloverview
 msgid "- selection ="
-msgstr "- подбор ="
+msgstr "- селекция ="
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.report_irmodeloverview
@@ -7556,8 +7556,8 @@ msgid ""
 "1. Global rules are combined together with a logical AND operator, and with "
 "the result of the following steps"
 msgstr ""
-"1. Глобалните правила се комбинират заедно с логиката И оператора, и с "
-"резултата от следващите стъпки"
+"1. Глобалните правила са комбинирани заедно с логиката И оператора, както и "
+"с резултата от следващите стъпки"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.res_lang_form
@@ -8530,9 +8530,8 @@ msgid ""
 "All pending configuration wizards have been executed. You may restart "
 "individual wizards via the list of configuration wizards."
 msgstr ""
-"Всички висящи помощници за конфигуриране са изпълнени. Можете да "
-"рестартирате индивидуални помощници чрез списъка с помощниците за "
-"конфигуриране."
+"Всички чакащи конфигурационни помощници са изпълнени. Можете да рестартирате"
+" индивидуални помощници чрез списъка с конфигурационни помощници."
 
 #. module: base
 #: model:ir.module.module,summary:base.module_pos_reprint
@@ -8566,7 +8565,7 @@ msgstr "Позволени компании"
 #. module: base
 #: model:ir.module.module,summary:base.module_hw_posbox_upgrade
 msgid "Allows to remotely upgrade the PosBox software"
-msgstr "Разрешава дистанционното надграждане на софтуеъра PosBox"
+msgstr "Разрешава софтуеърът PosBox преминава дистанционно към бъдещи версии"
 
 #. module: base
 #: model:ir.module.category,description:base.module_category_account_voucher
@@ -8714,12 +8713,12 @@ msgstr "Приложете"
 #: model:ir.ui.view,arch_db:base.view_base_module_upgrade_install
 #, python-format
 msgid "Apply Schedule Upgrade"
-msgstr "Приложете надграждане на график"
+msgstr "Приложете преминаването на графици към по-нова версия"
 
 #. module: base
 #: model:ir.ui.menu,name:base.menu_view_base_module_upgrade
 msgid "Apply Scheduled Upgrades"
-msgstr "Приложете планирани надграждания"
+msgstr "Приложете насрочени преминавания към по-нова версия"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_rule_perm_create
@@ -9468,7 +9467,8 @@ msgstr ""
 #: code:addons/base/module/module.py:540
 #, python-format
 msgid "Can not upgrade module '%s'. It is not installed."
-msgstr "Не можете да надграждате модул '%s'. Той не е инсталиран."
+msgstr ""
+"Не можете придвижите модула към по-нова версия '%s'. Той не е инсталиран."
 
 #. module: base
 #: code:addons/base/ir/ir_model.py:547
@@ -9519,7 +9519,7 @@ msgstr "Отменете 'Деинсталирайте'"
 #. module: base
 #: model:ir.ui.view,arch_db:base.module_form
 msgid "Cancel Upgrade"
-msgstr "Отменете 'Надградете'"
+msgstr "Отменете преминаването към по-нова версия"
 
 #. module: base
 #: code:addons/base/res/res_config.py:399
@@ -10031,7 +10031,7 @@ msgstr "Компании"
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_users_form
 msgid "Companies count"
-msgstr "Преброяване на компаниите"
+msgstr "Бройа компании"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_attachment_company_id
@@ -10188,7 +10188,7 @@ msgstr "Помощници за конфигурации"
 #. module: base
 #: model:ir.module.module,summary:base.module_timesheet_grid_sale
 msgid "Configure timesheet invoicing"
-msgstr "Конфигурирайте фактурирането на графика"
+msgstr "Конфигурирайте фактуриране на график"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_base_module_upgrade
@@ -10435,7 +10435,7 @@ msgstr "Име на държавата"
 #. module: base
 #: model:ir.model,name:base.model_res_country_state
 msgid "Country state"
-msgstr "Щат"
+msgstr "Държава"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_server_action_form
@@ -11058,7 +11058,7 @@ msgstr "Десетични места"
 #. module: base
 #: selection:ir.values,key:0
 msgid "Default"
-msgstr "По подразбиране"
+msgstr "Стандартен"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_theme_default
@@ -11285,7 +11285,7 @@ msgstr "Обсъдете"
 #. module: base
 #: model:ir.module.module,summary:base.module_mail
 msgid "Discussions, Mailing Lists, News"
-msgstr "Дискусии, пощенски списъци, новини"
+msgstr "Дискусии, мейлинг списъци, новини"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_currency_form
@@ -12315,8 +12315,8 @@ msgid ""
 "Final placeholder expression, to be copy-pasted in the desired template "
 "field."
 msgstr ""
-"Окончателен израз на значима нула, предназначен да бъде копиран и поставен в"
-" желаното поле на шаблона."
+"Окончателен израз-заместител, предназначен да бъде копиран и поставен в "
+"желаното поле на шаблона."
 
 #. module: base
 #: model:ir.module.module,summary:base.module_account_accountant
@@ -12790,7 +12790,7 @@ msgstr "Изглед на матрица"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_timesheet_grid
 msgid "Grid View for Timesheets"
-msgstr "Матричен изглед на електронните таблици"
+msgstr "Матричен изглед на електронни таблици"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_model_access_group_id
@@ -12816,7 +12816,7 @@ msgstr "Група"
 #: model:ir.ui.view,arch_db:base.view_window_action_search
 #: model:ir.ui.view,arch_db:base.view_workflow_activity_search
 msgid "Group By"
-msgstr "Група по"
+msgstr "Групирайте по"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_groups_full_name
@@ -13101,7 +13101,7 @@ msgid ""
 "Helps you manage your mass mailing for design\n"
 "                professional emails and reuse templates."
 msgstr ""
-"Помага Ви да управлявате масовата си поща, като създавате\n"
+"Помага Ви да управлявате масовия си мейлинг, като създавате\n"
 "                професионални имейли и използвате повторно шаблони."
 
 #. module: base
@@ -13422,14 +13422,14 @@ msgid ""
 "log at DEBUG level(this is very verbose and may include confidential info!)"
 msgstr ""
 "Ако е задействана, пълната производителност на сесиите на Простия протокол "
-"за прехвърляне на поща - SMTP ще бъде документирана в регистъра на сървъра "
-"на ниво ОТСТРАНЯВАНЕ НА ГРЕШКИ (това е доста подробно и може да включва "
+"за прехвърляне на поща - SMTP, ще бъде документирана в сървърния регистър на"
+" ниво ОТСТРАНЯВАНЕ НА ГРЕШКИ (това е доста подробно и може да включва "
 "поверителна информация!)"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_rule_global
 msgid "If no group is specified the rule is global and applied to everyone"
-msgstr "Ако не е указана група, правилото е глобално и се отнася до всичко"
+msgstr "Ако не е указана група, правилото е глобално и се отнася до всеки"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_property_res_id
@@ -13579,7 +13579,7 @@ msgid ""
 "module)."
 msgstr ""
 "Ако махнете отметката на активното поле, това ще деактивира Списъка за "
-"контрол на достъпа - ACL без да го изтрие (ако изтриете местен ACL, той ще "
+"контрол на достъпа - ACL без да го изтрие (ако изтриете нативен ACL, той ще "
 "се създаде повторно, когато презаредите модула)."
 
 #. module: base
@@ -13590,8 +13590,8 @@ msgid ""
 "you reload the module)."
 msgstr ""
 "Ако махнете отметката от активното поле, това ще деактивира правилото за "
-"запис без да го изтрива (ако изтриете местно правило за запис, то може да се"
-" създаде повторно, когато презаредите модула)."
+"запис без да го изтрива (ако изтриете нативно правило за запис, то може да "
+"се създаде повторно, когато презаредите модула)."
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_base_module_upgrade
@@ -13958,7 +13958,7 @@ msgstr ""
 #: code:addons/base/res/res_users.py:315
 #, python-format
 msgid "Invalid 'group by' parameter"
-msgstr "Невалиден параметър 'Групирайте по'"
+msgstr "Невалиден параметър 'групирайте по'"
 
 #. module: base
 #: code:addons/base/ir/ir_cron.py:70
@@ -14508,7 +14508,7 @@ msgstr "Последно коригирано на"
 #: model:ir.model.fields,field_description:base.field_wkf_transition_write_uid
 #: model:ir.model.fields,field_description:base.field_wkf_write_uid
 msgid "Last Updated by"
-msgstr "Последно обновено от"
+msgstr "Последно актуализирано от"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_base_language_export_write_date
@@ -14579,7 +14579,7 @@ msgstr "Последно обновено от"
 #: model:ir.model.fields,field_description:base.field_wkf_transition_write_date
 #: model:ir.model.fields,field_description:base.field_wkf_write_date
 msgid "Last Updated on"
-msgstr "Последно обновено на"
+msgstr "Последно актуализирано на"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_module_module_installed_version
@@ -14758,7 +14758,7 @@ msgid ""
 msgstr ""
 "Списък с възможности за изборно поле, уточнено като израз Python, определящ "
 "списък с двойки (ключ, етикет). Например: "
-"[('синьо','Синьо'),('жълто','Жълто')]"
+"[('blue','Blue'),('yellow','Yellow')] "
 
 #. module: base
 #: model:res.country,name:base.lt
@@ -14796,7 +14796,7 @@ msgstr "Локализация"
 #. module: base
 #: model:ir.ui.view,arch_db:base.ir_logging_form_view
 msgid "Log"
-msgstr "Логаритъм"
+msgstr "Раегистър"
 
 #. module: base
 #: model:ir.actions.act_window,name:base.ir_logging_all_act
@@ -14906,7 +14906,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_mail_channel
 msgid "Mailing List Archive"
-msgstr "Архив на пощенски списък"
+msgstr "Архив на мейлинг списък"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_act_report_xml_report_rml
@@ -15117,17 +15117,17 @@ msgstr "Мартиника (Френски)"
 #. module: base
 #: model:ir.module.category,name:base.module_category_mass_mailing
 msgid "Mass Mailing"
-msgstr "Масово разпращане на поща"
+msgstr "Масов мейлинг"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_mass_mailing
 msgid "Mass Mailing Campaigns"
-msgstr "Масови пощенски кампании"
+msgstr "Масови мейлинг кампании"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_mass_mailing_themes
 msgid "Mass Mailing Themes"
-msgstr "Масови пощенски теми"
+msgstr "Масови мейлинг теми"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_mrp_mps
@@ -15176,7 +15176,7 @@ msgstr "Управление на членство"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_note_pad
 msgid "Memos pad"
-msgstr "Подложка за бележки"
+msgstr "Pad за бележки"
 
 #. module: base
 #: code:addons/base/ir/ir_model.py:382
@@ -15506,12 +15506,12 @@ msgstr "Резултат от обновяване на модул"
 #. module: base
 #: model:ir.model,name:base.model_base_module_upgrade
 msgid "Module Upgrade"
-msgstr "Надграждане на модул"
+msgstr "Преминаване на модул към по-нова версия"
 
 #. module: base
 #: model:ir.actions.act_window,name:base.action_view_base_module_upgrade_install
 msgid "Module Upgrade Install"
-msgstr "Инсталация на модулно надграждане"
+msgstr "Инсталиране на модулно преминаване към по-нова версия"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_module_module_dependency
@@ -16002,7 +16002,7 @@ msgstr "Обект:"
 #. module: base
 #: selection:ir.module.module,license:0
 msgid "Odoo Enterprise Edition License v1.0"
-msgstr "Лиценз за предприемаческо издание на Odoo v1.0"
+msgstr "Лиценз на Odoo Enterprise Edition v1.0"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_web_mobile
@@ -16070,7 +16070,7 @@ msgstr "Офис консумативи"
 #: model:ir.module.module,description:base.module_payment_ogone
 #: model:ir.module.module,shortdesc:base.module_payment_ogone
 msgid "Ogone Payment Acquirer"
-msgstr "Ogone обработчик на плащането"
+msgstr "Ogone обработчик на плащане"
 
 #. module: base
 #: model:res.country,name:base.om
@@ -16223,8 +16223,8 @@ msgstr "Възможност за оферта"
 msgid ""
 "Optional domain filtering of the destination data, as a Python expression"
 msgstr ""
-"Филтриране по избор на домейна на данните за местоназначението, като израз "
-"Python"
+"Незадължително филтриране домейна на данните за местоназначението, като "
+"израз Python"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_act_client_help
@@ -16238,20 +16238,21 @@ msgid ""
 "Optional help text for the users with a description of the target view, such"
 " as its usage and purpose."
 msgstr ""
-"Помощен текст по избор за потребителите с описание на целевия изглед, като "
-"например неговото използване и цел."
+"Незадължителен помощен текст за потребителите с описание на целевия изглед, "
+"като например неговото използване и цел."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_act_window_src_model
 msgid ""
 "Optional model name of the objects on which this action should be visible"
 msgstr ""
-"Име на модел по избор на обектите, за които това действие трябва да е видимо"
+"Незадължително име на модел на обектите, за които това действие трябва да е "
+"видимо"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_act_client_res_model
 msgid "Optional model, mostly used for needactions."
-msgstr "Модел по избор, използван най-вече за необходимите действия."
+msgstr "Незадължителен модел, използван най-вече за необходимите действия."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_mail_server_smtp_pass
@@ -16382,7 +16383,7 @@ msgstr "Редакция на поръчки за покурки - POEdit"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_pad_project
 msgid "Pad on tasks"
-msgstr "Подложка за задачи"
+msgstr "Pad на задачи"
 
 #. module: base
 #: model:res.country,name:base.pk
@@ -16558,7 +16559,7 @@ msgstr "Обработчик на плащане"
 #: model:ir.module.module,description:base.module_payment
 #: model:ir.module.module,summary:base.module_payment
 msgid "Payment Acquirer Base Module"
-msgstr "Обработчик на плащането - основен модул"
+msgstr "Обработчик на плащане - основен модул"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_payment_adyen
@@ -16851,7 +16852,7 @@ msgstr "Начална страница на PosBox "
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_hw_posbox_upgrade
 msgid "PosBox Software Upgrader"
-msgstr "Обновяване софтуера на PosBox "
+msgstr "Инструмент за придвижване на PosBox софтуера към по-нова версия"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_model_constraint_definition
@@ -16907,7 +16908,7 @@ msgstr "Разпечатайте фактура"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_print_docsaway
 msgid "Print Provider : DocsAway"
-msgstr "Доставчик на печат : DocsAway"
+msgstr "Доставчик на печатни услуги: DocsAway"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_print_sale
@@ -16932,7 +16933,7 @@ msgstr "Разпечатвайте и изпращайте фактури с Doc
 #. module: base
 #: model:ir.module.module,summary:base.module_print
 msgid "Print and Send Provider Base Module"
-msgstr "Разпечатвайте и изпращайте базов модул на доставчик"
+msgstr "Базов модул на доставчик печатни и изпращащи услуги "
 
 #. module: base
 #: model:ir.module.module,description:base.module_print
@@ -16940,9 +16941,9 @@ msgid ""
 "Print and Send Provider Base Module. Print and send your invoice with a "
 "Postal Provider. This required to install a module implementing a provider."
 msgstr ""
-"Разпечатвайте и изпращайте базов модул на доставчик. Разпечатвайте и "
+"Базов модул на доставчик печатни и изпращащи услуги. Разпечатвайте и "
 "изпращайте фактурата си с доставчик на пощенски услуги. Това изисква "
-"инсталирането на модул, който изпълнява доставчик."
+"инсталирането на модул, осъществяващ доставчик."
 
 #. module: base
 #: model:ir.module.module,summary:base.module_print_sale
@@ -17366,7 +17367,7 @@ msgstr "Процес по наемане на работа"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_subscription
 msgid "Recurring Documents"
-msgstr "Повтарящи се документи"
+msgstr "Периодични документи"
 
 #. module: base
 #: code:addons/base/module/module.py:322
@@ -18086,12 +18087,12 @@ msgstr ""
 #. module: base
 #: selection:ir.property,type:0 selection:ir.translation,type:0
 msgid "Selection"
-msgstr "Подбор"
+msgstr "Селекция"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_model_fields_selection
 msgid "Selection Options"
-msgstr "Варианти за подбор"
+msgstr "Опции за избор"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_partner_self
@@ -18639,17 +18640,17 @@ msgstr "Състояние"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_country_state_code
 msgid "State Code"
-msgstr "Код на държава"
+msgstr "Код на състояние"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_country_state_name
 msgid "State Name"
-msgstr "Име на държава"
+msgstr "Име на състояние"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_country_state_ids
 msgid "States"
-msgstr "Щати"
+msgstr "Състояния"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_base_language_install_state
@@ -19185,8 +19186,8 @@ msgid ""
 "The Selection Options expression is not a valid Pythonic expression.Please "
 "provide an expression in the [('key','Label'), ...] format."
 msgstr ""
-"Изразът 'Варианти за избор' не важи за израз в Python. Моля, предоставете "
-"израз във формат [('key','Label'), ...]."
+"Изразът 'Опции за избор' не важи за израз в Python. Моля, предоставете израз"
+" във формат [('key','Label'), ...]."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_res_lang_grouping
@@ -19258,7 +19259,7 @@ msgstr "Кодът на езика трябва да е уникален!"
 #. module: base
 #: sql_constraint:res.country.state:0
 msgid "The code of the state must be unique by country !"
-msgstr "Кодът на страната трябва да е уникален"
+msgstr "Кодът на състоянието трябва да е уникален"
 
 #. module: base
 #: sql_constraint:res.company:0
@@ -19537,8 +19538,8 @@ msgid ""
 "The path to the main report file (depending on Report Type) or empty if the "
 "content is in another field"
 msgstr ""
-"Пътят към главния файл на отчета (зависещ от вида отчет) или празен, ако "
-"съдържанието е в друго поле"
+"Пътят към файла на главния отчет (в зависимост от вида отчет) или празен, "
+"ако съдържанието е в друго поле"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_act_report_xml_report_rml
@@ -19546,8 +19547,8 @@ msgid ""
 "The path to the main report file/controller (depending on Report Type) or "
 "empty if the content is in another data field"
 msgstr ""
-"Пътят към главния файл/контролер на отчета (зависещ от вида отчет) или "
-"празен, ако съдържанието е в друго поле за данни"
+"Пътят към файла/контролера на главния отчет (в зависимост от вида отчет) или"
+" празен, ако съдържанието е в друго поле за данни"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_cron_priority
@@ -19603,7 +19604,7 @@ msgstr "Избраните модули бяха актуализирани/ин
 #. module: base
 #: model:ir.model.fields,help:base.field_res_country_state_code
 msgid "The state code."
-msgstr "Кодът на страната."
+msgstr "Кодът на състоянието."
 
 #. module: base
 #: code:addons/custom.py:518
@@ -19801,7 +19802,7 @@ msgstr "График в уебсайт портал"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_project_issue_sheet
 msgid "Timesheet on Issues"
-msgstr "График за грешки"
+msgstr "График на грешки"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_project_issue_sheet
@@ -19885,7 +19886,7 @@ msgstr "Ще бъде премахнат"
 #: selection:ir.module.module,state:0
 #: selection:ir.module.module.dependency,state:0
 msgid "To be upgraded"
-msgstr "Ще бъде актуализиран"
+msgstr "Подлежи на придвижване към по-нова версия"
 
 #. module: base
 #: code:addons/base/module/module.py:651
@@ -19924,7 +19925,7 @@ msgstr "Инструменти"
 #. module: base
 #: model:ir.module.module,summary:base.module_point_of_sale
 msgid "Touchscreen Interface for Shops"
-msgstr "Интерфейс със сензорен екран за магазини"
+msgstr "Интерфейс на сензорен екран за магазини"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_web_tour
@@ -19934,7 +19935,7 @@ msgstr "Екскурзии"
 #. module: base
 #: model:ir.module.module,summary:base.module_event
 msgid "Trainings, Conferences, Meetings, Exhibitions, Registrations"
-msgstr "Обучения, конференции, срещи, изложения, регистрации"
+msgstr "Обучения, конференции, заседания, изложения, регистрации"
 
 #. module: base
 #: model:ir.module.module,description:base.module_payment_transfer
@@ -20277,8 +20278,8 @@ msgid ""
 "Unable to upgrade module \"%s\" because an external dependency is not met: "
 "%s"
 msgstr ""
-"Не можете да надградите модул, \"%s\" защото някоя външна зависимост не е "
-"изпълнена: %s"
+"Невъзможно е модулът да премине към по-нова версия, \"%s\" защото някоя "
+"външна зависимост не е изпълнена: %s"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_uncategorized
@@ -20452,7 +20453,7 @@ msgstr "Актуализации"
 #. module: base
 #: model:ir.ui.view,arch_db:base.module_form
 msgid "Upgrade"
-msgstr "Надграждане"
+msgstr "Придвижете към по-нова версия"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_attachment_url
@@ -20576,7 +20577,7 @@ msgstr "Потребителско влизане в системата"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_users_log_ids
 msgid "User log entries"
-msgstr "Потребителски регистрации в мрежата"
+msgstr "Потребителски влизания в системата"
 
 #. module: base
 #: model:ir.actions.act_window,name:base.act_values_form_defaults
@@ -20882,7 +20883,7 @@ msgstr "Система за складово управление - WMS - сче
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_stock_landed_costs
 msgid "WMS Landed Costs"
-msgstr "Система за складово управление - WMS - разходи за разтоварване"
+msgstr "Система за складово управление - WMS - разтоварни разходи"
 
 #. module: base
 #: model:res.country,name:base.wf
@@ -21184,7 +21185,7 @@ msgstr ""
 "много Ви се налага да промените възел или стрелка, можете да променяте "
 "единствено полета, които са празни или са настроени за стойността по "
 "подразбиране. Ако не направите това, персонализацията Ви ще бъде призаписана"
-" при следващата актуалзация или надграждане на бъдеща версия на Odoo."
+" при следващата актуалзация или придвижване към бъдеща версия на Odoo."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_act_server_sequence
@@ -21581,7 +21582,7 @@ msgid ""
 "You try to upgrade the module %s that depends on the module: %s.\n"
 "But this module is not available in your system."
 msgstr ""
-"Опитвате се да надградите модула, %s който зависи от модула: %s.\n"
+"Опитвате се да придвижите към по-нова версия модула %s, който зависи от модула: %s.\n"
 "Но този модул не присъства в системата Ви."
 
 #. module: base
@@ -22087,8 +22088,8 @@ msgstr "ir.values"
 msgid ""
 "log(message, level='info'): a logging function to create ir_logging records"
 msgstr ""
-"логаритъм (message, level='info'): функция за регистрация, за да създадете "
-"записи ir_logging"
+"регистър (съобщение, ниво='инфо'): функция за регистрация с цел създаване на"
+" записи ir_logging"
 
 #. module: base
 #: code:addons/base/ir/ir_ui_view.py:439
