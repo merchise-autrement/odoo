@@ -79,6 +79,13 @@ var DiagramRenderer = AbstractRenderer.extend({
                         .appendTo($('body'));
         var r  = new Raphael($div[0], '100%','100%');
         var graph  = new CuteGraph(r, style, this.$diagram_container[0]);
+        // ***********MERCHISE***********
+        function isValidColor(strColor){
+            var s = new Option().style;
+            s.color = strColor;
+            return (s.color);
+        }
+        // **********MERCHISE END*********
         _.each(nodes, function (node) {
             var n = new CuteNode(
                 graph,
@@ -86,7 +93,7 @@ var DiagramRenderer = AbstractRenderer.extend({
                 node.y + 50,
                 CuteGraph.wordwrap(node.name, 14),
                 node.shape === 'rectangle' ? 'rect' : 'circle',
-                node.color === 'white' ? style.white : style.gray);
+                isValidColor(node.color) ? node.color : style.gray); // merchise code
 
             n.id = node.id;
             id_to_node[node.id] = n;
