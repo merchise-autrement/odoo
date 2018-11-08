@@ -10,6 +10,7 @@
 # Eneli Õigus <enelioigus@gmail.com>, 2017
 # Marek Pontus, 2017
 # Wanradt Koell <wanradt@gmail.com>, 2017
+# Helen Sulaoja <helen@avalah.ee>, 2017
 # Gert Valdek <gert@airobot.ee>, 2017
 # Mattias Põldaru <mahfiaz@gmail.com>, 2017
 # Ants Peetsalu <ants@avalah.ee>, 2018
@@ -12987,7 +12988,7 @@ msgstr "Viimane muutmise kuupäev"
 #: model:ir.model.fields,field_description:base.field_res_users_log___last_update
 #: model:ir.model.fields,field_description:base.field_wizard_ir_model_menu_create___last_update
 msgid "Last Modified on"
-msgstr "Viimati muudetud"
+msgstr "Viimati muudetud (millal)"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_base_language_export_write_uid
@@ -13058,7 +13059,7 @@ msgstr "Viimati muudetud"
 #: model:ir.model.fields,field_description:base.field_res_users_write_uid
 #: model:ir.model.fields,field_description:base.field_wizard_ir_model_menu_create_write_uid
 msgid "Last Updated by"
-msgstr "Viimati uuendatud"
+msgstr "Viimati uuendatud (kelle poolt)"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_base_language_export_write_date
@@ -13330,7 +13331,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_link_tracker
 msgid "Link Tracker"
-msgstr ""
+msgstr "Lingi jälgija"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_pos_sale

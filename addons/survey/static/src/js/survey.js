@@ -42,35 +42,35 @@ if(!the_form.length) {
 
 
     // Custom code for right behavior of radio buttons with comments box
-    $('.js_comments>input[type="text"]').focusin(function(){
+    $('.js_comments>textarea.question-comment').focusin(function(){
         $(this).prev().find('>input').attr("checked","checked");
     });
     $('.js_radio input[type="radio"][data-oe-survey-otherr!="1"]').click(function(){
-        $(this).closest('.js_radio').find('.js_comments>input[type="text"]').val("");
+        $(this).closest('.js_radio').find('.js_comments>textarea.question-comment').val("");
     });
     $('.js_comments input[type="radio"]').click(function(){
-        $(this).closest('.js_comments').find('>input[data-oe-survey-othert="1"]').focus();
+        $(this).closest('.js_comments').find('>textarea[data-oe-survey-othert="1"]').focus();
     });
     // Custom code for right behavior of dropdown menu with comments
-    $('.js_drop input[data-oe-survey-othert="1"]').hide();
+    $('.js_drop textarea[data-oe-survey-othert="1"]').hide();
     $('.js_drop select').change(function(){
         var other_val = $(this).find('.js_other_option').val();
         if($(this).val() === other_val){
             $(this).parent().removeClass('col-md-12').addClass('col-md-6');
-            $(this).closest('.js_drop').find('input[data-oe-survey-othert="1"]').show().focus();
+            $(this).closest('.js_drop').find('textarea[data-oe-survey-othert="1"]').show().focus();
         }
         else{
             $(this).parent().removeClass('col-md-6').addClass('col-md-12');
-            $(this).closest('.js_drop').find('input[data-oe-survey-othert="1"]').val("").hide();
+            $(this).closest('.js_drop').find('textarea[data-oe-survey-othert="1"]').val("").hide();
         }
     });
     // Custom code for right behavior of checkboxes with comments box
-    $('.js_ck_comments>input[type="text"]').focusin(function(){
+    $('.js_ck_comments>textarea.question-comment').focusin(function(){
         $(this).prev().find('>input').attr("checked","checked");
     });
     $('.js_ck_comments input[type="checkbox"]').change(function(){
         if (! $(this).prop("checked")){
-            $(this).closest('.js_ck_comments').find('input[type="text"]').val("");
+            $(this).closest('.js_ck_comments').find('textarea.question-comment').val("");
         }
     });
 
@@ -80,7 +80,6 @@ if(!the_form.length) {
             var prefill_def = $.ajax(prefill_controller, {dataType: "json"})
                 .done(function(json_data){
                     _.each(json_data, function(value, key){
-
                         // prefill of text/number/date boxes
                         var input = the_form.find(".form-control[name=" + key + "]");
                         if (input.attr('date')) {
@@ -89,7 +88,20 @@ if(!the_form.length) {
                             value = field_utils.format.date(moment_date, null, {timezone: true});
                         }
                         input.val(value);
-
+                        if (print_mode && input.length) {
+                            $(input).hide();
+                            var div = document.createElement('div');
+                            $(div).addClass('survey-wrapped-div');
+                            $(div).addClass('form-control');
+                            $(input[0]).parent().append(div);
+                            if (input[0].tagName == 'SELECT'){
+                                var text = input[0].item(input[0].selectedIndex).innerHTML;
+                                div.innerHTML = text;
+                            }
+                            else {
+                                div.innerHTML = value;
+                            }
+                        }
                         // special case for comments under multiple suggestions questions
                         if (_.string.endsWith(key, "_comment") &&
                             (input.parent().hasClass("js_comments") || input.parent().hasClass("js_ck_comments"))) {
