@@ -77,6 +77,14 @@ def memory_info(process):
     pmem = (getattr(process, 'memory_info', None) or process.get_memory_info)()
     return (pmem.rss, pmem.vms)
 
+def empty_pipe(fd):
+    try:
+        while os.read(fd, 1):
+            pass
+    except OSError as e:
+        if e.errno not in [errno.EAGAIN]:
+            raise
+
 #----------------------------------------------------------
 # Werkzeug WSGI servers patched
 #----------------------------------------------------------
@@ -154,6 +162,8 @@ class FSWatcher(object):
                     try:
                         source = open(path, 'rb').read() + b'\n'
                         compile(source, path, 'exec')
+                    except FileNotFoundError:
+                        _logger.error('autoreload: python code change detected, FileNotFound for %s', path)
                     except SyntaxError:
                         _logger.error('autoreload: python code change detected, SyntaxError in %s', path)
                     else:
@@ -587,13 +597,7 @@ class PreforkServer(CommonServer):
             for fd in ready[0]:
                 if fd in fds:
                     fds[fd].watchdog_time = time.time()
-                try:
-                    # empty pipe
-                    while os.read(fd, 1):
-                        pass
-                except OSError as e:
-                    if e.errno not in [errno.EAGAIN]:
-                        raise
+                empty_pipe(fd)
         except select.error as e:
             if e.args[0] not in [errno.EINTR]:
                 raise
@@ -696,6 +700,7 @@ class Worker(object):
         self.watchdog_time = time.time()
         self.watchdog_pipe = multi.pipe_new()
         self.eintr_pipe = multi.pipe_new()
+        self.wakeup_fd_r, self.wakeup_fd_w = self.eintr_pipe
         # Can be set to None if no watchdog is desired.
         self.watchdog_timeout = multi.timeout
         #  XXX: The worker is instantiated before forking, so the parent's pid
@@ -736,8 +741,9 @@ class Worker(object):
 
     def sleep(self):
         try:
-            wakeup_fd = self.eintr_pipe[0]
-            select.select([self.multi.socket, wakeup_fd], [], [], self.multi.beat)
+            select.select([self.multi.socket, self.wakeup_fd_r], [], [], self.multi.beat)
+            # clear wakeup pipe if we were interrupted
+            empty_pipe(self.wakeup_fd_r)
         except select.error as e:
             if e.args[0] not in [errno.EINTR]:
                 raise
@@ -798,7 +804,7 @@ class Worker(object):
         signal.signal(signal.SIGINT, self.signal_handler)
         signal.signal(signal.SIGTERM, signal.SIG_DFL)
         signal.signal(signal.SIGCHLD, signal.SIG_DFL)
-        signal.set_wakeup_fd(self.eintr_pipe[1])
+        signal.set_wakeup_fd(self.wakeup_fd_w)
         signal.signal(signal.SIGUSR2, self.raise_timeout)
 
     def stop(self):
@@ -874,8 +880,9 @@ class WorkerCron(Worker):
 
             # simulate interruptible sleep with select(wakeup_fd, timeout)
             try:
-                wakeup_fd = self.eintr_pipe[0]
-                select.select([wakeup_fd], [], [], interval)
+                select.select([self.wakeup_fd_r], [], [], interval)
+                # clear wakeup pipe if we were interrupted
+                empty_pipe(self.wakeup_fd_r)
             except select.error as e:
                 if e.args[0] != errno.EINTR:
                     raise

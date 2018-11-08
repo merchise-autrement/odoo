@@ -10,14 +10,15 @@
 # maiolif <maiolif@mgftools.com>, 2018
 # Cécile Collart <cco@odoo.com>, 2018
 # Francesco Garganese <francesco.garganese@aeromnia.aero>, 2018
+# Davide Corio <enlightx@gmail.com>, 2018
 # Lorenzo Battistini <lorenzo.battistini@agilebg.com>, 2018
 # Léonie Bouchat <lbo@odoo.com>, 2018
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 10.saas~18\n"
+"Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-02 11:27+0000\n"
-"PO-Revision-Date: 2017-10-02 11:27+0000\n"
+"POT-Creation-Date: 2018-01-10 07:40+0000\n"
+"PO-Revision-Date: 2018-01-10 07:40+0000\n"
 "Last-Translator: Léonie Bouchat <lbo@odoo.com>, 2018\n"
 "Language-Team: Italian (https://www.transifex.com/odoo/teams/41243/it/)\n"
 "MIME-Version: 1.0\n"
@@ -229,6 +230,15 @@ msgid "<i class=\"fa fa-thumbs-up\"/> Likes"
 msgstr "<i class=\"fa fa-thumbs-up\"/> Likes"
 
 #. module: website_slides
+#: code:addons/website_slides/models/slides.py:105
+#, python-format
+msgid ""
+"<p>This channel is private and its content is restricted to some users.</p>"
+msgstr ""
+"<p>Questo canale è privato e il suo contenuto è limitato ad alcuni "
+"utenti.</p>"
+
+#. module: website_slides
 #: model:ir.ui.view,arch_db:website_slides.slide_detail_view
 msgid ""
 "<span class=\"badge\" id=\"facebook-badge\">0</span>\n"
@@ -381,7 +391,7 @@ msgstr "Canale"
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel_group_ids
 msgid "Channel Groups"
-msgstr "Canale dei grupi"
+msgstr "Gruppi abilitati"
 
 #. module: website_slides
 #: model:ir.ui.view,arch_db:website_slides.home
@@ -718,8 +728,8 @@ msgid ""
 "Groups allowed to upload presentations in this channel. If void, every user "
 "can upload."
 msgstr ""
-"I grupi permettono di caricare presentazioni in questo canale. Ogni utente "
-"può caricare"
+"Gruppi abilitati a caricare presentazioni in questo canale. Se vuoto, tutti "
+"gli utenti sono abilitati."
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_category_id
