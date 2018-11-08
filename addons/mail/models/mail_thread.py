@@ -110,7 +110,7 @@ class MailThread(models.AbstractModel):
         'Number of error', compute='_compute_message_has_error',
         help="Number of messages with delivery error")
     message_attachment_count = fields.Integer('Attachment Count', compute='_compute_message_attachment_count')
-    message_main_attachment_id = fields.Many2one(string="Main Attachment", comodel_name='ir.attachment')
+    message_main_attachment_id = fields.Many2one(string="Main Attachment", comodel_name='ir.attachment', index=True)
 
     @api.one
     @api.depends('message_follower_ids')
@@ -239,7 +239,7 @@ class MailThread(models.AbstractModel):
 
     @api.multi
     def _compute_message_attachment_count(self):
-        read_group_var = self.env['ir.attachment'].read_group([('res_model', '=', self._name)],
+        read_group_var = self.env['ir.attachment'].read_group([('res_id', 'in', self.ids), ('res_model', '=', self._name)],
                                                               fields=['res_id'],
                                                               groupby=['res_id'])
 

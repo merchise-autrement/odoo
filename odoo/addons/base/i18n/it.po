@@ -3,46 +3,47 @@
 # * base
 # 
 # Translators:
-# Sergio Zanchetta <primes2h@gmail.com>, 2018
-# Francesco Garganese <francesco.garganese@aeromnia.aero>, 2018
-# Martin Trigaux, 2018
-# Giovanni Perteghella <giovanni@perteghella.org>, 2018
 # Davide Corio <enlightx@gmail.com>, 2018
-# Luigi Di Naro <gigidn@gmail.com>, 2018
-# Simone Bernini <simone@aperturelabs.it>, 2018
-# Giacomo Grasso <giacomo.grasso.82@gmail.com>, 2018
-# Paolo Valier, 2018
+# Alessandro Camilli <alessandrocamilli@openforce.it>, 2018
+# mymage <stefano.consolaro@mymage.it>, 2018
+# Alberto Vincenzi <alberto.vincenzi@gmail.com>, 2018
+# Luca Tralli, 2018
+# Niccolò Lubello <nlubello@gmail.com>, 2018
+# Maurizio Delmonte <maurizio.delmonte@gmail.com>, 2018
+# Giovanni Casalini <casalini.g@gmail.com>, 2018
+# Alex Siviero <dolanblu@gmail.com>, 2018
+# Cesare Cugnasco <cesare.cugnasco@gmail.com>, 2018
+# Marius Marolla <mariusmarolla@entersys.it>, 2018
+# Matteo Boscolo <matteo.boscolo.76@gmail.com>, 2018
+# maiolif <maiolif@mgftools.com>, 2018
+# Giovanni Perteghella <giovanni@perteghella.org>, 2018
+# Leonardo Donelli <learts92@gmail.com>, 2018
 # Fabio Genovese <ing.fabiogenovese@gmail.com>, 2018
 # Cécile Collart <cco@odoo.com>, 2018
 # Pietro Della Notte <pdellanotte@gmail.com>, 2018
-# David Minneci <david@numeko.it>, 2018
-# Niccolò Lubello <nlubello@gmail.com>, 2018
-# Léonie Bouchat <lbo@odoo.com>, 2018
-# Marius Marolla <mariusmarolla@entersys.it>, 2018
-# Matteo Boscolo <matteo.boscolo.76@gmail.com>, 2018
-# Sebastiano Pistore <SebastianoPistore.info@protonmail.ch>, 2018
-# Maurizio Delmonte <maurizio.delmonte@gmail.com>, 2018
-# Alessandro Camilli <alessandrocamilli@openforce.it>, 2018
-# Cesare Cugnasco <cesare.cugnasco@gmail.com>, 2018
-# mymage <stefano.consolaro@mymage.it>, 2018
-# Alex Siviero <dolanblu@gmail.com>, 2018
-# Alberto Vincenzi <alberto.vincenzi@gmail.com>, 2018
-# maiolif <maiolif@mgftools.com>, 2018
-# Luca Tralli, 2018
-# efraimbiffi <eab@odoo.com>, 2018
-# Giovanni Casalini <casalini.g@gmail.com>, 2018
-# Leonardo Donelli <learts92@gmail.com>, 2018
 # Manuela Feliciani <mfeliciani@alice.it>, 2018
+# Giacomo Grasso <giacomo.grasso.82@gmail.com>, 2018
+# Sebastiano Pistore <SebastianoPistore.info@protonmail.ch>, 2018
 # p_amoruso <p.amoruso@elvenstudio.it>, 2018
+# Francesco Garganese <francesco.garganese@aeromnia.aero>, 2018
+# David Minneci <david@numeko.it>, 2018
+# Luigi Di Naro <gigidn@gmail.com>, 2018
 # Petra <bop@odoo.com>, 2018
+# efraimbiffi <eab@odoo.com>, 2018
 # Mirto Bonan <mbo@odoo.com>, 2018
+# Martin Trigaux, 2018
+# Simone Bernini <simone@aperturelabs.it>, 2018
+# Paolo Valier, 2018
+# Sergio Zanchetta <primes2h@gmail.com>, 2018
+# Léonie Bouchat <lbo@odoo.com>, 2018
+# 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server saas~11.5\n"
+"Project-Id-Version: Odoo Server 12.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-02 10:14+0000\n"
-"PO-Revision-Date: 2018-10-02 10:14+0000\n"
-"Last-Translator: Mirto Bonan <mbo@odoo.com>, 2018\n"
+"POT-Creation-Date: 2018-10-08 07:02+0000\n"
+"PO-Revision-Date: 2018-08-24 09:14+0000\n"
+"Last-Translator: Léonie Bouchat <lbo@odoo.com>, 2018\n"
 "Language-Team: Italian (https://www.transifex.com/odoo/teams/41243/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1082,7 +1083,7 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"    Modulo di collegamento tra il modulo di presenze e l'app timesheet.\n"
+"    Modulo che collega l'app \"Presenza\" e il modulo \"Foglio ore\".\n"
 "    "
 
 #. module: base
@@ -2187,11 +2188,11 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"Modulo intermedio per integrare le ferie nel timesheet\n"
-"================================================\n"
+"Modulo ponte per integrare i permessi nel foglio ore\n"
+"=====================================================\n"
 "\n"
-"Questo modulo consente di registrare automaticamente timesheet quando un dipendente\n"
-"è in ferie. È possibile configurare progetti e compiti in tutta l'azienda.\n"
+"Questo modulo consente di compilare automaticamente i fogli ore durante i permessi\n"
+"dei dipendenti. È possibile configurare progetti e attività di tutta l'azienda.\n"
 "    "
 
 #. module: base
@@ -3245,6 +3246,20 @@ msgid ""
 "new version. This module is specific to the IoTBox setup and environment\n"
 "and should not be installed on regular Odoo servers.\n"
 "\n"
+msgstr ""
+
+#. module: base
+#: model:ir.module.module,description:base.module_pos_iot
+msgid ""
+"\n"
+"It links the module \n"
+msgstr ""
+
+#. module: base
+#: model:ir.module.module,description:base.module_pos_restaurant_iot
+msgid ""
+"\n"
+"It links the module iot with the pos restaurant, so you don't have to call the  \n"
 msgstr ""
 
 #. module: base
@@ -5865,15 +5880,15 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"Questo modello implementa un sistema di timesheet.\n"
-"==========================================\n"
+"Questo modulo implementa un sistema di fogli ore.\n"
+"===============================================\n"
 "\n"
-"Ogni dipendente può registrare e tracciare il tempo che dedica ai diversi progetti.\n"
+"Ciascun dipendente può definire e tenere traccia del tempo dedicato ai diversi progetti.\n"
 "\n"
-"Vengono forniti molti report sul tempo e la traccia dei dipendenti.\n"
+"Fornisce molti resoconti sul monitoraggio di tempi e dipendenti.\n"
 "\n"
-"È completamente integrato con il modulo di contabilità dei costi. Consente di\n"
-"impostare una gestione per affare.\n"
+"È completamente integrato con il modulo di contabilità analitica. Consente di\n"
+"organizzare la gestione per lavoro.\n"
 "    "
 
 #. module: base
@@ -6012,7 +6027,7 @@ msgstr ""
 #: model:ir.module.module,description:base.module_iot
 msgid ""
 "\n"
-"This module provides management of your IoT boxes inside Odoo.\n"
+"This module provides management of your IoT Boxes inside Odoo.\n"
 msgstr ""
 
 #. module: base
@@ -6430,7 +6445,7 @@ msgid ""
 msgstr ""
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:1083
+#: code:addons/base/models/ir_ui_view.py:1091
 #, python-format
 msgid " - %r in %s=%r"
 msgstr ""
@@ -7422,7 +7437,7 @@ msgid "ABA Credit Transfer"
 msgstr ""
 
 #. module: base
-#: code:addons/fields.py:1760
+#: code:addons/fields.py:1770
 #, python-format
 msgid "ASCII characters are required for %s in %s"
 msgstr ""
@@ -9116,7 +9131,6 @@ msgid "C5E 24  163 x 229 mm"
 msgstr "C5E 24 163 x 229 mm"
 
 #. module: base
-#: model:ir.module.category,name:base.module_category_crm
 #: model:ir.module.module,shortdesc:base.module_crm
 msgid "CRM"
 msgstr "CRM"
@@ -9879,7 +9893,7 @@ msgstr "Condizione"
 #. module: base
 #: model:ir.model,name:base.model_res_config
 msgid "Config"
-msgstr ""
+msgstr "Configurazione"
 
 #. module: base
 #: model:ir.model,name:base.model_res_config_installer
@@ -9988,6 +10002,11 @@ msgstr "I vincoli di stesso nome sono unici in un modulo."
 #: model:res.partner.industry,name:base.res_partner_industry_F
 msgid "Construction"
 msgstr "Costruzione"
+
+#. module: base
+#: model:res.partner.category,name:base.res_partner_category_8
+msgid "Consulting Services"
+msgstr ""
 
 #. module: base
 #: model:ir.model,name:base.model_res_partner
@@ -10212,7 +10231,7 @@ msgstr "Data Creazione"
 #. module: base
 #: model:ir.module.module,summary:base.module_crm_reveal
 msgid "Create Leads/Opportunities from your website's traffic"
-msgstr ""
+msgstr "Crea lead/opportunità dal traffico del tuo sito Web"
 
 #. module: base
 #: model:ir.actions.act_window,name:base.act_menu_create
@@ -11088,6 +11107,11 @@ msgid "Design, send and track emails"
 msgstr "Crea, invia e traccia emails"
 
 #. module: base
+#: model:res.partner.category,name:base.res_partner_category_14
+msgid "Desk Manufacturers"
+msgstr ""
+
+#. module: base
 #: model:ir.model.fields,field_description:base.field_base_partner_merge_automatic_wizard__dst_partner_id
 msgid "Destination Contact"
 msgstr "Contatto di Destinazione"
@@ -11553,19 +11577,19 @@ msgid "EDI for Mexico"
 msgstr "EDI per il Messico"
 
 #. module: base
-#: code:addons/base/models/ir_attachment.py:541
+#: code:addons/base/models/ir_attachment.py:542
 #, python-format
 msgid "ERROR: Invalid PDF file!"
 msgstr ""
 
 #. module: base
-#: code:addons/base/models/ir_attachment.py:588
+#: code:addons/base/models/ir_attachment.py:589
 #, python-format
 msgid "ERROR: Invalid list of pages to split. Example: 1,5-9,10"
 msgstr ""
 
 #. module: base
-#: code:addons/base/models/ir_attachment.py:583
+#: code:addons/base/models/ir_attachment.py:584
 #, python-format
 msgid "ERROR: the file must be a PDF"
 msgstr ""
@@ -11679,8 +11703,8 @@ msgid "Electronic invoicing for Colombia with Carvajal"
 msgstr ""
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:611
-#: code:addons/base/models/ir_ui_view.py:692
+#: code:addons/base/models/ir_ui_view.py:619
+#: code:addons/base/models/ir_ui_view.py:700
 #, python-format
 msgid "Element '%s' cannot be located in parent view"
 msgstr "L'elemento '%s' non può esser localizzato nella vista genitore"
@@ -11733,6 +11757,7 @@ msgstr "Contratti Dipendente"
 #: model:ir.actions.act_window,name:base.action_partner_employee_form
 #: model:ir.module.category,name:base.module_category_human_resources
 #: model:ir.module.module,shortdesc:base.module_hr
+#: model:res.partner.category,name:base.res_partner_category_3
 msgid "Employees"
 msgstr "Dipendenti"
 
@@ -11794,7 +11819,7 @@ msgid "Error"
 msgstr "Errore"
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:518
+#: code:addons/base/models/ir_ui_view.py:526
 #, python-format
 msgid ""
 "Error context:\n"
@@ -12452,7 +12477,7 @@ msgid "Field \"Type\" cannot be modified on models."
 msgstr "Il campo \"Type\" non può essere modificato nei modelli."
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:1082
+#: code:addons/base/models/ir_ui_view.py:1090
 #, python-format
 msgid "Field %r used in attributes must be present in view but is missing:"
 msgstr ""
@@ -12484,7 +12509,7 @@ msgid "Field Type"
 msgstr "Tipo campo"
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:1076
+#: code:addons/base/models/ir_ui_view.py:1084
 #, python-format
 msgid "Field `%(field_name)s` does not exist"
 msgstr "Il campo `%(field_name)s` non esiste"
@@ -13422,7 +13447,7 @@ msgstr "HTML"
 #. module: base
 #: model:ir.model,name:base.model_ir_http
 msgid "HTTP Routing"
-msgstr ""
+msgstr "Routing HTTP"
 
 #. module: base
 #: model:res.country,name:base.ht
@@ -14166,6 +14191,11 @@ msgid "Implementation of sparse fields."
 msgstr ""
 
 #. module: base
+#: model:ir.module.module,summary:base.module_auth_password_policy
+msgid "Implements basic password policy configuration & check"
+msgstr ""
+
+#. module: base
 #: model:ir.module.module,summary:base.module_pos_blackbox_be
 msgid ""
 "Implements the registered cash system, adhering to guidelines by FPS "
@@ -14603,7 +14633,7 @@ msgid "Invalid model name %r in action definition."
 msgstr "Nome del modello %r non valido nella definizione dell'azione."
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:683
+#: code:addons/base/models/ir_ui_view.py:691
 #, python-format
 msgid "Invalid position attribute: '%s'"
 msgstr "Posizione non valida per l'attributo: '%s'"
@@ -14621,7 +14651,7 @@ msgid "Invalid search criterion"
 msgstr "Criterio di ricerca non valido"
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:604
+#: code:addons/base/models/ir_ui_view.py:612
 #, python-format
 msgid "Invalid specification for moved nodes: '%s'"
 msgstr ""
@@ -14639,13 +14669,13 @@ msgid "Invalid value for %s.%s: %s"
 msgstr "Valore non valida per %s.%s: %s"
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:345
+#: code:addons/base/models/ir_ui_view.py:353
 #, python-format
 msgid "Invalid view %s definition in %s"
 msgstr ""
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:347
+#: code:addons/base/models/ir_ui_view.py:355
 #, python-format
 msgid ""
 "Invalid view %s definition in %s \n"
@@ -15450,6 +15480,16 @@ msgid "Link using field"
 msgstr "Link che usa un campo"
 
 #. module: base
+#: model:ir.module.module,summary:base.module_pos_iot
+msgid "Link your PoS configuration with an IoT Box"
+msgstr ""
+
+#. module: base
+#: model:ir.module.module,summary:base.module_pos_restaurant_iot
+msgid "Link your PoS configuration with an IoT Box for the restaurant"
+msgstr ""
+
+#. module: base
 #: code:addons/base/models/ir_qweb_fields.py:629
 #, python-format
 msgid "List of contact fields to display in the widget"
@@ -15941,6 +15981,16 @@ msgid "Martinique"
 msgstr "Martinica"
 
 #. module: base
+#: model:ir.module.module,shortdesc:base.module_test_mass_mailing
+msgid "Mass Mail Tests"
+msgstr ""
+
+#. module: base
+#: model:ir.module.module,summary:base.module_test_mass_mailing
+msgid "Mass Mail Tests: feature and performance tests for mass mailing"
+msgstr ""
+
+#. module: base
 #: model:ir.module.module,shortdesc:base.module_mass_mailing_themes
 msgid "Mass Mailing Themes"
 msgstr "Temi di Mailing di Massa"
@@ -16199,7 +16249,7 @@ msgid "Missing required value for the field '%s' (%s)"
 msgstr "Valore richiesto mancante per il campo '%s' (%s)"
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:395
+#: code:addons/base/models/ir_ui_view.py:403
 #, python-format
 msgid "Missing view architecture."
 msgstr "Architettura di vista mancanti"
@@ -16326,8 +16376,8 @@ msgid "Model name of the object to open in the view window"
 msgstr "Nome modello dell'oggetto che verrà aperto nella vista"
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:822
-#: code:addons/base/models/ir_ui_view.py:1044
+#: code:addons/base/models/ir_ui_view.py:830
+#: code:addons/base/models/ir_ui_view.py:1052
 #, python-format
 msgid "Model not found: %(model)s"
 msgstr "Modello non trovato: %(model)s"
@@ -16729,7 +16779,7 @@ msgid "No gap"
 msgstr "Nessun gap"
 
 #. module: base
-#: code:addons/fields.py:2360
+#: code:addons/fields.py:2372
 #, python-format
 msgid "No inverse field %r found for %r"
 msgstr "Nessun campo inverso %r trovato per %r"
@@ -18498,6 +18548,11 @@ msgid "OdooBot for livechat"
 msgstr ""
 
 #. module: base
+#: model:res.partner.category,name:base.res_partner_category_12
+msgid "Office Supplies"
+msgstr "Forniture per Ufficio"
+
+#. module: base
 #: model:ir.module.module,description:base.module_payment_ogone
 #: model:ir.module.module,shortdesc:base.module_payment_ogone
 msgid "Ogone Payment Acquirer"
@@ -18600,6 +18655,12 @@ msgstr "Solo un amministratore può cambiare le impostazioni"
 #, python-format
 msgid "Only administrators can execute this action."
 msgstr "Solo gli amministratori possono eseguire questa azione."
+
+#. module: base
+#: code:addons/fields.py:1764
+#, python-format
+msgid "Only admins can upload SVG files."
+msgstr ""
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_ui_view__mode
@@ -19189,7 +19250,7 @@ msgstr "Menu Superiore"
 #: model:ir.model.fields,field_description:base.field_ir_ui_menu__parent_path
 #: model:ir.model.fields,field_description:base.field_res_partner_category__parent_path
 msgid "Parent Path"
-msgstr ""
+msgstr "Percorso"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_partner__parent_name
@@ -19263,6 +19324,16 @@ msgstr "Partner: "
 #: model:ir.model.fields,field_description:base.field_res_users__password
 msgid "Password"
 msgstr "Password"
+
+#. module: base
+#: model:ir.module.module,shortdesc:base.module_auth_password_policy
+msgid "Password Policy"
+msgstr ""
+
+#. module: base
+#: model:ir.module.module,shortdesc:base.module_auth_password_policy_signup
+msgid "Password Policy support for Signup"
+msgstr ""
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_logging__path
@@ -19861,6 +19932,11 @@ msgstr ""
 "modulo custom!"
 
 #. module: base
+#: model:res.partner.category,name:base.res_partner_category_2
+msgid "Prospects"
+msgstr ""
+
+#. module: base
 #: model:ir.model.fields,help:base.field_ir_actions_server__link_field_id
 #: model:ir.model.fields,help:base.field_ir_cron__link_field_id
 msgid ""
@@ -20156,7 +20232,7 @@ msgid "Qweb field many2many"
 msgstr ""
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:354
+#: code:addons/base/models/ir_ui_view.py:362
 #, python-format
 msgid ""
 "Qweb view cannot have 'Groups' define on the record. Use 'groups' attributes"
@@ -20803,7 +20879,7 @@ msgstr "Team di Vendita"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_sale_timesheet
 msgid "Sales Timesheet"
-msgstr "Timesheet vendite"
+msgstr "Foglio ore per vendite"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_timesheet_grid_sale
@@ -20898,7 +20974,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,summary:base.module_project_timesheet_holidays
 msgid "Schedule timesheet when on leaves"
-msgstr "Pianifica i timesheet durante le ferie"
+msgstr "Programma il foglio ore durante i permessi"
 
 #. module: base
 #: selection:ir.actions.server,usage:0
@@ -21076,7 +21152,7 @@ msgstr "Vendere un Helpdesk da registrare nei Timesheet"
 #. module: base
 #: model:ir.module.module,summary:base.module_sale_timesheet
 msgid "Sell based on timesheets"
-msgstr "Vendita basata sui timesheet"
+msgstr "Vendite basate sui fogli ore"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_website_sale_digital
@@ -21227,6 +21303,11 @@ msgstr "Azioni Server"
 #: model:ir.model.fields,field_description:base.field_ir_cron__ir_actions_server_id
 msgid "Server action"
 msgstr "Azione del Server"
+
+#. module: base
+#: model:res.partner.category,name:base.res_partner_category_11
+msgid "Services"
+msgstr "Servizi"
 
 #. module: base
 #: selection:ir.model.fields,on_delete:0
@@ -21485,7 +21566,7 @@ msgid "Sometimes called BIC or Swift."
 msgstr "Talvolta chiamato BIC o Swift."
 
 #. module: base
-#: code:addons/base/models/ir_attachment.py:381
+#: code:addons/base/models/ir_attachment.py:382
 #: code:addons/base/models/ir_model.py:1222
 #, python-format
 msgid "Sorry, you are not allowed to access this document."
@@ -21694,11 +21775,6 @@ msgstr "Il passo non può essere zero."
 #: model:ir.module.module,summary:base.module_note_pad
 msgid "Sticky memos, Collaborative"
 msgstr "Post-it, Condivise"
-
-#. module: base
-#: model:ir.module.category,name:base.module_category_stock
-msgid "Stock"
-msgstr "Stock"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_stock_barcode_mobile
@@ -22783,6 +22859,14 @@ msgid ""
 msgstr ""
 
 #. module: base
+#: model:ir.module.module,description:base.module_test_mass_mailing
+msgid ""
+"This module contains tests related to mass mailing. Those\n"
+"are contained in a separate module to use specific test models defined in\n"
+"test_mail. "
+msgstr ""
+
+#. module: base
 #: model:ir.module.module,description:base.module_website_sale_taxcloud_delivery
 msgid ""
 "This module ensures that when delivery price is computed online, and taxes are computed with TaxCloud, the tax computation is done correctly on both the order and delivery.\n"
@@ -22837,7 +22921,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_project_timesheet_holidays
 msgid "Timesheet when on Leaves"
-msgstr "Timesheet durante le Ferie"
+msgstr "Foglio ore durante i permessi"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_hr_timesheet
@@ -22848,7 +22932,7 @@ msgstr "Timesheet"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_hr_timesheet_attendance
 msgid "Timesheets/attendances reporting"
-msgstr "Report sui Timesheet/sulle Presenze"
+msgstr "Comunicazione fogli ore/presenze"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_partner__tz
@@ -23943,6 +24027,11 @@ msgid "Vat Label"
 msgstr ""
 
 #. module: base
+#: model:res.partner.category,name:base.res_partner_category_0
+msgid "Vendor"
+msgstr "Fornitore"
+
+#. module: base
 #: model:ir.module.module,shortdesc:base.module_account_3way_match
 msgid "Vendor Bill: Release to Pay"
 msgstr "Fattura Fornitore: Consegna da Pagare"
@@ -24417,6 +24506,9 @@ msgid ""
 "Write Python code that the action will execute. Some variables are available"
 " for use; help about python expression is given in the help tab."
 msgstr ""
+"Scrivi un codice Python che l'azione eseguirà. Alcune variabili sono "
+"disponibili per l'uso. Un aiuto sull'espressione Python è dato nella scheda "
+"Aiuto."
 
 #. module: base
 #: model:res.country,name:base.ye
@@ -24520,7 +24612,7 @@ msgid "You cannot create recursive companies."
 msgstr ""
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:361
+#: code:addons/base/models/ir_ui_view.py:369
 #, python-format
 msgid "You cannot create recursive inherited views."
 msgstr "Non è possibile creare viste ereditate ricorsive."
@@ -24702,6 +24794,11 @@ msgstr "Carattere"
 #: selection:base.language.export,state:0
 msgid "choose"
 msgstr "Scegli"
+
+#. module: base
+#: model:ir.module.category,name:base.module_category_crm
+msgid "crm"
+msgstr "crm"
 
 #. module: base
 #: code:addons/base/models/ir_fields.py:320
@@ -24920,7 +25017,7 @@ msgid "mrp"
 msgstr ""
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:515
+#: code:addons/base/models/ir_ui_view.py:523
 #, python-format
 msgid "n/a"
 msgstr "n/d"
@@ -24975,6 +25072,11 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_social_media
 msgid "social_media"
+msgstr ""
+
+#. module: base
+#: model:ir.module.category,name:base.module_category_stock
+msgid "stock"
 msgstr ""
 
 #. module: base

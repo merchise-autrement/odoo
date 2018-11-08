@@ -143,7 +143,7 @@ class HolidaysAllocation(models.Model):
         """
         today = fields.Date.from_string(fields.Date.today())
 
-        holidays = self.search([('accrual', '=', True), ('state', '=', 'validate'),
+        holidays = self.search([('accrual', '=', True), ('state', '=', 'validate'), ('holiday_type', '=', 'employee'),
                                 '|', ('date_to', '=', False), ('date_to', '>', fields.Datetime.now()),
                                 '|', ('nextcall', '=', False), ('nextcall', '<=', today)])
 
@@ -372,7 +372,13 @@ class HolidaysAllocation(models.Model):
             'notes': self.notes,
             'number_of_days': self.number_of_days,
             'parent_id': self.id,
-            'employee_id': employee.id
+            'employee_id': employee.id,
+            'accrual': self.accrual,
+            'date_to': self.date_to,
+            'interval_unit': self.interval_unit,
+            'interval_number': self.interval_number,
+            'number_per_interval': self.number_per_interval,
+            'unit_per_interval': self.unit_per_interval,
         }
         return values
 

@@ -9,10 +9,10 @@
 # Alina Lisnenko <alinasemeniuk1@gmail.com>, 2018
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server saas~11.5\n"
+"Project-Id-Version: Odoo Server 12.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-02 10:05+0000\n"
-"PO-Revision-Date: 2018-10-02 10:05+0000\n"
+"POT-Creation-Date: 2018-10-08 06:48+0000\n"
+"PO-Revision-Date: 2018-10-08 06:48+0000\n"
 "Last-Translator: Alina Lisnenko <alinasemeniuk1@gmail.com>, 2018\n"
 "Language-Team: Ukrainian (https://www.transifex.com/odoo/teams/41243/uk/)\n"
 "MIME-Version: 1.0\n"
@@ -477,6 +477,8 @@ msgid ""
 "An error occurred when loading product prices. Make sure all pricelists are "
 "available in the POS."
 msgstr ""
+"Виникла помилка при завантаженні цін товару. Переконайтеся, що всі "
+"прайслисти доступні в точці доступу."
 
 #. module: point_of_sale
 #: model:ir.model.fields,help:point_of_sale.field_pos_config__name
@@ -758,6 +760,11 @@ msgid "Category used in the Point of Sale."
 msgstr ""
 
 #. module: point_of_sale
+#: model:pos.category,name:point_of_sale.pos_category_chairs
+msgid "Chairs"
+msgstr ""
+
+#. module: point_of_sale
 #. openerp-web
 #: code:addons/point_of_sale/static/src/xml/pos.xml:552
 #, python-format
@@ -953,7 +960,7 @@ msgstr "Компанія"
 #. module: point_of_sale
 #: model:ir.model,name:point_of_sale.model_res_config_settings
 msgid "Config Settings"
-msgstr ""
+msgstr "Налаштування"
 
 #. module: point_of_sale
 #: model:ir.ui.menu,name:point_of_sale.menu_point_config_product
@@ -1272,7 +1279,20 @@ msgstr "Скасувати виділення клієнта"
 #. module: point_of_sale
 #: model_terms:ir.ui.view,arch_db:point_of_sale.customer_facing_display_html
 #: model_terms:pos.config,customer_facing_display_html:point_of_sale.pos_config_main
+#: model:product.product,name:point_of_sale.desk_organizer
+#: model:product.template,name:point_of_sale.desk_organizer_product_template
 msgid "Desk Organizer"
+msgstr ""
+
+#. module: point_of_sale
+#: model:product.product,name:point_of_sale.desk_pad
+#: model:product.template,name:point_of_sale.desk_pad_product_template
+msgid "Desk Pad"
+msgstr ""
+
+#. module: point_of_sale
+#: model:pos.category,name:point_of_sale.pos_category_desks
+msgid "Desks"
 msgstr ""
 
 #. module: point_of_sale
@@ -1297,7 +1317,7 @@ msgstr "Різниця між теоретичним та реальним ба�
 #. module: point_of_sale
 #: model:ir.model,name:point_of_sale.model_digest_digest
 msgid "Digest"
-msgstr ""
+msgstr "Огляд"
 
 #. module: point_of_sale
 #. openerp-web
@@ -1387,6 +1407,8 @@ msgstr "Відображення зображень категорій това�
 #, python-format
 msgid "Do not have access, skip this data for user's digest email"
 msgstr ""
+"Не маєте доступу, пропустіть ці дані для електронного оглядового "
+"повідомлення користувача"
 
 #. module: point_of_sale
 #: model_terms:ir.ui.view,arch_db:point_of_sale.view_pos_open_statement
@@ -1895,6 +1917,12 @@ msgid "Kpi Pos Total Value"
 msgstr ""
 
 #. module: point_of_sale
+#: model:product.product,name:point_of_sale.led_lamp
+#: model:product.template,name:point_of_sale.led_lamp_product_template
+msgid "LED Lamp"
+msgstr ""
+
+#. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_config__iface_big_scrollbars
 msgid "Large Scrollbars"
 msgstr "Великі смуги прокрутки"
@@ -1955,6 +1983,12 @@ msgstr "Останнє оновлення"
 #: model_terms:ir.ui.view,arch_db:point_of_sale.customer_facing_display_html
 #: model_terms:pos.config,customer_facing_display_html:point_of_sale.pos_config_main
 msgid "Led Lamp"
+msgstr ""
+
+#. module: point_of_sale
+#: model:product.product,name:point_of_sale.letter_tray
+#: model:product.template,name:point_of_sale.letter_tray_product_template
+msgid "Letter Tray"
 msgstr ""
 
 #. module: point_of_sale
@@ -2037,6 +2071,12 @@ msgid "Loyalty program to use for this point of sale."
 msgstr "Програма лояльності для використання в цій точці продажу."
 
 #. module: point_of_sale
+#: model:product.product,name:point_of_sale.magnetic_board
+#: model:product.template,name:point_of_sale.magnetic_board_product_template
+msgid "Magnetic Board"
+msgstr ""
+
+#. module: point_of_sale
 #: model_terms:ir.ui.view,arch_db:point_of_sale.view_pos_payment
 msgid "Make Payment"
 msgstr "Зробити платіж"
@@ -2083,6 +2123,7 @@ msgid "Method"
 msgstr "Метод"
 
 #. module: point_of_sale
+#: model:pos.category,name:point_of_sale.pos_category_miscellaneous
 #: model:product.product,name:point_of_sale.product_product_consumable
 #: model:product.template,name:point_of_sale.product_product_consumable_product_template
 msgid "Miscellaneous"
@@ -2091,6 +2132,8 @@ msgstr "Інші"
 #. module: point_of_sale
 #: model_terms:ir.ui.view,arch_db:point_of_sale.customer_facing_display_html
 #: model_terms:pos.config,customer_facing_display_html:point_of_sale.pos_config_main
+#: model:product.product,name:point_of_sale.monitor_stand
+#: model:product.template,name:point_of_sale.monitor_stand_product_template
 msgid "Monitor Stand"
 msgstr ""
 
@@ -2151,6 +2194,12 @@ msgid "New order"
 msgstr ""
 
 #. module: point_of_sale
+#: model:product.product,name:point_of_sale.newspaper_rack
+#: model:product.template,name:point_of_sale.newspaper_rack_product_template
+msgid "Newspaper Rack"
+msgstr ""
+
+#. module: point_of_sale
 #. openerp-web
 #: code:addons/point_of_sale/static/src/xml/pos.xml:709
 #, python-format
@@ -2161,7 +2210,7 @@ msgstr "Наступне замовлення"
 #: code:addons/point_of_sale/models/pos_order.py:1132
 #, python-format
 msgid "No Taxes"
-msgstr ""
+msgstr "Без податків"
 
 #. module: point_of_sale
 #: code:addons/point_of_sale/models/pos_order.py:147
@@ -2677,6 +2726,13 @@ msgstr "Зображення"
 #, python-format
 msgid "Please Confirm Large Amount"
 msgstr "Будь ласка, підтвердіть велику суму "
+
+#. module: point_of_sale
+#. openerp-web
+#: code:addons/point_of_sale/static/src/js/models.js:1874
+#, python-format
+msgid "Please configure a payment method in your POS."
+msgstr ""
 
 #. module: point_of_sale
 #: code:addons/point_of_sale/models/pos_order.py:363
@@ -3557,6 +3613,12 @@ msgid "Slash"
 msgstr ""
 
 #. module: point_of_sale
+#: model:product.product,name:point_of_sale.small_shelf
+#: model:product.template,name:point_of_sale.small_shelf_product_template
+msgid "Small Shelf"
+msgstr ""
+
+#. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_category__image_small
 msgid "Small-sized image"
 msgstr "Зменшене зображення"
@@ -3981,6 +4043,8 @@ msgid ""
 "The selected pricelists must belong to no company or the company of the "
 "point of sale."
 msgstr ""
+"Обрані прайслисти не повинні належати до жодної компанії, або компанії точки"
+" продажу."
 
 #. module: point_of_sale
 #. openerp-web
@@ -4481,6 +4545,12 @@ msgid "Virtual KeyBoard"
 msgstr "Віртуальна клавіатура"
 
 #. module: point_of_sale
+#: model:product.product,name:point_of_sale.wall_shelf
+#: model:product.template,name:point_of_sale.wall_shelf_product_template
+msgid "Wall Shelf Unit"
+msgstr ""
+
+#. module: point_of_sale
 #. openerp-web
 #: code:addons/point_of_sale/static/src/xml/pos.xml:1369
 #, python-format
@@ -4504,8 +4574,16 @@ msgstr ""
 "виставляється рахунок. Рахунки вносяться в бухоблік окремо."
 
 #. module: point_of_sale
+#: model:product.product,name:point_of_sale.whiteboard
+#: model:product.template,name:point_of_sale.whiteboard_product_template
+msgid "Whiteboard"
+msgstr "Біла дошка"
+
+#. module: point_of_sale
 #: model_terms:ir.ui.view,arch_db:point_of_sale.customer_facing_display_html
 #: model_terms:pos.config,customer_facing_display_html:point_of_sale.pos_config_main
+#: model:product.product,name:point_of_sale.whiteboard_pen
+#: model:product.template,name:point_of_sale.whiteboard_pen_product_template
 msgid "Whiteboard Pen"
 msgstr ""
 
@@ -4762,10 +4840,54 @@ msgid "for an order of"
 msgstr "для замовлення"
 
 #. module: point_of_sale
+#: model:product.product,uom_name:point_of_sale.desk_organizer
+#: model:product.product,uom_name:point_of_sale.desk_pad
+#: model:product.product,uom_name:point_of_sale.led_lamp
+#: model:product.product,uom_name:point_of_sale.letter_tray
+#: model:product.product,uom_name:point_of_sale.magnetic_board
+#: model:product.product,uom_name:point_of_sale.monitor_stand
+#: model:product.product,uom_name:point_of_sale.newspaper_rack
+#: model:product.product,uom_name:point_of_sale.small_shelf
+#: model:product.product,uom_name:point_of_sale.wall_shelf
+#: model:product.product,uom_name:point_of_sale.whiteboard
+#: model:product.product,uom_name:point_of_sale.whiteboard_pen
+#: model:product.product,weight_uom_name:point_of_sale.desk_organizer
+#: model:product.product,weight_uom_name:point_of_sale.desk_pad
+#: model:product.product,weight_uom_name:point_of_sale.led_lamp
+#: model:product.product,weight_uom_name:point_of_sale.letter_tray
+#: model:product.product,weight_uom_name:point_of_sale.magnetic_board
+#: model:product.product,weight_uom_name:point_of_sale.monitor_stand
+#: model:product.product,weight_uom_name:point_of_sale.newspaper_rack
 #: model:product.product,weight_uom_name:point_of_sale.product_product_consumable
 #: model:product.product,weight_uom_name:point_of_sale.product_product_tip
+#: model:product.product,weight_uom_name:point_of_sale.small_shelf
+#: model:product.product,weight_uom_name:point_of_sale.wall_shelf
+#: model:product.product,weight_uom_name:point_of_sale.whiteboard
+#: model:product.product,weight_uom_name:point_of_sale.whiteboard_pen
+#: model:product.template,uom_name:point_of_sale.desk_organizer_product_template
+#: model:product.template,uom_name:point_of_sale.desk_pad_product_template
+#: model:product.template,uom_name:point_of_sale.led_lamp_product_template
+#: model:product.template,uom_name:point_of_sale.letter_tray_product_template
+#: model:product.template,uom_name:point_of_sale.magnetic_board_product_template
+#: model:product.template,uom_name:point_of_sale.monitor_stand_product_template
+#: model:product.template,uom_name:point_of_sale.newspaper_rack_product_template
+#: model:product.template,uom_name:point_of_sale.small_shelf_product_template
+#: model:product.template,uom_name:point_of_sale.wall_shelf_product_template
+#: model:product.template,uom_name:point_of_sale.whiteboard_pen_product_template
+#: model:product.template,uom_name:point_of_sale.whiteboard_product_template
+#: model:product.template,weight_uom_name:point_of_sale.desk_organizer_product_template
+#: model:product.template,weight_uom_name:point_of_sale.desk_pad_product_template
+#: model:product.template,weight_uom_name:point_of_sale.led_lamp_product_template
+#: model:product.template,weight_uom_name:point_of_sale.letter_tray_product_template
+#: model:product.template,weight_uom_name:point_of_sale.magnetic_board_product_template
+#: model:product.template,weight_uom_name:point_of_sale.monitor_stand_product_template
+#: model:product.template,weight_uom_name:point_of_sale.newspaper_rack_product_template
 #: model:product.template,weight_uom_name:point_of_sale.product_product_consumable_product_template
 #: model:product.template,weight_uom_name:point_of_sale.product_product_tip_product_template
+#: model:product.template,weight_uom_name:point_of_sale.small_shelf_product_template
+#: model:product.template,weight_uom_name:point_of_sale.wall_shelf_product_template
+#: model:product.template,weight_uom_name:point_of_sale.whiteboard_pen_product_template
+#: model:product.template,weight_uom_name:point_of_sale.whiteboard_product_template
 msgid "kg"
 msgstr "кг"
 

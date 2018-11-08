@@ -6,6 +6,7 @@ var BoardView = require('board.BoardView');
 var ListController = require('web.ListController');
 var testUtils = require('web.test_utils');
 var ListRenderer = require('web.ListRenderer');
+var pyUtils = require('web.py_utils');
 
 var createActionManager = testUtils.createActionManager;
 var createView = testUtils.createView;
@@ -23,6 +24,7 @@ QUnit.module('Dashboard', {
                 fields: {
                     display_name: {string: "Displayed name", type: "char", searchable: true},
                     foo: {string: "Foo", type: "char", default: "My little Foo Value", searchable: true},
+                    bar: {string: "Bar", type: "boolean"},
                 },
                 records: [{
                     id: 1,
@@ -746,4 +748,81 @@ QUnit.test('save to dashboard actions with flag keepSearchView', function (asser
     actionManager.destroy();
 });
 
+QUnit.test("Views should be loaded in the user's language", function (assert) {
+    assert.expect(2);
+    var form = createView({
+        View: BoardView,
+        model: 'board',
+        data: this.data,
+        session: {user_context: {lang: 'fr_FR'}},
+        arch: '<form string="My Dashboard">' +
+                '<board style="2-1">' +
+                    '<column>' +
+                        '<action context="{\'lang\': \'en_US\'}" view_mode="list" string="ABC" name="51" domain="[]"></action>' +
+                    '</column>' +
+                '</board>' +
+            '</form>',
+        mockRPC: function (route, args) {
+            if (args.method === 'load_views') {
+                assert.deepEqual(pyUtils.eval('context', args.kwargs.context), {lang: 'fr_FR'},
+                    'The views should be loaded with the correct context');
+            }
+            if (route === "/web/dataset/search_read") {
+                assert.deepEqual(args.context, {lang: 'fr_FR'},
+                    'The data should be loaded with the correct context');
+            }
+            if (route === '/web/action/load') {
+                return $.when({
+                    res_model: 'partner',
+                    views: [[4, 'list']],
+                });
+            }
+            return this._super.apply(this, arguments);
+        },
+        archs: {
+            'partner,4,list':
+                '<list string="Partner"><field name="foo"/></list>',
+        },
+    });
+
+    form.destroy();
+});
+
+QUnit.test("Dashboard should use correct groupby", function (assert) {
+    assert.expect(1);
+    var form = createView({
+        View: BoardView,
+        model: 'board',
+        data: this.data,
+        arch: '<form string="My Dashboard">' +
+                '<board style="2-1">' +
+                    '<column>' +
+                        '<action context="{\'group_by\': [\'bar\']}" string="ABC" name="51"></action>' +
+                    '</column>' +
+                '</board>' +
+            '</form>',
+        mockRPC: function (route, args) {
+            if (args.method === 'read_group') {
+                assert.deepEqual(args.kwargs.groupby, ['bar'],
+                    'user defined groupby should have precedence on action groupby');
+            }
+            if (route === '/web/action/load') {
+                return $.when({
+                    res_model: 'partner',
+                    context: {
+                        group_by: 'some_field',
+                    },
+                    views: [[4, 'list']],
+                });
+            }
+            return this._super.apply(this, arguments);
+        },
+        archs: {
+            'partner,4,list':
+                '<list string="Partner"><field name="foo"/></list>',
+        },
+    });
+
+    form.destroy();
+});
 });

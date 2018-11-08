@@ -5,13 +5,16 @@
 # Translators:
 # Martin Trigaux, 2018
 # Bohdan Lisnenko, 2018
+# ТАрас <tratatuta@i.ua>, 2018
+# Alina Lisnenko <alinasemeniuk1@gmail.com>, 2018
+# 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server saas~11.5\n"
+"Project-Id-Version: Odoo Server 12.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-02 10:04+0000\n"
-"PO-Revision-Date: 2018-10-02 10:04+0000\n"
-"Last-Translator: Bohdan Lisnenko, 2018\n"
+"POT-Creation-Date: 2018-10-08 06:48+0000\n"
+"PO-Revision-Date: 2018-08-24 09:17+0000\n"
+"Last-Translator: Alina Lisnenko <alinasemeniuk1@gmail.com>, 2018\n"
 "Language-Team: Ukrainian (https://www.transifex.com/odoo/teams/41243/uk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -55,7 +58,7 @@ msgid ""
 "<b>Drag &amp; drop opportunities</b> between columns as you progress in your"
 " sales cycle."
 msgstr ""
-"<b>Перетягуйте нагоди</b> між стовпцями, коли ви просуваєтесь у стадіях "
+"<b>Перетягуйте нагоди</b> між колонками, коли ви просуваєтесь у стадіях "
 "продажів."
 
 #. module: crm
@@ -65,7 +68,7 @@ msgstr ""
 msgid ""
 "<b>Invite coworkers</b> via email.<br/><i>Enter one email per line.</i>"
 msgstr ""
-"<b>Запросити колег</b> через електронну пошту.<br/><i>Введіть одну "
+"<b>Запросіть колег</b> через електронну пошту.<br/><i>Введіть одну "
 "електронну адресу у рядок.</i>"
 
 #. module: crm
@@ -87,7 +90,7 @@ msgid ""
 "attached to this opportunity.</p><p class=\"mb0\">Type <i>'@'</i> to mention"
 " people - it's like cc-ing on emails.</p>"
 msgstr ""
-"<p><b>Надіслати повідомлення</b> до вашого дослідження і автоматично дойте "
+"<p><b>Надішліть повідомлення</b> до вашого дослідження і автоматично дайте "
 "відповідь щодо цієї нагоди.</p><p class=\"mb0\">Тип <i>'@'</i> згадати людей"
 " - це як копіювання електронної адреси.</p>"
 
@@ -119,12 +122,12 @@ msgstr "<span class=\"oe_grey\"> біля </span>"
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.sales_team_form_view_in_crm
 msgid "Accept Emails From"
-msgstr "Приймати листи від"
+msgstr "Прийняти електронні листи від"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__message_needaction
 msgid "Action Needed"
-msgstr "Дія необхідна"
+msgstr "Необхідна дія"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_activity_report__active
@@ -205,7 +208,7 @@ msgstr "Аналіз"
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead2opportunity_partner_mass__deduplicate
 msgid "Apply deduplication"
-msgstr "Застосувати дедуплікацію"
+msgstr "Застосувати дедублікацію"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.merge_opportunity_form
@@ -269,6 +272,11 @@ msgstr "Аналіз дій CRM"
 #: model:ir.model,name:crm.model_crm_stage
 msgid "CRM Stages"
 msgstr ""
+
+#. module: crm
+#: model:mail.activity.type,name:crm.mail_activity_demo_call_demo
+msgid "Call for Demo"
+msgstr "Замовлення демо"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__campaign_id
@@ -396,7 +404,7 @@ msgstr "Назва компанії"
 #. module: crm
 #: model:ir.model,name:crm.model_res_config_settings
 msgid "Config Settings"
-msgstr ""
+msgstr "Налаштування"
 
 #. module: crm
 #: model:ir.ui.menu,name:crm.crm_menu_config
@@ -410,6 +418,11 @@ msgstr "Налаштування"
 #, python-format
 msgid "Configuration options are available in the Settings app."
 msgstr "Параметри налаштування доступні в додатку Налаштування"
+
+#. module: crm
+#: model:crm.lead.tag,name:crm.categ_oppor7
+msgid "Consulting"
+msgstr "Консалтинг"
 
 #. module: crm
 #: model:ir.model,name:crm.model_res_partner
@@ -494,7 +507,7 @@ msgstr "Конвертувати у нагоду"
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.res_config_settings_view_form
 msgid ""
-"Convert visitors of your website into leads in the CRM. Wre do data "
+"Convert visitors of your website into leads in the CRM. We do data "
 "enrichment based on their IP address."
 msgstr ""
 
@@ -700,9 +713,14 @@ msgid "Describe the lead..."
 msgstr "Опишіть лід..."
 
 #. module: crm
+#: model:crm.lead.tag,name:crm.categ_oppor5
+msgid "Design"
+msgstr "Дизайн"
+
+#. module: crm
 #: model:ir.model,name:crm.model_digest_digest
 msgid "Digest"
-msgstr ""
+msgstr "Огляд"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.view_create_opportunity_simplified
@@ -728,6 +746,8 @@ msgstr "Назва для відображення"
 #, python-format
 msgid "Do not have access, skip this data for user's digest email"
 msgstr ""
+"Не маєте доступу, пропустіть ці дані для електронного оглядового "
+"повідомлення користувача"
 
 #. module: crm
 #: selection:crm.lead2opportunity.partner,action:0
@@ -867,6 +887,11 @@ msgid "Folded in Pipeline"
 msgstr "Згорнуто в конвеєрі"
 
 #. module: crm
+#: model:mail.activity.type,name:crm.mail_activity_demo_followup_quote
+msgid "Follow-up Quote"
+msgstr "Подальша пропозиція"
+
+#. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__message_follower_ids
 msgid "Followers"
 msgstr "Підписники"
@@ -884,7 +909,7 @@ msgstr "Підписники (Партнери)"
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_case_form_view_oppor
 msgid "Followup"
-msgstr "Післядія"
+msgstr "Нагадування"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead2opportunity_partner_mass__force_assignation
@@ -927,7 +952,7 @@ msgstr ""
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__email_cc
 msgid "Global CC"
-msgstr "Глобальна копірка"
+msgstr "Global CC"
 
 #. module: crm
 #: code:addons/crm/models/crm_lead.py:398
@@ -1042,6 +1067,11 @@ msgid "Include archived"
 msgstr "Включити заархівовані"
 
 #. module: crm
+#: model:crm.lead.tag,name:crm.categ_oppor4
+msgid "Information"
+msgstr "Інформація"
+
+#. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_case_form_view_oppor
 msgid "Initial Contact Information"
 msgstr ""
@@ -1104,7 +1134,7 @@ msgstr "Остання модифікація"
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__date_last_stage_update
 msgid "Last Stage Update"
-msgstr "Остання зміна стану"
+msgstr "Остання зміна етапу"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead2opportunity_partner__write_uid
@@ -1290,6 +1320,11 @@ msgstr "Низький"
 #: model:ir.model.fields,field_description:crm.field_crm_lead__message_main_attachment_id
 msgid "Main Attachment"
 msgstr ""
+
+#. module: crm
+#: model:mail.activity.type,name:crm.mail_activity_demo_make_quote
+msgid "Make Quote"
+msgstr "Зробити пропозицію"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_res_config_settings__generate_lead_from_alias
@@ -1710,6 +1745,11 @@ msgid "Opportunity won"
 msgstr "Нагоду впіймано"
 
 #. module: crm
+#: model:crm.lead.tag,name:crm.categ_oppor8
+msgid "Other"
+msgstr "Інше"
+
+#. module: crm
 #: selection:crm.lead,activity_state:0
 msgid "Overdue"
 msgstr "Прострочено"
@@ -1847,6 +1887,11 @@ msgid "Probability (%)"
 msgstr "Ймовірність (%)"
 
 #. module: crm
+#: model:crm.lead.tag,name:crm.categ_oppor1
+msgid "Product"
+msgstr "Товар"
+
+#. module: crm
 #: model:crm.stage,name:crm.stage_lead3
 msgid "Proposition"
 msgstr "Пропозиція"
@@ -1854,7 +1899,7 @@ msgstr "Пропозиція"
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__expected_revenue
 msgid "Prorated Revenue"
-msgstr ""
+msgstr "Пропорційний дохід"
 
 #. module: crm
 #: model:crm.stage,name:crm.stage_lead2
@@ -1991,6 +2036,11 @@ msgid "Sequence"
 msgstr "Послідовність"
 
 #. module: crm
+#: model:crm.lead.tag,name:crm.categ_oppor3
+msgid "Services"
+msgstr "Послуги"
+
+#. module: crm
 #: model_terms:ir.actions.act_window,help:crm.crm_stage_action
 msgid "Set a new stage in your opportunity pipeline"
 msgstr ""
@@ -2032,6 +2082,11 @@ msgid "Show only opportunity"
 msgstr "Показати тільки нагоди"
 
 #. module: crm
+#: model:crm.lead.tag,name:crm.categ_oppor2
+msgid "Software"
+msgstr "Програмне забезпечення"
+
+#. module: crm
 #: model_terms:ir.actions.act_window,help:crm.crm_lost_reason_action
 msgid ""
 "Some examples of lost reasons: \"We don't have people/skill\", \"Price too "
@@ -2066,34 +2121,34 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_case_leads_filter
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_case_opportunities_filter
 msgid "Stage"
-msgstr "Стадія"
+msgstr "Етап"
 
 #. module: crm
 #: model:mail.message.subtype,name:crm.mt_lead_stage
 msgid "Stage Changed"
-msgstr "Стадію змінено"
+msgstr "Етап змінено"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_stage__name
 msgid "Stage Name"
-msgstr "Назва стадії"
+msgstr "Назва етапу"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_stage_search
 msgid "Stage Search"
-msgstr "Пошук стадії"
+msgstr "Пошук етапу"
 
 #. module: crm
 #: model:mail.message.subtype,description:crm.mt_lead_stage
 msgid "Stage changed"
-msgstr "Стадію змінено"
+msgstr "Етап змінено"
 
 #. module: crm
 #: model:ir.actions.act_window,name:crm.crm_stage_action
 #: model:ir.ui.menu,name:crm.menu_crm_lead_stage_act
 #: model_terms:ir.ui.view,arch_db:crm.crm_stage_tree
 msgid "Stages"
-msgstr "Стадії"
+msgstr "Етапи"
 
 #. module: crm
 #: model_terms:ir.actions.act_window,help:crm.crm_stage_action
@@ -2144,7 +2199,7 @@ msgstr "Вулиця..."
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__street2
 msgid "Street2"
-msgstr "Вулиця 2"
+msgstr "Вулиця2"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_lost_view_form
@@ -2226,7 +2281,7 @@ msgid ""
 "addresses with a comma"
 msgstr ""
 "Ці адреси будуть додані до поля СС для всіх вхідних та вихідних листів для "
-"цього запису перед відправкою. Можна вказати декілька адрес, розділяючи їх "
+"цього запису перед відправкою. Можна вказати кілька адрес, розділяючи їх "
 "комою."
 
 #. module: crm
@@ -2257,7 +2312,7 @@ msgid ""
 "This is the source of the link, e.g. Search Engine, another domain, or name "
 "of email list"
 msgstr ""
-"Це джерело посилання, наприклад, пошукова система, інший домен або ім'я "
+"Це джерело посилання, наприклад, пошукова система, інший домен або назва "
 "списку листів"
 
 #. module: crm
@@ -2322,6 +2377,11 @@ msgstr "Занадто дорого"
 #: model_terms:ir.ui.view,arch_db:crm.crm_case_form_view_leads
 msgid "Tracking"
 msgstr "Відстеження"
+
+#. module: crm
+#: model:crm.lead.tag,name:crm.categ_oppor6
+msgid "Training"
+msgstr "Тренінг"
 
 #. module: crm
 #: model_terms:digest.tip,tip_description:crm.digest_tip_crm_0
@@ -2439,7 +2499,7 @@ msgstr "Використовується для входу в систему"
 #. module: crm
 #: model:ir.model.fields,help:crm.field_crm_stage__sequence
 msgid "Used to order stages. Lower is better."
-msgstr "Використовуйте для замовлення етапів. Нижче краще."
+msgstr "Використовуйте для замовлення етапів. Чим нижче, тим краще."
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__user_email

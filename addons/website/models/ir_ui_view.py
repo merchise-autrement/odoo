@@ -38,7 +38,9 @@ class View(models.Model):
         '''
         current_website_id = self._context.get('website_id')
         if current_website_id:
-            for view in self:
+            # Optional views are inactive but we need to write them
+            # if their parent is copied
+            for view in self.with_context(active_test=False):
                 if not view.key and not vals.get('key'):
                     view.with_context(no_cow=True).key = 'website.key_%s' % str(uuid.uuid4())[:6]
                 if not view.website_id and current_website_id and not self._context.get('no_cow'):
@@ -301,12 +303,14 @@ class View(models.Model):
     @api.multi
     def save(self, value, xpath=None):
         self.ensure_one()
-        # The first time a generic view is edited, if multiple editable parts
-        # were edited at the same time, multiple call to this method will be
-        # done but the first one may create a website specific view. So if there
-        # already is a website specific view, we need to divert the super to it.
         current_website = self.env['website'].get_current_website()
-        if self.key and current_website:
+        # xpath condition is important to be sure we are editing a view and not
+        # a field as in that case `self` might not exist (check commit message)
+        if xpath and self.key and current_website:
+            # The first time a generic view is edited, if multiple editable parts
+            # were edited at the same time, multiple call to this method will be
+            # done but the first one may create a website specific view. So if there
+            # already is a website specific view, we need to divert the super to it.
             website_specific_view = self.env['ir.ui.view'].search([
                 ('key', '=', self.key),
                 ('website_id', '=', current_website.id)

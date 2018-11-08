@@ -48,8 +48,8 @@ class SaleOrder(models.Model):
         super(SaleOrder, self)._compute_expected_date()
         for order in self:
             dates_list = []
-            confirm_date = fields.Datetime.from_string(order.confirmation_date if order.state == 'sale' else fields.Datetime.now())
-            for line in order.order_line.filtered(lambda x: x.state != 'cancel'):
+            confirm_date = fields.Datetime.from_string((order.confirmation_date or order.write_date) if order.state == 'sale' else fields.Datetime.now())
+            for line in order.order_line.filtered(lambda x: x.state != 'cancel' and not x._is_delivery()):
                 dt = confirm_date + timedelta(days=line.customer_lead or 0.0)
                 dates_list.append(dt)
             if dates_list:
@@ -185,9 +185,9 @@ class SaleOrderLine(models.Model):
         for line in self:  # TODO: maybe one day, this should be done in SQL for performance sake
             if line.qty_delivered_method == 'stock_move':
                 qty = 0.0
-                for move in line.move_ids.filtered(lambda r: r.state == 'done' and not r.scrapped):
+                for move in line.move_ids.filtered(lambda r: r.state == 'done' and not r.scrapped and line.product_id == r.product_id):
                     if move.location_dest_id.usage == "customer":
-                        if not move.origin_returned_move_id:
+                        if not move.origin_returned_move_id or (move.origin_returned_move_id and move.to_refund):
                             qty += move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom)
                     elif move.location_dest_id.usage != "customer" and move.to_refund:
                         qty -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom)
@@ -415,7 +415,7 @@ class SaleOrderLine(models.Model):
         else:
             mto_route = False
             try:
-                mto_route = self.env['stock.warehouse']._find_global_route('stock.route_warehouse0_mto', 'Make To Order')
+                mto_route = self.env['stock.warehouse']._find_global_route('stock.route_warehouse0_mto', _('Make To Order'))
             except UserError:
                 # if route MTO not found in ir_model_data, we treat the product as in MTS
                 pass

@@ -349,6 +349,9 @@ class WebsiteSale(ProductConfiguratorController):
         revive: Revival method when abandoned cart. Can be 'merge' or 'squash'
         """
         order = request.website.sale_get_order()
+        if order and order.state != 'draft':
+            request.session['sale_order_id'] = None
+            order = request.website.sale_get_order()
         values = {}
         if access_token:
             abandoned_order = request.env['sale.order'].sudo().search([('access_token', '=', access_token)], limit=1)
@@ -392,11 +395,16 @@ class WebsiteSale(ProductConfiguratorController):
 
     @http.route(['/shop/cart/update'], type='http', auth="public", methods=['POST'], website=True, csrf=False)
     def cart_update(self, product_id, add_qty=1, set_qty=0, **kw):
+        sale_order = request.website.sale_get_order(force_create=True)
+        if sale_order.state != 'draft':
+            request.session['sale_order_id'] = None
+            sale_order = request.website.sale_get_order(force_create=True)
+
         product_custom_attribute_values = None
         if kw.get('product_custom_attribute_values'):
             product_custom_attribute_values = json.loads(kw.get('product_custom_attribute_values'))
 
-        request.website.sale_get_order(force_create=1)._cart_update(
+        sale_order._cart_update(
             product_id=int(product_id),
             add_qty=add_qty,
             set_qty=set_qty,
@@ -569,6 +577,7 @@ class WebsiteSale(ProductConfiguratorController):
 
         new_values['customer'] = True
         new_values['team_id'] = request.website.salesteam_id and request.website.salesteam_id.id
+        new_values['user_id'] = request.website.salesperson_id and request.website.salesperson_id.id
         new_values['website_id'] = request.website.id
 
         lang = request.lang if request.lang in request.website.mapped('language_ids.code') else None
@@ -706,9 +715,9 @@ class WebsiteSale(ProductConfiguratorController):
         order.order_line._compute_tax_id()
         request.session['sale_last_order_id'] = order.id
         request.website.sale_get_order(update_pricelist=True)
-        extra_step = request.env.ref('website_sale.extra_info_option')
+        extra_step = request.env['ir.ui.view']._view_obj('website_sale.extra_info_option')
         if extra_step.active:
-            return request.redirect("/shop/confirm_order")
+            return request.redirect("/shop/extra_info")
 
         return request.redirect("/shop/payment")
 
@@ -1069,12 +1078,32 @@ class WebsiteSale(ProductConfiguratorController):
             phone_code=country.phone_code
         )
 
+    @http.route(['/shop/update_carrier'], type='json', auth='public', methods=['POST'], website=True, csrf=False)
+    def update_eshop_carrier(self, **post):
+        results = {}
+        if hasattr(self, '_update_website_sale_delivery'):
+            results.update(self._update_website_sale_delivery(**post))
+
+        if hasattr(self, '_update_website_sale_coupon'):
+            results.update(self._update_website_sale_coupon(**post))
+
+        return results
+
+    def _format_amount(self, amount, currency):
+        fmt = "%.{0}f".format(currency.decimal_places)
+        lang = request.env['res.lang']._lang_get(request.env.context.get('lang') or 'en_US')
+        return lang.format(fmt, currency.round(amount), grouping=True, monetary=True)\
+            .replace(r' ', u'\N{NO-BREAK SPACE}').replace(r'-', u'-\N{ZERO WIDTH NO-BREAK SPACE}')
+
     @http.route(['/shop/cart/update_option'], type='http', auth="public", methods=['POST'], website=True, multilang=False)
     def cart_options_update_json(self, product_id, add_qty=1, set_qty=0, goto_shop=None, lang=None, **kw):
         if lang:
             request.website = request.website.with_context(lang=lang)
 
-        order = request.website.sale_get_order(force_create=1)
+        order = request.website.sale_get_order(force_create=True)
+        if order.state != 'draft':
+            request.session['sale_order_id'] = None
+            order = request.website.sale_get_order(force_create=True)
         optional_product_ids = []
         for k, v in kw.items():
             if "optional-product-" in k and int(kw.get(k.replace("product", "add"))):

@@ -3,45 +3,46 @@
 # * base
 # 
 # Translators:
-# Mustafa Rawi <mustafa@cubexco.com>, 2018
 # Mustafa J. Kadhem <safi2266@gmail.com>, 2018
-# Akram Alfusayal <akram_ma@hotmail.com>, 2018
-# amrnegm <amrnegm.01@gmail.com>, 2018
-# Martin Trigaux, 2018
-# hoxhe Aits <hoxhe0@gmail.com>, 2018
-# Osoul <baruni@osoul.ly>, 2018
-# Mohammed Albasha <m.albasha.ma@gmail.com>, 2018
-# Ghaith Gammar <g.gammar@saharaifs.net>, 2018
-# Mahmood Al Halwachi <mahmood.alhalwachi@gmail.com>, 2018
-# Shaima Safar <shaima.safar@open-inside.com>, 2018
-# Yihya Hugirat <hugirat@gmail.com>, 2018
 # abdullah alsabi <alsabi.abdullah@gmail.com>, 2018
-# Osama Ahmaro <osamaahmaro@gmail.com>, 2018
 # fares alokeeli <okffok@gmail.com>, 2018
 # Zuhair Hammadi <zuhair12@gmail.com>, 2018
-# Hashem Aly <smart.hashem@gmail.com>, 2018
-# Mohammed Ibrahim <m.ibrahim@mussder.com>, 2018
-# Waleed Mohsen <mohsen.waleed@gmail.com>, 2018
-# Ali Alrehawi <alrehawi@hotmail.com>, 2018
 # nle_odoo, 2018
+# Mohammed Albasha <m.albasha.ma@gmail.com>, 2018
 # Majeed Alsamarraie <majeed.hatim@gmail.com>, 2018
+# Waleed Mohsen <mohsen.waleed@gmail.com>, 2018
 # Muhamed Saad <midoam2003@gmail.com>, 2018
+# Osama Ahmaro <osamaahmaro@gmail.com>, 2018
 # Ahmed AL-Haddad <ahmed@utech-sa.com>, 2018
 # zahi chemaly <zahi@sercotex.net>, 2018
+# Mahmood Al Halwachi <mahmood.alhalwachi@gmail.com>, 2018
+# Akram Alfusayal <akram_ma@hotmail.com>, 2018
+# hoxhe Aits <hoxhe0@gmail.com>, 2018
 # aymen rahmani <aymen.isims@gmail.com>, 2018
+# Mohammed Ibrahim <m.ibrahim@mussder.com>, 2018
+# Ghaith Gammar <g.gammar@saharaifs.net>, 2018
+# Hashem Aly <smart.hashem@gmail.com>, 2018
 # Abd El-Rahman Ali <abdelrahman.ali.242@gmail.com>, 2018
 # Islam Eldeeb <islameldeb@gmail.com>, 2018
 # Amer Hazaa <eng.amer.it@gmail.com>, 2018
+# amrnegm <amrnegm.01@gmail.com>, 2018
 # Mostafa Hanafy <mostafa.s.hanafy@gmail.com>, 2018
+# Mustafa Rawi <mustafa@cubexco.com>, 2018
+# Martin Trigaux, 2018
+# Yihya Hugirat <hugirat@gmail.com>, 2018
 # Abdulmajeed Alomar <majeeed87@gmail.com>, 2018
 # Firas Asad <firas101@gmail.com>, 2018
+# Shaima Safar <shaima.safar@open-inside.com>, 2018
+# Ali Alrehawi <alrehawi@hotmail.com>, 2018
+# Walid Baruni <baruni@osoul.ly>, 2018
+# 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server saas~11.5\n"
+"Project-Id-Version: Odoo Server 12.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-02 10:14+0000\n"
-"PO-Revision-Date: 2018-10-02 10:14+0000\n"
-"Last-Translator: Firas Asad <firas101@gmail.com>, 2018\n"
+"POT-Creation-Date: 2018-10-08 07:02+0000\n"
+"PO-Revision-Date: 2018-08-24 09:14+0000\n"
+"Last-Translator: Walid Baruni <baruni@osoul.ly>, 2018\n"
 "Language-Team: Arabic (https://www.transifex.com/odoo/teams/41243/ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2687,6 +2688,20 @@ msgid ""
 msgstr ""
 
 #. module: base
+#: model:ir.module.module,description:base.module_pos_iot
+msgid ""
+"\n"
+"It links the module \n"
+msgstr ""
+
+#. module: base
+#: model:ir.module.module,description:base.module_pos_restaurant_iot
+msgid ""
+"\n"
+"It links the module iot with the pos restaurant, so you don't have to call the  \n"
+msgstr ""
+
+#. module: base
 #: model:ir.module.module,description:base.module_stock_landed_costs
 msgid ""
 "\n"
@@ -4922,7 +4937,7 @@ msgstr ""
 #: model:ir.module.module,description:base.module_iot
 msgid ""
 "\n"
-"This module provides management of your IoT boxes inside Odoo.\n"
+"This module provides management of your IoT Boxes inside Odoo.\n"
 msgstr ""
 
 #. module: base
@@ -5294,7 +5309,7 @@ msgstr ""
 "payments acquirer using Worldline SIPS."
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:1083
+#: code:addons/base/models/ir_ui_view.py:1091
 #, python-format
 msgid " - %r in %s=%r"
 msgstr ""
@@ -6276,7 +6291,7 @@ msgid "ABA Credit Transfer"
 msgstr ""
 
 #. module: base
-#: code:addons/fields.py:1760
+#: code:addons/fields.py:1770
 #, python-format
 msgid "ASCII characters are required for %s in %s"
 msgstr ""
@@ -6363,7 +6378,7 @@ msgstr "صاحب الحساب"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_partner_bank__acc_holder_name
 msgid "Account Holder Name"
-msgstr ""
+msgstr "اسم صاحب الحساب"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_invoice_extract
@@ -7063,7 +7078,7 @@ msgstr "تطبيق"
 #: model_terms:ir.ui.view,arch_db:base.user_groups_view
 #, python-format
 msgid "Application Accesses"
-msgstr ""
+msgstr "صلاحيات المنظومة"
 
 #. module: base
 #: model:ir.ui.menu,name:base.menu_translation_app
@@ -7960,7 +7975,6 @@ msgid "C5E 24  163 x 229 mm"
 msgstr "C5E 24  163 x 229 mm"
 
 #. module: base
-#: model:ir.module.category,name:base.module_category_crm
 #: model:ir.module.module,shortdesc:base.module_crm
 msgid "CRM"
 msgstr "إدارة علاقات العملاء"
@@ -8733,7 +8747,7 @@ msgstr ""
 #. module: base
 #: model:ir.model,name:base.model_res_config_settings
 msgid "Config Settings"
-msgstr ""
+msgstr "ضبط الإعدادات"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.config_wizard_step_view_form
@@ -8832,6 +8846,11 @@ msgid "Construction"
 msgstr ""
 
 #. module: base
+#: model:res.partner.category,name:base.res_partner_category_8
+msgid "Consulting Services"
+msgstr ""
+
+#. module: base
 #: model:ir.model,name:base.model_res_partner
 #: model_terms:ir.ui.view,arch_db:base.view_partner_simple_form
 #: selection:res.partner,type:0
@@ -8891,7 +8910,7 @@ msgstr "جهات الاتصال"
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_partner_form
 msgid "Contacts & Addresses"
-msgstr ""
+msgstr "بيانات الاتصال"
 
 #. module: base
 #: sql_constraint:res.partner:0
@@ -9922,6 +9941,11 @@ msgid "Design, send and track emails"
 msgstr "تصميم، إرسال وتتبع رسائل البريد الإلكتروني "
 
 #. module: base
+#: model:res.partner.category,name:base.res_partner_category_14
+msgid "Desk Manufacturers"
+msgstr ""
+
+#. module: base
 #: model:ir.model.fields,field_description:base.field_base_partner_merge_automatic_wizard__dst_partner_id
 msgid "Destination Contact"
 msgstr "جهة الاتصال الهدف"
@@ -10372,19 +10396,19 @@ msgid "EDI for Mexico"
 msgstr ""
 
 #. module: base
-#: code:addons/base/models/ir_attachment.py:541
+#: code:addons/base/models/ir_attachment.py:542
 #, python-format
 msgid "ERROR: Invalid PDF file!"
 msgstr ""
 
 #. module: base
-#: code:addons/base/models/ir_attachment.py:588
+#: code:addons/base/models/ir_attachment.py:589
 #, python-format
 msgid "ERROR: Invalid list of pages to split. Example: 1,5-9,10"
 msgstr ""
 
 #. module: base
-#: code:addons/base/models/ir_attachment.py:583
+#: code:addons/base/models/ir_attachment.py:584
 #, python-format
 msgid "ERROR: the file must be a PDF"
 msgstr ""
@@ -10498,8 +10522,8 @@ msgid "Electronic invoicing for Colombia with Carvajal"
 msgstr ""
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:611
-#: code:addons/base/models/ir_ui_view.py:692
+#: code:addons/base/models/ir_ui_view.py:619
+#: code:addons/base/models/ir_ui_view.py:700
 #, python-format
 msgid "Element '%s' cannot be located in parent view"
 msgstr "Element '%s' cannot be located in parent view"
@@ -10552,6 +10576,7 @@ msgstr "عقود الموظفين"
 #: model:ir.actions.act_window,name:base.action_partner_employee_form
 #: model:ir.module.category,name:base.module_category_human_resources
 #: model:ir.module.module,shortdesc:base.module_hr
+#: model:res.partner.category,name:base.res_partner_category_3
 msgid "Employees"
 msgstr "الموظفون"
 
@@ -10615,7 +10640,7 @@ msgid "Error"
 msgstr "خطأ"
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:518
+#: code:addons/base/models/ir_ui_view.py:526
 #, python-format
 msgid ""
 "Error context:\n"
@@ -11229,7 +11254,7 @@ msgid "Field \"Type\" cannot be modified on models."
 msgstr ""
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:1082
+#: code:addons/base/models/ir_ui_view.py:1090
 #, python-format
 msgid "Field %r used in attributes must be present in view but is missing:"
 msgstr ""
@@ -11261,7 +11286,7 @@ msgid "Field Type"
 msgstr "نوع الحقل"
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:1076
+#: code:addons/base/models/ir_ui_view.py:1084
 #, python-format
 msgid "Field `%(field_name)s` does not exist"
 msgstr "Field `%(field_name)s` does not exist"
@@ -12918,6 +12943,11 @@ msgid "Implementation of sparse fields."
 msgstr ""
 
 #. module: base
+#: model:ir.module.module,summary:base.module_auth_password_policy
+msgid "Implements basic password policy configuration & check"
+msgstr ""
+
+#. module: base
 #: model:ir.module.module,summary:base.module_pos_blackbox_be
 msgid ""
 "Implements the registered cash system, adhering to guidelines by FPS "
@@ -12992,7 +13022,7 @@ msgstr "غير نشط"
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_users_search
 msgid "Inactive Users"
-msgstr ""
+msgstr "مستخدمين غير نشطين"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_model_fields__index
@@ -13048,12 +13078,12 @@ msgstr "الرواتب الهندية"
 #. module: base
 #: selection:res.partner,company_type:0
 msgid "Individual"
-msgstr ""
+msgstr "فرد"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_res_partner_filter
 msgid "Individuals"
-msgstr ""
+msgstr "أفراد"
 
 #. module: base
 #: model:res.country,name:base.id
@@ -13068,7 +13098,7 @@ msgstr "إندونيسيا"
 #: model_terms:ir.ui.view,arch_db:base.res_partner_industry_view_form
 #: model_terms:ir.ui.view,arch_db:base.res_partner_industry_view_tree
 msgid "Industry"
-msgstr ""
+msgstr "مجال العمل"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_model__info
@@ -13249,12 +13279,12 @@ msgstr ""
 #. module: base
 #: model:res.groups,name:base.group_user
 msgid "Internal User"
-msgstr ""
+msgstr "مستخدم داخلي"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_users_search
 msgid "Internal Users"
-msgstr ""
+msgstr "مستخدمين داخليين"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_partner_form
@@ -13360,7 +13390,7 @@ msgid "Invalid model name %r in action definition."
 msgstr ""
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:683
+#: code:addons/base/models/ir_ui_view.py:691
 #, python-format
 msgid "Invalid position attribute: '%s'"
 msgstr "Invalid position attribute: '%s'"
@@ -13378,7 +13408,7 @@ msgid "Invalid search criterion"
 msgstr ""
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:604
+#: code:addons/base/models/ir_ui_view.py:612
 #, python-format
 msgid "Invalid specification for moved nodes: '%s'"
 msgstr ""
@@ -13396,13 +13426,13 @@ msgid "Invalid value for %s.%s: %s"
 msgstr ""
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:345
+#: code:addons/base/models/ir_ui_view.py:353
 #, python-format
 msgid "Invalid view %s definition in %s"
 msgstr ""
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:347
+#: code:addons/base/models/ir_ui_view.py:355
 #, python-format
 msgid ""
 "Invalid view %s definition in %s \n"
@@ -13506,13 +13536,13 @@ msgstr "هذه شركة"
 #: model:ir.model.fields,field_description:base.field_res_partner__customer
 #: model:ir.model.fields,field_description:base.field_res_users__customer
 msgid "Is a Customer"
-msgstr "هو العميل"
+msgstr "عميل"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_partner__supplier
 #: model:ir.model.fields,field_description:base.field_res_users__supplier
 msgid "Is a Vendor"
-msgstr ""
+msgstr "مورّد"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_attachment__public
@@ -14200,6 +14230,16 @@ msgid "Link using field"
 msgstr "Link using field"
 
 #. module: base
+#: model:ir.module.module,summary:base.module_pos_iot
+msgid "Link your PoS configuration with an IoT Box"
+msgstr ""
+
+#. module: base
+#: model:ir.module.module,summary:base.module_pos_restaurant_iot
+msgid "Link your PoS configuration with an IoT Box for the restaurant"
+msgstr ""
+
+#. module: base
 #: code:addons/base/models/ir_qweb_fields.py:629
 #, python-format
 msgid "List of contact fields to display in the widget"
@@ -14682,6 +14722,16 @@ msgid "Martinique"
 msgstr ""
 
 #. module: base
+#: model:ir.module.module,shortdesc:base.module_test_mass_mailing
+msgid "Mass Mail Tests"
+msgstr ""
+
+#. module: base
+#: model:ir.module.module,summary:base.module_test_mass_mailing
+msgid "Mass Mail Tests: feature and performance tests for mass mailing"
+msgstr ""
+
+#. module: base
 #: model:ir.module.module,shortdesc:base.module_mass_mailing_themes
 msgid "Mass Mailing Themes"
 msgstr ""
@@ -14936,7 +14986,7 @@ msgid "Missing required value for the field '%s' (%s)"
 msgstr "Missing required value for the field '%s' (%s)"
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:395
+#: code:addons/base/models/ir_ui_view.py:403
 #, python-format
 msgid "Missing view architecture."
 msgstr ""
@@ -15063,8 +15113,8 @@ msgid "Model name of the object to open in the view window"
 msgstr "اسم نموذج الكائن الذي سيتمّ فتحه في نافذة العرض"
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:822
-#: code:addons/base/models/ir_ui_view.py:1044
+#: code:addons/base/models/ir_ui_view.py:830
+#: code:addons/base/models/ir_ui_view.py:1052
 #, python-format
 msgid "Model not found: %(model)s"
 msgstr "Model not found: %(model)s"
@@ -15237,7 +15287,7 @@ msgstr "السيدة."
 #: model_terms:ir.ui.view,arch_db:base.view_users_form
 #: model:res.groups,name:base.group_multi_company
 msgid "Multi Companies"
-msgstr "شركات متعددة"
+msgstr "تعدد الشركات"
 
 #. module: base
 #: model:res.groups,name:base.group_multi_currency
@@ -15252,7 +15302,7 @@ msgstr "Multi Language Chart of Accounts"
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_res_partner_filter
 msgid "My Contacts"
-msgstr ""
+msgstr "عملائي"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_attachment_search
@@ -15466,7 +15516,7 @@ msgid "No gap"
 msgstr "لا توجد فجوة"
 
 #. module: base
-#: code:addons/fields.py:2360
+#: code:addons/fields.py:2372
 #, python-format
 msgid "No inverse field %r found for %r"
 msgstr ""
@@ -16803,6 +16853,11 @@ msgid "OdooBot for livechat"
 msgstr ""
 
 #. module: base
+#: model:res.partner.category,name:base.res_partner_category_12
+msgid "Office Supplies"
+msgstr "اللوازم المكتبية"
+
+#. module: base
 #: model:ir.module.module,description:base.module_payment_ogone
 #: model:ir.module.module,shortdesc:base.module_payment_ogone
 msgid "Ogone Payment Acquirer"
@@ -16901,6 +16956,12 @@ msgstr "المسؤولين فقط يمكنهم تغيير الإعدادات"
 #, python-format
 msgid "Only administrators can execute this action."
 msgstr "يمكن للمسؤولين فقط تنفيذ هذا الإجراء."
+
+#. module: base
+#: code:addons/fields.py:1764
+#, python-format
+msgid "Only admins can upload SVG files."
+msgstr ""
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_ui_view__mode
@@ -17519,6 +17580,16 @@ msgid "Password"
 msgstr "كلمة المرور"
 
 #. module: base
+#: model:ir.module.module,shortdesc:base.module_auth_password_policy
+msgid "Password Policy"
+msgstr ""
+
+#. module: base
+#: model:ir.module.module,shortdesc:base.module_auth_password_policy_signup
+msgid "Password Policy support for Signup"
+msgstr ""
+
+#. module: base
 #: model:ir.model.fields,field_description:base.field_ir_logging__path
 msgid "Path"
 msgstr "مسار "
@@ -18043,6 +18114,11 @@ msgstr ""
 "كود البايثون , و يستحسن استخدام برنامج إضافي!"
 
 #. module: base
+#: model:res.partner.category,name:base.res_partner_category_2
+msgid "Prospects"
+msgstr ""
+
+#. module: base
 #: model:ir.model.fields,help:base.field_ir_actions_server__link_field_id
 #: model:ir.model.fields,help:base.field_ir_cron__link_field_id
 msgid ""
@@ -18338,7 +18414,7 @@ msgid "Qweb field many2many"
 msgstr ""
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:354
+#: code:addons/base/models/ir_ui_view.py:362
 #, python-format
 msgid ""
 "Qweb view cannot have 'Groups' define on the record. Use 'groups' attributes"
@@ -19401,6 +19477,11 @@ msgid "Server action"
 msgstr ""
 
 #. module: base
+#: model:res.partner.category,name:base.res_partner_category_11
+msgid "Services"
+msgstr "الخدمات"
+
+#. module: base
 #: selection:ir.model.fields,on_delete:0
 msgid "Set NULL"
 msgstr "Set NULL"
@@ -19655,7 +19736,7 @@ msgid "Sometimes called BIC or Swift."
 msgstr "Sometimes called BIC or Swift."
 
 #. module: base
-#: code:addons/base/models/ir_attachment.py:381
+#: code:addons/base/models/ir_attachment.py:382
 #: code:addons/base/models/ir_model.py:1222
 #, python-format
 msgid "Sorry, you are not allowed to access this document."
@@ -19866,11 +19947,6 @@ msgstr "يجب ألا تكون خطوة صفر."
 #: model:ir.module.module,summary:base.module_note_pad
 msgid "Sticky memos, Collaborative"
 msgstr "Sticky memos, Collaborative"
-
-#. module: base
-#: model:ir.module.category,name:base.module_category_stock
-msgid "Stock"
-msgstr "أسهم"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_stock_barcode_mobile
@@ -20903,6 +20979,14 @@ msgid ""
 msgstr ""
 
 #. module: base
+#: model:ir.module.module,description:base.module_test_mass_mailing
+msgid ""
+"This module contains tests related to mass mailing. Those\n"
+"are contained in a separate module to use specific test models defined in\n"
+"test_mail. "
+msgstr ""
+
+#. module: base
 #: model:ir.module.module,description:base.module_website_sale_taxcloud_delivery
 msgid ""
 "This module ensures that when delivery price is computed online, and taxes are computed with TaxCloud, the tax computation is done correctly on both the order and delivery.\n"
@@ -21832,7 +21916,7 @@ msgstr "أسم الدخول:"
 #: model_terms:ir.ui.view,arch_db:base.user_groups_view
 #, python-format
 msgid "User Type"
-msgstr ""
+msgstr "نوع المستخدم"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_users__log_ids
@@ -21842,7 +21926,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.category,name:base.module_category_user_type
 msgid "User types"
-msgstr ""
+msgstr "نوع المستخدم"
 
 #. module: base
 #: model:ir.model,name:base.model_change_password_user
@@ -22031,6 +22115,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_res_country__vat_label
 msgid "Vat Label"
 msgstr ""
+
+#. module: base
+#: model:res.partner.category,name:base.res_partner_category_0
+msgid "Vendor"
+msgstr "المورّد"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_3way_match
@@ -22600,7 +22689,7 @@ msgid "You cannot create recursive companies."
 msgstr ""
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:361
+#: code:addons/base/models/ir_ui_view.py:369
 #, python-format
 msgid "You cannot create recursive inherited views."
 msgstr ""
@@ -22779,6 +22868,11 @@ msgstr ""
 #: selection:base.language.export,state:0
 msgid "choose"
 msgstr "اختر"
+
+#. module: base
+#: model:ir.module.category,name:base.module_category_crm
+msgid "crm"
+msgstr ""
 
 #. module: base
 #: code:addons/base/models/ir_fields.py:320
@@ -22995,7 +23089,7 @@ msgid "mrp"
 msgstr ""
 
 #. module: base
-#: code:addons/base/models/ir_ui_view.py:515
+#: code:addons/base/models/ir_ui_view.py:523
 #, python-format
 msgid "n/a"
 msgstr "غير ممكن"
@@ -23050,6 +23144,11 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_social_media
 msgid "social_media"
+msgstr ""
+
+#. module: base
+#: model:ir.module.category,name:base.module_category_stock
+msgid "stock"
 msgstr ""
 
 #. module: base

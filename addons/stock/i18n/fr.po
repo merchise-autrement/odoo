@@ -37,10 +37,10 @@
 # Nathan Grognet <ngr@odoo.com>, 2018
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server saas~11.5\n"
+"Project-Id-Version: Odoo Server 12.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-02 10:04+0000\n"
-"PO-Revision-Date: 2018-10-02 10:04+0000\n"
+"POT-Creation-Date: 2018-10-24 09:34+0000\n"
+"PO-Revision-Date: 2018-10-24 09:34+0000\n"
 "Last-Translator: Nathan Grognet <ngr@odoo.com>, 2018\n"
 "Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
@@ -463,6 +463,12 @@ msgid "Add a new route"
 msgstr "Ajouter une nouvelle route"
 
 #. module: stock
+#: model_terms:ir.ui.view,arch_db:stock.view_picking_form
+msgid ""
+"Add an internal note that will be printed on the Picking Operations sheet"
+msgstr "Ajouter une note interne qui figurera sur le Bon de Préparation"
+
+#. module: stock
 #: model:ir.model.fields,help:stock.field_res_config_settings__group_stock_adv_location
 msgid ""
 "Add and customize route operations to process product moves in your warehouse(s): e.g. unload > quality control > stock for incoming products, pick > pack > ship for outgoing products. \n"
@@ -824,6 +830,12 @@ msgid ""
 msgstr ""
 "En décochant cette case, vous pouvez masquer un emplacement sans pour autant"
 " le supprimer."
+
+#. module: stock
+#: model:product.product,name:stock.product_cable_management_box
+#: model:product.template,name:stock.product_cable_management_box_product_template
+msgid "Cable Management Box"
+msgstr ""
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.stock_picking_calendar
@@ -1412,8 +1424,8 @@ msgstr "Clients"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_res_config_settings__module_delivery_dhl
-msgid "DHL Connector"
-msgstr "Connecteur DHL"
+msgid "DHL USA"
+msgstr "DHL USA"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_report_stock_forecast__date
@@ -1455,6 +1467,28 @@ msgstr "Jour(s) pour recevoir les produits"
 #: selection:stock.warehouse.orderpoint,lead_type:0
 msgid "Day(s) to purchase"
 msgstr "Jour(s) pour acheter"
+
+#. module: stock
+#: model:res.company,overdue_msg:stock.res_company_1
+msgid ""
+"Dear Sir/Madam,\n"
+"\n"
+"Our records indicate that some payments on your account are still due. Please find details below.\n"
+"If the amount has already been paid, please disregard this notice. Otherwise, please forward us the total amount stated below.\n"
+"If you have any queries regarding your account, Please contact us.\n"
+"\n"
+"Thank you in advance for your cooperation.\n"
+"Best Regards,"
+msgstr ""
+"Madame, Monsieur,\n"
+"\n"
+"D'après nos relevés, nous sommes encore en attente à ce jour de paiements de votre part, dont les détails sont indiqués ci-dessous.\n"
+"Si ces sommes ont déjà été réglées, vous pouvez ignorer ce rappel. Dans le cas contraire, nous vous remercions de bien vouloir nous faire parvenir votre règlement.\n"
+"Si vous avez d'autres questions concernant votre compte, vous pouvez nous contacter directement.\n"
+"\n"
+"En vous remerciant par avance.\n"
+"\n"
+"Cordialement,"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_picking_type__default_location_dest_id
@@ -1599,6 +1633,7 @@ msgstr "Livraisons"
 
 #. module: stock
 #: code:addons/stock/models/stock_warehouse.py:734
+#: model:stock.picking.type,name:stock.chi_picking_type_out
 #: model:stock.picking.type,name:stock.picking_type_out
 #, python-format
 msgid "Delivery Orders"
@@ -1848,8 +1883,8 @@ msgstr "Mouvements en brouillon"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_res_config_settings__module_delivery_easypost
-msgid "Easypost Connector"
-msgstr "Connecteur Easypost"
+msgid "Easypost"
+msgstr "Easypost"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.view_picking_form
@@ -1920,8 +1955,8 @@ msgstr "FIFO, LIFO..."
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_res_config_settings__module_delivery_fedex
-msgid "FedEx Connector"
-msgstr "Connecteur FedEx"
+msgid "FedEx"
+msgstr "FedEx"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_package_destination__filtered_location
@@ -3108,7 +3143,10 @@ msgid "Main Attachment"
 msgstr "Pièce jointe principale"
 
 #. module: stock
+#: code:addons/stock/models/stock_warehouse.py:288
+#: code:addons/stock/models/stock_warehouse.py:629
 #: model:stock.location.route,name:stock.route_warehouse0_mto
+#, python-format
 msgid "Make To Order"
 msgstr "Approvisionner à la commande"
 
@@ -3496,6 +3534,11 @@ msgstr "Normale"
 #: selection:stock.move,priority:0 selection:stock.picking,priority:0
 msgid "Not urgent"
 msgstr "Non urgent"
+
+#. module: stock
+#: model_terms:ir.ui.view,arch_db:stock.view_picking_form
+msgid "Note"
+msgstr "Note"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_move__note
@@ -4638,6 +4681,7 @@ msgstr "Route de réception"
 
 #. module: stock
 #: code:addons/stock/models/stock_warehouse.py:726
+#: model:stock.picking.type,name:stock.chi_picking_type_in
 #: model:stock.picking.type,name:stock.picking_type_in
 #, python-format
 msgid "Receipts"
@@ -6333,13 +6377,13 @@ msgstr "Type d'opération"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_res_config_settings__module_delivery_ups
-msgid "UPS Connector"
-msgstr "Connecteur UPS"
+msgid "UPS"
+msgstr "UPS"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_res_config_settings__module_delivery_usps
-msgid "USPS Connector"
-msgstr "Connecteur USPSConnecteur USPS"
+msgid "USPS"
+msgstr "USPS"
 
 #. module: stock
 #. openerp-web
@@ -7230,8 +7274,8 @@ msgstr "_Annuler"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_res_config_settings__module_delivery_bpost
-msgid "bpost Connector"
-msgstr "Connecteur Bpost"
+msgid "bpost"
+msgstr "bpost"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.view_template_property_form
@@ -7268,6 +7312,14 @@ msgstr "dans"
 #: model_terms:ir.ui.view,arch_db:stock.stock_warn_insufficient_qty_form_view
 msgid "is not available in sufficient quantity"
 msgstr "n'est pas disponible en quantité suffisante"
+
+#. module: stock
+#: model:product.product,uom_name:stock.product_cable_management_box
+#: model:product.product,weight_uom_name:stock.product_cable_management_box
+#: model:product.template,uom_name:stock.product_cable_management_box_product_template
+#: model:product.template,weight_uom_name:stock.product_cable_management_box_product_template
+msgid "kg"
+msgstr "kg"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.view_warehouse_orderpoint_form
