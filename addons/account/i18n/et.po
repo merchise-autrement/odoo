@@ -3,24 +3,25 @@
 # * account
 # 
 # Translators:
-# Marek Pontus, 2017
-# Egon Raamat <egon@avalah.ee>, 2017
-# Eneli Õigus <enelioigus@gmail.com>, 2017
+# Ahto Reinaru <ahto.reinaru@gmail.com>, 2017
+# Gert Valdek <gert@airobot.ee>, 2017
+# Wanradt Koell <wanradt@gmail.com>, 2017
+# Rivo Zängov <eraser@eraser.ee>, 2017
 # Martin Trigaux, 2017
 # Arma Gedonsky <armagedonsky@hot.ee>, 2017
-# Ahto Reinaru <ahto.reinaru@gmail.com>, 2017
-# Martin Aavastik <martin@avalah.ee>, 2017
-# Rivo Zängov <eraser@eraser.ee>, 2017
-# Wanradt Koell <wanradt@gmail.com>, 2017
-# Gert Valdek <gert@airobot.ee>, 2017
 # Hedi Hunt <Hedi.Hunt@gmail.com>, 2017
+# Egon Raamat <egon@avalah.ee>, 2018
+# Marek Pontus, 2018
+# Eneli Õigus <enelioigus@gmail.com>, 2018
+# Martin Aavastik <martin@avalah.ee>, 2018
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-07-27 11:55+0000\n"
-"PO-Revision-Date: 2018-07-27 11:55+0000\n"
-"Last-Translator: Hedi Hunt <Hedi.Hunt@gmail.com>, 2017\n"
+"PO-Revision-Date: 2017-09-20 10:13+0000\n"
+"Last-Translator: Martin Aavastik <martin@avalah.ee>, 2018\n"
 "Language-Team: Estonian (https://www.transifex.com/odoo/teams/41243/et/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1533,7 +1534,7 @@ msgstr "Konto kogusumma"
 #: model:ir.ui.view,arch_db:account.view_account_type_search
 #: model:ir.ui.view,arch_db:account.view_account_type_tree
 msgid "Account Type"
-msgstr "Konto liik"
+msgstr "Kontotüüp"
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_account_user_type_id
@@ -1543,7 +1544,7 @@ msgid ""
 "legal reports, and set the rules to close a fiscal year and generate opening"
 " entries."
 msgstr ""
-"Konto liiki kasutatakse informatiivsena, et luua riigipõhiseid põhiaruandeid"
+"Konto tüüpi kasutatakse informatiivsena, et luua riigipõhiseid põhiaruandeid"
 " ja panna paika reeglid majandusaasta sulgemiseks ja algsaldode "
 "sisestamiseks."
 
@@ -2132,7 +2133,7 @@ msgid ""
 "                Sheet and the Profit and Loss report use the category\n"
 "                (profit/loss or balance sheet)."
 msgstr ""
-"Konto liik määrab, kuidas kontot kasutatakse andmikes.\n"
+"Kontotüüp määrab, kuidas kontot kasutatakse andmikes.\n"
 "                Edasilükkamise meetod konto liigil määrab aasta sulgemise\n"
 "                protsessi. Näiteks bilansis ja kasumiaruandes kasutatakse \n"
 "                konto kategooriat (kasumiaruanne või bilanss)."
@@ -3177,7 +3178,7 @@ msgstr "Kliki, et lisada sobitamise mudel."
 #. module: account
 #: model:ir.actions.act_window,help:account.action_account_type_form
 msgid "Click to define a new account type."
-msgstr "Kliki, et lisada uus konto tüüp."
+msgstr "Kliki, et lisada uus kontotüüp."
 
 #. module: account
 #: model:ir.actions.act_window,help:account.action_invoice_tree2
@@ -5248,7 +5249,7 @@ msgstr "Peida kassapõhine võimalus"
 #. module: account
 #: model:ir.ui.view,arch_db:account.view_account_form
 msgid "How do account types affect your reports?"
-msgstr "Kuidas kontoliigid mõjutavad aruandeid?"
+msgstr "Kuidas kontotüübid mõjutavad aruandeid?"
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.res_config_settings_view_form
@@ -5894,8 +5895,8 @@ msgid ""
 "Invoice_${(object.number or '').replace('/','_')}_${object.state == 'draft' "
 "and 'draft' or ''}"
 msgstr ""
-"Invoice_${(object.number or '').replace('/','_')}_${object.state == 'draft' "
-"and 'draft' or ''}"
+"Arve_${(object.number or '').replace('/','_')}_${object.state == 'draft' and"
+" 'draft' or ''}"
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.view_account_invoice_report_search
@@ -12170,3 +12171,11 @@ msgstr "wizard.multi.charts.accounts"
 #: model:ir.ui.view,arch_db:account.view_bank_statement_form
 msgid "→ Count"
 msgstr "→ Loenda"
+
+#. module: account
+#: code:addons/account/models/account.py:309
+#, python-format
+msgid ""
+"Currency field should only be set if the journal's currency is different "
+"from the company's. Leave the field blank to use company currency."
+msgstr ""

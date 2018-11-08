@@ -1,11 +1,11 @@
-=========
- Prefork
-=========
+===================================================
+ Notes about the preforking implementation in Odoo
+===================================================
 
 .. warning:: About the accuracy of these notes.
 
    These note are about learning.  I need to write stuff while I'm learning,
-   it let's me to fix it on my head.  At the same time, I believe, these notes
+   it let me to fix it on my head.  At the same time, I believe, these notes
    will serve anyone (including myself) needing to change and/or debug the
    server.
 
@@ -22,12 +22,8 @@
    or FITNESS FOR A PARTICULAR PURPOSE.
 
 
-
-Notes about the preforking implementation in Odoo
-=================================================
-
-The server
-----------
+The prefork server
+==================
 
 - Creates a pipe to allow `select` unblock if interrupted (EINTR).
 
@@ -48,15 +44,15 @@ The server
   This is different from the "accepting and then forking" cycle we see in
   other servers (call it simply forking).  When "forking" is employed the
   parent process accepts all incoming connections and then forks children that
-  handle that connection.  In HTTP this is rather wasteful.
+  handle that connection.  In HTTP this is rather wasteful (and a bit slower).
 
-  This pre-forking opens the listening socket and then forks several workers
-  children.  This means that the listening socket FD is shared by all workers.
-  All accept connections.  Calling `accept(2)`:man: from several process makes
-  all threads/process to block until a connection is established (the 3WHS is
-  done).  In older Linuxes, this could lead to a `Thundering Herd`__ (this is
-  not actually applicable since the number of workers in our case is limited
-  and known); newer linuxes don't suffer from this.
+  This pre-forking server opens the listening socket and then forks several
+  workers children.  This means that the listening socket FD is shared by all
+  workers.  All accept connections.  Calling `accept(2)`:man: from several
+  process makes all threads/process to block until a connection is established
+  (the 3WHS is done).  In older Linuxes, this could lead to a `Thundering
+  Herd`__ (this is not actually applicable since the number of workers in our
+  case is limited and known); newer linuxes don't suffer from this.
 
 __ http://uwsgi-docs.readthedocs.org/en/latest/articles/SerializingAccept.html
 
@@ -110,14 +106,11 @@ Integrity
     If any bounds are trespassed the worker kill itself.
 
 
-
-
 Signals
 -------
 
 It seems that pressing Ctrl-C on the terminal sends the SIGINT to all the
-processes workers and servers.  Can't be sure.
-
+processes workers and servers.  I can't be sure.
 
 Increase the numbers of workers on-the-fly::
 
@@ -129,14 +122,10 @@ on-the-fly, but in my tests it does not work::
 
   kill -TTOU `cat var/run/xoeuf.pid`
 
-Sending the SIGUSR2 signal to a worker process will make to start collecting
-profiling data (see the Python profile module).  Sending it again will stop
-the profiling and save the data in ``/tmp/odoo.stats<PID>.txt``.  In any case
-the profiling will stop after 5 minutes after activation.
 
 
-Sketch
-------
+Notes
+-----
 
 - Windows XP does not have a ``select.poll`` object.
 
