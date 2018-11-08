@@ -49,6 +49,27 @@ msgid ""
 "<p>If you have any question, do not hesitate to contact us.</p>\n"
 "<p>Best regards,</p>\n"
 msgstr ""
+"\n"
+"<p>尊敬的\n"
+"% if object.partner_id.is_company and object.child_ids:\n"
+"    ${object.partner_id.child_ids[0].name}\n"
+"% else :\n"
+"    ${object.partner_id.name}\n"
+"% endif\n"
+",</p><p>\n"
+"这是 ${object.state in ('draft', 'sent') and 'request for quotation' or 'purchase order confirmation'} <strong>${object.name}</strong>\n"
+"% if object.partner_ref:\n"
+"    with reference: ${object.partner_ref}\n"
+"% endif\n"
+"% if object.origin:\n"
+"    (RFQ origin: ${object.origin})\n"
+"% endif\n"
+"amounting in <strong>${object.amount_total} ${object.currency_id.name}</strong>\n"
+"from ${object.company_id.name}.\n"
+"</p>\n"
+"\n"
+"<p>如您有任何疑问，可立即与我们联络。</p>\n"
+"<p>此致,</p>\n"
 
 #. module: purchase
 #: model:mail.template,body_html:purchase.email_template_edi_purchase_done
@@ -74,6 +95,26 @@ msgid ""
 "<p>You can reply to this email if you have any questions.</p>\n"
 "<p>Thank you,</p>\n"
 msgstr ""
+"\n"
+"<p>尊敬的 ${object.partner_id.name} \n"
+"% if object.partner_id.parent_id:\n"
+"    (<i>${object.partner_id.parent_id.name}</i>)\n"
+"% endif\n"
+",</p>\n"
+"<p>\n"
+"附件为 <strong>${object.state in ('draft', 'sent') and 'request for quotation' or 'purchase order confirmation'} ${object.name}</strong>\n"
+"% if object.partner_ref:\n"
+"    with reference: ${object.partner_ref}\n"
+"% endif\n"
+"% if object.origin:\n"
+"    (RFQ origin: ${object.origin})\n"
+"% endif\n"
+"amounting <strong>${object.amount_total} ${object.currency_id.name}</strong>\n"
+"来自 ${object.company_id.name}.\n"
+"</p>\n"
+"\n"
+"<p>如您有任何疑问，可直接本邮件中回复。</p>\n"
+"<p>谢谢,</p>\n"
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_config_settings_module_stock_dropshipping
@@ -82,6 +123,9 @@ msgid ""
 "Creates the dropship Route and add more complex tests\n"
 "-This installs the module stock_dropshipping."
 msgstr ""
+"\n"
+"创建直运路径并且添加更加复杂的测试\n"
+"-此模块依赖 stock_dropshipping模块"
 
 #. module: purchase
 #: code:addons/purchase/models/stock.py:87
@@ -389,6 +433,8 @@ msgid ""
 "Calls for tenders are used when you want to generate requests for quotations to several vendors for a given set of products.\n"
 "You can configure per product if you directly do a Request for Quotation to one vendor or if you want a Call for Tenders to compare offers from several vendors."
 msgstr ""
+"当你想为一组给定的产品生成报价给几个供应商的报价时就需要招标.\n"
+"如果您直接向一个供应商报价，或者您想要一个招标来比较几个供应商的报价，您可以配置每个产品的配置."
 
 #. module: purchase
 #: code:addons/purchase/models/purchase.py:812
@@ -1614,6 +1660,7 @@ msgid ""
 "This purchase order has been created from: <a href=# data-oe-"
 "model=procurement.order data-oe-id=%d>%s</a>"
 msgstr ""
+"这个采购订单是从: <a href=# data-oe-model=procurement.order data-oe-id=%d>%s</a>"
 
 #. module: purchase
 #: code:addons/purchase/models/purchase.py:986
@@ -1622,6 +1669,7 @@ msgid ""
 "This purchase order has been modified from: <a href=# data-oe-"
 "model=procurement.order data-oe-id=%d>%s</a>"
 msgstr ""
+"此采购订单已从: <a href=# data-oe-model=procurement.order data-oe-id=%d>%s</a>"
 
 #. module: purchase
 #: code:addons/purchase/models/account_invoice.py:184
@@ -1891,6 +1939,8 @@ msgid ""
 "You are decreasing the ordered quantity!\n"
 "You must update the quantities on the reception and/or bills."
 msgstr ""
+"你们订货量减少了！\n"
+"你必须更新接待和/或账单上的数量。"
 
 #. module: purchase
 #: model:ir.actions.act_window,help:purchase.purchase_open_invoice

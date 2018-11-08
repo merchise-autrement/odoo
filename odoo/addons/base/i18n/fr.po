@@ -28,6 +28,7 @@
 # Nicolas Martinelli <nim@odoo.com>, 2016
 # Jean-Marc Dupont <jmd@6it.fr>, 2016
 # Kévin R., 2016
+# Pierrick Brun <brun.pierrick@protonmail.com>, 2016
 # Jérôme Tanché <jerome.tanche@ouest-dsi.fr>, 2016
 # Fabien Bourgeois <fabien@yaltik.com>, 2016
 # Matillon Samantha <smatillon@gmail.com>, 2016
@@ -51,13 +52,14 @@
 # e2f <projects@e2f.com>, 2018
 # fr trans <e2ffr01@hotmail.com>, 2018
 # fr rev <e2ffr02@hotmail.com>, 2018
+# Bertrand LATOUR <divoir@gmail.com>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-10-20 07:12+0000\n"
 "PO-Revision-Date: 2017-10-20 07:12+0000\n"
-"Last-Translator: fr rev <e2ffr02@hotmail.com>, 2018\n"
+"Last-Translator: Bertrand LATOUR <divoir@gmail.com>, 2018\n"
 "Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -899,6 +901,9 @@ msgid ""
 "* Automatically enables forecasting on projects created from sale orders\n"
 "    "
 msgstr ""
+"\n"
+"* Permet de faire automatiquement des prévisions pour les projets créés à partir de bons de commande\n"
+"    "
 
 #. module: base
 #: model:ir.module.module,description:base.module_report_intrastat
@@ -5143,7 +5148,7 @@ msgstr ""
 "Ainsi, la copie pure du modèle de tableau est générée.\n"
 "\n"
 "Assistants fournis par ce module:\n"
-" --------------------------------\n"
+"--------------------------------\n"
 " * Partenaire TVA intra : enregistrer les partenaires avec leur TVA afférente et les montants facturés. \n"
 "Préparer un format de fichier XML.\n"
 "\n"
@@ -13574,7 +13579,7 @@ msgstr "Définition de vue non conforme"
 #. module: base
 #: model:ir.module.category,name:base.module_category_warehouse_management
 msgid "Inventory"
-msgstr "Inventaire"
+msgstr "Stock"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_stock

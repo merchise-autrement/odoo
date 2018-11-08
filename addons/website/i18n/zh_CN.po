@@ -11,17 +11,18 @@
 # Bo Cao, 2017
 # fausthuang, 2017
 # Yaorong Li <55yaorong.li@gmail.com>, 2017
-# 老窦 北京 <2662059195@qq.com>, 2018
 # e2f <projects@e2f.com>, 2018
 # e2f_cn c5 <jarvisn@ecinnovations.com>, 2018
 # Maie <m@maie.name>, 2018
+# 广州救火 <7017511@qq.com>, 2018
+# 李赋 <fu792659@163.com>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-06-23 13:27+0000\n"
 "PO-Revision-Date: 2017-06-23 13:27+0000\n"
-"Last-Translator: Maie <m@maie.name>, 2018\n"
+"Last-Translator: 李赋 <fu792659@163.com>, 2018\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/odoo/teams/41243/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -62,7 +63,7 @@ msgid ""
 "                                                      the #1"
 msgstr ""
 ",\n"
-"此 #1"
+"                                                      免费开店请点击 #1"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.show_website_info
@@ -180,7 +181,7 @@ msgstr "<b>点击 编辑</b> 开始设计你的主页."
 msgid ""
 "<b>Click on a text</b> to start editing it. <i>It's that easy to edit your "
 "content!</i>"
-msgstr ""
+msgstr "<b>单击文本</b>开始编辑。<i>轻松编辑您的内容！</i>"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_text_block
@@ -202,13 +203,19 @@ msgid ""
 "                        quirks like word choices or phrases. Write from your point\n"
 "                        of view, not from someone else's experience."
 msgstr ""
+"<b>考虑讲述 一个带有个性化的故事。</b> \n"
+"带个性化的故事\n"
+"能够使你跟潜在的客户建立某种联系。\n"
+" 这会在一些小地方例如词语和短语中体现出来。\n"
+" 从你的角度写， \n"
+"而不是别人的体验。"
 
 #. module: website
 #. openerp-web
 #: code:addons/website/static/src/js/website.tour.banner.js:72
 #, python-format
 msgid "<b>Install a contact form</b> to improve this page."
-msgstr ""
+msgstr "<b>安装联系表单</b>以便改进此页面。"
 
 #. module: website
 #. openerp-web
@@ -217,7 +224,7 @@ msgstr ""
 msgid ""
 "<b>Install new apps</b> to get more features. Let's install the <i>'Contact "
 "form'</i> app."
-msgstr ""
+msgstr "<b>安装新的应用</b>以便获取更多功能。让我们安装<i>“联系表单”</i>应用。"
 
 #. module: website
 #: model:ir.actions.act_window,help:website.action_module_theme
@@ -245,16 +252,18 @@ msgid ""
 "<br/>\n"
 "                                    Make sure the Advanced Options are set to your country and language."
 msgstr ""
+"<br/>\n"
+" 确保将高级选项设置为您的国家和语言。"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.snippet_options
 msgid "<i class=\"fa fa-arrows\"/>Background Image Sizing"
-msgstr ""
+msgstr "<i class=\"fa fa-arrows\"/>背景图片尺寸"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.snippet_options
 msgid "<i class=\"fa fa-arrows-h\"/>Images spacing"
-msgstr ""
+msgstr "<i class=\"fa fa-arrows-h\"/>图片空间"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.snippet_options
@@ -294,7 +303,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.snippets
 msgid "<i class=\"fa fa-indent\"/> Inner content"
-msgstr ""
+msgstr "<i class=\"fa fa-indent\"/> 内在内容 "
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.snippets
@@ -363,7 +372,7 @@ msgstr "<i class=\"fa fa-th-large\"/> 网站 <b class=\"caret\"/>"
 #. module: website
 #: model:ir.ui.view,arch_db:website.snippet_options
 msgid "<i class=\"fa fa-trash\"/>Remove all images"
-msgstr ""
+msgstr "<i class=\"fa fa-trash\"/>删除所有图像"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.snippet_options
@@ -420,7 +429,7 @@ msgstr "<I>我们希望你有一个有趣的时间！</I>"
 msgid ""
 "<p><b>That's it.</b> Your homepage is live.</p><p>Continue adding more pages"
 " to your site or edit this page to make it even more awesome.</p>"
-msgstr ""
+msgstr "<p><b>就是这样。</b> 您的主页已生成。</p><p>继续为您的网站添加更多页面或编辑此页面使其更完善。</p>"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_image_floating
@@ -534,6 +543,8 @@ msgid ""
 "<span>Contact Us Now</span>\n"
 "                        <i class=\"fa fa-chevron-right\"/>"
 msgstr ""
+"<span>现在联系我们</span>\n"
+"                          <i class=\"fa fa-chevron-right\"/>"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_share
@@ -628,7 +639,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "<strong>Contact Form</strong>"
-msgstr ""
+msgstr "<strong>联系表</strong>"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -693,7 +704,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "<strong>Install</strong> what you need:"
-msgstr ""
+msgstr "<strong>安装</strong>你需要的："
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -718,7 +729,7 @@ msgstr "<strong>现在试着写下你的页脚结构:</strong>"
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "<strong>Publish documentation</strong>"
-msgstr ""
+msgstr "<strong>发布文档</strong>"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -738,7 +749,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "<strong>Send mass mails</strong>"
-msgstr ""
+msgstr "<strong>群发邮件</strong>"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -765,19 +776,19 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "<strong>Use contact forms</strong>"
-msgstr ""
+msgstr "<strong>使用联系表单</strong>"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "<strong>Use relevant keywords</strong><br/>"
-msgstr ""
+msgstr "<strong>使用相关关键字</strong><br/>"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid ""
 "<strong>With that in mind, try to define the structure of your main "
 "menu:</strong>"
-msgstr ""
+msgstr "<strong>考虑到这一点，尝试定义主菜单的结构：</strong>"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -823,6 +834,8 @@ msgid ""
 "field as True to allow users to run this action. If it is set to False the "
 "action cannot be run through the website."
 msgstr ""
+"使用专用控制器可从网站上执行代码服务器操作。地址为<base> /website/action/<website_path>。将此字段设置为 "
+"True，可允许用户运行此操作。如果将此字段设置为 False，则无法通过网站运行该操作。"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_text_block
@@ -926,7 +939,7 @@ msgstr "在菜单添加页面"
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "Adding relevant and popular keywords"
-msgstr ""
+msgstr "添加相关和热门关键字"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.view_website_config_settings
@@ -944,7 +957,7 @@ msgstr "如果您对下列三个问题给出肯定回答，则对关键字进行
 #: code:addons/website/static/src/js/website.tour.banner.js:49
 #, python-format
 msgid "After having checked how it looks on mobile, <b>close the preview</b>."
-msgstr ""
+msgstr "在检查其在移动端的呈现视图后，<b>请关闭预览。</b>"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -970,13 +983,13 @@ msgstr "所有图标的许可都是以知识共享的方式授权的,所以你�
 #. module: website
 #: selection:website.config.settings,module_website_version:0
 msgid "Allow multiple versions of the same page (advanced)"
-msgstr ""
+msgstr "允许同一页面的多个版本（高级）"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid ""
 "Allows your community to ask and answer questions about their interests"
-msgstr ""
+msgstr "允许您的社区提出并回答有关其兴趣的问题"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.500
@@ -1003,7 +1016,7 @@ msgstr "应用"
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "Apply it to your website from your database admin page"
-msgstr ""
+msgstr "从数据库管理页面将其应用到您的网站"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_ir_attachment_website_url
@@ -1013,7 +1026,7 @@ msgstr "附件网址"
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "Attract more visitors with a content marketing strategy."
-msgstr ""
+msgstr "通过内容营销策略吸引更多访问者。"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -1123,7 +1136,7 @@ msgstr "CDN筛选"
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "Can I afford for advertising on the keyword?"
-msgstr ""
+msgstr "我可以负担关于关键字广告的费用吗？"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_faq_collapse
@@ -1295,7 +1308,7 @@ msgstr "恭喜你，成功了！"
 #. module: website
 #: model:ir.ui.view,arch_db:website.footer_default
 msgid "Connect with us"
-msgstr "连接我们"
+msgstr "联系我们"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.403 model:ir.ui.view,arch_db:website.404
@@ -1537,13 +1550,13 @@ msgstr "域"
 #: code:addons/website/static/src/xml/website.xml:64
 #, python-format
 msgid "Don't forget to update all links referring to this page:"
-msgstr ""
+msgstr "不要忘记更新引用此页面的所有链接："
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid ""
 "Don't go over 6 items, otherwise your main menu will be difficult to use."
-msgstr ""
+msgstr "不要超过6项，否则您的主菜单将难以使用。"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -1558,7 +1571,7 @@ msgstr "下载产品的技术文件"
 #. module: website
 #: model:ir.ui.view,arch_db:website.snippet_options
 msgid "Downtown"
-msgstr ""
+msgstr "市中心"
 
 #. module: website
 #. openerp-web
@@ -1579,7 +1592,7 @@ msgstr "在封面下面，在您的页面中拖动另一个块。"
 #: code:addons/website/static/src/js/website.tour.banner.js:19
 #, python-format
 msgid "Drag the <i>Cover</i> block and drop it in your page."
-msgstr ""
+msgstr "拖动<i>封面</i>区块并将其放在页面之中。"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_feature_grid
@@ -1775,7 +1788,7 @@ msgstr "字体"
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "For a custom-made theme:"
-msgstr ""
+msgstr "定制的主题:"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -1863,7 +1876,7 @@ msgstr "转到链接"
 #: code:addons/website/static/src/xml/website.backend.xml:45
 #, python-format
 msgid "Go to our"
-msgstr ""
+msgstr "浏览"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -1877,7 +1890,7 @@ msgstr "GoDaddy"
 msgid ""
 "Good Job! You created your first page. Let's check how this page looks like "
 "on <b>mobile devices</b>."
-msgstr ""
+msgstr "棒极了! 您创建了第一个页面. 让我们检查一下该页面在 <b>移动设备</b>上的呈现效果."
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -1975,7 +1988,7 @@ msgstr "这是用来帮助你提高翻译效率的可视化工具"
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid ""
 "Here is a checklist of actions to help you launch a new website efficiently:"
-msgstr ""
+msgstr "以下是帮助您有效启动新网站的操作清单："
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.500
@@ -2052,7 +2065,7 @@ msgstr "在此模式下，你只能翻译文本.要改动也页面的结构，�
 #: code:addons/website/static/src/js/website.backendDashboard.js:96
 #, python-format
 msgid "Incorrect Client ID"
-msgstr ""
+msgstr "错误的客户端ID"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.show_website_info
@@ -2102,7 +2115,7 @@ msgstr "已安装的模块"
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "Is the keyword popular in Google?"
-msgstr ""
+msgstr "是在 Google 中常见的关键字吗？"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -2120,7 +2133,7 @@ msgstr ""
 #: code:addons/website/static/src/xml/website.xml:13
 #, python-format
 msgid "It might be possible to edit the relevant items or fix the issue in"
-msgstr ""
+msgstr "可以编辑相关项目或修复问题"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -2141,7 +2154,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "It’s time to grow your traffic!"
-msgstr ""
+msgstr "是时候增加您的流量了！"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_button
@@ -2226,7 +2239,7 @@ msgstr "有限的定制"
 #: code:addons/website/static/src/xml/website.backend.xml:29
 #, python-format
 msgid "Link my Analytics Account"
-msgstr "链接我的谷歌分析帐户"
+msgstr "关联我的谷歌分析帐户"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_config_settings_social_linkedin
@@ -2343,7 +2356,7 @@ msgstr "我的网站"
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
 msgid "Namecheap"
-msgstr ""
+msgstr "Namecheap"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.view_website_config_settings
@@ -2591,7 +2604,7 @@ msgstr "网页标题"
 #. module: website
 #: model:ir.ui.view,arch_db:website.snippet_options
 msgid "Panama Sky"
-msgstr ""
+msgstr "巴拿马天空"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_panel
@@ -2783,7 +2796,7 @@ msgstr ""
 #: code:addons/website/static/src/js/website.tour.banner.js:41
 #, python-format
 msgid "Publish your page by clicking on the <b>Save</b> button."
-msgstr ""
+msgstr "通过单击<b>保存</b>按钮发布您的页面。"
 
 #. module: website
 #. openerp-web
@@ -3070,7 +3083,7 @@ msgstr "静态"
 #: code:addons/website/static/src/js/website.snippets.editor.js:44
 #, python-format
 msgid "Stay on this page"
-msgstr ""
+msgstr "停留在本页"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.footer_custom
@@ -3090,7 +3103,7 @@ msgstr "小标题3"
 #. module: website
 #: model:ir.ui.view,arch_db:website.user_navbar
 msgid "TRANSLATE"
-msgstr ""
+msgstr "翻译"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.show_website_info
@@ -3134,7 +3147,7 @@ msgstr "横幅或大图片积木都是好选择。"
 #: code:addons/website/static/src/js/website.backendDashboard.js:96
 #, python-format
 msgid "The Google Analytics Client ID you have entered seems incorrect."
-msgstr ""
+msgstr "你输入的Google Analytics客户端ID或密钥似乎不正确。"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_faq_collapse
@@ -3240,7 +3253,7 @@ msgstr ""
 #: code:addons/website/static/src/xml/website.backend.xml:28
 #, python-format
 msgid "There is no data currently available."
-msgstr ""
+msgstr "目前没有可用的数据。"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_features
@@ -3323,7 +3336,7 @@ msgstr "追溯"
 #: code:addons/website/static/src/js/website.snippets.editor.js:472
 #, python-format
 msgid "Transform the picture (click twice to reset transformation)"
-msgstr ""
+msgstr "更换图片（双击重置转换）"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -3468,6 +3481,8 @@ msgid ""
 "User-agent: *\n"
 "Sitemap:"
 msgstr ""
+"User-agent: *\n"
+"Sitemap:"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.snippet_options
@@ -3769,7 +3784,7 @@ msgstr "欢迎进入您的主页"
 #: code:addons/website/static/src/xml/website.editor.xml:26
 #, python-format
 msgid "What do you want to do?"
-msgstr ""
+msgstr "您想要做什么？"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -3820,6 +3835,9 @@ msgid ""
 "                        services.<br/>To be successful your content needs to be\n"
 "                        useful to your readers."
 msgstr ""
+"写一两个段落描述您的产品或 \n"
+" 服务。<br/>要想取得成功，您的内容需要 \n"
+" 对读者有用。"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_image_text
@@ -3834,7 +3852,7 @@ msgstr "使用一两个图片来说明你的产品和服务。是你的内容对
 msgid ""
 "Write one or two paragraphs describing your product, services or a specific "
 "feature. To be successful your content needs to be useful to your readers."
-msgstr ""
+msgstr "写一两个段落描述您的产品服务或特定功能。要想取得成功，您的内容需要对读者有用。"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.s_big_message
@@ -3969,7 +3987,7 @@ msgstr "你的网站标题"
 #: code:addons/website/static/src/xml/website.editor.xml:27
 #, python-format
 msgid "Your current changes will be saved automatically."
-msgstr ""
+msgstr "您当前的更改将自动保存。"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -4210,7 +4228,7 @@ msgstr "经典的Odoo界面"
 #. module: website
 #: model:ir.ui.view,arch_db:website.view_website_config_settings
 msgid "the instructions"
-msgstr ""
+msgstr "指令"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -4220,7 +4238,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.view,arch_db:website.view_website_config_settings
 msgid "to create your key."
-msgstr ""
+msgstr "创建您的密钥。"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
@@ -4234,7 +4252,7 @@ msgstr ""
 #: code:addons/website/static/src/xml/website.backend.xml:45
 #, python-format
 msgid "to get more information."
-msgstr ""
+msgstr "获取更多信息"
 
 #. module: website
 #: model:ir.ui.view,arch_db:website.website_planner
