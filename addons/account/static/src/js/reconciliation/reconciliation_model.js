@@ -376,9 +376,17 @@ var StatementModel = BasicModel.extend({
                     };
                 });
             });
+        var domainReconcile = [];
+        if (context && context.company_ids) {
+            domainReconcile.push(['company_id', 'in', context.company_ids]);
+        }
+        if (context && context.active_model === 'account.journal' && context.active_ids) {
+            domainReconcile.push(['journal_id', 'in', [false].concat(context.active_ids)]);
+        }
         var def_reconcileModel = this._rpc({
                 model: 'account.reconcile.model',
                 method: 'search_read',
+                domain: domainReconcile,
             })
             .then(function (reconcileModels) {
                 self.reconcileModels = reconcileModels;
@@ -391,20 +399,7 @@ var StatementModel = BasicModel.extend({
             .then(function (accounts) {
                 self.accounts = _.object(_.pluck(accounts, 'id'), _.pluck(accounts, 'code'));
             });
-        self.taxes = {};
-        var def_taxes = this._rpc({
-                model: 'account.tax',
-                method: 'search_read',
-                fields: ['price_include', 'amount_type'],
-            })
-            .then(function (taxes) {
-                _.each(taxes, function(tax){
-                    self.taxes[tax.id] = {
-                        price_include: tax.price_include,
-                        amount_type: tax.amount_type,
-                    }
-                })
-            });
+        var def_taxes = self._loadTaxes();
         return $.when(def_statement, def_reconcileModel, def_account, def_taxes).then(function () {
             _.each(self.lines, function (line) {
                 line.reconcileModels = self.reconcileModels;
@@ -413,6 +408,23 @@ var StatementModel = BasicModel.extend({
             ids = ids.splice(0, self.defaultDisplayQty);
             self.pagerIndex = ids.length;
             return self._formatLine(self.statement.lines);
+        });
+    },
+
+    _loadTaxes: function(){
+        var self = this;
+        self.taxes = {};
+        return this._rpc({
+            model: 'account.tax',
+            method: 'search_read',
+            fields: ['price_include', 'amount_type'],
+        }).then(function (taxes) {
+            _.each(taxes, function(tax){
+                self.taxes[tax.id] = {
+                    price_include: tax.price_include,
+                    amount_type: tax.amount_type,
+                }
+            })
         });
     },
     /**
@@ -1253,15 +1265,23 @@ var ManualModel = StatementModel.extend({
                 self.accounts = _.object(self.account_ids, _.pluck(accounts, 'code'));
             });
 
+        var domainReconcile = [];
+        var company_ids = context && context.company_ids || [session.company_id]
+        if (company_ids) {
+            domainReconcile.push(['company_id', 'in', company_ids]);
+        }
         var def_reconcileModel = this._rpc({
                 model: 'account.reconcile.model',
                 method: 'search_read',
+                domain: domainReconcile,
             })
             .then(function (reconcileModels) {
                 self.reconcileModels = reconcileModels;
             });
 
-        return $.when(def_reconcileModel, def_account).then(function () {
+        var def_taxes = this._loadTaxes();
+
+        return $.when(def_reconcileModel, def_account, def_taxes).then(function () {
             switch(context.mode) {
                 case 'customers':
                 case 'suppliers':
