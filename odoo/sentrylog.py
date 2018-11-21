@@ -22,8 +22,9 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 import raven
-from raven.transport.http import HTTPTransport
-from raven.transport.threaded import ThreadedHTTPTransport
+from raven.transport.requests import RequestsHTTPTransport as HTTPTransport
+from raven.transport.threaded_requests \
+    import ThreadedRequestsHTTPTransport as ThreadedHTTPTransport
 from raven.transport.gevent import GeventedHTTPTransport
 from raven.utils.wsgi import get_headers, get_environ
 
@@ -36,8 +37,6 @@ except ImportError:
 # middleware, etc.
 
 from xoutil.objects import setdefaultattr
-
-from odoo import models
 
 from xoutil.symbols import Unset
 from xoutil.symbols import boolean as Logical
