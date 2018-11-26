@@ -18,7 +18,7 @@ check signature:
 
 run all Odoo tests:
   variables:
-    PYTHON: python3
+    PYTHON: python3.6
     ODOO_VERSION: 12
     GIT_STRATEGY: none
   stage: test
