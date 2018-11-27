@@ -72,7 +72,6 @@ class configmanager(object):
         # Options not exposed on the command line. Command line options will be added
         # from optparse's parser.
         self.options = {
-            'admin_passwd': 'admin',
             'csv_internal_sep': ',',
             'publisher_warranty_url': 'http://services.openerp.com/publisher-warranty/',
             'reportgz': False,
@@ -250,6 +249,8 @@ class configmanager(object):
                                  "so be sure to set a proper --database parameter first")
         security.add_option('--disable-database-manager', action='store_true', dest='disable_database_manager', my_default=False,
                             help='Disable the ability to manage the databases from the web interface.')
+        security.add_option('--master-password-hash', dest='admin_passwd',
+                            my_default='$pbkdf2-sha512$25000$bE2pdW4thZDSmhMiROj9Hw$UF3D/aGJCTy5OL.jxOMD7xwxYDazPyNQAXBHctlxlzdNT7ThTVdtkiVv4.V7nE.Wdh13vDyPbtyTdGPFyCCMmg')
         parser.add_option_group(security)
 
         # Advanced options
@@ -434,6 +435,7 @@ class configmanager(object):
             'osv_memory_count_limit', 'osv_memory_age_limit', 'max_cron_threads', 'unaccent',
             'data_dir',
             'server_wide_modules',
+            'admin_passwd',
         ]
 
         posix_keys = [
