@@ -12,3 +12,4 @@ from . import server
 from . import shell
 from . import start
 from . import celery  # noqa
+from . import passwd  # noqa
