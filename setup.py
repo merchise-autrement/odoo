@@ -64,7 +64,7 @@ setup(
         'flower',
         'redis',
         'xoutil>=1.9.3',
-        'raven>=5.31.0',
+        'raven>=6.9.0',
         'raven-sanitize-openerp',
         'rjsmin>=1.0.12,<1.1',
     ],
