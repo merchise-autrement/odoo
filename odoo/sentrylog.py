@@ -24,7 +24,9 @@ from __future__ import (division as _py3_division,
 import os
 import raven
 from raven.transport.http import HTTPTransport
+from raven.transport.requests import RequestsHTTPTransport
 from raven.transport.threaded import ThreadedHTTPTransport
+from raven.transport.threaded_requests import ThreadedRequestsHTTPTransport
 from raven.transport.gevent import GeventedHTTPTransport
 from raven.utils.wsgi import get_headers, get_environ
 
@@ -63,7 +65,7 @@ conf = {
     # 'gevent', or 'threaded'.  If set to None, default to 'threaded'.  In
     # fact any value other than 'sync', or 'gevent' will be regarded as
     # 'threaded'.
-    'transport': 'threaded',
+    'transport': os.environ.get('odoo_sentry_transport', 'threaded'),
 
     # Only report errors with at least this level.
     'report_level': 'ERROR',
@@ -95,11 +97,18 @@ def get_client():
         transport = conf.get('transport', None)
         if transport == 'sync':
             transport = HTTPTransport
+        elif transport == 'requests':
+            transport = RequestsHTTPTransport
         elif transport == 'gevent':
             transport = GeventedHTTPTransport
-        else:
+        elif transport == 'threaded':
             transport = ThreadedHTTPTransport
-        conf['transport'] = transport
+        elif transport == 'threaded+requests':
+            transport = ThreadedRequestsHTTPTransport
+        else:
+            transport = None
+        if transport is not None:
+            conf['transport'] = transport
         _sentry_client = raven.Client(**conf)
     return _sentry_client
 
