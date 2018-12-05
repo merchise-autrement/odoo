@@ -75,6 +75,11 @@ conf = {
     # and capture_locals.
 }
 
+default_environment = os.environ.get('odoo_sentry_environment', None)
+if default_environment is not None:
+    conf['environment'] = default_environment
+
+
 # The name of the context to the logger to avoid logging sentry-related
 # errors.
 SENTRYLOGGER = object()
