@@ -112,7 +112,7 @@ class AccountInvoice(models.Model):
         else:
             self.reconciled = False
         if self.date < '2018-02-01' and was_reconciled and not self.reconciled:
-            logger.error(
+            _logger.error(
                 'Reopening old invoices %r: UID: %r',
                 self.mapped('number'),
                 self.env.uid,
@@ -370,12 +370,22 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def _write(self, vals):
+        from xoeuf.tools import normalize_datestr
         pre_not_reconciled = self.filtered(lambda invoice: not invoice.reconciled)
         pre_reconciled = self - pre_not_reconciled
         res = super(AccountInvoice, self)._write(vals)
         reconciled = self.filtered(lambda invoice: invoice.reconciled)
         not_reconciled = self - reconciled
         (reconciled & pre_reconciled).filtered(lambda invoice: invoice.state == 'open').action_invoice_paid()
+        # merchise: register this event for old invoices
+        to_reopen = (not_reconciled & pre_not_reconciled).filtered(lambda invoice: invoice.state == 'paid')
+        if to_reopen and to_reopen.filtered(lambda inv: normalize_datestr(inv.date) < '2018-02-01'):
+            _logger.error(
+                'Reopening old invoices %r: UID: %r',
+                self.mapped('number'),
+                self.env.uid,
+                extra=dict(stack=True)
+            )
         (not_reconciled & pre_not_reconciled).filtered(lambda invoice: invoice.state == 'paid').action_invoice_re_open()
         return res
 
