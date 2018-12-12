@@ -67,13 +67,21 @@ conf = {
     # 'threaded'.
     'transport': os.environ.get('odoo_sentry_transport', 'threaded'),
 
-    # Only report errors with at least this level.
-    'report_level': 'ERROR',
-
     # Other keyword arguments are passed unchanged to the Raven Client
     # object.  The following are interesting: environment, auto_log_stacks,
     # and capture_locals.
 }
+
+# Only report errors with at least this level.
+default_report_level = os.environ.get(
+    'odoo_sentry_report_level',
+    'ERROR'
+).upper()
+if default_report_level not in ('ERROR', 'WARNING', 'INFO', 'DEBUG'):
+    default_report_level = 'ERROR'
+
+conf['report_level'] = default_report_level
+
 
 default_environment = os.environ.get('odoo_sentry_environment', None)
 if default_environment is not None:
