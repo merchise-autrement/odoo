@@ -100,6 +100,14 @@ def get_client():
         else:
             transport = ThreadedHTTPTransport
         conf['transport'] = transport
+        include_paths = []
+        try:
+            import pkg_resources
+            env = pkg_resources.AvailableDistributions()
+            include_paths.extend(env)
+        except:  # noqa
+            include_paths = ['odoo', 'celery', 'billiard', 'kombu', 'ampq']
+        conf['include_paths'] = include_paths
         _sentry_client = raven.Client(**conf)
     return _sentry_client
 
