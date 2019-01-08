@@ -99,9 +99,16 @@ class DeferredType(object):
 
                                The default is False.
 
+        :keyword return_signature: If True we only return the signature of the
+                 job instead of actually scheduling the job.  This allows to
+                 create chains and groups of jobs.
+
+                 Notice we always create immutable signatures.
+
         :keyword queue: The name of the queue.
 
         '''
+        self.__return_signature = options.pop('return_signature', False)
         self.__disallow_nested = not options.pop('allow_nested', False)
         options.setdefault('queue', DEFAULT_QUEUE_NAME)
         self.__options = options
@@ -109,6 +116,10 @@ class DeferredType(object):
     @property
     def disallow_nested(self):
         return self.__disallow_nested
+
+    @property
+    def return_signature(self):
+        return self.__return_signature
 
     @property
     def options(self):
@@ -144,7 +155,15 @@ class DeferredType(object):
                         ))
             return task(*signature)
         else:
-            return task.apply_async(args=signature, **self.options)
+            signature = task.signature(
+                signature,
+                immutable=True,
+                **self.options
+            )
+            if self.return_signature:
+                return signature
+            else:
+                return signature.delay()
 
 
 Deferred = DeferredType()
@@ -856,6 +875,7 @@ def _report_success(self, dbname, uid, job_uuid, result=None):
                 env=env
             )
     except Exception:
+        logger.exception('Exception while reporting success')
         try:
             raise self.retry(args=(dbname, uid, job_uuid),
                              kwargs=dict(result=result))
@@ -876,6 +896,7 @@ def _report_failure(self, dbname, uid, job_uuid, tb=None, message=''):
                 env=env
             )
     except Exception:
+        logger.exception('Exception while reporting failure')
         try:
             raise self.retry(args=(dbname, uid, job_uuid, tb),
                              kwargs={'message': message})

@@ -3,32 +3,34 @@
 # * base
 # 
 # Translators:
-# Martin Trigaux, 2017
-# grazziano <gra.negocia@gmail.com>, 2017
-# Mateus Lopes <mateus1@gmail.com>, 2017
-# Luiz Carlos de Lima <luiz.carlos@akretion.com.br>, 2017
-# danimaribeiro <danimaribeiro@gmail.com>, 2017
 # Fábio Novais <fabionovais@aptu.com.br>, 2017
-# Clemilton Clementino <clemylton@hotmail.com>, 2017
-# Gideoni Silva <gd.willian@gmail.com>, 2017
 # Franciele Neiva <franciele.neiva@br.ey.com>, 2017
-# falexandresilva <falexandresilva@gmail.com>, 2017
 # Adriel Kotviski <kotviski@gmail.com>, 2017
-# Rodrigo de Almeida Sottomaior Macedo <rmsolucoeseminformatic4@gmail.com>, 2017
-# Silmar <pinheirosilmar@gmail.com>, 2017
 # André Augusto Firmino Cordeiro <a.cordeito@gmail.com>, 2017
+# Clemilton Clementino <clemylton@hotmail.com>, 2017
+# falexandresilva <falexandresilva@gmail.com>, 2017
+# Luiz Carlos de Lima <luiz.carlos@akretion.com.br>, 2017
+# Gideoni Silva <gd.willian@gmail.com>, 2017
+# danimaribeiro <danimaribeiro@gmail.com>, 2017
+# Rodrigo de Almeida Sottomaior Macedo <rmsolucoeseminformatic4@gmail.com>, 2017
+# Martin Trigaux, 2017
 # Pablo Valentini <pablondrina@gmail.com>, 2017
 # Thiago MACÊDO <thiago95macedo@gmail.com>, 2017
 # Raphael Rodrigues <raphael0608@gmail.com>, 2018
+# Mateus Lopes <mateus1@gmail.com>, 2018
 # Diego Bittencourt <diegomb86@gmail.com>, 2018
 # Hildeberto Abreu Magalhães <hildeberto@gmail.com>, 2018
+# grazziano <gra.negocia@gmail.com>, 2018
+# Silmar <pinheirosilmar@gmail.com>, 2018
+# Rafael H L Moretti <rafael.moretti@gmail.com>, 2018
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-08-02 09:47+0000\n"
-"PO-Revision-Date: 2018-08-02 09:47+0000\n"
-"Last-Translator: Hildeberto Abreu Magalhães <hildeberto@gmail.com>, 2018\n"
+"PO-Revision-Date: 2017-09-20 10:13+0000\n"
+"Last-Translator: Rafael H L Moretti <rafael.moretti@gmail.com>, 2018\n"
 "Language-Team: Portuguese (Brazil) (https://www.transifex.com/odoo/teams/41243/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -5840,7 +5842,7 @@ msgstr ""
 #. module: base
 #: model:ir.ui.view,arch_db:base.res_lang_form
 msgid "%Y - Year with century.\""
-msgstr ""
+msgstr "%Y - Ano com século.\""
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.res_lang_form
@@ -6012,7 +6014,7 @@ msgstr "-Este módulo não exclui nenhum outro módulo."
 #. module: base
 #: model:ir.ui.view,arch_db:base.res_lang_form
 msgid "1. %b, %B         ==&gt; Dec, December"
-msgstr ""
+msgstr "1. %b, %B         ==&gt; Dez, Dezembro"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_rule_form
@@ -8836,6 +8838,12 @@ msgid "Commercial Entity"
 msgstr "Entidade Comercial"
 
 #. module: base
+#: model:ir.model.fields,field_description:base.field_res_partner_commercial_partner_country_id
+#: model:ir.model.fields,field_description:base.field_res_users_commercial_partner_country_id
+msgid "Commercial Entity's Country"
+msgstr ""
+
+#. module: base
 #: model:ir.module.module,summary:base.module_pos_data_drinks
 msgid "Common Drinks data for points of sale"
 msgstr ""
@@ -11300,6 +11308,8 @@ msgstr "O campo `%(field_name)s` não existe"
 msgid ""
 "Field names can only contain characters, digits and underscores (up to 63)."
 msgstr ""
+"Nomes de campos somente podem conter caracteres, dígitos e subtraços (até "
+"63)."
 
 #. module: base
 #: sql_constraint:ir.model.fields:0
@@ -12257,7 +12267,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.category,description:base.module_category_hr_expense
 msgid "Helps you manage your expenses."
-msgstr ""
+msgstr "Ajuda a gerenciar suas despesas."
 
 #. module: base
 #: model:ir.module.category,description:base.module_category_warehouse_management
@@ -20031,6 +20041,8 @@ msgid ""
 "The model name can only contain lowercase characters, digits, underscores "
 "and dots."
 msgstr ""
+"O nome do modelo pode conter somente caracteres em caixa baixa, dígitos, "
+"subtraços e pontos."
 
 #. module: base
 #: code:addons/base/ir/ir_model.py:133

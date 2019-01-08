@@ -18,6 +18,7 @@
 # Martin Trigaux, 2017
 # Simon Andersen <simon@vkdata.dk>, 2018
 # Ejner Sønniksen <ejner@vkdata.dk>, 2018
+# Jesper Laugesen <jel@enigma.dk>, 2018
 # lhmflexerp <lhm@flexerp.dk>, 2018
 # Sanne Kristensen <sanne@vkdata.dk>, 2018
 # 
@@ -5043,7 +5044,7 @@ msgstr ""
 #: code:addons/account/static/src/xml/account_reconciliation.xml:57
 #, python-format
 msgid "Go to bank statement(s)"
-msgstr "Gå til kontoudtog"
+msgstr "Gå til bankkontoudtog"
 
 #. module: account
 #: code:addons/account/models/account_invoice.py:642
@@ -9096,7 +9097,7 @@ msgstr ""
 #. module: account
 #: model:ir.ui.view,arch_db:account.view_account_invoice_filter
 msgid "Show all records which has next action date is before today"
-msgstr ""
+msgstr "Vis alle poster, hvor den næste handlingsdato er før i dag"
 
 #. module: account
 #: model:ir.ui.view,arch_db:account.view_account_tax_search
