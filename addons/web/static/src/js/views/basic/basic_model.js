@@ -3208,6 +3208,7 @@ var BasicModel = AbstractModel.extend({
         _.each(element._changes, function (command) {
             if (command.operation === 'DELETE' ||
                     command.operation === 'FORGET' ||
+                    (command.operation === 'ADD' &&  !command.isNew)||
                     command.operation === 'REMOVE_ALL') {
                 return;
             }
@@ -3332,7 +3333,7 @@ var BasicModel = AbstractModel.extend({
             model: params.modelName,
             offset: params.offset || (type === 'record' ? _.indexOf(res_ids, res_id) : 0),
             openGroupByDefault: params.openGroupByDefault,
-            orderedBy: params.orderedBy || (params.context && params.context.orderedBy) || [],
+            orderedBy: params.orderedBy || [],
             orderedResIDs: params.orderedResIDs,
             parentID: params.parentID,
             rawContext: params.rawContext,
@@ -3957,11 +3958,24 @@ var BasicModel = AbstractModel.extend({
         }
         return def.then(function () {
             var resIDs = [];
-            // generate the current count and res_ids list by applying the changes
-            var currentCount = list.count;
             var currentResIDs = list.res_ids;
-            var effectiveLimit = (list.limit || 0) - (list.tempLimitIncrement || 0);
-            var upperBound = effectiveLimit ? Math.min(list.offset + effectiveLimit, currentCount) : currentCount;
+            // if new records have been added to the list, their virtual ids have
+            // been pushed at the end of res_ids (or at the beginning, depending
+            // on the editable property), ignoring completely the current page
+            // where the records have actually been created ; for that reason,
+            // we use orderedResIDs which is a freezed order with the virtual ids
+            // at the correct position where they were actually inserted ; however,
+            // when we use orderedResIDs, we must filter out ids that are not in
+            // res_ids, which correspond to records that have been removed from
+            // the relation (this information being taken into account in res_ids
+            // but not in orderedResIDs)
+            if (list.orderedResIDs) {
+                currentResIDs = list.orderedResIDs.filter(function (resID) {
+                    return list.res_ids.indexOf(resID) >= 0;
+                });
+            }
+            var currentCount = currentResIDs.length;
+            var upperBound = list.limit ? Math.min(list.offset + list.limit, currentCount) : currentCount;
             var fieldNames = list.getFieldNames();
             for (var i = list.offset; i < upperBound; i++) {
                 var resId = currentResIDs[i];
@@ -4242,7 +4256,7 @@ var BasicModel = AbstractModel.extend({
                 if (orderData1 > orderData2) {
                     return order.asc ? 1 : -1;
                 }
-                return compareRecords(record1ID, record2ID, level + 1);
+                return compareRecords(resId1, resId2, level + 1);
             };
             utils.stableSort(list.res_ids, compareRecords);
         }
