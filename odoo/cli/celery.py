@@ -47,6 +47,7 @@ class Celery(Command):
         client = get_client()
         odoo.evented = False
         odoo.multi_process = True
-        register_logger_signal(client)
-        register_signal(client)
+        if client:
+            register_logger_signal(client)
+            register_signal(client)
         _main(argv=['celery', ] + cmdargs)
