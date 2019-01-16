@@ -23,8 +23,9 @@ from __future__ import (division as _py3_division,
 
 import os
 import raven
-from raven.transport.http import HTTPTransport
-from raven.transport.threaded import ThreadedHTTPTransport
+from raven.transport.requests import RequestsHTTPTransport as HTTPTransport
+from raven.transport.threaded_requests \
+    import ThreadedRequestsHTTPTransport as ThreadedHTTPTransport
 from raven.transport.gevent import GeventedHTTPTransport
 from raven.utils.wsgi import get_headers, get_environ
 
@@ -100,6 +101,14 @@ def get_client():
         else:
             transport = ThreadedHTTPTransport
         conf['transport'] = transport
+        include_paths = []
+        try:
+            import pkg_resources
+            env = pkg_resources.AvailableDistributions()
+            include_paths.extend(env)
+        except:  # noqa
+            include_paths = ['odoo', 'celery', 'billiard', 'kombu', 'ampq']
+        conf['include_paths'] = include_paths
         _sentry_client = raven.Client(**conf)
     return _sentry_client
 
