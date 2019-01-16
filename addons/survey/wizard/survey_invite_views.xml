@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="survey_invite_view_form">
+            <field name="name">survey.invite.view.form</field>
+            <field name="model">survey.invite</field>
+            <field name="arch" type="xml">
+                <form string="Compose Email">
+                    <group col="1">
+                        <group col="2">
+                            <field name="survey_access_mode" invisible="1"/>
+                            <field name="survey_id" readonly="context.get('default_survey_id')"/>
+                            <field name="existing_mode" widget="radio" invisible="1" />
+                            <field name="survey_url" label="Public share URL" readonly="1" widget="CopyClipboardText"
+                                 attrs="{'invisible':[('survey_access_mode', '!=', 'public')]}"
+                                 class="mb16"/>
+                            <field name="partner_ids"
+                                attrs="{'readonly': [('existing_mode', '=', 'resend')]}"
+                                widget="many2many_tags_email"
+                                placeholder="Add existing contacts..."
+                                context="{'force_email':True, 'show_email':True, 'no_create_edit': True}"/>
+                            <field name="emails"
+                                attrs="{
+                                    'invisible': [('survey_access_mode', 'in', ['authentication', 'internal'])],
+                                    'readonly': [('existing_mode', '=', 'resend')]
+                                }"
+                                placeholder="Add a list of email of recipients (will not be converted into contacts). Separated by commas, semicolons or newline..."/>
+                            <field name="subject" placeholder="Subject..."/>
+                        </group>
+                        <field name="body" options="{'style-inline': true}"/>
+                        <group>
+                            <group>
+                                <field name="attachment_ids" widget="many2many_binary"/>
+                            </group>
+                            <group>
+                                <field name="deadline"/>
+                                <field name="template_id" label="Use template"/>
+                            </group>
+                        </group>
+                    </group>
+                    <footer>
+                        <button string="Send" name="action_invite" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

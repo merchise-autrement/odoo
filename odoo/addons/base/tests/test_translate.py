@@ -3,7 +3,6 @@
 
 import unittest
 
-from odoo.tools import pycompat
 from odoo.tools import mute_logger
 from odoo.tools.translate import quote, unquote, xml_translate, html_translate
 from odoo.tests.common import TransactionCase, tagged
@@ -116,6 +115,20 @@ class TranslationToolsTestCase(unittest.TestCase):
         self.assertEquals(result, source)
         self.assertItemsEqual(terms,
             ['Form stuff', 'Blah blah blah'])
+
+    def test_translate_xml_inline4(self):
+        """ Test xml_translate() with inline elements with translated attrs only. """
+        terms = []
+        source = """<form string="Form stuff">
+                        <div>
+                            <label for="stuff"/>
+                            <span class="fa fa-globe" title="Title stuff"/>
+                        </div>
+                    </form>"""
+        result = xml_translate(terms.append, source)
+        self.assertEquals(result, source)
+        self.assertItemsEqual(terms,
+            ['Form stuff', '<span class="fa fa-globe" title="Title stuff"/>'])
 
     def test_translate_xml_t(self):
         """ Test xml_translate() with t-* attributes. """
@@ -310,30 +323,36 @@ class TestTranslation(TransactionCase):
 class TestXMLTranslation(TransactionCase):
     def setUp(self):
         super(TestXMLTranslation, self).setUp()
-        self.env['ir.translation'].load_module_terms(['base'], ['fr_FR'])
+        self.env['ir.translation'].load_module_terms(['base'], ['fr_FR', 'nl_NL'])
+
+    def create_view(self, archf, terms, **kwargs):
+        view = self.env['ir.ui.view'].create({
+            'name': 'test',
+            'model': 'res.partner',
+            'arch': archf % terms,
+        })
+        for lang, trans_terms in kwargs.items():
+            for src, val in zip(terms, trans_terms):
+                self.env['ir.translation'].create({
+                    'type': 'model_terms',
+                    'name': 'ir.ui.view,arch_db',
+                    'lang': lang,
+                    'res_id': view.id,
+                    'src': src,
+                    'value': val,
+                    'state': 'translated',
+                })
+        return view
 
     def test_copy(self):
         """ Create a simple view, fill in translations, and copy it. """
-        env_en = self.env(context={})
-        env_fr = self.env(context={'lang': 'fr_FR'})
-
         archf = '<form string="%s"><div>%s</div><div>%s</div></form>'
         terms_en = ('Knife', 'Fork', 'Spoon')
         terms_fr = ('Couteau', 'Fourchette', 'Cuiller')
-        view0 = self.env['ir.ui.view'].create({
-            'name': 'test',
-            'model': 'res.partner',
-            'arch': archf % terms_en,
-        })
-        for src, value in list(pycompat.izip(terms_en, terms_fr)):
-            self.env['ir.translation'].create({
-                'type': 'model_terms',
-                'name': 'ir.ui.view,arch_db',
-                'lang': 'fr_FR',
-                'res_id': view0.id,
-                'src': src,
-                'value': value,
-            })
+        view0 = self.create_view(archf, terms_en, fr_FR=terms_fr)
+
+        env_en = self.env(context={})
+        env_fr = self.env(context={'lang': 'fr_FR'})
 
         # check translated field
         self.assertEqual(view0.with_env(env_en).arch_db, archf % terms_en)
@@ -360,17 +379,29 @@ class TestXMLTranslation(TransactionCase):
         archf = '<form string="%s"><div>%s</div><div>%s</div></form>'
         terms_en = ('Knife', 'Fork', 'Spoon')
         terms_fr = (' Couteau', 'Fourchette ', ' Cuiller ')
-        view0 = self.env['ir.ui.view'].create({
-            'name': 'test',
-            'model': 'res.partner',
-            'arch': archf % terms_en,
-        })
-        for src, value in list(pycompat.izip(terms_en, terms_fr)):
-            self.env['ir.translation'].create({
-                'type': 'model_terms',
-                'name': 'ir.ui.view,arch_db',
-                'lang': 'fr_FR',
-                'res_id': view0.id,
-                'src': src,
-                'value': value,
-            })
+        self.create_view(archf, terms_en, fr_FR=terms_fr)
+
+    def test_sync(self):
+        """ Check translations after minor change in source terms. """
+        archf = '<form string="X">%s</form>'
+        terms_en = ('Bread and cheeze',)
+        terms_fr = ('Pain et fromage',)
+        terms_nl = ('Brood and kaas',)
+        view = self.create_view(archf, terms_en, fr_FR=terms_fr, nl_NL=terms_nl)
+
+        env_en = self.env(context={})
+        env_fr = self.env(context={'lang': 'fr_FR'})
+        env_nl = self.env(context={'lang': 'nl_NL'})
+
+        self.assertEqual(view.with_env(env_en).arch_db, archf % terms_en)
+        self.assertEqual(view.with_env(env_fr).arch_db, archf % terms_fr)
+        self.assertEqual(view.with_env(env_nl).arch_db, archf % terms_nl)
+
+        # modify source term in view (fixed type in 'cheeze')
+        terms_en = ('Bread and cheese',)
+        view.write({'arch_db': archf % terms_en})
+
+        # check whether translations have been synchronized
+        self.assertEqual(view.with_env(env_en).arch_db, archf % terms_en)
+        self.assertEqual(view.with_env(env_fr).arch_db, archf % terms_fr)
+        self.assertEqual(view.with_env(env_nl).arch_db, archf % terms_nl)

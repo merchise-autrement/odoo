@@ -91,7 +91,7 @@ class account_journal(models.Model):
     @api.multi
     def get_bar_graph_datas(self):
         data = []
-        today = fields.Date.context_today(self)
+        today = fields.Datetime.now(self)
         data.append({'label': _('Past'), 'value':0.0, 'type': 'past'})
         day_of_week = int(format_datetime(today, 'e', locale=self._context.get('lang') or 'en_US'))
         first_day_of_week = today + timedelta(days=-day_of_week+1)
@@ -157,7 +157,7 @@ class account_journal(models.Model):
                             FROM account_bank_statement_line AS line
                             LEFT JOIN account_bank_statement AS st
                             ON line.statement_id = st.id
-                            WHERE st.journal_id IN %s AND st.state = 'open' AND line.amount != 0.0
+                            WHERE st.journal_id IN %s AND st.state = 'open' AND line.amount != 0.0 AND line.account_id IS NULL
                             AND not exists (select 1 from account_move_line aml where aml.statement_line_id = line.id)
                         """, (tuple(self.ids),))
             number_to_reconcile = self.env.cr.fetchone()[0]
@@ -320,10 +320,10 @@ class account_journal(models.Model):
                 action_name = 'action_view_bank_statement_tree'
             elif self.type == 'sale':
                 action_name = 'action_invoice_tree1'
-                self = self.with_context(use_domain=[('type', '=', 'out_invoice')])
+                self = self.with_context(use_domain=[('type', 'in', ['out_invoice', 'out_refund'])])
             elif self.type == 'purchase':
                 action_name = 'action_vendor_bill_template'
-                self = self.with_context(use_domain=[('type', '=', 'in_invoice')])
+                self = self.with_context(use_domain=[('type', 'in', ['in_invoice', 'in_refund'])])
             else:
                 action_name = 'action_move_journal_line'
 

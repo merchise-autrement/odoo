@@ -99,6 +99,7 @@ QUnit.module('activity view', {
                     activity_type_id: { string: "Activity type", type: "many2one", relation: "mail.activity.type" },
                     display_name: { string: "Display name", type: "char" },
                     date_deadline: { string: "Due Date", type: "date" },
+                    can_write: { string: "Can write", type: "boolean" },
                     state: {
                         string: 'State',
                         type: 'selection',
@@ -112,6 +113,8 @@ QUnit.module('activity view', {
                         id: 1,
                         display_name: "An activity",
                         date_deadline: moment().add(3, "days").format("YYYY-MM-DD"), // now
+                        can_write: true,
+
                         state: "planned",
                         activity_type_id: 1,
                         mail_template_ids: [8, 9],
@@ -120,6 +123,7 @@ QUnit.module('activity view', {
                         id: 2,
                         display_name: "An activity",
                         date_deadline: moment().format("YYYY-MM-DD"), // now
+                        can_write: true,
                         state: "today",
                         activity_type_id: 1,
                         mail_template_ids: [8, 9],
@@ -128,6 +132,7 @@ QUnit.module('activity view', {
                         id: 3,
                         display_name: "An activity",
                         date_deadline: moment().subtract(2, "days").format("YYYY-MM-DD"), // now
+                        can_write: true,
                         state: "overdue",
                         activity_type_id: 2,
                         mail_template_ids: [],
@@ -172,7 +177,7 @@ QUnit.test('activity view: simple activity rendering', function (assert) {
         }
     });
 
-    assert.strictEqual(activity.$('table').length, 1,
+    assert.containsOnce(activity, 'table',
         'should have a table');
     assert.ok(activity.$('table thead tr:first th:nth-child(2) span:first:contains(Email)').length,
         'should contain "Email" in header of first column');
@@ -204,7 +209,7 @@ QUnit.test('activity view: no content rendering', function (assert) {
         },
     });
 
-    assert.strictEqual(activity.$('.o_view_nocontent').length, 1,
+    assert.containsOnce(activity, '.o_view_nocontent',
         "should display the no content helper");
     assert.strictEqual(activity.$('.o_view_nocontent .o_view_nocontent_empty_folder').text().trim(),
         "No data to display",
@@ -234,16 +239,16 @@ QUnit.test('activity view: batch send mail on activity', function (assert) {
     assert.notOk(activity.$('table thead tr:first th:nth-child(2) span:nth-child(2) .dropdown-menu.show').length,
         'dropdown shouldn\'t be displayed');
 
-    activity.$('table thead tr:first th:nth-child(2) span:nth-child(2) i.fa-ellipsis-v').click();
+    testUtils.dom.click(activity.$('table thead tr:first th:nth-child(2) span:nth-child(2) i.fa-ellipsis-v'));
     assert.ok(activity.$('table thead tr:first th:nth-child(2) span:nth-child(2) .dropdown-menu.show').length,
         'dropdown should have appeared');
 
-    activity.$('table thead tr:first th:nth-child(2) span:nth-child(2) .dropdown-menu.show .o_send_mail_template:first:contains(Task: Rating Request)').click();
+    testUtils.dom.click(activity.$('table thead tr:first th:nth-child(2) span:nth-child(2) .dropdown-menu.show .o_send_mail_template:first:contains(Task: Rating Request)'));
     assert.notOk(activity.$('table thead tr:first th:nth-child(2) span:nth-child(2) .dropdown-menu.show').length,
         'dropdown shouldn\'t be displayed');
 
-    activity.$('table thead tr:first th:nth-child(2) span:nth-child(2) i.fa-ellipsis-v').click();
-    activity.$('table thead tr:first th:nth-child(2) span:nth-child(2) .dropdown-menu.show .o_send_mail_template:nth-child(2):contains(Task: Reception Acknowledgment)').click();
+    testUtils.dom.click(activity.$('table thead tr:first th:nth-child(2) span:nth-child(2) i.fa-ellipsis-v'));
+    testUtils.dom.click(activity.$('table thead tr:first th:nth-child(2) span:nth-child(2) .dropdown-menu.show .o_send_mail_template:nth-child(2):contains(Task: Reception Acknowledgment)'));
     assert.verifySteps([
         [[13, 30], 9], //send mail template 9 on tasl 13 and 30
         [[13, 30], 8]  //send mail template 8 on tasl 13 and 30
@@ -305,28 +310,28 @@ QUnit.test('activity view: activity widget', function (assert) {
     var today = activity.$('table tbody tr:first td:nth-child(2).today');
     var dropdown = today.find('.dropdown-menu.o_activity');
 
-    today.find('.o_closest_deadline').click();
-    assert.ok(dropdown.hasClass('show'), "dropdown should be displayed");
+    testUtils.dom.click(today.find('.o_closest_deadline'));
+    assert.hasClass(dropdown,'show', "dropdown should be displayed");
     assert.ok(dropdown.find('.o_activity_color_today:contains(Today)').length, "Title should be today");
     assert.ok(dropdown.find('.o_activity_title_entry[data-activity-id="2"]:first div:contains(template8)').length,
         "template8 should be available");
     assert.ok(dropdown.find('.o_activity_title_entry[data-activity-id="2"]:eq(1) div:contains(template9)').length,
         "template9 should be available");
 
-    dropdown.find('.o_activity_title_entry[data-activity-id="2"]:first .o_activity_template_preview').click();
-    dropdown.find('.o_activity_title_entry[data-activity-id="2"]:first .o_activity_template_send').click();
+    testUtils.dom.click(dropdown.find('.o_activity_title_entry[data-activity-id="2"]:first .o_activity_template_preview'));
+    testUtils.dom.click(dropdown.find('.o_activity_title_entry[data-activity-id="2"]:first .o_activity_template_send'));
     var overdue = activity.$('table tbody tr:first td:nth-child(3).overdue');
-    overdue.find('.o_closest_deadline').click();
+    testUtils.dom.click(overdue.find('.o_closest_deadline'));
     dropdown = overdue.find('.dropdown-menu.o_activity');
     assert.notOk(dropdown.find('.o_activity_title div div div:first span').length,
         "No template should be available");
 
-    dropdown.find('.o_schedule_activity').click();
-    overdue.find('.o_closest_deadline').click();
-    dropdown.find('.o_mark_as_done').click();
+    testUtils.dom.click(dropdown.find('.o_schedule_activity'));
+    testUtils.dom.click(overdue.find('.o_closest_deadline'));
+    testUtils.dom.click(dropdown.find('.o_mark_as_done'));
     dropdown.find('#activity_feedback').val("feedback2");
 
-    dropdown.find('.o_activity_popover_done_next').click();
+    testUtils.dom.click(dropdown.find('.o_activity_popover_done_next'));
     assert.verifySteps([
         "do_action_compose",
         "activity_send_mail",
@@ -337,8 +342,8 @@ QUnit.test('activity view: activity widget', function (assert) {
 
     activity.destroy();
 });
-QUnit.test('activity view: no group by', function (assert) {
-    assert.expect(4);
+QUnit.test('activity view: no group_by_menu and no time_range_menu', function (assert) {
+    assert.expect(3);
 
     var actionManager = createActionManager({
         actions: [{
@@ -363,14 +368,12 @@ QUnit.test('activity view: no group by', function (assert) {
 
     actionManager.doAction(1);
 
-    assert.strictEqual($('.o_search_options .o_dropdown:visible').length, 2,
+    assert.containsN(actionManager, '.o_search_options .o_dropdown button:visible', 2,
         "only two elements should be available in view search");
-    assert.strictEqual($('.o_search_options .o_dropdown:visible .o_filters_menu').length, 1,
+    assert.isVisible(actionManager.$('.o_search_options .o_dropdown button.o_filters_menu_button'),
         "filter should be available in view search");
-    assert.strictEqual($('.o_search_options .o_dropdown:visible .o_favorites_menu').length, 1,
+    assert.isVisible(actionManager.$('.o_search_options .o_dropdown button.o_favorites_menu_button'),
         "favorites should be available in view search");
-    assert.strictEqual($('.o_search_options .o_dropdown:hidden .o_group_by_menu').length, 1,
-        "group by should be hidden");
     actionManager.destroy();
 });
 

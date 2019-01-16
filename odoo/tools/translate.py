@@ -130,7 +130,7 @@ csv.register_dialect("UNIX", UNIX_LINE_TERMINATOR)
 
 # FIXME: holy shit this whole thing needs to be cleaned up hard it's a mess
 def encode(s):
-    assert isinstance(s, pycompat.text_type)
+    assert isinstance(s, str)
     return s
 
 # which elements are translated inline
@@ -145,6 +145,7 @@ TRANSLATED_ELEMENTS = {
 TRANSLATED_ATTRS = {
     'string', 'help', 'sum', 'avg', 'confirm', 'placeholder', 'alt', 'title', 'aria-label',
     'aria-keyshortcuts', 'aria-placeholder', 'aria-roledescription', 'aria-valuetext',
+    'value_label',
 }
 
 TRANSLATED_ATTRS = TRANSLATED_ATTRS | {'t-attf-' + attr for attr in TRANSLATED_ATTRS}
@@ -162,7 +163,7 @@ def translate_xml_node(node, callback, parse, serialize):
     """
 
     def nonspace(text):
-        return bool(text) and not text.isspace()
+        return bool(text) and len(re.sub(r'\W+', '', text)) > 1
 
     def concat(text1, text2):
         return text2 if text1 is None else text1 + (text2 or "")
@@ -254,7 +255,10 @@ def translate_xml_node(node, callback, parse, serialize):
             # complete result and return it
             append_content(result, todo)
             result.tail = node.tail
-            has_text = todo_has_text or nonspace(result.text) or nonspace(result.tail)
+            has_text = (
+                todo_has_text or nonspace(result.text) or nonspace(result.tail)
+                or any(name in TRANSLATED_ATTRS for name in result.attrib)
+            )
             return (has_text, result)
 
         # translate the content of todo and append it to result
@@ -651,8 +655,8 @@ class PoFile(object):
             u"msgid %s\n"
             u"msgstr %s\n\n"
         ) % (
-            quote(pycompat.text_type(source)), 
-            quote(pycompat.text_type(trad))
+            quote(str(source)), 
+            quote(str(trad))
         )
         self.buffer.write(msg)
 
@@ -814,14 +818,6 @@ def trans_generate(lang, modules, cr):
         # empty and one-letter terms are ignored, they probably are not meant to be
         # translated, and would be very hard to translate anyway.
         sanitized_term = (source or '').strip()
-        try:
-            # verify the minimal size without eventual xml tags
-            # wrap to make sure html content like '<a>b</a><c>d</c>' is accepted by lxml
-            wrapped = u"<div>%s</div>" % sanitized_term
-            node = etree.fromstring(wrapped)
-            sanitized_term = etree.tostring(node, encoding='unicode', method='text')
-        except etree.ParseError:
-            pass
         # remove non-alphanumeric chars
         sanitized_term = re.sub(r'\W+', '', sanitized_term)
         if not sanitized_term or len(sanitized_term) <= 1:
@@ -1038,6 +1034,7 @@ def trans_load_data(cr, fileobj, fileformat, lang, lang_name=None, verbose=True,
         # (Because the POT comments are correct on Launchpad but not the
         # PO comments due to a Launchpad limitation. See LP bug 933496.)
         pot_reader = []
+        use_pot_reference = False
 
         # now, the serious things: we read the language file
         fileobj.seek(0)
@@ -1066,6 +1063,7 @@ def trans_load_data(cr, fileobj, fileformat, lang, lang_name=None, verbose=True,
                     pot_handle = file_open(os.path.join(
                         addons, module, i18n_dir, module + '.pot'), mode='rb')
                     pot_reader = PoFile(pot_handle)
+                    use_pot_reference = True
                 except:
                     pass
 
@@ -1098,27 +1096,32 @@ def trans_load_data(cr, fileobj, fileformat, lang, lang_name=None, verbose=True,
             dic = dict.fromkeys(('type', 'name', 'res_id', 'src', 'value',
                                  'comments', 'imd_model', 'imd_name', 'module'))
             dic['lang'] = lang
-            dic.update(pycompat.izip(fields, row))
+            dic.update(zip(fields, row))
 
-            # discard the target from the POT targets.
-            src = dic['src']
-            target_key = (dic['type'], dic['name'], dic['type'] != 'code' and dic['res_id'] or 0)
-            target = pot_targets.get(src)
-            if not target or target_key not in target.targets:
-                _logger.info("Translation '%s' (%s, %s, %s) not found in reference pot, skipping",
-                    src[:60], dic['type'], dic['name'], dic['res_id'])
+            # ignore empty value that may be set from base language
+            if not dic['value']:
                 return
 
-            target.value = dic['value']
-            target.targets.discard(target_key)
+            if use_pot_reference:
+                # discard the target from the POT targets.
+                src = dic['src']
+                target_key = (dic['type'], dic['name'], dic['type'] != 'code' and dic['res_id'] or 0)
+                target = pot_targets.get(src)
+                if not target or target_key not in target.targets:
+                    _logger.info("Translation '%s' (%s, %s, %s) not found in reference pot, skipping",
+                        src[:60], dic['type'], dic['name'], dic['res_id'])
+                    return
+
+                target.value = dic['value']
+                target.targets.discard(target_key)
 
             # This would skip terms that fail to specify a res_id
             res_id = dic['res_id']
             if not res_id and dic['type'] != 'code':
                 return
 
-            if isinstance(res_id, pycompat.integer_types) or \
-                    (isinstance(res_id, pycompat.string_types) and res_id.isdigit()):
+            if isinstance(res_id, int) or \
+                    (isinstance(res_id, str) and res_id.isdigit()):
                 dic['res_id'] = int(res_id)
                 if module_name:
                     dic['module'] = module_name
@@ -1138,15 +1141,16 @@ def trans_load_data(cr, fileobj, fileformat, lang, lang_name=None, verbose=True,
         for row in reader:
             process_row(row)
 
-        # Then process the entries implied by the POT file (which is more
-        # correct w.r.t. the targets) if some of them remain.
-        pot_rows = []
-        for src, target in pot_targets.items():
-            if target.value:
-                for type, name, res_id in target.targets:
-                    pot_rows.append((type, name, res_id, src, target.value, target.comments))
-        for row in pot_rows:
-            process_row(row)
+        if use_pot_reference:
+            # Then process the entries implied by the POT file (which is more
+            # correct w.r.t. the targets) if some of them remain.
+            pot_rows = []
+            for src, target in pot_targets.items():
+                if target.value:
+                    for type, name, res_id in target.targets:
+                        pot_rows.append((type, name, res_id, src, target.value, target.comments))
+            for row in pot_rows:
+                process_row(row)
 
         irt_cursor.finish()
         Translation.clear_caches()

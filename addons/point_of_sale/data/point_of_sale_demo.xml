@@ -12,15 +12,13 @@
 
         <record id="base.user_root" model="res.users">
             <field name="barcode">0410100000006</field>
-        </record>
-        <record id="base.user_root" model="res.users">
-            <field name="barcode">0410100000006</field>
             <field name="groups_id" eval="[(4,ref('group_pos_manager'))]"/>
         </record>
 
         <record id="base.user_demo" model="res.users">
             <field name="groups_id" eval="[(4, ref('group_pos_user'))]"/>
         </record>
+
 
         <!-- Resource: pos.category -->
         <record id="pos_category_miscellaneous" model="pos.category">
@@ -31,6 +29,11 @@
         </record>
         <record id="pos_category_chairs" model="pos.category">
           <field name="name">Chairs</field>
+        </record>
+
+        <record model="pos.config" id="pos_config_main">
+            <field name="iface_start_categ_id" ref="pos_category_chairs"/>
+            <field name="start_category">True</field>
         </record>
 
         <!-- Resource: product.product -->

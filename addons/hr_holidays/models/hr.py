@@ -63,6 +63,10 @@ class Department(models.Model):
 class Employee(models.Model):
     _inherit = "hr.employee"
 
+    leave_manager_id = fields.Many2one(
+        'res.users', string='Leave Responsible',
+        domain=lambda self: [('groups_id', 'in', self.env.ref('hr_holidays.group_hr_holidays_team_leader').id)],
+        help="User responsible of leaves approval. Should be Team Leader or Department Manager.")
     remaining_leaves = fields.Float(
         compute='_compute_remaining_leaves', string='Remaining Legal Leaves',
         help='Total number of legal leaves allocated to this employee, change this value to create allocation/leave request. '
@@ -79,7 +83,7 @@ class Employee(models.Model):
     current_leave_id = fields.Many2one('hr.leave.type', compute='_compute_leave_status', string="Current Leave Type")
     leave_date_from = fields.Date('From Date', compute='_compute_leave_status')
     leave_date_to = fields.Date('To Date', compute='_compute_leave_status')
-    leaves_count = fields.Float('Number of Leaves', compute='_compute_leaves_count')
+    leaves_count = fields.Float('Number of Leaves', compute='_compute_remaining_leaves')
     show_leaves = fields.Boolean('Able to see Remaining Leaves', compute='_compute_show_leaves')
     is_absent_totay = fields.Boolean('Absent Today', compute='_compute_absent_employee', search='_search_absent_employee')
 
@@ -96,7 +100,7 @@ class Employee(models.Model):
                     SELECT holiday_status_id, number_of_days,
                         state, employee_id
                     FROM hr_leave_allocation
-                    UNION
+                    UNION ALL
                     SELECT holiday_status_id, (number_of_days * -1) as number_of_days,
                         state, employee_id
                     FROM hr_leave
@@ -113,7 +117,9 @@ class Employee(models.Model):
     def _compute_remaining_leaves(self):
         remaining = self._get_remaining_leaves()
         for employee in self:
-            employee.remaining_leaves = float_round(remaining.get(employee.id, 0.0), precision_digits=2)
+            value = float_round(remaining.get(employee.id, 0.0), precision_digits=2)
+            employee.leaves_count = value
+            employee.remaining_leaves = value
 
     @api.multi
     def _compute_leave_status(self):
@@ -137,16 +143,6 @@ class Employee(models.Model):
             employee.leave_date_to = leave_data.get(employee.id, {}).get('leave_date_to')
             employee.current_leave_state = leave_data.get(employee.id, {}).get('current_leave_state')
             employee.current_leave_id = leave_data.get(employee.id, {}).get('current_leave_id')
-
-    @api.multi
-    def _compute_leaves_count(self):
-        all_leaves = self.env['hr.leave.report'].read_group([
-            ('employee_id', 'in', self.ids),
-            ('state', '=', 'validate')
-        ], fields=['number_of_days', 'employee_id'], groupby=['employee_id'])
-        mapping = dict([(leave['employee_id'][0], leave['number_of_days']) for leave in all_leaves])
-        for employee in self:
-            employee.leaves_count = float_round(mapping.get(employee.id, 0), precision_digits=2)
 
     @api.multi
     def _compute_show_leaves(self):
@@ -190,13 +186,14 @@ class Employee(models.Model):
 
     def write(self, values):
         res = super(Employee, self).write(values)
+        today_date = fields.Datetime.now()
         if 'parent_id' in values or 'department_id' in values:
             hr_vals = {}
             if values.get('parent_id') is not None:
                 hr_vals['manager_id'] = values['parent_id']
             if values.get('department_id') is not None:
                 hr_vals['department_id'] = values['department_id']
-            holidays = self.env['hr.leave'].search([('state', 'in', ['draft', 'confirm']), ('employee_id', 'in', self.ids)])
+            holidays = self.env['hr.leave'].search(['|',('state', 'in', ['draft', 'confirm']),('date_from', '>', today_date), ('employee_id', 'in', self.ids)])
             holidays.write(hr_vals)
             allocations = self.env['hr.leave.allocation'].search([('state', 'in', ['draft', 'confirm']), ('employee_id', 'in', self.ids)])
             allocations.write(hr_vals)

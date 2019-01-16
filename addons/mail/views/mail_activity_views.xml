@@ -16,7 +16,7 @@
                         <h1><field name="name"/></h1>
                     </div>
                     <group>
-                        <group>
+                        <group name="activity_details">
                             <field name="category" invisible="1"/>
                             <field name="res_model_id" groups="base.group_no_one"/>
                             <field name="res_model_change" invisible="1"/>
@@ -26,12 +26,14 @@
                             <field name="decoration_type" groups="base.group_no_one"/>
                             <label for="delay_count"/>
                             <div>
-                                <field name="delay_count" class="oe_inline"/>&amp;nbsp;
-                                <field name="delay_unit" class="oe_inline"/>&amp;nbsp;
-                                <field name="delay_from" class="oe_inline"/>
+                                <div class="o_row">
+                                    <field name="delay_count"/>
+                                    <field name="delay_unit"/>
+                                </div>
+                                <field name="delay_from"/>
                             </div>
                         </group>
-                        <group>
+                        <group name="activity_planning">
                             <field name="force_next"/>
                             <field name="default_next_type_id" attrs="{'required': [('force_next', '=', True)]}" context="{'default_res_model_id': res_model_id}"/>
                             <field name="next_type_ids" widget="many2many_tags"
@@ -153,7 +155,7 @@
                 <field name="activity_type_id"/>
                 <separator/>
                 <filter string="My Activities" name="activities_my"
-                        domain="[('create_uid', '=', uid)]"/>
+                        domain="[('user_id', '=', uid)]"/>
                 <separator/>
                 <filter string="Late Activities" name="activities_overdue"
                         domain="[('date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"
@@ -161,7 +163,7 @@
                 <filter string="Today Activities" name="activities_today"
                         domain="[('date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
                 <filter string="Future Activities" name="activities_upcoming_all"
-                        domain="[('activity_ids.date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))
+                        domain="[('date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))
                         ]"/>
                 <separator/>
                 <group expand="0" string="Group By">
@@ -196,7 +198,7 @@
         <field name="arch" type="xml">
             <calendar string="Activity" date_start="date_deadline" color="activity_type_id">
                 <field name="res_name"/>
-                <field name="create_uid"/>
+                <field name="user_id"/>
                 <field name="summary"/>
             </calendar>
         </field>

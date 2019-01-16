@@ -5,13 +5,15 @@
 # Translators:
 # Martin Trigaux, 2018
 # Jorunn D. Newth, 2018
+# Marius Stedjan <marius@stedjan.com>, 2018
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server saas~11.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-18 09:49+0000\n"
-"PO-Revision-Date: 2018-09-18 09:49+0000\n"
-"Last-Translator: Jorunn D. Newth, 2018\n"
+"POT-Creation-Date: 2018-09-21 13:18+0000\n"
+"PO-Revision-Date: 2018-08-24 09:34+0000\n"
+"Last-Translator: Marius Stedjan <marius@stedjan.com>, 2018\n"
 "Language-Team: Norwegian Bokmål (https://www.transifex.com/odoo/teams/41243/nb/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -60,6 +62,11 @@ msgstr "Svartelist dette feltet for webskjemaer"
 #: model:ir.model.fields,field_description:website_form.field_ir_model_fields__website_form_blacklisted
 msgid "Blacklisted in web forms"
 msgstr "Svartelistet i webskjemaer"
+
+#. module: website_form
+#: model:ir.model,name:website_form.model_res_config_settings
+msgid "Config Settings"
+msgstr "Konfigurasjonsinnstillinger"
 
 #. module: website_form
 #: code:addons/website_form/controllers/main.py:54
@@ -163,8 +170,3 @@ msgstr "Nettsted"
 #: model:ir.model.fields,help:website_form.field_website__website_form_enable_metadata
 msgid "You can choose to log technical data like IP, User Agent ,..."
 msgstr ""
-
-#. module: website_form
-#: model:ir.model,name:website_form.model_res_config_settings
-msgid "res.config.settings"
-msgstr "res.config.settings"

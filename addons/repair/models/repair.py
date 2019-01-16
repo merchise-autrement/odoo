@@ -46,7 +46,7 @@ class Repair(models.Model):
     partner_id = fields.Many2one(
         'res.partner', 'Customer',
         index=True, states={'confirmed': [('readonly', True)]},
-        help='Choose partner for whom the order will be invoiced and delivered.')
+        help='Choose partner for whom the order will be invoiced and delivered. You can find a partner by its Name, TIN, Email or Internal Reference.')
     address_id = fields.Many2one(
         'res.partner', 'Delivery Address',
         domain="[('parent_id','=',partner_id)]",
@@ -61,7 +61,7 @@ class Repair(models.Model):
         ('2binvoiced', 'To be Invoiced'),
         ('invoice_except', 'Invoice Exception'),
         ('done', 'Repaired')], string='Status',
-        copy=False, default='draft', readonly=True, track_visibility='onchange',
+        copy=False, default='draft', readonly=True, tracking=True,
         help="* The \'Draft\' status is used when a user is encoding a new and unconfirmed repair order.\n"
              "* The \'Confirmed\' status is used when a user confirms the repair order.\n"
              "* The \'Ready to Repair\' status is used to start to repairing, user can start repairing only after repair order is confirmed.\n"
@@ -96,10 +96,10 @@ class Repair(models.Model):
         help='Selecting \'Before Repair\' or \'After Repair\' will allow you to generate invoice before or after the repair is done respectively. \'No invoice\' means you don\'t want to generate invoice for this repair order.')
     invoice_id = fields.Many2one(
         'account.invoice', 'Invoice',
-        copy=False, readonly=True, track_visibility="onchange")
+        copy=False, readonly=True, tracking=True)
     move_id = fields.Many2one(
         'stock.move', 'Move',
-        copy=False, readonly=True, track_visibility="onchange",
+        copy=False, readonly=True, tracking=True,
         help="Move created by the repair order")
     fees_lines = fields.One2many(
         'repair.fee', 'repair_id', 'Operations',
@@ -114,7 +114,7 @@ class Repair(models.Model):
     amount_untaxed = fields.Float('Untaxed Amount', compute='_amount_untaxed', store=True)
     amount_tax = fields.Float('Taxes', compute='_amount_tax', store=True)
     amount_total = fields.Float('Total', compute='_amount_total', store=True)
-    tracking = fields.Selection('Product Tracking', related="product_id.tracking")
+    tracking = fields.Selection('Product Tracking', related="product_id.tracking", readonly=False)
 
     @api.one
     @api.depends('partner_id')
@@ -497,7 +497,7 @@ class Repair(models.Model):
 
 class RepairLine(models.Model):
     _name = 'repair.line'
-    _description = 'Repair Line'
+    _description = 'Repair Line (parts)'
 
     name = fields.Text('Description', required=True)
     repair_id = fields.Many2one(
@@ -613,7 +613,7 @@ class RepairLine(models.Model):
 
 class RepairFee(models.Model):
     _name = 'repair.fee'
-    _description = 'Repair Fees Line'
+    _description = 'Repair Fees'
 
     repair_id = fields.Many2one(
         'repair.order', 'Repair Order Reference',

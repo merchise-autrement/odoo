@@ -10,7 +10,7 @@ Allows users to send documents by post
     'depends': ['iap', 'mail'],
     'data': [
         'data/snailmail_data.xml',
-        'views/res_config_settings_views.xml',
+        'views/report_assets.xml',
         'views/snailmail_views.xml',
         'security/ir.model.access.csv',
     ],

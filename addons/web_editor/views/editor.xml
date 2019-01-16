@@ -58,6 +58,12 @@
     </xpath>
 </template>
 
+<template id="_assets_secondary_variables" inherit_id="web._assets_secondary_variables">
+    <xpath expr="//link" position="before">
+        <link rel="stylesheet" type="text/scss" href="/web_editor/static/src/scss/secondary_variables.scss"/>
+    </xpath>
+</template>
+
 <template id="assets_common" inherit_id="web.assets_common" name="Web Editor Common Assets (used in backend interface and website)">
     <xpath expr="script[last()]" position="after">
         <script type="text/javascript" src="/web_editor/static/lib/vkbeautify/vkbeautify.0.99.00.beta.js"></script>
@@ -67,7 +73,8 @@
 </template>
 
 <template id="_assets_backend_helpers" inherit_id="web._assets_backend_helpers">
-    <xpath expr="//link[last()]" position="after">
+    <xpath expr="//link" position="before">
+        <link rel="stylesheet" type="text/scss" href="/web_editor/static/src/scss/bootstrap_overridden_backend.scss"/>
         <link rel="stylesheet" type="text/scss" href="/web_editor/static/src/scss/bootstrap_overridden.scss"/>
     </xpath>
 </template>
@@ -83,7 +90,7 @@
 </template>
 
 <template id="_assets_frontend_helpers" inherit_id="web._assets_frontend_helpers">
-    <xpath expr="//link[last()]" position="after">
+    <xpath expr="//link" position="before">
         <link rel="stylesheet" type="text/scss" href="/web_editor/static/src/scss/bootstrap_overridden.scss"/>
     </xpath>
 </template>
@@ -168,7 +175,20 @@
             <button data-color="white-50"></button>
             <button data-color="white-75"></button>
         </div>
-        <div class="o_colorpicker_section" data-name="common" data-display="Common Colors" data-icon-class="fa fa-paint-brush"></div>
+        <div class="o_colorpicker_section" data-name="common" data-display="Common Colors" data-icon-class="fa fa-paint-brush">
+            <button data-color="black"></button>
+            <button data-color="white"></button>
+            <div class="clearfix"/>
+            <button data-color="900"></button>
+            <button data-color="800"></button>
+            <button data-color="700"></button>
+            <button data-color="600"></button>
+            <button data-color="500"></button>
+            <button data-color="400" class="d-none"></button><!-- Hide this one to be able to use it but not display it -->
+            <button data-color="300"></button>
+            <button data-color="200"></button>
+            <button data-color="100"></button>
+        </div>
     </colorpicker>
 </template>
 </odoo>

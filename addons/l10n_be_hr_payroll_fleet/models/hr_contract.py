@@ -9,7 +9,7 @@ class HrContract(models.Model):
 
     car_id = fields.Many2one('fleet.vehicle', string='Company Car',
         default=lambda self: self.env['fleet.vehicle'].search([('driver_id', '=', self.employee_id.address_home_id.id)], limit=1),
-        track_visibility="onchange",
+        tracking=True,
         help="Employee's company car.")
     car_atn = fields.Float(compute='_compute_car_atn_and_costs', string='ATN Company Car', store=True)
     company_car_total_depreciated_cost = fields.Float(compute='_compute_car_atn_and_costs', store=True)
@@ -18,11 +18,11 @@ class HrContract(models.Model):
     # YTI: Check if could be removed
     new_car_model_id = fields.Many2one('fleet.vehicle.model', string="Model", domain=lambda self: self._get_possible_model_domain())
     max_unused_cars = fields.Integer(compute='_compute_max_unused_cars')
-    acquisition_date = fields.Date(related='car_id.acquisition_date')
-    car_value = fields.Float(related="car_id.car_value")
-    fuel_type = fields.Selection(related="car_id.fuel_type")
-    co2 = fields.Float(related="car_id.co2")
-    driver_id = fields.Many2one('res.partner', related="car_id.driver_id")
+    acquisition_date = fields.Date(related='car_id.acquisition_date', readonly=False)
+    car_value = fields.Float(related="car_id.car_value", readonly=False)
+    fuel_type = fields.Selection(related="car_id.fuel_type", readonly=False)
+    co2 = fields.Float(related="car_id.co2", readonly=False)
+    driver_id = fields.Many2one('res.partner', related="car_id.driver_id", readonly=False)
     car_open_contracts_count = fields.Integer(compute='_compute_car_open_contracts_count')
     recurring_cost_amount_depreciated = fields.Float(
         compute='_compute_recurring_cost_amount_depreciated',

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import logging
 import pytz
 
 from odoo import _, api, fields, models
@@ -8,6 +9,14 @@ from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools.translate import html_translate
 
 from dateutil.relativedelta import relativedelta
+
+_logger = logging.getLogger(__name__)
+
+try:
+    import vobject
+except ImportError:
+    _logger.warning("`vobject` Python module not found, iCal file generation disabled. Consider installing this module if you want to generate iCal files")
+    vobject = None
 
 
 class EventType(models.Model):
@@ -78,7 +87,7 @@ class EventEvent(models.Model):
     """Event"""
     _name = 'event.event'
     _description = 'Event'
-    _inherit = ['mail.thread']
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'date_begin'
 
     name = fields.Char(
@@ -88,7 +97,7 @@ class EventEvent(models.Model):
     user_id = fields.Many2one(
         'res.users', string='Responsible',
         default=lambda self: self.env.user,
-        track_visibility="onchange",
+        tracking=True,
         readonly=False, states={'done': [('readonly', True)]})
     company_id = fields.Many2one(
         'res.company', string='Company', change_default=True,
@@ -96,7 +105,7 @@ class EventEvent(models.Model):
         required=False, readonly=False, states={'done': [('readonly', True)]})
     organizer_id = fields.Many2one(
         'res.partner', string='Organizer',
-        track_visibility="onchange",
+        tracking=True,
         default=lambda self: self.env.user.company_id.partner_id)
     event_type_id = fields.Many2one(
         'event.type', string='Category',
@@ -140,10 +149,10 @@ class EventEvent(models.Model):
     date_tz = fields.Selection('_tz_get', string='Timezone', required=True, default=lambda self: self.env.user.tz or 'UTC')
     date_begin = fields.Datetime(
         string='Start Date', required=True,
-        track_visibility='onchange', states={'done': [('readonly', True)]})
+        tracking=True, states={'done': [('readonly', True)]})
     date_end = fields.Datetime(
         string='End Date', required=True,
-        track_visibility='onchange', states={'done': [('readonly', True)]})
+        tracking=True, states={'done': [('readonly', True)]})
     date_begin_located = fields.Char(string='Start Date Located', compute='_compute_date_begin_tz')
     date_end_located = fields.Char(string='End Date Located', compute='_compute_date_end_tz')
 
@@ -158,8 +167,8 @@ class EventEvent(models.Model):
         'res.partner', string='Location',
         default=lambda self: self.env.user.company_id.partner_id,
         readonly=False, states={'done': [('readonly', True)]},
-        track_visibility="onchange")
-    country_id = fields.Many2one('res.country', 'Country',  related='address_id.country_id', store=True)
+        tracking=True)
+    country_id = fields.Many2one('res.country', 'Country',  related='address_id.country_id', store=True, readonly=False)
     twitter_hashtag = fields.Char('Twitter Hashtag')
     description = fields.Html(
         string='Description', oldname='note', translate=html_translate, sanitize_attributes=False,
@@ -331,11 +340,34 @@ class EventEvent(models.Model):
     def _is_event_registrable(self):
         return True
 
+    @api.multi
+    def _get_ics_file(self):
+        """ Returns iCalendar file for the event invitation.
+            :returns a dict of .ics file content for each event
+        """
+        result = {}
+        if not vobject:
+            return result
+
+        for event in self:
+            cal = vobject.iCalendar()
+            cal_event = cal.add('vevent')
+
+            cal_event.add('created').value = fields.Datetime.now().replace(tzinfo=pytz.timezone('UTC'))
+            cal_event.add('dtstart').value = fields.Datetime.from_string(event.date_begin).replace(tzinfo=pytz.timezone('UTC'))
+            cal_event.add('dtend').value = fields.Datetime.from_string(event.date_end).replace(tzinfo=pytz.timezone('UTC'))
+            cal_event.add('summary').value = event.name
+            if event.address_id:
+                cal_event.add('location').value = event.sudo().address_id.contact_address
+
+            result[event.id] = cal.serialize().encode('utf-8')
+        return result
+
 
 class EventRegistration(models.Model):
     _name = 'event.registration'
-    _description = 'Attendee'
-    _inherit = ['mail.thread']
+    _description = 'Event Registration'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'name, create_date desc'
 
     origin = fields.Char(
@@ -357,7 +389,7 @@ class EventRegistration(models.Model):
     state = fields.Selection([
         ('draft', 'Unconfirmed'), ('cancel', 'Cancelled'),
         ('open', 'Confirmed'), ('done', 'Attended')],
-        string='Status', default='draft', readonly=True, copy=False, track_visibility='onchange')
+        string='Status', default='draft', readonly=True, copy=False, tracking=True)
     email = fields.Char(string='Email')
     phone = fields.Char(string='Phone')
     name = fields.Char(string='Attendee Name', index=True)

@@ -10,7 +10,7 @@ from odoo.osv import expression
 class FleetVehicle(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _name = 'fleet.vehicle'
-    _description = 'Information on a vehicle'
+    _description = 'Vehicle'
     _order = 'license_plate asc, acquisition_date asc'
 
     def _get_default_state(self):
@@ -18,15 +18,15 @@ class FleetVehicle(models.Model):
         return state and state.id or False
 
     name = fields.Char(compute="_compute_vehicle_name", store=True)
-    active = fields.Boolean('Active', default=True, track_visibility="onchange")
+    active = fields.Boolean('Active', default=True, tracking=True)
     company_id = fields.Many2one('res.company', 'Company')
-    license_plate = fields.Char(track_visibility="onchange",
+    license_plate = fields.Char(tracking=True,
         help='License plate number of the vehicle (i = plate number for a car)')
     vin_sn = fields.Char('Chassis Number', help='Unique number written on the vehicle motor (VIN/SN number)', copy=False)
-    driver_id = fields.Many2one('res.partner', 'Driver', track_visibility="onchange", help='Driver of the vehicle', copy=False)
+    driver_id = fields.Many2one('res.partner', 'Driver', tracking=True, help='Driver of the vehicle', copy=False)
     model_id = fields.Many2one('fleet.vehicle.model', 'Model',
-        track_visibility="onchange", required=True, help='Model of the vehicle')
-    brand_id = fields.Many2one('fleet.vehicle.model.brand', 'Brand', related="model_id.brand_id", store=True)
+        tracking=True, required=True, help='Model of the vehicle')
+    brand_id = fields.Many2one('fleet.vehicle.model.brand', 'Brand', related="model_id.brand_id", store=True, readonly=False)
     log_drivers = fields.One2many('fleet.vehicle.assignation.log', 'vehicle_id', string='Assignation Logs')
     log_fuel = fields.One2many('fleet.vehicle.log.fuel', 'vehicle_id', 'Fuel Logs')
     log_services = fields.One2many('fleet.vehicle.log.services', 'vehicle_id', 'Services Logs')
@@ -42,7 +42,7 @@ class FleetVehicle(models.Model):
     color = fields.Char(help='Color of the vehicle')
     state_id = fields.Many2one('fleet.vehicle.state', 'State',
         default=_get_default_state, group_expand='_read_group_stage_ids',
-        track_visibility="onchange",
+        tracking=True,
         help='Current state of the vehicle', ondelete="set null")
     location = fields.Char(help='Location of the vehicle (garage, ...)')
     seats = fields.Integer('Seats Number', help='Number of seats of the vehicle')
@@ -66,9 +66,9 @@ class FleetVehicle(models.Model):
     horsepower_tax = fields.Float('Horsepower Taxation')
     power = fields.Integer('Power', help='Power in kW of the vehicle')
     co2 = fields.Float('CO2 Emissions', help='CO2 emissions of the vehicle')
-    image = fields.Binary(related='model_id.image', string="Logo")
-    image_medium = fields.Binary(related='model_id.image_medium', string="Logo (medium)")
-    image_small = fields.Binary(related='model_id.image_small', string="Logo (small)")
+    image = fields.Binary(related='model_id.image', string="Logo", readonly=False)
+    image_medium = fields.Binary(related='model_id.image_medium', string="Logo (medium)", readonly=False)
+    image_small = fields.Binary(related='model_id.image_small', string="Logo (small)", readonly=False)
     contract_renewal_due_soon = fields.Boolean(compute='_compute_contract_reminder', search='_search_contract_renewal_due_soon',
         string='Has Contracts to renew', multi='contract_info')
     contract_renewal_overdue = fields.Boolean(compute='_compute_contract_reminder', search='_search_get_overdue_contract_reminder',
@@ -130,9 +130,9 @@ class FleetVehicle(models.Model):
                     if diff_time < 0:
                         overdue = True
                         total += 1
-                    if diff_time < 15 and diff_time >= 0:
-                            due_soon = True
-                            total += 1
+                    if 0 >= diff_time < 30:
+                        due_soon = True
+                        total += 1
                     if overdue or due_soon:
                         log_contract = self.env['fleet.vehicle.log.contract'].search([
                             ('vehicle_id', '=', record.id),
@@ -229,9 +229,11 @@ class FleetVehicle(models.Model):
     def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
         domain = args or []
         domain = expression.AND([domain, [('name', operator, name)]])
-        partner_ids = self.env['res.partner']._search([('name', operator, name)], access_rights_uid=name_get_uid)
-        if partner_ids:
-            domain = expression.OR([domain, ['|', ('driver_id', 'in', partner_ids), ('driver_id', '=', False)]])
+        # we don't want to override the domain's filter on driver_id if present
+        if not any(['driver_id' in element for element in domain]):
+            partner_ids = self.env['res.partner']._search([('name', operator, name)], access_rights_uid=name_get_uid)
+            if partner_ids:
+                domain = expression.OR([domain, ['|', ('driver_id', 'in', partner_ids), ('driver_id', '=', False)]])
         rec = self._search(domain, limit=limit, access_rights_uid=name_get_uid)
         return self.browse(rec).name_get()
 
@@ -268,7 +270,7 @@ class FleetVehicle(models.Model):
     def _track_subtype(self, init_values):
         self.ensure_one()
         if 'driver_id' in init_values:
-            return 'fleet.mt_fleet_driver_updated'
+            return self.env.ref('fleet.mt_fleet_driver_updated')
         return super(FleetVehicle, self)._track_subtype(init_values)
 
     def open_assignation_logs(self):
@@ -292,7 +294,7 @@ class FleetVehicleOdometer(models.Model):
     value = fields.Float('Odometer Value', group_operator="max")
     vehicle_id = fields.Many2one('fleet.vehicle', 'Vehicle', required=True)
     unit = fields.Selection(related='vehicle_id.odometer_unit', string="Unit", readonly=True)
-    driver_id = fields.Many2one(related="vehicle_id.driver_id", string="Driver")
+    driver_id = fields.Many2one(related="vehicle_id.driver_id", string="Driver", readonly=False)
 
     @api.depends('vehicle_id', 'date')
     def _compute_vehicle_log_name(self):
@@ -313,8 +315,9 @@ class FleetVehicleOdometer(models.Model):
 class FleetVehicleState(models.Model):
     _name = 'fleet.vehicle.state'
     _order = 'sequence asc'
+    _description = 'Vehicle Status'
 
-    name = fields.Char(required=True)
+    name = fields.Char(required=True, translate=True)
     sequence = fields.Integer(help="Used to order the note stages")
 
     _sql_constraints = [('fleet_state_name_unique', 'unique(name)', 'State name already exists')]
@@ -322,6 +325,7 @@ class FleetVehicleState(models.Model):
 
 class FleetVehicleTag(models.Model):
     _name = 'fleet.vehicle.tag'
+    _description = 'Vehicle Tag'
 
     name = fields.Char(required=True, translate=True)
     color = fields.Integer('Color Index')
@@ -331,7 +335,7 @@ class FleetVehicleTag(models.Model):
 
 class FleetServiceType(models.Model):
     _name = 'fleet.service.type'
-    _description = 'Type of services available on a vehicle'
+    _description = 'Fleet Service Type'
 
     name = fields.Char(required=True, translate=True)
     category = fields.Selection([

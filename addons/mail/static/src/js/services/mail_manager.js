@@ -33,6 +33,7 @@ var MailFailure = require('mail.model.MailFailure');
 var Message = require('mail.model.Message');
 var MultiUserChannel = require('mail.model.MultiUserChannel');
 var mailUtils = require('mail.utils');
+var utils = require('web.utils');
 
 var Bus = require('web.Bus');
 var config = require('web.config');
@@ -199,7 +200,7 @@ var MailManager =  AbstractService.extend({
      * Get partners as mentions from a chatter
      * Typically all employees as partner suggestions.
      *
-     * @returns {Array<Object[]>}
+     * @returns {Array<Array<Object[]>>}
      */
     getMentionPartnerSuggestions: function () {
         return this._mentionPartnerSuggestions;
@@ -676,8 +677,8 @@ var MailManager =  AbstractService.extend({
     },
     /**
      * Get the previews of the mail failures
-     * Mail failures of a same model are grouped together, so that there are few
-     * preview items on the messaging menu in the systray.
+     * Mail failures of a same model with the same type are grouped together, so
+     * that there are few preview items on the messaging menu in the systray.
      *
      * To determine whether this is a model preview or a document preview review
      * the documentID is omitted for a model preview, whereas it is set for a
@@ -696,10 +697,11 @@ var MailManager =  AbstractService.extend({
         _.each(this._mailFailures, function (failure) {
             var unreadCounter = 1;
             var isSameDocument = true;
-            var sameModelItem = _.find(items, function (item) {
+            var sameModelAndTypeItem = _.find(items, function (item) {
                 if (
                     item.failure.isLinkedToDocument() &&
-                    (item.failure.getDocumentModel() === failure.getDocumentModel())
+                    (item.failure.getDocumentModel() === failure.getDocumentModel()) &&
+                    (item.failure.getFailureType() === failure.getFailureType())
                 ) {
                     isSameDocument = item.failure.getDocumentID() === failure.getDocumentID();
                     return true;
@@ -707,10 +709,10 @@ var MailManager =  AbstractService.extend({
                 return false;
             });
 
-            if (failure.isLinkedToDocument() && sameModelItem) {
-                unreadCounter = sameModelItem.unreadCounter + 1;
-                isSameDocument = sameModelItem.isSameDocument && isSameDocument;
-                var index = _.findIndex(items, sameModelItem);
+            if (failure.isLinkedToDocument() && sameModelAndTypeItem) {
+                unreadCounter = sameModelAndTypeItem.unreadCounter + 1;
+                isSameDocument = sameModelAndTypeItem.isSameDocument && isSameDocument;
+                var index = _.findIndex(items, sameModelAndTypeItem);
                 items[index] = {
                     unreadCounter: unreadCounter,
                     failure: failure,
@@ -1093,7 +1095,7 @@ var MailManager =  AbstractService.extend({
      */
     _searchPartnerPrefetch: function (searchVal, limit) {
         var values = [];
-        var searchRegexp = new RegExp(_.str.escapeRegExp(mailUtils.unaccent(searchVal)), 'i');
+        var searchRegexp = new RegExp(_.str.escapeRegExp(utils.unaccent(searchVal)), 'i');
         _.each(this._mentionPartnerSuggestions, function (partners) {
             if (values.length < limit) {
                 values = values.concat(_.filter(partners, function (partner) {
@@ -1108,8 +1110,9 @@ var MailManager =  AbstractService.extend({
      * Sort previews
      *
      *      1. unread,
-     *      2. two-user thread,
-     *      3. date,
+     *      2. dated previews
+     *      3. two-user thread,
+     *      4. date,
      *
      * @private
      * @param {Object[]} previews
@@ -1118,13 +1121,10 @@ var MailManager =  AbstractService.extend({
     _sortPreviews: function (previews) {
         var res = previews.sort(function (p1, p2) {
             var unreadDiff = Math.min(1, p2.unreadCounter) - Math.min(1, p1.unreadCounter);
+            var datedDiff = !!p2.date - !!p1.date;
             var isTwoUserThreadDiff = p2.isTwoUserThread - p1.isTwoUserThread;
-            var dateDiff = (!!p2.date - !!p1.date) ||
-                              (
-                                p2.date &&
-                                p2.date.diff(p1.date)
-                              );
-            return  unreadDiff || isTwoUserThreadDiff || dateDiff;
+            var dateDiff = p2.date && p2.date.diff(p1.date);
+            return  unreadDiff || datedDiff || isTwoUserThreadDiff || dateDiff;
         });
         return res;
     },
@@ -1195,8 +1195,8 @@ var MailManager =  AbstractService.extend({
      *
      * @private
      * @param {Object} result data from server on mail/init_messaging rpc
-     * @param {Object[]} result.mention_partner_suggestions list of suggestions
-     *   with all the employees
+     * @param {Array<Object[]>} result.mention_partner_suggestions list of
+     *   suggestions.
      * @param {integer} result.menu_id the menu ID of discuss app
      */
     _updateInternalStateFromServer: function (result) {

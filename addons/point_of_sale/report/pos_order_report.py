@@ -6,11 +6,11 @@ from odoo import api, fields, models, tools
 
 class PosOrderReport(models.Model):
     _name = "report.pos.order"
-    _description = "Point of Sale Orders Statistics"
+    _description = "Point of Sale Orders Report"
     _auto = False
     _order = 'date desc'
 
-    date = fields.Datetime(string='Date Order', readonly=True)
+    date = fields.Datetime(string='Order Date', readonly=True)
     order_id = fields.Many2one('pos.order', string='Order', readonly=True)
     partner_id = fields.Many2one('res.partner', string='Customer', readonly=True)
     product_id = fields.Many2one('product.product', string='Product', readonly=True)
@@ -19,7 +19,7 @@ class PosOrderReport(models.Model):
         [('draft', 'New'), ('paid', 'Paid'), ('done', 'Posted'),
          ('invoiced', 'Invoiced'), ('cancel', 'Cancelled')],
         string='Status')
-    user_id = fields.Many2one('res.users', string='Salesperson', readonly=True)
+    user_id = fields.Many2one('res.users', string='User', readonly=True)
     price_total = fields.Float(string='Total Price', readonly=True)
     price_sub_total = fields.Float(string='Subtotal w/o discount', readonly=True)
     total_discount = fields.Float(string='Total Discount', readonly=True)

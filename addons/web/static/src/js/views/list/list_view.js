@@ -42,7 +42,6 @@ var ListView = BasicView.extend({
         this.controllerParams.editable = this.arch.attrs.editable;
         this.controllerParams.hasSidebar = params.hasSidebar;
         this.controllerParams.toolbarActions = viewInfo.toolbar;
-        this.controllerParams.noLeaf = !!this.loadParams.context.group_by_no_leaf;
         this.controllerParams.mode = mode;
         this.controllerParams.selectedRecords = selectedRecords;
 
@@ -54,6 +53,28 @@ var ListView = BasicView.extend({
 
         this.loadParams.limit = this.loadParams.limit || 80;
         this.loadParams.type = 'list';
+    },
+
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
+
+    /**
+     * @override
+     */
+    _extractParamsFromAction: function (action) {
+        var params = this._super.apply(this, arguments);
+        var inDialog = action.target === 'new';
+        var inline = action.target === 'inline';
+        params.hasSidebar = !inDialog && !inline;
+        return params;
+    },
+    /**
+     * @override
+     */
+    _updateMVCParams: function () {
+        this._super.apply(this, arguments);
+        this.controllerParams.noLeaf = !!this.loadParams.context.group_by_no_leaf;
     },
 });
 

@@ -159,9 +159,9 @@ def dispatch_rpc(service_name, method, params):
         rpc_response_flag = rpc_response.isEnabledFor(logging.DEBUG)
         if rpc_request_flag or rpc_response_flag:
             start_time = time.time()
-            start_rss, start_vms = 0, 0
+            start_memory = 0
             if psutil:
-                start_rss, start_vms = memory_info(psutil.Process(os.getpid()))
+                start_memory = memory_info(psutil.Process(os.getpid()))
             if rpc_request and rpc_response_flag:
                 odoo.netsvc.log(rpc_request, logging.DEBUG, '%s.%s' % (service_name, method), replace_request_password(params))
 
@@ -179,10 +179,10 @@ def dispatch_rpc(service_name, method, params):
 
         if rpc_request_flag or rpc_response_flag:
             end_time = time.time()
-            end_rss, end_vms = 0, 0
+            end_memory = 0
             if psutil:
-                end_rss, end_vms = memory_info(psutil.Process(os.getpid()))
-            logline = '%s.%s time:%.3fs mem: %sk -> %sk (diff: %sk)' % (service_name, method, end_time - start_time, start_vms / 1024, end_vms / 1024, (end_vms - start_vms)/1024)
+                end_memory = memory_info(psutil.Process(os.getpid()))
+            logline = '%s.%s time:%.3fs mem: %sk -> %sk (diff: %sk)' % (service_name, method, end_time - start_time, start_memory / 1024, end_memory / 1024, (end_memory - start_memory)/1024)
             if rpc_response_flag:
                 odoo.netsvc.log(rpc_response, logging.DEBUG, logline, result)
             else:
@@ -576,7 +576,7 @@ def route(route=None, **kw):
             if isinstance(response, Response) or f.routing_type == 'json':
                 return response
 
-            if isinstance(response, (bytes, pycompat.text_type)):
+            if isinstance(response, (bytes, str)):
                 return Response(response)
 
             if isinstance(response, werkzeug.exceptions.HTTPException):
@@ -638,6 +638,7 @@ class JsonRequest(WebRequest):
         super(JsonRequest, self).__init__(*args)
 
         self.jsonp_handler = None
+        self.params = {}
 
         args = self.httprequest.args
         jsonp = args.get('jsonp')
@@ -743,9 +744,9 @@ class JsonRequest(WebRequest):
                 args = self.params.get('args', [])
 
                 start_time = time.time()
-                _, start_vms = 0, 0
+                start_memory = 0
                 if psutil:
-                    _, start_vms = memory_info(psutil.Process(os.getpid()))
+                    start_memory = memory_info(psutil.Process(os.getpid()))
                 if rpc_request and rpc_response_flag:
                     rpc_request.debug('%s: %s %s, %s',
                         endpoint, model, method, pprint.pformat(args))
@@ -754,11 +755,11 @@ class JsonRequest(WebRequest):
 
             if rpc_request_flag or rpc_response_flag:
                 end_time = time.time()
-                _, end_vms = 0, 0
+                end_memory = 0
                 if psutil:
-                    _, end_vms = memory_info(psutil.Process(os.getpid()))
+                    end_memory = memory_info(psutil.Process(os.getpid()))
                 logline = '%s: %s %s: time:%.3fs mem: %sk -> %sk (diff: %sk)' % (
-                    endpoint, model, method, end_time - start_time, start_vms / 1024, end_vms / 1024, (end_vms - start_vms)/1024)
+                    endpoint, model, method, end_time - start_time, start_memory / 1024, end_memory / 1024, (end_memory - start_memory)/1024)
                 if rpc_response_flag:
                     rpc_response.debug('%s, %s', logline, pprint.pformat(result))
                 else:
@@ -865,7 +866,7 @@ class HttpRequest(WebRequest):
 
 Odoo URLs are CSRF-protected by default (when accessed with unsafe
 HTTP methods). See
-https://www.odoo.com/documentation/11.0/reference/http.html#csrf for
+https://www.odoo.com/documentation/12.0/reference/http.html#csrf for
 more details.
 
 * if this endpoint is accessed through Odoo via py-QWeb form, embed a CSRF
@@ -1091,6 +1092,7 @@ class OpenERPSession(werkzeug.contrib.sessions.Session):
             uid = odoo.registry(db)['res.users'].authenticate(db, login, password, env)
         else:
             security.check(db, uid, password)
+        self.rotate = True
         self.db = db
         self.uid = uid
         self.login = login
@@ -1406,7 +1408,8 @@ def SessionStore(path):
     else:
         return werkzeug.contrib.sessions.FilesystemSessionStore(
             path,
-            session_class=OpenERPSession
+            session_class=OpenERPSession,
+            renew_missing=True,
         )
 
 
@@ -1530,7 +1533,7 @@ class Root(object):
                 else:
                     raise
 
-        if isinstance(result, (bytes, pycompat.text_type)):
+        if isinstance(result, (bytes, str)):
             response = Response(result, mimetype='text/html')
         else:
             response = result
@@ -1543,6 +1546,8 @@ class Root(object):
             if httprequest.session.rotate:
                 self.session_store.delete(httprequest.session)
                 httprequest.session.sid = self.session_store.generate_key()
+                if httprequest.session.uid:
+                    httprequest.session.session_token = security.compute_session_token(httprequest.session, request.env)
                 httprequest.session.modified = True
             self.session_store.save(httprequest.session)
         # We must not set the cookie if the session id was specified using a http header or a GET parameter.
@@ -1726,7 +1731,7 @@ def send_file(filepath_or_fp, mimetype=None, as_attachment=False, filename=None,
 
     :param cache_timeout: the timeout in seconds for the headers.
     """
-    if isinstance(filepath_or_fp, pycompat.string_types):
+    if isinstance(filepath_or_fp, str):
         if not filename:
             filename = os.path.basename(filepath_or_fp)
         file = open(filepath_or_fp, 'rb')
@@ -1776,7 +1781,7 @@ def send_file(filepath_or_fp, mimetype=None, as_attachment=False, filename=None,
             mtime,
             size,
             adler32(
-                filename.encode('utf-8') if isinstance(filename, pycompat.text_type)
+                filename.encode('utf-8') if isinstance(filename, str)
                 else filename
             ) & 0xffffffff
         ))

@@ -10,7 +10,6 @@ from odoo import tools
 from odoo.addons.http_routing.models.ir_http import url_for
 from odoo.osv import expression
 from odoo.http import request
-from odoo.tools import pycompat
 
 _logger = logging.getLogger(__name__)
 
@@ -36,38 +35,61 @@ class View(models.Model):
         websites. Also this way newly created websites will only
         contain the default views.
         '''
-        current_website_id = self._context.get('website_id')
-        if current_website_id:
-            for view in self:
-                if not view.key and not vals.get('key'):
-                    view.with_context(no_cow=True).key = 'website.key_%s' % str(uuid.uuid4())[:6]
-                if not view.website_id and current_website_id and not self._context.get('no_cow'):
-                    # If already a specific view for this generic view, write on it
-                    website_specific_view = self.env['ir.ui.view'].search([
-                        ('key', '=', view.key),
-                        ('website_id', '=', current_website_id)
-                    ], limit=1)
-                    if not website_specific_view:
-                        # Set key to avoid copy() to generate an unique key as we want the specific view to have the same key
-                        website_specific_view = view.copy({'website_id': current_website_id, 'key': view.key})
-                        view._create_website_specific_pages_for_view(website_specific_view,
-                                                                     view.env['website'].browse(current_website_id))
+        current_website_id = self.env.context.get('website_id')
+        if not current_website_id or self.env.context.get('no_cow'):
+            return super(View, self).write(vals)
 
-                        for inherit_child in view.inherit_children_ids:
-                            # COW won't be triggered if there is already a website_id on the view, we should copy the view ourself
-                            if inherit_child.website_id.id == current_website_id:
-                                inherit_child.copy({'inherit_id': website_specific_view.id, 'key': inherit_child.key})
-                                # We should unlink website specific view from generic tree as it now copied on specific tree
-                                inherit_child.unlink()
-                            else:
-                                # trigger COW on inheriting views
-                                inherit_child.write({'inherit_id': website_specific_view.id})
+        # We need to consider inactive views when handling multi-website cow
+        # feature (to copy inactive children views, to search for specific
+        # views, ...)
+        for view in self.with_context(active_test=False):
+            # Make sure views which are written in a website context receive
+            # a value for their 'key' field
+            if not view.key and not vals.get('key'):
+                view.with_context(no_cow=True).key = 'website.key_%s' % str(uuid.uuid4())[:6]
 
-                    super(View, website_specific_view).write(vals)
-                    continue
+            # No need of COW if the view is already specific
+            if view.website_id:
                 super(View, view).write(vals)
-        else:
-            super(View, self).write(vals)
+                continue
+
+            # If already a specific view for this generic view, write on it
+            website_specific_view = view.search([
+                ('key', '=', view.key),
+                ('website_id', '=', current_website_id)
+            ], limit=1)
+            if website_specific_view:
+                super(View, website_specific_view).write(vals)
+                continue
+
+            # Set key to avoid copy() to generate an unique key as we want the
+            # specific view to have the same key
+            copy_vals = {'website_id': current_website_id, 'key': view.key}
+            # Copy with the 'inherit_id' field value that will be written to
+            # ensure the copied view's validation works
+            if vals.get('inherit_id'):
+                copy_vals['inherit_id'] = vals['inherit_id']
+            website_specific_view = view.copy(copy_vals)
+
+            view._create_website_specific_pages_for_view(website_specific_view,
+                                                            view.env['website'].browse(current_website_id))
+
+            for inherit_child in view.inherit_children_ids.filter_duplicate():
+                if inherit_child.website_id.id == current_website_id:
+                    # In the case the child was already specific to the current
+                    # website, we cannot just reattach it to the new specific
+                    # parent: we have to copy it there and remove it from the
+                    # original tree. Indeed, the order of children 'id' fields
+                    # must remain the same so that the inheritance is applied
+                    # in the same order in the copied tree.
+                    inherit_child.copy({'inherit_id': website_specific_view.id, 'key': inherit_child.key})
+                    inherit_child.unlink()
+                else:
+                    # Trigger COW on inheriting views
+                    inherit_child.write({'inherit_id': website_specific_view.id})
+
+            super(View, website_specific_view).write(vals)
+
         return True
 
     @api.multi
@@ -103,64 +125,50 @@ class View(models.Model):
         # get_related_views can be called through website=False routes
         # (e.g. /web_editor/get_assets_editor_resources), so website
         # dispatch_parameters may not be added. Manually set
-        # website_id.
+        # website_id. (It will then always fallback on a website, this
+        # method should never be called in a generic context, even for
+        # tests)
         self = self.with_context(website_id=self.env['website'].get_current_website().id)
-        views = super(View, self).get_related_views(key, bundles=bundles)
+        return super(View, self).get_related_views(key, bundles=bundles)
+
+    def filter_duplicate(self):
+        """ Filter current recordset only keeping the most suitable view per distinct key.
+            Every non-accessible view will be removed from the set:
+              * In non website context, every view with a website will be removed
+              * In a website context, every view from another website
+        """
         current_website_id = self._context.get('website_id')
         most_specific_views = self.env['ir.ui.view']
-
         if not current_website_id:
-            return views
+            return self.filtered(lambda view: not view.website_id)
 
-        for view in views:
+        for view in self:
             if view.website_id and view.website_id.id == current_website_id:
                 most_specific_views |= view
-            elif not view.website_id and not any(view.key == view2.key and view2.website_id and view2.website_id.id == current_website_id for view2 in views):
+            elif not view.website_id and not any(view.key == view2.key and view2.website_id and view2.website_id.id == current_website_id for view2 in self):
                 most_specific_views |= view
 
         return most_specific_views
 
-    @api.multi
-    def _sort_suitability_key(self):
-        """ Key function to sort views by descending suitability
-            Suitability of a view is defined as follow:
-                * if the view and request website_id are matched
-                * then if the view has no set website
-        """
-        self.ensure_one()
-        context_website_id = self.env.context.get('website_id', 1)
-        website_id = self.website_id.id or 0
-        different_website = context_website_id != website_id
-        return (different_website, website_id)
-
-    def filter_duplicate(self):
-        """ Filter current recordset only keeping the most suitable view per distinct key """
-        view_with_key = self.filtered('key')
-        view_without_key = self - view_with_key
-        filtered = self.env['ir.ui.view']
-        for dummy, group in groupby(view_with_key.sorted('key'), key=lambda record: record.key):
-            filtered += sorted(group, key=lambda record: record._sort_suitability_key())[0]
-        return (filtered + view_without_key).sorted(key=lambda view: (view.priority, view.id))
+    @api.model
+    def _view_get_inherited_children(self, view, options):
+        extensions = super(View, self)._view_get_inherited_children(view, options)
+        return extensions.filter_duplicate()
 
     @api.model
     def _view_obj(self, view_id):
-        if isinstance(view_id, pycompat.string_types):
-            if 'website_id' in self._context:
-                domain = [('key', '=', view_id)] + self.env['website'].website_domain(self._context.get('website_id'))
-                order = 'website_id'
-            else:
-                domain = [('key', '=', view_id)]
-                order = self._order
-            views = self.search(domain, order=order)
-            if views:
-                return views.filter_duplicate()
-            else:
-                return self.env.ref(view_id)
-        elif isinstance(view_id, pycompat.integer_types):
-            return self.browse(view_id)
-
-        # assume it's already a view object (WTF?)
-        return view_id
+        ''' Given an xml_id or a view_id, return the corresponding view record.
+            In case of website context, return the most specific one.
+            :param view_id: either a string xml_id or an integer view_id
+            :return: The view record or empty recordset
+        '''
+        if isinstance(view_id, str) or isinstance(view_id, int):
+            return self.env['website'].viewref(view_id)
+        else:
+            # It can already be a view object when called by '_views_get()' that is calling '_view_obj'
+            # for it's inherit_children_ids, passing them directly as object record. (Note that it might
+            # be a view_id from another website but it will be filtered in 'get_related_views()')
+            return view_id if view_id._name == 'ir.ui.view' else self.env['ir.ui.view']
 
     @api.model
     def _get_inheriting_views_arch_website(self, view_id):
@@ -193,7 +201,7 @@ class View(models.Model):
     @api.model
     @tools.ormcache_context('self._uid', 'xml_id', keys=('website_id',))
     def get_view_id(self, xml_id):
-        if 'website_id' in self._context and not isinstance(xml_id, pycompat.integer_types):
+        if 'website_id' in self._context and not isinstance(xml_id, int):
             current_website = self.env['website'].browse(self._context.get('website_id'))
             domain = ['&', ('key', '=', xml_id)] + current_website.website_domain()
 
@@ -292,16 +300,26 @@ class View(models.Model):
     def _read_template_keys(self):
         return super(View, self)._read_template_keys() + ['website_id']
 
+    @api.model
+    def _save_oe_structure_hook(self):
+        res = super(View, self)._save_oe_structure_hook()
+        res['website_id'] = self.env['website'].get_current_website().id
+        return res
+
     @api.multi
     def save(self, value, xpath=None):
         self.ensure_one()
-        # The first time a generic view is edited, it will send multiple rpc to this method.
-        # If there is already a website specific view, we need to divert the super to it
-        current_website_id = self._context.get('website_id')
-        if self.key and current_website_id:
+        current_website = self.env['website'].get_current_website()
+        # xpath condition is important to be sure we are editing a view and not
+        # a field as in that case `self` might not exist (check commit message)
+        if xpath and self.key and current_website:
+            # The first time a generic view is edited, if multiple editable parts
+            # were edited at the same time, multiple call to this method will be
+            # done but the first one may create a website specific view. So if there
+            # already is a website specific view, we need to divert the super to it.
             website_specific_view = self.env['ir.ui.view'].search([
                 ('key', '=', self.key),
-                ('website_id', '=', current_website_id)
+                ('website_id', '=', current_website.id)
             ], limit=1)
             if website_specific_view:
                 self = website_specific_view

@@ -5,12 +5,13 @@
 # Translators:
 # Martin Trigaux, 2018
 # Alina Lisnenko <alinasemeniuk1@gmail.com>, 2018
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server saas~11.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-24 09:05+0000\n"
-"PO-Revision-Date: 2018-08-24 09:05+0000\n"
+"POT-Creation-Date: 2018-09-21 13:17+0000\n"
+"PO-Revision-Date: 2018-08-24 09:25+0000\n"
 "Last-Translator: Alina Lisnenko <alinasemeniuk1@gmail.com>, 2018\n"
 "Language-Team: Ukrainian (https://www.transifex.com/odoo/teams/41243/uk/)\n"
 "MIME-Version: 1.0\n"
@@ -24,10 +25,10 @@ msgstr ""
 #: code:addons/sms/static/src/js/sms_widget.js:93
 #, python-format
 msgid "%s chars, fits in %s SMS (%s) "
-msgstr ""
+msgstr "%s символи, підходить %s SMS (%s) "
 
 #. module: sms
-#: model:ir.ui.view,arch_db:sms.send_sms_view_form
+#: model_terms:ir.ui.view,arch_db:sms.send_sms_view_form
 msgid "Cancel"
 msgstr "Скасувати"
 
@@ -55,7 +56,7 @@ msgstr "Назва для відображення"
 #. module: sms
 #: model:ir.model,name:sms.model_mail_thread
 msgid "Email Thread"
-msgstr "Ланцюжки повідомлень"
+msgstr "Тема електронного листа"
 
 #. module: sms
 #: model:ir.model.fields,field_description:sms.field_sms_api__id
@@ -91,7 +92,7 @@ msgid "Message"
 msgstr "Повідомлення"
 
 #. module: sms
-#: code:addons/sms/wizard/send_sms.py:81
+#: code:addons/sms/wizard/send_sms.py:82
 #, python-format
 msgid "Missing mobile number for %s."
 msgstr "Відсутній мобільний номер для %s."
@@ -110,11 +111,16 @@ msgid "Recipients"
 msgstr "Отримувачі"
 
 #. module: sms
+#: model:ir.model,name:sms.model_sms_api
+msgid "SMS API"
+msgstr "SMS API"
+
+#. module: sms
 #. openerp-web
 #: code:addons/sms/static/src/xml/sms_widget.xml:4
 #, python-format
 msgid "SMS Pricing"
-msgstr ""
+msgstr "Ціна SMS"
 
 #. module: sms
 #: code:addons/sms/models/mail_thread.py:48
@@ -123,28 +129,19 @@ msgid "SMS message sent: %s"
 msgstr "SMS повідомлення надіслано: %s"
 
 #. module: sms
-#: model:ir.ui.view,arch_db:sms.send_sms_view_form
+#: model_terms:ir.ui.view,arch_db:sms.send_sms_view_form
 msgid "Send"
 msgstr "Надіслати"
 
 #. module: sms
 #: model:ir.actions.act_window,name:sms.send_sms_action
 #: model:ir.actions.act_window,name:sms.send_sms_form_action
-#: model:ir.ui.view,arch_db:sms.partner_form_send_sms_form_view
+#: model:ir.model,name:sms.model_sms_send_sms
+#: model_terms:ir.ui.view,arch_db:sms.partner_form_send_sms_form_view
 msgid "Send SMS"
 msgstr "Надіслати SMS"
 
 #. module: sms
-#: model:ir.ui.view,arch_db:sms.send_sms_view_form
+#: model_terms:ir.ui.view,arch_db:sms.send_sms_view_form
 msgid "Send an SMS"
 msgstr "Надіслати SMS"
-
-#. module: sms
-#: model:ir.model,name:sms.model_sms_api
-msgid "sms.api"
-msgstr "sms.api"
-
-#. module: sms
-#: model:ir.model,name:sms.model_sms_send_sms
-msgid "sms.send_sms"
-msgstr "sms.send_sms"

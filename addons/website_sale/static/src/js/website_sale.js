@@ -124,6 +124,7 @@ odoo.define('website_sale.website_sale', function (require) {
 'use strict';
 
 var utils = require('web.utils');
+var ProductConfiguratorMixin = require('sale.ProductConfiguratorMixin');
 var core = require('web.core');
 var config = require('web.config');
 var sAnimations = require('website.content.snippets.animation');
@@ -131,10 +132,10 @@ require("website.content.zoomodoo");
 
 var _t = core._t;
 
-sAnimations.registry.WebsiteSale = sAnimations.Class.extend({
+sAnimations.registry.WebsiteSale = sAnimations.Class.extend(ProductConfiguratorMixin, {
     selector: '.oe_website_sale',
     read_events: {
-        'change input[name="add_qty"]': '_onChangeAddQuantity',
+        'change form .js_product:first input[name="add_qty"]': '_onChangeAddQuantity',
         'mouseup .js_publish': '_onMouseupPublish',
         'touchend .js_publish': '_onMouseupPublish',
         'change .oe_cart input.js_quantity[data-product-id]': '_onChangeCartQuantity',
@@ -145,12 +146,12 @@ sAnimations.registry.WebsiteSale = sAnimations.Class.extend({
         'mouseup form.js_add_cart_json label': '_onMouseupAddCartLabel',
         'touchend form.js_add_cart_json label': '_onMouseupAddCartLabel',
         'change .css_attribute_color input': '_onChangeColorAttribute',
-        'change input.js_variant_change, select.js_variant_change, input.js_product_change, [data-attribute_value_ids]': '_onChangeVariant',
         'click .show_coupon': '_onClickShowCoupon',
         'submit .o_website_sale_search': '_onSubmitSaleSearch',
         'change select[name="country_id"]': '_onChangeCountry',
         'change #shipping_use_same': '_onChangeShippingUseSame',
         'click .toggle_summary': '_onToggleSummary',
+        'click input.js_product_change': 'onChangeVariant',
     },
 
     /**
@@ -161,6 +162,8 @@ sAnimations.registry.WebsiteSale = sAnimations.Class.extend({
 
         this._changeCartQuantity = _.debounce(this._changeCartQuantity.bind(this), 500);
         this._changeCountry = _.debounce(this._changeCountry.bind(this), 500);
+
+        this.isWebsite = true;
     },
     /**
      * @override
@@ -175,9 +178,8 @@ sAnimations.registry.WebsiteSale = sAnimations.Class.extend({
             $('input.js_product_change', product).first().trigger('change');
         });
 
-        _.each(this.$('.js_add_cart_variants'), function (add_variant) {
-            $('input.js_variant_change, select.js_variant_change', add_variant).first().trigger('change');
-        });
+        // This has to be triggered to compute the "out of stock" feature
+        this.triggerVariantChange(this.$el);
 
         this.$('select[name="country_id"]').change();
 
@@ -189,33 +191,23 @@ sAnimations.registry.WebsiteSale = sAnimations.Class.extend({
             }
         });
 
-        // Do not activate image zoom for mobile devices, since it might prevent users from scrolling the page
-        if (!config.device.isMobile) {
-            var autoZoom = $('.ecom-zoomable').data('ecom-zoom-auto') || false,
-            factorZoom = parseFloat($('.ecom-zoomable').data('ecom-zoom-factor')) || 1.5,
-            attach = '#o-carousel-product';
-            _.each($('.ecom-zoomable img[data-zoom]'), function (el) {
-                onImageLoaded(el, function () {
-                    var $img = $(el);
-                    if (!_.str.endsWith(el.src, el.dataset.zoomImage) || // if zoom-img != img
-                        el.naturalWidth >= $(attach).width() * factorZoom || el.naturalHeight >= $(attach).height() * factorZoom) {
-                        $img.zoomOdoo({event: autoZoom ? 'mouseenter' : 'click', attach: attach});
-                    } else {
-                        $img.removeAttr('data-zoom');  // remove cursor
-                    }
-                });
-            });
-        }
-
-        function onImageLoaded(img, callback) {
-            $(img).on('load', function () { callback(); });
-            if (img.complete) {
-                $(img).off('load');
-                callback();
-            }
-        }
+        this._startZoom();
 
         return def;
+    },
+    /**
+     * The selector is different when using list view of variants.
+     *
+     * @override
+     */
+    getSelectedVariantValues: function ($container) {
+        var combination = $container.find('input.js_product_change:checked')
+            .data('combination');
+
+        if (combination) {
+            return JSON.parse(combination);
+        }
+        return ProductConfiguratorMixin.getSelectedVariantValues.apply(this, arguments);
     },
 
     //--------------------------------------------------------------------------
@@ -329,47 +321,118 @@ sAnimations.registry.WebsiteSale = sAnimations.Class.extend({
         });
     },
     /**
-     * @private
+     * This is overridden to handle the "List View of Variants" of the web shop.
+     * That feature allows directly selecting the variant from a list instead of selecting the
+     * attribute values.
+     *
+     * Since the layout is completely different, we need to fetch the product_id directly
+     * from the selected variant.
+     *
+     * @override
      */
-    _priceToStr: function (price) {
-        var l10n = _t.database.parameters;
-        var precision = 2;
-
-        if ($(".decimal_precision").length) {
-            precision = parseInt($(".decimal_precision").last().data('precision'));
+    _getProductId: function ($parent) {
+        if ($parent.find('input.js_product_change').length !== 0) {
+            return parseInt($parent.find('input.js_product_change:checked').val());
         }
-        var formatted = _.str.sprintf('%.' + precision + 'f', price).split('.');
-        formatted[0] = utils.insert_thousand_seps(formatted[0]);
-        return formatted.join(l10n.decimal_point);
+        else {
+            return ProductConfiguratorMixin._getProductId.apply(this, arguments);
+        }
     },
     /**
      * @private
      */
-    _updateProductImage: function ($productContainer, product_id) {
+    _startZoom: function () {
+        // Do not activate image zoom for mobile devices, since it might prevent users from scrolling the page
+        if (!config.device.isMobile) {
+            var autoZoom = $('.ecom-zoomable').data('ecom-zoom-auto') || false,
+            factorZoom = parseFloat($('.ecom-zoomable').data('ecom-zoom-factor')) || 1.5,
+            attach = '#o-carousel-product';
+            _.each($('.ecom-zoomable img[data-zoom]'), function (el) {
+                onImageLoaded(el, function () {
+                    var $img = $(el);
+                    if (!_.str.endsWith(el.src, el.dataset.zoomImage) || // if zoom-img != img
+                        el.naturalWidth >= $(attach).width() * factorZoom || el.naturalHeight >= $(attach).height() * factorZoom) {
+                        $img.zoomOdoo({event: autoZoom ? 'mouseenter' : 'click', attach: attach});
+                        $img.attr('data-zoom', 1); // add cursor (if previously removed)
+                    } else {
+                        $img.removeAttr('data-zoom'); // remove cursor
+                        // remove zooming but keep the attribute because
+                        // it can potentially be set back
+                        $img.attr('data-zoom-image', '');
+                    }
+                });
+            });
+        }
+
+        function onImageLoaded(img, callback) {
+            // On Chrome the load event already happened at this point so we
+            // have to rely on complete. On Firefox it seems that the event is
+            // always triggered after this so we can rely on it.
+            //
+            // However on the "complete" case we still want to keep listening to
+            // the event because if the image is changed later (eg. product
+            // configurator) a new load event will be triggered (both browsers).
+            $(img).on('load', function () {
+                callback();
+            });
+            if (img.complete) {
+                callback();
+            }
+        }
+    },
+    /**
+     * On website, we display a carousel instead of only one image
+     *
+     * @override
+     * @private
+     */
+    _updateProductImage: function ($productContainer, productId, productTemplateId, new_carousel) {
         var $img;
-        if ($('#o-carousel-product').length) {
+        var $carousel = $productContainer.find('#o-carousel-product');
+
+        if (new_carousel) {
+            // When using the web editor, don't reload this or the images won't
+            // be able to be edited depending on if this is done loading before
+            // or after the editor is ready.
+            if (window.location.search.indexOf('enable_editor') === -1) {
+                var $new_carousel = $(new_carousel);
+                $carousel.after($new_carousel);
+                $carousel.remove();
+                $carousel = $new_carousel;
+                $carousel.carousel(0);
+                this._startZoom();
+                // fix issue with carousel height
+                this.trigger_up('animation_start_demand', {$target: $carousel});
+            }
+        }
+        else { // compatibility 12.0
+            var model = productId ? 'product.product' : 'product.template';
+            var modelId = productId || productTemplateId;
+            var imageSrc = '/web/image/{0}/{1}/image'
+                .replace("{0}", model)
+                .replace("{1}", modelId);
+
             $img = $productContainer.find('img.js_variant_img');
-            $img.attr("src", "/web/image/product.product/" + product_id + "/image");
-            $img.parent().attr('data-oe-model', 'product.product').attr('data-oe-id', product_id)
-                .data('oe-model', 'product.product').data('oe-id', product_id);
+            $img.attr("src", imageSrc);
+            $img.parent().attr('data-oe-model', model).attr('data-oe-id', modelId)
+                .data('oe-model', model).data('oe-id', modelId);
 
             var $thumbnail = $productContainer.find('img.js_variant_img_small');
             if ($thumbnail.length !== 0) { // if only one, thumbnails are not displayed
-                $thumbnail.attr("src", "/web/image/product.product/" + product_id + "/image/90x90");
+                $thumbnail.attr("src", "/web/image/{0}/{1}/image/90x90"
+                    .replace('{0}', model)
+                    .replace('{1}', modelId));
                 $('.carousel').carousel(0);
             }
+
+            // reset zooming constructs
+            $img.filter('[data-zoom-image]').attr('data-zoom-image', $img.attr('src'));
+            if ($img.data('zoomOdoo') !== undefined) {
+                $img.data('zoomOdoo').isReady = false;
+            }
         }
-        else {
-            $img = $productContainer.find('span[data-oe-model^="product."][data-oe-type="image"] img:first, img.product_detail_img');
-            $img.attr("src", "/web/image/product.product/" + product_id + "/image");
-            $img.parent().attr('data-oe-model', 'product.product').attr('data-oe-id', product_id)
-                .data('oe-model', 'product.product').data('oe-id', product_id);
-        }
-        // reset zooming constructs
-        $img.filter('[data-zoom-image]').attr('data-zoom-image', $img.attr('src'));
-        if ($img.data('zoomOdoo') !== undefined) {
-            $img.data('zoomOdoo').isReady = false;
-        }
+
+        $carousel.toggleClass('css_not_available', !this.isSelectedVariantAllowed);
     },
 
     //--------------------------------------------------------------------------
@@ -378,33 +441,17 @@ sAnimations.registry.WebsiteSale = sAnimations.Class.extend({
 
     /**
      * @private
+     * @param {MouseEvent} ev
+     */
+    _onClickAddCartJSON: function (ev){
+        this.onClickAddCartJSON(ev);
+    },
+    /**
+     * @private
      * @param {Event} ev
      */
     _onChangeAddQuantity: function (ev) {
-        var productIDs = [];
-        var $addVariant = $(ev.currentTarget).closest(".js_product").find(".js_add_cart_variants");
-        var qty = $(ev.currentTarget).closest('form').find('input[name="add_qty"]').val();
-        var attributeValueIDs = $addVariant.data("attribute_value_ids");
-        _.each(attributeValueIDs, function (entry) {
-            productIDs.push(entry[0]);
-        });
-
-        if ($("#product_detail").length) {
-            // display the reduction from the pricelist in function of the quantity
-            this._rpc({
-                route: '/shop/get_unit_price',
-                params: {
-                    product_ids: productIDs,
-                    add_qty: parseInt(qty),
-                },
-            }).then(function (data) {
-                var current = attributeValueIDs;
-                for (var j = 0 ; j < current.length ; j++) {
-                    current[j][2] = data[current[j][0]];
-                }
-                $addVariant.trigger('change');
-            });
-        }
+        this.onChangeAddQuantity(ev);
     },
     /**
      * @private
@@ -444,27 +491,10 @@ sAnimations.registry.WebsiteSale = sAnimations.Class.extend({
      * @private
      * @param {Event} ev
      */
-    _onClickAddCartJSON: function (ev) { // hack to add and remove from cart with json
-        ev.preventDefault();
-        var $link = $(ev.currentTarget);
-        var $input = $link.closest('.input-group').find("input");
-        var product_id = +$input.closest('*:has(input[name="product_id"])').find('input[name="product_id"]').val();
-        var min = parseFloat($input.data("min") || 0);
-        var max = parseFloat($input.data("max") || Infinity);
-        var quantity = ($link.has(".fa-minus").length ? -1 : 1) + parseFloat($input.val() || 0, 10);
-        var new_qty = quantity > min ? (quantity < max ? quantity : max) : min;
-        // if they are more of one input for this product (eg: option modal)
-        $('input[name="'+$input.attr("name")+'"]').add($input).filter(function () {
-            var $prod = $(this).closest('*:has(input[name="product_id"])');
-            return !$prod.length || +$prod.find('input[name="product_id"]').val() === product_id;
-        }).val(new_qty).change();
-        return false;
-    },
-    /**
-     * @private
-     * @param {Event} ev
-     */
-    _onClickSubmit: function (ev) {
+    _onClickSubmit: function (ev, forceSubmit) {
+        if ($(ev.currentTarget).is('#add_to_cart, #products_grid .a-submit') && !forceSubmit) {
+            return;
+        }
         var $aSubmit = $(ev.currentTarget);
         if (!ev.isDefaultPrevented() && !$aSubmit.is(".disabled")) {
             ev.preventDefault();
@@ -521,76 +551,6 @@ sAnimations.registry.WebsiteSale = sAnimations.Class.extend({
      * @private
      * @param {Event} ev
      */
-    _onChangeVariant: function (ev) {
-        var $parent = $(ev.target).closest('.js_product');
-        var $ul = $parent.find('.js_add_cart_variants');
-        var $product_id = $parent.find('.product_id').first();
-        var $price = $parent.find(".oe_price:first .oe_currency_value");
-        var $default_price = $parent.find(".oe_default_price:first .oe_currency_value");
-        var $optional_price = $parent.find(".oe_optional:first .oe_currency_value");
-        var variant_ids = $ul.data("attribute_value_ids");
-        var values = [];
-        var unchanged_values = $parent.find('div.oe_unchanged_value_ids').data('unchanged_value_ids') || [];
-
-        _.each($parent.find('input.js_variant_change:checked, select.js_variant_change'), function (el) {
-            values.push(+$(el).val());
-        });
-        values = values.concat(unchanged_values);
-        var list_variant_id = parseInt($parent.find('input.js_product_change:checked').val());
-
-        $parent.find("label").removeClass("text-muted css_not_available");
-
-        var product_id = false;
-        for (var k in variant_ids) {
-            if (_.isEmpty(_.difference(variant_ids[k][1], values)) || variant_ids[k][0] === list_variant_id) {
-                $price.html(this._priceToStr(variant_ids[k][2]));
-                $default_price.html(this._priceToStr(variant_ids[k][3]));
-                if (variant_ids[k][3]-variant_ids[k][2]>0.01) {
-                    $default_price.closest('.oe_website_sale').addClass("discount");
-                    $optional_price.closest('.oe_optional').show().css('text-decoration', 'line-through');
-                    $default_price.parent().removeClass('d-none');
-                } else {
-                    $optional_price.closest('.oe_optional').hide();
-                    $default_price.parent().addClass('d-none');
-                }
-                product_id = variant_ids[k][0];
-                this._updateProductImage($(ev.currentTarget).closest('tr.js_product, .oe_website_sale'), product_id);
-                break;
-            }
-        }
-
-        _.each($parent.find("input.js_variant_change:radio, select.js_variant_change"), function (elem) {
-            var $input = $(elem);
-            var id = +$input.val();
-            var values = [id];
-
-            _.each($parent.find("ul:not(:has(input.js_variant_change[value='" + id + "'])) input.js_variant_change:checked, select.js_variant_change"), function (elem) {
-                values.push(+$(elem).val());
-            });
-
-            for (var k in variant_ids) {
-                if (!_.difference(values, variant_ids[k][1]).length) {
-                    return;
-                }
-            }
-            $input.closest("label").addClass("css_not_available");
-            $input.find("option[value='" + id + "']").addClass("css_not_available");
-        });
-
-        if (product_id) {
-            $parent.removeClass("css_not_available");
-            $product_id.val(product_id);
-            $parent.find("#add_to_cart").removeClass("disabled");
-        } else {
-            $parent.addClass("css_not_available");
-            $product_id.val(0);
-            $parent.find("#add_to_cart").addClass("disabled");
-        }
-    },
-    /**
-     * @private
-     * @param {Event} ev
-     */
     _onClickShowCoupon: function (ev) {
         $(ev.currentTarget).hide();
         $('.coupon_form').removeClass('d-none');
@@ -634,7 +594,7 @@ sAnimations.registry.WebsiteSale = sAnimations.Class.extend({
      */
     _onToggleSummary: function () {
         $('.toggle_summary_div').toggleClass('d-none');
-        $('.toggle_summary_div').removeClass('d-none d-xl-block');
+        $('.toggle_summary_div').removeClass('d-xl-block');
     },
 });
 
@@ -666,7 +626,7 @@ sAnimations.registry.websiteSaleCart = sAnimations.Class.extend({
         $new.removeClass('js_change_shipping');
         $new.addClass('border_primary');
 
-        var $form = $(ev.currentTarget).parent('div.one_kanban').find('form.hide');
+        var $form = $(ev.currentTarget).parent('div.one_kanban').find('form.d-none');
         $.post($form.attr('action'), $form.serialize()+'&xhr=1');
     },
     /**

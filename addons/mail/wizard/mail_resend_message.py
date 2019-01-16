@@ -68,7 +68,7 @@ class MailResendMessage(models.TransientModel):
                 rdata = []
                 for pid, cid, active, pshare, ctype, notif, groups in self.env['mail.followers']._get_recipient_data(None, False, pids=to_send.ids):
                     if pid and notif == 'email' or not notif:
-                        pdata = {'id': pid, 'share': pshare, 'active': active, 'notif': 'email', 'groups': groups}
+                        pdata = {'id': pid, 'share': pshare, 'active': active, 'notif': 'email', 'groups': groups or []}
                         if not pshare and notif:  # has an user and is not shared, is therefore user
                             rdata.append(dict(pdata, type='user'))
                         elif pshare and notif:  # has an user and is shared, is therefore portal
@@ -101,8 +101,8 @@ class PartnerResend(models.TransientModel):
     _description = 'Partner with additionnal information for mail resend'
 
     partner_id = fields.Many2one('res.partner', string='Partner', required=True, ondelete='cascade')
-    name = fields.Char(related="partner_id.name", related_sudo=False)
-    email = fields.Char(related="partner_id.email", related_sudo=False)
+    name = fields.Char(related="partner_id.name", related_sudo=False, readonly=False)
+    email = fields.Char(related="partner_id.email", related_sudo=False, readonly=False)
     resend = fields.Boolean(string="Send Again", default=True)
     resend_wizard_id = fields.Many2one('mail.resend.message', string="Resend wizard")
     message = fields.Char(string="Help message")

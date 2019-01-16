@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import models
-from odoo.tools import mute_logger, pycompat
+from odoo.tools import mute_logger
 from odoo.tests import common
 from odoo.exceptions import AccessError
 
@@ -69,8 +69,8 @@ class TestAPI(common.TransactionCase):
         self.cr.execute("SELECT COUNT(*) FROM res_partner WHERE active")
         count1 = self.cr.fetchone()[0]
         count2 = self.env['res.partner'].search([], count=True)
-        self.assertIsInstance(count1, pycompat.integer_types)
-        self.assertIsInstance(count2, pycompat.integer_types)
+        self.assertIsInstance(count1, int)
+        self.assertIsInstance(count2, int)
         self.assertEqual(count1, count2)
 
     @mute_logger('odoo.models')
@@ -366,6 +366,31 @@ class TestAPI(common.TransactionCase):
         same_prefetch(empty, empty.country_id)
         same_prefetch(empty, empty.bank_ids)
         same_prefetch(empty, empty.category_id)
+
+    @mute_logger('odoo.models')
+    def test_60_prefetch_read(self):
+        """ Check that reading a field computes it on self only. """
+        Partner = self.env['res.partner']
+        field = type(Partner).company_type
+        self.assertTrue(field.compute and not field.store)
+
+        partner1 = Partner.create({'name': 'Foo'})
+        partner2 = Partner.create({'name': 'Bar', 'parent_id': partner1.id})
+        self.assertEqual(partner1.child_ids, partner2)
+
+        # reading partner1 should not prefetch 'company_type' on partner2
+        self.env.clear()
+        partner1 = partner1.with_prefetch()
+        partner1.read(['company_type'])
+        self.assertIn('company_type', partner1._cache)
+        self.assertNotIn('company_type', partner2._cache)
+
+        # reading partner1 should not prefetch 'company_type' on partner2
+        self.env.clear()
+        partner1 = partner1.with_prefetch()
+        partner1.read(['child_ids', 'company_type'])
+        self.assertIn('company_type', partner1._cache)
+        self.assertNotIn('company_type', partner2._cache)
 
     @mute_logger('odoo.models')
     def test_70_one(self):

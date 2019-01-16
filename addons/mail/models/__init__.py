@@ -15,6 +15,7 @@ from . import mail_thread
 # mail.thread behaviour when imported below.
 from . import xopgi  # noqa
 
+from . import mail_address_mixin
 from . import mail_blacklist
 from . import mail_channel
 from . import mail_template

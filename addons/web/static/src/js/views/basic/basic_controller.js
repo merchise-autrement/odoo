@@ -36,8 +36,8 @@ var BasicController = AbstractController.extend(FieldManagerMixin, {
         this.confirmOnDelete = params.confirmOnDelete;
         this.hasButtons = params.hasButtons;
         FieldManagerMixin.init.call(this, this.model);
-        this.handle = params.initialState.id;
         this.mode = params.mode || 'readonly';
+        this.handle = this.initialState.id;
     },
     /**
      * @override
@@ -201,6 +201,18 @@ var BasicController = AbstractController.extend(FieldManagerMixin, {
             self._updatePager();
         });
     },
+    /**
+     * @override
+     */
+    reload: function (params) {
+        if (params && params.controllerState) {
+            if (params.controllerState.currentId) {
+                params.currentId = params.controllerState.currentId;
+            }
+            params.ids = params.controllerState.resIds;
+        }
+        return this._super.apply(this, arguments);
+    },
 
     //--------------------------------------------------------------------------
     // Private
@@ -264,7 +276,9 @@ var BasicController = AbstractController.extend(FieldManagerMixin, {
                 resIDs: record.res_ids,
             },
             on_success: def.resolve.bind(def),
-            on_fail: def.reject.bind(def),
+            on_fail: function () {
+                self.update({}, {reload: false}).always(def.reject.bind(def));
+            },
             on_closed: reload,
         });
         return this.alive(def);
@@ -365,6 +379,20 @@ var BasicController = AbstractController.extend(FieldManagerMixin, {
         if (this.$buttons) {
             this.$buttons.find('button').removeAttr('disabled');
         }
+    },
+    /**
+     * Override to add the current record ID (currentId) and the list of ids
+     * (resIds) in the current dataPoint to the exported state.
+     *
+     * @override
+     */
+    exportState: function () {
+        var state = this._super.apply(this, arguments);
+        var env = this.model.get(this.handle, {env: true});
+        return _.extend(state, {
+            currentId: env.currentId,
+            resIds: env.ids,
+        });
     },
     /**
      * Returns the new sidebar env
@@ -485,7 +513,6 @@ var BasicController = AbstractController.extend(FieldManagerMixin, {
             var sidebarEnv = this._getSidebarEnv();
             this.sidebar.updateEnv(sidebarEnv);
         }
-        this.trigger_up('env_updated', {controllerID: this.controllerID, env: env});
     },
     /**
      * Helper method, to make sure the information displayed by the pager is up
@@ -554,16 +581,16 @@ var BasicController = AbstractController.extend(FieldManagerMixin, {
      *
      * @todo: rename db_id into handle
      *
-     * @param {OdooEvent} event
-     * @param {Object} event.data
-     * @param {string} [event.data.db_id] handle of the data to reload and
+     * @param {OdooEvent} ev
+     * @param {Object} ev.data
+     * @param {string} [ev.data.db_id] handle of the data to reload and
      *   re-render (reload the whole form by default)
-     * @param {string[]} [event.data.fieldNames] list of the record's fields to
+     * @param {string[]} [ev.data.fieldNames] list of the record's fields to
      *   reload
      */
-    _onReload: function (event) {
-        event.stopPropagation(); // prevent other controllers from handling this request
-        var data = event && event.data || {};
+    _onReload: function (ev) {
+        ev.stopPropagation(); // prevent other controllers from handling this request
+        var data = ev && ev.data || {};
         var handle = data.db_id;
         if (handle) {
             // reload the relational field given its db_id
@@ -589,28 +616,28 @@ var BasicController = AbstractController.extend(FieldManagerMixin, {
      * performed through the sidebar.
      *
      * @private
-     * @param {OdooEvent} event
+     * @param {OdooEvent} ev
      */
-    _onSidebarDataAsked: function (event) {
+    _onSidebarDataAsked: function (ev) {
         var sidebarEnv = this._getSidebarEnv();
-        event.data.callback(sidebarEnv);
+        ev.data.callback(sidebarEnv);
     },
     /**
      * open the translation view for the current field
      *
      * @private
-     * @param {OdooEvent} event
+     * @param {OdooEvent} ev
      */
-    _onTranslate: function (event) {
-        event.stopPropagation();
+    _onTranslate: function (ev) {
+        ev.stopPropagation();
         var self = this;
-        var record = this.model.get(event.data.id, {raw: true});
+        var record = this.model.get(ev.data.id, {raw: true});
         this._rpc({
             route: '/web/dataset/call_button',
             params: {
                 model: 'ir.translation',
                 method: 'translate_fields',
-                args: [record.model, record.res_id, event.data.fieldName, record.getContext()],
+                args: [record.model, record.res_id, ev.data.fieldName, record.getContext()],
             }
         }).then(function (result) {
             self.do_action(result, {

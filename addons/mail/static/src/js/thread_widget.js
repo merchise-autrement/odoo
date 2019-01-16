@@ -34,6 +34,7 @@ var ThreadWidget = Widget.extend({
         'click .o_thread_show_more': '_onClickShowMore',
         'click .o_attachment_download': '_onAttachmentDownload',
         'click .o_attachment_view': '_onAttachmentView',
+        'click .o_attachment_delete_cross': '_onDeleteAttachment',
         'click .o_thread_message_needaction': '_onClickMessageNeedaction',
         'click .o_thread_message_star': '_onClickMessageStar',
         'click .o_thread_message_reply': '_onClickMessageReply',
@@ -58,6 +59,7 @@ var ThreadWidget = Widget.extend({
         this._enabledOptions = _.defaults(options || {}, {
             displayOrder: ORDER.ASC,
             displayMarkAsRead: true,
+            displayModerationCommands: false,
             displayStars: true,
             displayDocumentLinks: true,
             displayAvatars: true,
@@ -70,6 +72,7 @@ var ThreadWidget = Widget.extend({
         this._disabledOptions = {
             displayOrder: this._enabledOptions.displayOrder,
             displayMarkAsRead: false,
+            displayModerationCommands: false,
             displayStars: false,
             displayDocumentLinks: false,
             displayAvatars: this._enabledOptions.displayAvatars,
@@ -81,6 +84,9 @@ var ThreadWidget = Widget.extend({
         this._selectedMessageID = null;
         this._currentThreadID = null;
         this._messageMailPopover = null;
+        this._messageSeenPopover = null;
+        // used to track popover IDs to destroy on re-rendering of popovers
+        this._openedSeenPopoverIDs = [];
     },
     /**
      * The message mail popover may still be shown at this moment. If we do not
@@ -93,6 +99,10 @@ var ThreadWidget = Widget.extend({
         if (this._messageMailPopover) {
             this._messageMailPopover.popover('hide');
         }
+        if (this._messageSeenPopover) {
+            this._messageSeenPopover.popover('hide');
+        }
+        this._destroyOpenSeenPopoverIDs();
     },
     /**
      * @param {mail.model.AbstractThread} thread the thread to render.
@@ -183,12 +193,6 @@ var ThreadWidget = Widget.extend({
             dateFormat: time.getLangDatetimeFormat(),
         }));
 
-        // must be after mail.widget.Thread rendering, so that there is the
-        // DOM element for the 'is typing' notification bar
-        if (thread.hasTypingNotification()) {
-            this.renderTypingNotificationBar(thread);
-        }
-
         _.each(messages, function (message) {
             var $message = self.$('.o_thread_message[data-message-id="'+ message.getID() +'"]');
             $message.find('.o_mail_timestamp').data('date', message.getDate());
@@ -207,6 +211,9 @@ var ThreadWidget = Widget.extend({
         }
 
         this._renderMessageMailPopover(messages);
+        if (thread.hasSeenFeature()) {
+            this._renderMessageSeenPopover(thread, messages);
+        }
     },
 
     //--------------------------------------------------------------------------
@@ -252,28 +259,6 @@ var ThreadWidget = Widget.extend({
         return done;
     },
     /**
-     * Render the 'is typing...' text on the typing notification bar of the
-     * thread. This is called when there is a change in the list of users
-     * typing something on this thread.
-     *
-     * @param {mail.model.AbstractThread} thread with ThreadTypingMixin
-     */
-    renderTypingNotificationBar: function (thread) {
-        if (this._currentThreadID === thread.getID()) {
-            var shouldScrollToBottomAfterRendering = this.isAtBottom();
-
-            // typing notification bar rendering
-            var $typingBar = this.$('.o_thread_typing_notification_bar');
-            var text = thread.getTypingMembersToText();
-            $typingBar.toggleClass('o_hidden', !text); // hide if no text, because of padding
-            $typingBar.text(text);
-
-            if (shouldScrollToBottomAfterRendering) {
-                this.scrollToBottom();
-            }
-        }
-    },
-    /**
      * Scroll to the bottom of the thread
      */
     scrollToBottom: function () {
@@ -282,12 +267,12 @@ var ThreadWidget = Widget.extend({
     /**
      * Scrolls the thread to a given message
      *
-     * @param {integer} options.messageID the ID of the message to scroll to
+     * @param {integer} options.msgID the ID of the message to scroll to
      * @param {integer} [options.duration]
      * @param {boolean} [options.onlyIfNecessary]
      */
     scrollToMessage: function (options) {
-        var $target = this.$('.o_thread_message[data-message-id="' + options.messageID + '"]');
+        var $target = this.$('.o_thread_message[data-message-id="' + options.msgID + '"]');
         if (options.onlyIfNecessary) {
             var delta = $target.parent().height() - $target.height();
             var offset = delta < 0 ?
@@ -335,6 +320,15 @@ var ThreadWidget = Widget.extend({
     // Private
     //--------------------------------------------------------------------------
 
+    /**
+     * @private
+     */
+    _destroyOpenSeenPopoverIDs: function () {
+        _.each(this._openedSeenPopoverIDs, function (popoverID) {
+            $('#' + popoverID).remove();
+        });
+        this._openedSeenPopoverIDs = [];
+    },
     /**
      * Modifies $element to add the 'read more/read less' functionality
      * All element nodes with 'data-o-mail-quote' attribute are concerned.
@@ -418,6 +412,18 @@ var ThreadWidget = Widget.extend({
         });
     },
     /**
+    * @private
+    * @param {MouseEvent} ev
+    */
+    _onDeleteAttachment: function (ev) {
+        ev.stopPropagation();
+        var $target = $(ev.currentTarget);
+        this.trigger_up('delete_attachment', {
+            attachmentId: $target.data('id'),
+            attachmentName: $target.data('name')
+        });
+     },
+    /**
      * @private
      * @param {Object} options
      * @param {integer} [options.channelID]
@@ -444,6 +450,9 @@ var ThreadWidget = Widget.extend({
         if (this._messageMailPopover) {
             this._messageMailPopover.popover('hide');
         }
+        if (!this.$('.o_thread_tooltip').length) {
+            return;
+        }
         this._messageMailPopover = this.$('.o_thread_tooltip').popover({
             html: true,
             boundary: 'viewport',
@@ -457,6 +466,46 @@ var ThreadWidget = Widget.extend({
                 });
                 return QWeb.render('mail.widget.Thread.Message.MailTooltip', {
                     data: message.getCustomerEmailData()
+                });
+            },
+        });
+    },
+    /**
+     * Render the popover when mouse hovering on the seen icon of a message
+     * in the thread. Only seen icons in non-squashed message have popover,
+     * because squashed messages hides this icon on message mouseover.
+     *
+     * @private
+     * @param {mail.model.AbstractThread} thread with thread seen mixin,
+     *   @see {mail.model.ThreadSeenMixin}
+     * @param {mail.model.Message[]} messages list of messages in the
+     *   rendered thread.
+     */
+    _renderMessageSeenPopover: function (thread, messages) {
+        var self = this;
+        this._destroyOpenSeenPopoverIDs();
+        if (this._messageSeenPopover) {
+            this._messageSeenPopover.popover('hide');
+        }
+        if (!this.$('.o_thread_message_core .o_mail_thread_message_seen_icon').length) {
+            return;
+        }
+        this._messageSeenPopover = this.$('.o_thread_message_core .o_mail_thread_message_seen_icon').popover({
+            html: true,
+            boundary: 'viewport',
+            placement: 'auto',
+            trigger: 'hover',
+            offset: '0, 1',
+            content: function () {
+                var $this = $(this);
+                self._openedSeenPopoverIDs.push($this.attr('aria-describedby'));
+                var messageID = $this.data('message-id');
+                var message = _.find(messages, function (message) {
+                    return message.getID() === messageID;
+                });
+                return QWeb.render('mail.widget.Thread.Message.SeenIconPopoverContent', {
+                    thread: thread,
+                    message: message,
                 });
             },
         });

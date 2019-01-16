@@ -2,7 +2,6 @@ odoo.define('base_import.import', function (require) {
 "use strict";
 
 var AbstractAction = require('web.AbstractAction');
-var ControlPanelMixin = require('web.ControlPanelMixin');
 var core = require('web.core');
 var session = require('web.session');
 var time = require('web.time');
@@ -72,8 +71,9 @@ function dataFilteredQuery(q) {
     q.callback({results: suggestions});
 }
 
-var DataImport = AbstractAction.extend(ControlPanelMixin, {
-    template: 'ImportView',
+var DataImport = AbstractAction.extend({
+    hasControlPanel: true,
+    contentTemplate: 'ImportView',
     opts: [
         {name: 'encoding', label: _lt("Encoding:"), value: ''},
         {name: 'separator', label: _lt("Separator:"), value: ''},
@@ -137,7 +137,7 @@ var DataImport = AbstractAction.extend(ControlPanelMixin, {
         // import object id
         this.id = null;
         this.session = session;
-        action.display_name = _t('Import a File'); // Displayed in the breadcrumbs
+        this._title = _t('Import a File'); // Displayed in the breadcrumbs
         this.do_not_change_match = false;
     },
     /**
@@ -145,16 +145,18 @@ var DataImport = AbstractAction.extend(ControlPanelMixin, {
      */
     willStart: function () {
         var self = this;
-        return this._rpc({
+        var def = this._rpc({
             model: this.res_model,
             method: 'get_import_templates',
             context: this.parent_context,
         }).then(function (result) {
             self.importTemplates = result;
         });
+        return $.when(this._super.apply(this, arguments), def);
     },
     start: function () {
         var self = this;
+        this.$form = this.$('form');
         this.setup_encoding_picker();
         this.setup_separator_picker();
         this.setup_float_format_picker();
@@ -170,7 +172,7 @@ var DataImport = AbstractAction.extend(ControlPanelMixin, {
                 var status = {
                     cp_content: {$buttons: self.$buttons},
                 };
-                self.update_control_panel(status);
+                self.updateControlPanel(status);
             })
         );
     },
@@ -189,7 +191,7 @@ var DataImport = AbstractAction.extend(ControlPanelMixin, {
         this.$buttons.filter('.o_import_import').on('click', this.import.bind(this));
         this.$buttons.filter('.o_import_file_reload').on('click', this.loaded_file.bind(this));
         this.$buttons.filter('.oe_import_file').on('click', function () {
-            self.$('.oe_import_file').click();
+            self.$('.o_content .oe_import_file').click();
         });
         this.$buttons.filter('.o_import_cancel').on('click', function(e) {
             e.preventDefault();
@@ -318,25 +320,25 @@ var DataImport = AbstractAction.extend(ControlPanelMixin, {
         this.$('.oe_import_date_format').select2('val', '');
         this.$('.oe_import_datetime_format').val('');
 
-        this.$el.removeClass('oe_import_preview oe_import_error');
+        this.$form.removeClass('oe_import_preview oe_import_error');
         var import_toggle = false;
         var file = this.$('input.oe_import_file')[0].files[0];
         // some platforms send text/csv, application/csv, or other things if Excel is prevent
         if ((file.type && _.last(file.type.split('/')) === "csv") || ( _.last(file.name.split('.')) === "csv")) {
             import_toggle = true;
         }
-        this.$el.find('.oe_import_box').toggle(import_toggle);
-        jsonp(this.$el, {
+        this.$form.find('.oe_import_box').toggle(import_toggle);
+        jsonp(this.$form, {
             url: '/base_import/set_file'
         }, this.proxy('settings_changed'));
     },
     onpreviewing: function () {
         var self = this;
         this.$buttons.filter('.o_import_import, .o_import_validate, .o_import_file_reload').addClass('d-none');
-        this.$el.addClass('oe_import_with_file');
+        this.$form.addClass('oe_import_with_file');
         // TODO: test that write // succeeded?
-        this.$el.removeClass('oe_import_preview_error oe_import_error');
-        this.$el.toggleClass(
+        this.$form.removeClass('oe_import_preview_error oe_import_error');
+        this.$form.toggleClass(
             'oe_import_noheaders text-muted',
             !this.$('input.oe_import_has_header').prop('checked'));
         this._rpc({
@@ -352,9 +354,9 @@ var DataImport = AbstractAction.extend(ControlPanelMixin, {
     onpreview_error: function (event, from, to, result) {
         this.$('.oe_import_options').show();
         this.$buttons.filter('.o_import_file_reload').removeClass('d-none');
-        this.$el.addClass('oe_import_preview_error oe_import_error');
-        this.$el.find('.oe_import_box, .oe_import_with_file').removeClass('d-none');
-        this.$el.find('.o_view_nocontent').addClass('d-none');
+        this.$form.addClass('oe_import_preview_error oe_import_error');
+        this.$form.find('.oe_import_box, .oe_import_with_file').removeClass('d-none');
+        this.$form.find('.o_view_nocontent').addClass('d-none');
         this.$('.oe_import_error_report').html(
                 QWeb.render('ImportView.preview.error', result));
     },
@@ -365,9 +367,9 @@ var DataImport = AbstractAction.extend(ControlPanelMixin, {
             .removeClass('btn-primary').addClass('btn-secondary')
             .blur();
         this.$buttons.filter('.o_import_import, .o_import_validate, .o_import_file_reload').removeClass('d-none');
-        this.$el.find('.oe_import_box, .oe_import_with_file').removeClass('d-none');
-        this.$el.find('.o_view_nocontent').addClass('d-none');
-        this.$el.addClass('oe_import_preview');
+        this.$form.find('.oe_import_box, .oe_import_with_file').removeClass('d-none');
+        this.$form.find('.o_view_nocontent').addClass('d-none');
+        this.$form.addClass('oe_import_preview');
         this.$('input.oe_import_advanced_mode').prop('checked', result.advanced_mode);
         this.$('.oe_import_grid').html(QWeb.render('ImportView.preview', result));
 
@@ -582,7 +584,8 @@ var DataImport = AbstractAction.extend(ControlPanelMixin, {
                         msg = _t("An unknown issue occurred during import (possibly lost connection, data limit exceeded or memory limits exceeded). Please retry in case the issue is transient. If the issue still occurs, try to split the file rather than import it at once.");
                     }
                 } else {
-                    msg = error.data.arguments ? error.data.arguments[1] : error.message;
+                    msg = (error.data.arguments && error.data.arguments[1] || error.data.arguments[0])
+                        || error.message;
                 }
 
                 return $.when({'messages': [{
@@ -630,7 +633,7 @@ var DataImport = AbstractAction.extend(ControlPanelMixin, {
         // offset more if header
         if (this.import_options().headers) { offset += 1; }
 
-        this.$el.addClass('oe_import_error');
+        this.$form.addClass('oe_import_error');
         this.$('.oe_import_error_report').html(
             QWeb.render('ImportView.error', {
                 errors: _(message).groupBy('message'),

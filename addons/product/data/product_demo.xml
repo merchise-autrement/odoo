@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
+        <!-- We want to activate product variant by default for easier demoing. -->
+        <record id="base.group_user" model="res.groups">
+            <field name="implied_ids" eval="[(4, ref('product.group_product_variant'))]"/>
+        </record>
 
         <record id="product_category_2" model="product.category">
             <field name="parent_id" ref="product.product_category_all"/>
@@ -124,26 +128,32 @@
 
         <record id="product_attribute_1" model="product.attribute">
             <field name="name">Legs</field>
+            <field name="sequence">1</field>
         </record>
         <record id="product_attribute_value_1" model="product.attribute.value">
             <field name="name">Steel</field>
             <field name="attribute_id" ref="product_attribute_1"/>
+            <field name="sequence">1</field>
         </record>
         <record id="product_attribute_value_2" model="product.attribute.value">
             <field name="name">Aluminium</field>
             <field name="attribute_id" ref="product_attribute_1"/>
+            <field name="sequence">2</field>
         </record>
 
         <record id="product_attribute_2" model="product.attribute">
             <field name="name">Color</field>
+            <field name="sequence">2</field>
         </record>
         <record id="product_attribute_value_3" model="product.attribute.value">
             <field name="name">White</field>
             <field name="attribute_id" ref="product_attribute_2"/>
+            <field name="sequence">1</field>
         </record>
         <record id="product_attribute_value_4" model="product.attribute.value">
             <field name="name">Black</field>
             <field name="attribute_id" ref="product_attribute_2"/>
+            <field name="sequence">2</field>
         </record>
 
         <record id="product_attribute_3" model="product.attribute">
@@ -197,29 +207,19 @@
             <field name="image" type="base64" file="product/static/img/table01.png"/>
         </record>
 
-        <record id="product_attribute_line_1" model="product.attribute.line">
+        <record id="product_template_attribute_line_1" model="product.template.attribute.line">
             <field name="product_tmpl_id" ref="product_product_4_product_template"/>
             <field name="attribute_id" ref="product_attribute_1"/>
             <field name="value_ids" eval="[(6,0,[ref('product.product_attribute_value_1'), ref('product.product_attribute_value_2')])]"/>
         </record>
-        <record id="product_attribute_line_2" model="product.attribute.line">
+        <record id="product_template_attribute_line_2" model="product.template.attribute.line">
             <field name="product_tmpl_id" ref="product_product_4_product_template"/>
             <field name="attribute_id" ref="product_attribute_2"/>
             <field name="value_ids" eval="[(6,0,[ref('product.product_attribute_value_3'), ref('product.product_attribute_value_4')])]"/>
         </record>
 
         <record id="product_product_4_product_template" model="product.template">
-            <field name="attribute_line_ids" eval="[(6,0,[ref('product.product_attribute_line_1'), ref('product.product_attribute_line_2')])]"/>
-        </record>
-
-        <record id="product_product_4d" model="product.product">
-            <field name="active" eval="False"/>
-        </record>
-
-        <record id="product_attribute_price_1" model="product.attribute.price">
-            <field name="product_tmpl_id" ref="product_product_4_product_template"/>
-            <field name="value_id" ref="product_attribute_value_2"/>
-            <field name="price_extra">50.40</field>
+            <field name="attribute_line_ids" eval="[(6,0,[ref('product.product_template_attribute_line_1'), ref('product.product_template_attribute_line_2')])]"/>
         </record>
 
         <record id="product_product_5" model="product.product">
@@ -315,19 +315,39 @@
             <field name="attribute_value_ids" eval="[(6,0,[ref('product.product_attribute_value_2')])]"/>
         </record>
 
-        <record id="product_attribute_line_4" model="product.attribute.line">
+        <record id="product_template_attribute_line_4" model="product.template.attribute.line">
             <field name="product_tmpl_id" ref="product_product_11_product_template"/>
             <field name="attribute_id" ref="product_attribute_1"/>
             <field name="value_ids" eval="[(6,0,[ref('product.product_attribute_value_1'), ref('product.product_attribute_value_2')])]"/>
         </record>
 
         <record id="product_product_11_product_template" model="product.template">
-            <field name="attribute_line_ids" eval="[(6,0,[ref('product.product_attribute_line_4')])]"/>
+            <field name="attribute_line_ids" eval="[(6,0,[ref('product.product_template_attribute_line_4')])]"/>
         </record>
 
-        <record id="product_attribute_price_2" model="product.attribute.price">
-            <field name="product_tmpl_id" ref="product_product_11_product_template"/>
-            <field name="value_id" ref="product_attribute_value_2"/>
+        <!--
+        Handle automatically created product.template.attribute.value.
+        Meaning that the combination between the "customizable desk" and the attribute value "black" will be materialized
+        into a "product.template.attribute.value" with the ref "product.product_template_attribute_value_1".
+        This will allow setting fields like "price_extra" and "exclude_for"
+         -->
+        <function model="ir.model.data" name="_update_xmlids">
+            <value model="base" eval="[{
+                'xml_id': 'product.product_template_attribute_value_1',
+                'record': obj().env.ref('product.product_template_attribute_line_1').product_template_value_ids[1],
+                'noupdate': True,
+            }, {
+                'xml_id': 'product.product_template_attribute_value_2',
+                'record': obj().env.ref('product.product_template_attribute_line_4').product_template_value_ids[1],
+                'noupdate': True,
+            }]"/>
+        </function>
+
+        <record id="product_template_attribute_value_1" model="product.template.attribute.value">
+            <field name="price_extra">50.40</field>
+        </record>
+
+        <record id="product_template_attribute_value_2" model="product.template.attribute.value">
             <field name="price_extra">6.40</field>
         </record>
 

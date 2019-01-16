@@ -6,8 +6,8 @@ from odoo import api, fields, models, tools
 class MaintenanceEquipment(models.Model):
     _inherit = 'maintenance.equipment'
 
-    employee_id = fields.Many2one('hr.employee', string='Assigned to Employee', track_visibility='onchange')
-    department_id = fields.Many2one('hr.department', string='Assigned to Department', track_visibility='onchange')
+    employee_id = fields.Many2one('hr.employee', string='Assigned to Employee', tracking=True)
+    department_id = fields.Many2one('hr.department', string='Assigned to Department', tracking=True)
     equipment_assign_to = fields.Selection(
         [('department', 'Department'), ('employee', 'Employee'), ('other', 'Other')],
         string='Used By',
@@ -65,7 +65,7 @@ class MaintenanceEquipment(models.Model):
     def _track_subtype(self, init_values):
         self.ensure_one()
         if ('employee_id' in init_values and self.employee_id) or ('department_id' in init_values and self.department_id):
-            return 'maintenance.mt_mat_assign'
+            return self.env.ref('maintenance.mt_mat_assign')
         return super(MaintenanceEquipment, self)._track_subtype(init_values)
 
 

@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server saas~11.5\n"
+"Project-Id-Version: Odoo Server saas~12.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-18 09:48+0000\n"
-"PO-Revision-Date: 2018-09-18 09:48+0000\n"
+"POT-Creation-Date: 2018-12-24 10:57+0000\n"
+"PO-Revision-Date: 2018-12-24 10:57+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -21,14 +21,24 @@ msgid "<span class=\"o_stat_text\">Purchase Orders</span>"
 msgstr ""
 
 #. module: purchase_stock
+#: model:ir.model.fields,help:purchase_stock.field_purchase_order_line__qty_received_method
+msgid "According to product configuration, the recieved quantity can be automatically computed by mechanism :\n"
+"  - Manual: the quantity is set manually on the line\n"
+"  - Stock Moves: the quantity comes from confirmed pickings\n"
+""
+msgstr ""
+
+#. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_stock_rule__action
 msgid "Action"
 msgstr ""
 
 #. module: purchase_stock
+#: code:addons/purchase_stock/models/stock.py:117
 #: model_terms:ir.ui.view,arch_db:purchase_stock.purchase_report_stock_rule
 #: model:stock.location.route,name:purchase_stock.route_warehouse0_buy
 #: selection:stock.rule,action:0
+#, python-format
 msgid "Buy"
 msgstr ""
 
@@ -43,6 +53,11 @@ msgid "Buy to Resupply"
 msgstr ""
 
 #. module: purchase_stock
+#: model:ir.model,name:purchase_stock.model_res_config_settings
+msgid "Config Settings"
+msgstr ""
+
+#. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_stock_move__created_purchase_line_id
 msgid "Created Purchase Order Line"
 msgstr ""
@@ -54,7 +69,7 @@ msgstr ""
 
 #. module: purchase_stock
 #: model:ir.model.fields,help:purchase_stock.field_product_template__route_ids
-msgid "Depending on the modules installed, this will allow you to define the route of the product: whether it will be bought, manufactured, MTO/MTS,..."
+msgid "Depending on the modules installed, this will allow you to define the route of the product: whether it will be bought, manufactured, replenished on order, etc."
 msgstr ""
 
 #. module: purchase_stock
@@ -125,6 +140,11 @@ msgstr ""
 #. module: purchase_stock
 #: model:ir.model,name:purchase_stock.model_stock_production_lot
 msgid "Lot/Serial"
+msgstr ""
+
+#. module: purchase_stock
+#: selection:purchase.order.line,qty_received_method:0
+msgid "Manual"
 msgstr ""
 
 #. module: purchase_stock
@@ -206,13 +226,13 @@ msgid "Purchase Orders"
 msgstr ""
 
 #. module: purchase_stock
-#: model:ir.model.fields,field_description:purchase_stock.field_stock_production_lot__purchase_order_count
-msgid "Purchase order count"
+#: model:ir.model,name:purchase_stock.model_purchase_report
+msgid "Purchase Report"
 msgstr ""
 
 #. module: purchase_stock
-#: model:ir.model,name:purchase_stock.model_purchase_report
-msgid "Purchases Orders"
+#: model:ir.model.fields,field_description:purchase_stock.field_stock_production_lot__purchase_order_count
+msgid "Purchase order count"
 msgstr ""
 
 #. module: purchase_stock
@@ -228,6 +248,11 @@ msgstr ""
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.purchase_order_view_form_inherit
 msgid "Receive Products"
+msgstr ""
+
+#. module: purchase_stock
+#: model:ir.model.fields,field_description:purchase_stock.field_purchase_order_line__qty_received_method
+msgid "Received Qty Method"
 msgstr ""
 
 #. module: purchase_stock
@@ -268,6 +293,7 @@ msgstr ""
 
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.purchase_order_line_view_form_inherit
+#: selection:purchase.order.line,qty_received_method:0
 msgid "Stock Moves"
 msgstr ""
 
@@ -277,12 +303,17 @@ msgid "Stock Rule"
 msgstr ""
 
 #. module: purchase_stock
+#: model:ir.model,name:purchase_stock.model_report_stock_report_stock_rule
+msgid "Stock rule report"
+msgstr ""
+
+#. module: purchase_stock
 #: model:ir.model.fields,help:purchase_stock.field_purchase_order__default_location_dest_id_usage
 msgid "Technical field used to display the Drop Ship Address"
 msgstr ""
 
 #. module: purchase_stock
-#: code:addons/purchase_stock/models/purchase.py:265
+#: code:addons/purchase_stock/models/purchase.py:290
 #, python-format
 msgid "The quantities on your purchase order indicate less than billed. You should ask for a refund. "
 msgstr ""
@@ -332,7 +363,7 @@ msgid "When products are needed in <b>%s</b>, <br/> a request for quotation is c
 msgstr ""
 
 #. module: purchase_stock
-#: code:addons/purchase_stock/models/purchase.py:257
+#: code:addons/purchase_stock/models/purchase.py:282
 #, python-format
 msgid "You cannot decrease the ordered quantity below the received quantity.\n"
 "Create a return first."
@@ -357,15 +388,5 @@ msgstr ""
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.exception_on_po
 msgid "ordered instead of"
-msgstr ""
-
-#. module: purchase_stock
-#: model:ir.model,name:purchase_stock.model_report_stock_report_stock_rule
-msgid "report.stock.report_stock_rule"
-msgstr ""
-
-#. module: purchase_stock
-#: model:ir.model,name:purchase_stock.model_res_config_settings
-msgid "res.config.settings"
 msgstr ""
 

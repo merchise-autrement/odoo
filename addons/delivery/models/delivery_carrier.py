@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 
 class DeliveryCarrier(models.Model):
     _name = 'delivery.carrier'
-    _description = "Carrier"
+    _description = "Delivery Methods"
     _order = 'sequence, id'
 
     ''' A Shipping Provider
@@ -42,7 +42,7 @@ class DeliveryCarrier(models.Model):
     integration_level = fields.Selection([('rate', 'Get Rate'), ('rate_and_ship', 'Get Rate and Create Shipment')], string="Integration Level", default='rate_and_ship', help="Action while validating Delivery Orders")
     prod_environment = fields.Boolean("Environment", help="Set to True if your credentials are certified for production.")
     debug_logging = fields.Boolean('Debug logging', help="Log requests in order to ease debugging")
-    company_id = fields.Many2one('res.company', string='Company', related='product_id.company_id', store=True)
+    company_id = fields.Many2one('res.company', string='Company', related='product_id.company_id', store=True, readonly=False)
     product_id = fields.Many2one('product.product', string='Delivery Product', required=True, ondelete='restrict')
 
     country_ids = fields.Many2many('res.country', 'delivery_carrier_country_rel', 'carrier_id', 'country_id', 'Countries')
@@ -120,7 +120,7 @@ class DeliveryCarrier(models.Model):
         if hasattr(self, '%s_rate_shipment' % self.delivery_type):
             res = getattr(self, '%s_rate_shipment' % self.delivery_type)(order)
             # apply margin on computed price
-            res['price'] = res['price'] * (1.0 + (float(self.margin) / 100.0))
+            res['price'] = float(res['price']) * (1.0 + (float(self.margin) / 100.0))
             # free when order is large enough
             if res['success'] and self.free_over and order._compute_amount_total_without_delivery() >= self.amount:
                 res['warning_message'] = _('Info:\nThe shipping is free because the order amount exceeds %.2f.\n(The actual shipping cost is: %.2f)') % (self.amount, res['price'])
@@ -217,7 +217,7 @@ class DeliveryCarrier(models.Model):
                     'error_message': _('Error: this delivery method is not available for this address.'),
                     'warning_message': False}
         price = self.fixed_price
-        if self.company_id.currency_id.id != order.currency_id.id:
+        if self.company_id and self.company_id.currency_id.id != order.currency_id.id:
             price = self.env['res.currency']._compute(self.company_id.currency_id, order.currency_id, price)
         return {'success': True,
                 'price': price,

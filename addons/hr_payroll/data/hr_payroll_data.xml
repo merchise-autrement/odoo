@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="0">
+
+        <record id="resource.resource_calendar_std" model="resource.calendar">
+            <field name="full_time_required_hours">40</field>
+        </record>
+
+        <record id="resource.resource_calendar_std_35h" model="resource.calendar">
+            <field name="full_time_required_hours">35</field>
+        </record>
+
+        <record id="resource.resource_calendar_std_38h" model="resource.calendar">
+            <field name="full_time_required_hours">38</field>
+        </record>
+
         <record id="contrib_register_employees" model="hr.contribution.register">
             <field name="name">Employees</field>
             <field name="partner_id" eval="False"/>
@@ -89,6 +102,20 @@
             <field name="digits">4</field>
         </record>
 
+        <!-- Benefits Type -->
+
+        <record id="benefit_type_attendance" model="hr.benefit.type">
+            <field name="name">Attendance</field>
+            <field name="color">0</field>
+            <field name="code">WORK100</field>
+        </record>
+
+        <record id="benefit_type_leave" model="hr.benefit.type">
+            <field name="name">Generic Leave</field>
+            <field name="code">LEAVE100</field>
+            <field name="color">3</field>
+            <field name="is_leave">True</field>
+        </record>
 
     </data>
 </odoo>

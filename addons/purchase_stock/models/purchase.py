@@ -221,9 +221,34 @@ class PurchaseOrder(models.Model):
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
+    qty_received_method = fields.Selection(selection_add=[('stock_moves', 'Stock Moves')])
+
     move_ids = fields.One2many('stock.move', 'purchase_line_id', string='Reservation', readonly=True, ondelete='set null', copy=False)
     orderpoint_id = fields.Many2one('stock.warehouse.orderpoint', 'Orderpoint')
     move_dest_ids = fields.One2many('stock.move', 'created_purchase_line_id', 'Downstream Moves')
+
+    @api.multi
+    def _compute_qty_received_method(self):
+        super(PurchaseOrderLine, self)._compute_qty_received_method()
+        for line in self:
+            if line.product_id.type in ['consu', 'product']:
+                line.qty_received_method = 'stock_moves'
+
+    @api.multi
+    @api.depends('move_ids.state', 'move_ids.product_uom_qty', 'move_ids.product_uom')
+    def _compute_qty_received(self):
+        super(PurchaseOrderLine, self)._compute_qty_received()
+        for line in self:
+            if line.qty_received_method == 'stock_moves':
+                total = 0.0
+                for move in line.move_ids:
+                    if move.state == 'done':
+                        if move.location_dest_id.usage == "supplier":
+                            if move.to_refund:
+                                total -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom)
+                        else:
+                            total += move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom)
+                line.qty_received = total
 
     @api.model
     def create(self, values):
@@ -290,7 +315,7 @@ class PurchaseOrderLine(models.Model):
         if line.taxes_id:
             price_unit = line.taxes_id.with_context(round=False).compute_all(
                 price_unit, currency=line.order_id.currency_id, quantity=1.0, product=line.product_id, partner=line.order_id.partner_id
-            )['total_excluded']
+            )['total_void']
         if line.product_uom.id != line.product_id.uom_id.id:
             price_unit *= line.product_uom.factor / line.product_id.uom_id.factor
         if order.currency_id != order.company_id.currency_id:
@@ -334,14 +359,11 @@ class PurchaseOrderLine(models.Model):
         }
         diff_quantity = self.product_qty - qty
         if float_compare(diff_quantity, 0.0,  precision_rounding=self.product_uom.rounding) > 0:
+            po_line_uom = self.product_uom
             quant_uom = self.product_id.uom_id
-            get_param = self.env['ir.config_parameter'].sudo().get_param
-            if self.product_uom.id != quant_uom.id and get_param('stock.propagate_uom') != '1':
-                product_qty = self.product_uom._compute_quantity(diff_quantity, quant_uom, rounding_method='HALF-UP')
-                template['product_uom'] = quant_uom.id
-                template['product_uom_qty'] = product_qty
-            else:
-                template['product_uom_qty'] = diff_quantity
+            product_uom_qty, product_uom = po_line_uom._adjust_uom_quantities(diff_quantity, quant_uom)
+            template['product_uom_qty'] = product_uom_qty
+            template['product_uom'] = product_uom.id
             res.append(template)
         return res
 
@@ -353,18 +375,6 @@ class PurchaseOrderLine(models.Model):
             for val in line._prepare_stock_moves(picking):
                 done += moves.create(val)
         return done
-
-    def _update_received_qty(self):
-        for line in self:
-            total = 0.0
-            for move in line.move_ids:
-                if move.state == 'done':
-                    if move.location_dest_id.usage == "supplier":
-                        if move.to_refund:
-                            total -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom)
-                    else:
-                        total += move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom)
-            line.qty_received = total
 
     def _merge_in_existing_line(self, product_id, product_qty, product_uom, location_id, name, origin, values):
         """ This function purpose is to be override with the purpose to forbide _run_buy  method

@@ -9,11 +9,12 @@ from odoo.exceptions import ValidationError
 
 class AccountAnalyticDistribution(models.Model):
     _name = 'account.analytic.distribution'
+    _description = 'Analytic Account Distribution'
     _rec_name = 'account_id'
 
     account_id = fields.Many2one('account.analytic.account', string='Analytic Account', required=True)
     percentage = fields.Float(string='Percentage', required=True, default=100.0)
-    name = fields.Char(string='Name', related='account_id.name')
+    name = fields.Char(string='Name', related='account_id.name', readonly=False)
     tag_id = fields.Many2one('account.analytic.tag', string="Parent tag", required=True)
 
     _sql_constraints = [
@@ -120,8 +121,8 @@ class AccountAnalyticAccount(models.Model):
             account.credit = data_credit.get(account.id, 0.0)
             account.balance = account.credit - account.debit
 
-    name = fields.Char(string='Analytic Account', index=True, required=True, track_visibility='onchange')
-    code = fields.Char(string='Reference', index=True, track_visibility='onchange')
+    name = fields.Char(string='Analytic Account', index=True, required=True, tracking=True)
+    code = fields.Char(string='Reference', index=True, tracking=True)
     active = fields.Boolean('Active', help="If the active field is set to False, it will allow you to hide the account without removing it.", default=True)
 
     group_id = fields.Many2one('account.analytic.group', string='Group')
@@ -131,7 +132,7 @@ class AccountAnalyticAccount(models.Model):
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.user.company_id)
 
     # use auto_join to speed up name_search call
-    partner_id = fields.Many2one('res.partner', string='Customer', auto_join=True, track_visibility='onchange')
+    partner_id = fields.Many2one('res.partner', string='Customer', auto_join=True, tracking=True)
 
     balance = fields.Monetary(compute='_compute_debit_credit_balance', string='Balance')
     debit = fields.Monetary(compute='_compute_debit_credit_balance', string='Debit')

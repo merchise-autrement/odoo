@@ -143,7 +143,11 @@ var Dialog = Widget.extend({
                     $.when(def).always(self.close.bind(self));
                 }
             });
-            self.$footer.append($button);
+            if (self.technical) {
+                self.$footer.append($button);
+            } else {
+                self.$footer.prepend($button);
+            }
         });
     },
 
@@ -182,10 +186,10 @@ var Dialog = Widget.extend({
             self.$modal.removeAttr("aria-hidden");
             self.$modal.modal('show');
             self._opened.resolve();
+            if (options && options.shouldFocusButtons) {
+                self._onFocusControlButton();
+            }
         });
-        if (options && options.shouldFocusButtons) {
-            self._onFocusControlButton();
-        }
 
         return self;
     },

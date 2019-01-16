@@ -6,10 +6,10 @@ from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
+from odoo.osv import expression
 
 
 class Employee(models.Model):
-
     _inherit = "hr.employee"
 
     manager = fields.Boolean(string='Is a Manager')
@@ -31,6 +31,22 @@ class Employee(models.Model):
         result = dict((data['employee_id'][0], data['employee_id_count']) for data in contract_data)
         for employee in self:
             employee.contracts_count = result.get(employee.id, 0)
+
+    def _get_contracts(self, date_from, date_to):
+        """
+        Returns the contracts of the employee between date_from and date_to
+        """
+        self.ensure_one()
+        # a contract is valid if it ends between the given dates
+        clause_1 = ['&', ('date_end', '<=', date_to), ('date_end', '>=', date_from)]
+        # OR if it starts between the given dates
+        clause_2 = ['&', ('date_start', '<=', date_to), ('date_start', '>=', date_from)]
+        # OR if it starts before the date_from and finish after the date_end (or never finish)
+        clause_3 = ['&', ('date_start', '<=', date_from), '|', ('date_end', '=', False), ('date_end', '>=', date_to)]
+        clause_final = expression.AND([
+            [('employee_id', '=', self.id), ('state', '=', 'open')],
+            expression.OR([clause_1, clause_2, clause_3])])
+        return self.env['hr.contract'].search(clause_final)
 
 
 class ContractType(models.Model):
@@ -64,7 +80,7 @@ class Contract(models.Model):
     resource_calendar_id = fields.Many2one(
         'resource.calendar', 'Working Schedule',
         default=lambda self: self.env['res.company']._company_default_get().resource_calendar_id.id)
-    wage = fields.Monetary('Wage', digits=(16, 2), required=True, track_visibility="onchange", help="Employee's monthly gross wage.")
+    wage = fields.Monetary('Wage', digits=(16, 2), required=True, tracking=True, help="Employee's monthly gross wage.")
     advantages = fields.Text('Advantages')
     notes = fields.Text('Notes')
     state = fields.Selection([
@@ -74,12 +90,12 @@ class Contract(models.Model):
         ('close', 'Expired'),
         ('cancel', 'Cancelled')
     ], string='Status', group_expand='_expand_states',
-       track_visibility='onchange', help='Status of the contract', default='draft')
+       tracking=True, help='Status of the contract', default='draft')
     company_id = fields.Many2one('res.company', default=lambda self: self.env.user.company_id)
     currency_id = fields.Many2one(string="Currency", related='company_id.currency_id', readonly=True)
-    permit_no = fields.Char('Work Permit No', related="employee_id.permit_no")
-    visa_no = fields.Char('Visa No', related="employee_id.visa_no")
-    visa_expire = fields.Date('Visa Expire Date', related="employee_id.visa_expire")
+    permit_no = fields.Char('Work Permit No', related="employee_id.permit_no", readonly=False)
+    visa_no = fields.Char('Visa No', related="employee_id.visa_no", readonly=False)
+    visa_expire = fields.Date('Visa Expire Date', related="employee_id.visa_expire", readonly=False)
     reported_to_secretariat = fields.Boolean('Social Secretariat',
         help='Green this button when the contract information has been transfered to the social secretariat.')
 
@@ -128,7 +144,7 @@ class Contract(models.Model):
     def _track_subtype(self, init_values):
         self.ensure_one()
         if 'state' in init_values and self.state == 'pending':
-            return 'hr_contract.mt_contract_pending'
+            return self.env.ref('hr_contract.mt_contract_pending')
         elif 'state' in init_values and self.state == 'close':
-            return 'hr_contract.mt_contract_close'
+            return self.env.ref('hr_contract.mt_contract_close')
         return super(Contract, self)._track_subtype(init_values)

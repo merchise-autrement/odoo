@@ -24,7 +24,6 @@ import logging
 import sys
 import werkzeug
 
-from . import pycompat
 from .misc import ustr
 from . import pycompat
 
@@ -275,7 +274,7 @@ _BUILTINS = {
     'None': None,
     'bytes': bytes,
     'str': str,
-    'unicode': pycompat.text_type,
+    'unicode': str,
     'bool': bool,
     'int': int,
     'float': float,

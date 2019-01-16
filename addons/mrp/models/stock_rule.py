@@ -40,6 +40,8 @@ class StockRule(models.Model):
 
         # create the MO as SUPERUSER because the current user may not have the rights to do it (mto product launched by a sale for example)
         production = ProductionSudo.create(self._prepare_mo_vals(product_id, product_qty, product_uom, location_id, name, origin, values, bom))
+        production.move_raw_ids = self.env['stock.move'].create(production._get_moves_raw_values())
+        production.action_confirm()
         origin_production = values.get('move_dest_ids') and values['move_dest_ids'][0].raw_material_production_id or False
         orderpoint = values.get('orderpoint_id')
         if orderpoint:
@@ -52,13 +54,18 @@ class StockRule(models.Model):
                                               subtype_id=self.env.ref('mail.mt_note').id)
         return True
 
+    def _get_custom_move_fields(self):
+        fields = super(StockRule, self)._get_custom_move_fields()
+        fields += ['bom_line_id']
+        return fields
+
     @api.multi
     def _get_matching_bom(self, product_id, values):
         if values.get('bom_id', False):
             return values['bom_id']
         return self.env['mrp.bom'].with_context(
             company_id=values['company_id'].id, force_company=values['company_id'].id
-        )._bom_find(product=product_id, picking_type=self.picking_type_id)  # TDE FIXME: context bullshit
+        )._bom_find(product=product_id, picking_type=self.picking_type_id, bom_type='normal')  # TDE FIXME: context bullshit
 
     def _prepare_mo_vals(self, product_id, product_qty, product_uom, location_id, name, origin, values, bom):
         return {
@@ -88,3 +95,26 @@ class StockRule(models.Model):
         new_move_vals = super(StockRule, self)._push_prepare_move_copy_values(move_to_copy, new_date)
         new_move_vals['production_id'] = False
         return new_move_vals
+
+class ProcurementGroup(models.Model):
+    _inherit = 'procurement.group'
+
+    @api.model
+    def run(self, product_id, product_qty, product_uom, location_id, name, origin, values):
+        """ If 'run' is called on a kit, this override is made in order to call
+        the original 'run' method with the values of the components of that kit.
+        """
+        bom_kit = self.env['mrp.bom']._bom_find(product=product_id, bom_type='phantom')
+        if bom_kit:
+            order_qty = product_uom._compute_quantity(product_qty, bom_kit.product_uom_id, round=False)
+            qty_to_produce = ( order_qty / bom_kit.product_qty)
+            boms, bom_sub_lines = bom_kit.explode(product_id, qty_to_produce)
+            for bom_line, bom_line_data in bom_sub_lines:
+                bom_line_uom = bom_line.product_uom_id
+                quant_uom =  bom_line.product_id.uom_id
+                component_qty, procurement_uom = bom_line_uom._adjust_uom_quantities(bom_line_data['qty'], quant_uom)
+                values['bom_line_id'] = bom_line.id
+                super(ProcurementGroup, self).run(bom_line.product_id, component_qty, procurement_uom, location_id, name, origin, values)
+            return True
+        else:
+            return super(ProcurementGroup, self).run(product_id, product_qty, product_uom, location_id, name, origin, values)
