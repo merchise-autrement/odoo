@@ -27,14 +27,15 @@ class HrPayrollStructure(models.Model):
 
     name = fields.Char(required=True)
     code = fields.Char(string='Reference', required=True)
-    company_id = fields.Many2one('res.company', string='Company', required=True,
-        copy=False, default=lambda self: self.env['res.company']._company_default_get())
+    country_id = fields.Many2one('res.country', string='Country')
     note = fields.Text(string='Description')
     parent_id = fields.Many2one('hr.payroll.structure', string='Parent', default=_get_parent)
     children_ids = fields.One2many('hr.payroll.structure', 'parent_id', string='Children', copy=True)
     rule_ids = fields.Many2many('hr.salary.rule', 'hr_structure_salary_rule_rel', 'struct_id', 'rule_id', string='Salary Rules')
     report_id = fields.Many2one('ir.actions.report',
         string="Report", required=True, domain="[('model','=','hr.payslip'),('report_type','=','qweb-pdf')]", default=_get_default_report_id)
+    payslip_name = fields.Char(string="Payslip Name", translate=True,
+        help="Name to be set on a payslip. Example: 'End of the year bonus'. If not set, the default value is 'Salary Slip'")
 
     @api.constrains('parent_id')
     def _check_parent_id(self):
@@ -70,8 +71,6 @@ class HrContributionRegister(models.Model):
     _name = 'hr.contribution.register'
     _description = 'Contribution Register'
 
-    company_id = fields.Many2one('res.company', string='Company',
-        default=lambda self: self.env['res.company']._company_default_get())
     partner_id = fields.Many2one('res.partner', string='Partner')
     name = fields.Char(required=True)
     register_line_ids = fields.One2many('hr.payslip.line', 'register_id',
@@ -89,8 +88,6 @@ class HrSalaryRuleCategory(models.Model):
         help="Linking a salary category to its parent is used only for the reporting purpose.")
     children_ids = fields.One2many('hr.salary.rule.category', 'parent_id', string='Children')
     note = fields.Text(string='Description')
-    company_id = fields.Many2one('res.company', string='Company',
-        default=lambda self: self.env['res.company']._company_default_get())
 
     @api.constrains('parent_id')
     def _check_parent_id(self):
@@ -120,8 +117,6 @@ class HrSalaryRule(models.Model):
     appears_on_payslip = fields.Boolean(string='Appears on Payslip', default=True,
         help="Used to display the salary rule on payslip.")
     parent_rule_id = fields.Many2one('hr.salary.rule', string='Parent Salary Rule', index=True)
-    company_id = fields.Many2one('res.company', string='Company',
-        default=lambda self: self.env['res.company']._company_default_get())
     condition_select = fields.Selection([
         ('none', 'Always True'),
         ('range', 'Range'),

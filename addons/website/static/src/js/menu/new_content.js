@@ -12,7 +12,7 @@ var _t = core._t;
 var enableFlag = 'enable_new_content';
 
 var NewContentMenu = websiteNavbarData.WebsiteNavbarActionWidget.extend({
-    xmlDependencies: ['/web_editor/static/src/xml/editor.xml'],
+    xmlDependencies: ['/website/static/src/xml/website.editor.xml'],
     actions: _.extend({}, websiteNavbarData.WebsiteNavbarActionWidget.prototype.actions || {}, {
         close_all_widgets: '_handleCloseDemand',
         new_page: '_createNewPage',
@@ -83,7 +83,7 @@ var NewContentMenu = websiteNavbarData.WebsiteNavbarActionWidget.extend({
 
                 var $add = $('<div/>', {'class': 'form-group mb0'})
                             .append($('<span/>', {'class': 'offset-md-3 col-md-9 text-left'})
-                                    .append(qweb.render('web_editor.components.switch', {id: 'switch_addTo_menu', label: _t("Add to menu")})));
+                                    .append(qweb.render('website.components.switch', {id: 'switch_addTo_menu', label: _t("Add to menu")})));
                 $add.find('input').prop('checked', true);
                 $group.after($add);
             }

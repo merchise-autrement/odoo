@@ -7,8 +7,8 @@ var Dialog = require('web.Dialog');
 var mixins = require('web.mixins');
 var rpc = require('web.rpc');
 var Widget = require('web.Widget');
-var weContext = require('web_editor.context');
-var weWidgets = require('web_editor.widget');
+var wContext = require('website.context');
+var weWidgets = require('wysiwyg.widgets');
 var websiteNavbarData = require('website.navbar');
 
 var _t = core._t;
@@ -49,7 +49,7 @@ var SuggestionList = Widget.extend({
     refresh: function () {
         var self = this;
         self.$el.append(_t("Loading..."));
-        var language = self.language || weContext.get().lang.toLowerCase();
+        var language = self.language || wContext.get().lang.toLowerCase();
         this._rpc({
             route: '/website/seo_suggest',
             params: {
@@ -478,11 +478,11 @@ var MetaKeywords = Widget.extend({
         this._rpc({
             model: 'website',
             method: 'get_languages',
-            args: [[weContext.get().website_id]],
+            args: [[wContext.get().website_id]],
         }).then( function (data) {
             self.$('#language-box').html(core.qweb.render('Configurator.language_promote', {
                 'language': data,
-                'def_lang': weContext.get().lang
+                'def_lang': wContext.get().lang
             }));
         });
     },
@@ -589,12 +589,11 @@ var MetaImageSelector = Widget.extend({
         var mediaDialog = new weWidgets.MediaDialog(this, {
             onlyImages: true,
             res_model: 'ir.ui.view',
-        }, null, $image);
+        }, $image[0]);
         mediaDialog.open();
         mediaDialog.on('save', this, function (image) {
-            var src = image.attr('src');
-            self.activeMetaImg = src;
-            self.customImgUrl = src;
+            self.activeMetaImg = image.src;
+            self.customImgUrl = image.src;
             self._updateTemplateBody();
         });
     },

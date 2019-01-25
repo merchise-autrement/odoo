@@ -182,7 +182,7 @@ class TestAdvMailPerformance(TransactionCase):
             #voip module read activity_type during create leading to one less query in enterprise on action_feedback
             category = activity.activity_type_id.category
 
-        with self.assertQueryCount(__system__=26, emp=50):  # com runbot: 25 - 46 // test_mail only: 26 - 48
+        with self.assertQueryCount(__system__=26, emp=51):  # com runbot: 25 - 46 // test_mail only: 24 - 45
             activity.action_feedback(feedback='Zizisse Done !')
 
     @users('__system__', 'emp')
@@ -199,7 +199,7 @@ class TestAdvMailPerformance(TransactionCase):
 
         record.write({'name': 'Dupe write'})
 
-        with self.assertQueryCount(__system__=28, emp=52):  # com runbot: 27 - 86 // test_mail only: 28 - 50
+        with self.assertQueryCount(__system__=28, emp=53):  # com runbot: 27 - 86 // test_mail only: 26 - 47
             record.action_close('Dupe feedback')
 
         self.assertEqual(record.activity_ids, self.env['mail.activity'])
@@ -277,7 +277,7 @@ class TestAdvMailPerformance(TransactionCase):
     def test_message_post_one_inbox_notification(self):
         record = self.env['mail.test.simple'].create({'name': 'Test'})
 
-        with self.assertQueryCount(__system__=32, emp=44):  # com runbot 31 - 43 // test_mail only: 32 - 44
+        with self.assertQueryCount(__system__=32, emp=46):  # com runbot 31 - 45 // test_mail only: 32 - 44
             record.message_post(
                 body='<p>Test Post Performances with an inbox ping</p>',
                 partner_ids=self.user_test.partner_id.ids,

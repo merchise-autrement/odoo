@@ -2,6 +2,8 @@ odoo.define('website_forum.website_forum', function (require) {
 'use strict';
 
 var core = require('web.core');
+var wContext = require('website.context');
+var Wysiwyg = require('web_editor.wysiwyg');
 var sAnimations = require('website.content.snippets.animation');
 var session = require('web.session');
 var qweb = core.qweb;
@@ -119,26 +121,41 @@ sAnimations.registry.websiteForum = sAnimations.Class.extend({
                 $textarea.val('<p><br/></p>');
             }
             var $form = $textarea.closest('form');
+            var hasFullEdit = parseInt($("#karma").val()) >= editorKarma;
             var toolbar = [
                 ['style', ['style']],
                 ['font', ['bold', 'italic', 'underline', 'clear']],
                 ['para', ['ul', 'ol', 'paragraph']],
                 ['table', ['table']],
-                ['history', ['undo', 'redo']],
             ];
-            if (parseInt($('#karma').val()) >= editorKarma) {
-                toolbar.push(['insert', ['link', 'picture']]);
+            if (hasFullEdit) {
+                toolbar.push(['insert', ['linkPlugin', 'mediaPlugin']]);
             }
-            $textarea.summernote({
+            toolbar.push(['history', ['undo', 'redo']]);
+
+            var options = {
                 height: 150,
                 toolbar: toolbar,
-                styleWithSpan: false
-            });
-
-            // float-left class messes up the post layout OPW 769721
-            $form.find('.note-editable').find('img.float-left').removeClass('float-left');
-            $form.on('click', 'button, .a-submit', function () {
-                $textarea.html($form.find('.note-editable').code());
+                styleWithSpan: false,
+                recordInfo: {
+                    context: wContext.get(),
+                    res_model: 'forum.post',
+                    res_id: +window.location.pathname.split('-').pop(),
+                },
+            };
+            if (!hasFullEdit) {
+                options.plugins = {
+                    LinkPlugin: false,
+                    MediaPlugin: false,
+                };
+            }
+            var wysiwyg = new Wysiwyg(self, options);
+            wysiwyg.attachTo($textarea).then(function () {
+                // float-left class messes up the post layout OPW 769721
+                $form.find('.note-editable').find('img.float-left').removeClass('float-left');
+                $form.on('click', 'button, .a-submit', function () {
+                    $form.find('textarea').data('wysiwyg').save();
+                });
             });
         });
 

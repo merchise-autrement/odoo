@@ -23,8 +23,6 @@ class TestHrPayrollAccount(common.TransactionCase):
 
         self._load('account', 'test', 'account_minimal_test.xml')
 
-        self.payslip_action_id = self.ref('hr_payroll.menu_department_tree')
-
         self.res_partner_bank = self.env['res.partner.bank'].create({
             'acc_number': '001-9876543-21',
             'partner_id': self.ref('base.res_partner_12'),
@@ -48,7 +46,6 @@ class TestHrPayrollAccount(common.TransactionCase):
         self.hr_structure_softwaredeveloper = self.env['hr.payroll.structure'].create({
             'name': 'Salary Structure for Software Developer',
             'code': 'SD',
-            'company_id': self.ref('base.main_company'),
             'parent_id': self.ref('hr_payroll.structure_base'),
             'rule_ids': [(6, 0, [
                     self.ref('hr_payroll.hr_salary_rule_houserentallowance1'),
@@ -84,6 +81,7 @@ class TestHrPayrollAccount(common.TransactionCase):
         self.hr_payslip.date_to = str(datetime.now() + relativedelta.relativedelta(months=+1, day=1, days=-1))[:10]
         self.hr_payslip.onchange_employee()
         self.hr_payslip.onchange_contract()
+        self.hr_payslip._onchange_struct_id()
 
         # I assign the amount to Input data.
         payslip_input = self.env['hr.payslip.input'].search([('payslip_id', '=', self.hr_payslip.id)])
@@ -93,7 +91,7 @@ class TestHrPayrollAccount(common.TransactionCase):
         self.assertEqual(self.hr_payslip.state, 'draft', 'State not changed!')
 
         # I click on "Compute Sheet" button.
-        context = {"lang": "en_US", "tz": False, "active_model": 'hr.payslip', "department_id": False, "active_ids": [self.payslip_action_id], "section_id": False, "active_id": self.payslip_action_id}
+        context = {"lang": "en_US", "tz": False, "active_model": 'hr.payslip', "department_id": False, "section_id": False}
         self.hr_payslip.with_context(context).compute_sheet()
 
         # I want to check cancel button. So I first cancel the sheet then make it set to draft.

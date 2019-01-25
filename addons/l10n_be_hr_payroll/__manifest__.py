@@ -21,9 +21,14 @@ Belgian Payroll Rules.
     """,
 
     'data': [
+        'views/report_payslip_template.xml',
+        'views/reports.xml',
         'views/l10n_be_hr_payroll_view.xml',
         'data/l10n_be_hr_payroll_data.xml',
         'views/res_config_settings_views.xml',
+    ],
+    'demo':[
+        'data/l10n_be_hr_payroll_demo.xml'
     ],
     'auto_install': True,
 }

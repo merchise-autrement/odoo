@@ -44,5 +44,30 @@
         <field name="perm_read" eval="0"/>
     </record>
 
+    <record id="hr_user_benefit_employee" model="ir.rule">
+        <field name="name">Benefits/Employee calendar filter: only self</field>
+        <field name="model_id" ref="model_hr_user_benefit_employee"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+        <field name="perm_read" eval="0"/>
+    </record>
+
+    <record id="ir_rule_hr_payroll_structure_multi_company" model="ir.rule">
+        <field name="name">HR Payroll Structure: Multi Company</field>
+        <field name="model_id" ref="model_hr_payroll_structure"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('country_id', '=', False), ('country_id', '=', user.company_id.country_id.id)]</field>
+    </record>
+
+    <record id="ir_rule_hr_payslip_multi_company" model="ir.rule">
+        <field name="name">HR Payslip: Multi Company</field>
+        <field name="model_id" ref="model_hr_payslip"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', [user.company_id.id])]</field>
+    </record>
+
 </data>
 </odoo>

@@ -5,8 +5,8 @@ var Class = require('web.Class');
 var core = require('web.core');
 var Dialog = require('web.Dialog');
 var time = require('web.time');
-var weContext = require('web_editor.context');
-var weWidgets = require('web_editor.widget');
+var wContext = require('website.context');
+var weWidgets = require('wysiwyg.widgets');
 var websiteNavbarData = require('website.navbar');
 var websiteRootData = require('website.WebsiteRoot');
 var Widget = require('web.Widget');
@@ -195,7 +195,7 @@ var PagePropertiesDialog = weWidgets.Dialog.extend({
      */
     save: function (data) {
         var self = this;
-        var context = weContext.get();
+        var context = wContext.get();
         var url = this.$('#page_url').val();
 
         var $date_publish = this.$("#date_publish");
@@ -364,13 +364,15 @@ var MenuEntryDialog = weWidgets.LinkDialog.extend({
     /**
      * @constructor
      */
-    init: function (parent, options, editor, data) {
+    init: function (parent, options, data) {
         data.text = data.name || '';
         data.isNewWindow = data.new_window;
-        this.data = data;
-        this._super(parent, _.extend({}, {
+
+        this._super(parent, _.extend({
             title: _t("Create Menu"),
-        }, options || {}), editor, data);
+        }, options || {}), _.extend({
+            needLabel: true,
+        }, data || {}));
     },
     /**
      * @override
@@ -467,7 +469,7 @@ var EditMenuDialog = weWidgets.Dialog.extend({
     willStart: function () {
         var defs = [this._super.apply(this, arguments)];
         var self = this;
-        var context = weContext.get();
+        var context = wContext.get();
         defs.push(this._rpc({
             model: 'website.menu',
             method: 'get_tree',
@@ -514,7 +516,7 @@ var EditMenuDialog = weWidgets.Dialog.extend({
         var new_menu = this.$('.oe_menu_editor').nestedSortable('toArray', {startDepthCount: 0});
         var levels = [];
         var data = [];
-        var context = weContext.get();
+        var context = wContext.get();
         // Resequence, re-tree and remove useless data
         new_menu.forEach(function (menu) {
             if (menu.id) {
@@ -570,7 +572,7 @@ var EditMenuDialog = weWidgets.Dialog.extend({
      */
     _onAddMenuButtonClick: function () {
         var self = this;
-        var dialog = new MenuEntryDialog(this, {}, undefined, {});
+        var dialog = new MenuEntryDialog(this, {}, {});
         dialog.on('save', this, function (link) {
             var new_menu = {
                 id: _.uniqueId('new-'),
@@ -611,7 +613,7 @@ var EditMenuDialog = weWidgets.Dialog.extend({
         var menu_id = $(ev.currentTarget).closest('[data-menu-id]').data('menu-id');
         var menu = self.flat[menu_id];
         if (menu) {
-            var dialog = new MenuEntryDialog(this, {}, undefined, menu);
+            var dialog = new MenuEntryDialog(this, {}, menu);
             dialog.on('save', this, function (link) {
                 var id = link.id;
                 var menu_obj = self.flat[id];
