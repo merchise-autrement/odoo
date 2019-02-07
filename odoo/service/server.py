@@ -865,8 +865,8 @@ class Worker(object):
             if e.args[0] not in [errno.EINTR]:
                 raise
 
-    def process_limit(self):
-        # If our parent changed suicide
+    def check_limits(self):
+        # If our parent changed sucide
         if self.ppid != os.getppid():
             _logger.info("Worker (%s) Parent changed", self.pid)
             self.alive = False
@@ -882,6 +882,7 @@ class Worker(object):
 
         set_limit_memory_hard()
 
+    def set_limits(self):
         # SIGXCPU (exceeded CPU time) signal handler will raise an exception.
         r = resource.getrusage(resource.RUSAGE_SELF)
         cpu_time = r.ru_utime + r.ru_stime
@@ -922,26 +923,40 @@ class Worker(object):
         signal.set_wakeup_fd(self.wakeup_fd_w)
         signal.signal(signal.SIGUSR2, self.raise_timeout)
 
+        self.set_limits()
+
     def stop(self):
         pass
 
     def run(self):
         try:
             self.start()
-            while self.alive:
-                self.process_limit()
-                self.multi.pipe_ping(self.watchdog_pipe)
-                self.sleep()
-                self.process_work()
-            _logger.info(
-                "Worker (%s) exiting. request_count: %s, registry count: %s.",
-                self.pid, self.request_count,
-                len(odoo.modules.registry.Registry.registries)
-            )
+            t = threading.Thread(name="Worker %s (%s) workthread" % (self.__class__.__name__, self.pid), target=self._runloop)
+            t.daemon = True
+            t.start()
+            t.join()
+            _logger.info("Worker (%s) exiting. request_count: %s, registry count: %s.",
+                         self.pid, self.request_count,
+                         len(odoo.modules.registry.Registry.registries))
             self.stop()
         except Exception:
             _logger.exception("Worker (%s) Exception occured, exiting..." % self.pid)
             # should we use 3 to abort everything ?
+            sys.exit(1)
+
+    def _runloop(self):
+        try:
+            while self.alive:
+                self.multi.pipe_ping(self.watchdog_pipe)
+                self.sleep()
+                self.process_work()
+                self.check_limits()
+        except:  # noqa
+            _logger.exception(
+                "Worker %s (%s) Exception occured, exiting...",
+                self.__class__.__name__,
+                self.pid
+            )
             sys.exit(1)
 
 class WorkerHTTP(Worker):
@@ -986,7 +1001,6 @@ class WorkerCron(Worker):
         # process.
         self.db_index = 0
         self.watchdog_timeout = multi.cron_timeout  # Use a distinct value for CRON Worker
-
 
     def sleep(self):
         # Really sleep once all the databases have been processed.
