@@ -23,9 +23,7 @@ from __future__ import (division as _py3_division,
 
 import os
 import raven
-from raven.transport.http import HTTPTransport
 from raven.transport.requests import RequestsHTTPTransport
-from raven.transport.threaded import ThreadedHTTPTransport
 from raven.transport.threaded_requests import ThreadedRequestsHTTPTransport
 from raven.transport.gevent import GeventedHTTPTransport
 from raven.utils.wsgi import get_headers, get_environ
@@ -109,19 +107,28 @@ def get_client():
             conf['release'] = '%s/%s' % (version, releasetag)
         transport = conf.get('transport', None)
         if transport == 'sync':
-            transport = HTTPTransport
+            transport = RequestsHTTPTransport
         elif transport == 'requests':
             transport = RequestsHTTPTransport
         elif transport == 'gevent':
             transport = GeventedHTTPTransport
         elif transport == 'threaded':
-            transport = ThreadedHTTPTransport
+            transport = ThreadedRequestsHTTPTransport
         elif transport == 'threaded+requests':
             transport = ThreadedRequestsHTTPTransport
         else:
             transport = None
         if transport is not None:
             conf['transport'] = transport
+        conf['transport'] = transport
+        include_paths = []
+        try:
+            import pkg_resources
+            env = pkg_resources.AvailableDistributions()
+            include_paths.extend(env)
+        except:  # noqa
+            include_paths = ['odoo', 'celery', 'billiard', 'kombu', 'ampq']
+        conf['include_paths'] = include_paths
         _sentry_client = raven.Client(**conf)
     return _sentry_client
 

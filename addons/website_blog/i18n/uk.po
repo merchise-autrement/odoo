@@ -3,19 +3,19 @@
 # * website_blog
 # 
 # Translators:
-# Martin Trigaux, 2017
-# Bohdan Lisnenko, 2017
-# Zoriana Zaiats, 2017
-# ТАрас <tratatuta@i.ua>, 2017
-# Alina Lisnenko <alinasemeniuk1@gmail.com>, 2018
+# Martin Trigaux, 2018
+# Bohdan Lisnenko, 2018
+# Zoriana Zaiats, 2018
+# ТАрас <tratatuta@i.ua>, 2018
+# Alina Lisnenko <alinasemeniuk1@gmail.com>, 2019
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 11.0\n"
+"Project-Id-Version: Odoo Server 12.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-24 09:00+0000\n"
-"PO-Revision-Date: 2017-09-20 10:25+0000\n"
-"Last-Translator: Alina Lisnenko <alinasemeniuk1@gmail.com>, 2018\n"
+"POT-Creation-Date: 2019-01-09 10:32+0000\n"
+"PO-Revision-Date: 2018-08-24 09:33+0000\n"
+"Last-Translator: Alina Lisnenko <alinasemeniuk1@gmail.com>, 2019\n"
 "Language-Team: Ukrainian (https://www.transifex.com/odoo/teams/41243/uk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n % 10 == 1 && n % 100 != 11 ? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || (n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_2
+#: model_terms:blog.post,content:website_blog.blog_post_2
 msgid ""
 "\"Finally, the leading edge is being brought to the masses.\n"
 "                        It will now be the turn of the big players to catch up to\n"
@@ -35,7 +35,7 @@ msgstr ""
 "                вищі технології МСП \"."
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_2
+#: model_terms:blog.post,content:website_blog.blog_post_2
 msgid ""
 "\"Odoo now competes on many fronts, with no real\n"
 "                    competition out there to knock them off the top spot.\n"
@@ -56,7 +56,7 @@ msgstr ""
 "                     яку в даний час використовують більшість постачальників галузі \"."
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_2
+#: model_terms:blog.post,content:website_blog.blog_post_2
 msgid ""
 "\"Odoo's latest launch will allow a business to go from\n"
 "                    zero to trading online quicker than ever before,” Stuart\n"
@@ -77,7 +77,7 @@ msgstr ""
 "                     продуктивність, раніше зарезервованої для великих ІТ-інвесторів \"."
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_2
+#: model_terms:blog.post,content:website_blog.blog_post_2
 msgid ""
 "\"This is another clever and highly disruptive move by\n"
 "                    Odoo,which will force other technology providers to\n"
@@ -90,28 +90,78 @@ msgstr ""
 "                     адже їх \"рішення\" все-таки може конкурувати \"."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
 msgid "&amp;mdash;"
 msgstr "&amp;mdash;"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.latest_blogs
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
 msgid "&amp;times;"
 msgstr "&amp;times;"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_feed
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_feed
 msgid "&lt;?xml version=\"1.0\" encoding=\"utf-8\"?&gt;"
 msgstr "&lt;?xml version=\"1.0\" encoding=\"utf-8\"?&gt;"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.view_blog_blog_form
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_blog_form
 msgid ""
 "(Un)archiving a blog automatically (un)archives its posts. Do you want to "
 "proceed?"
 msgstr ""
 "(Не) архівувати блог автоматично (не) архівованих повідомлень. Ви хочете "
 "продовжити?"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "1 post"
+msgstr "1 пост"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "10 posts"
+msgstr "10 постів"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "2 posts"
+msgstr "2 поста"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "3 posts"
+msgstr ""
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "4 posts"
+msgstr ""
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "5 posts"
+msgstr ""
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "6 posts"
+msgstr ""
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "7 posts"
+msgstr ""
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "8 posts"
+msgstr ""
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "9 posts"
+msgstr ""
 
 #. module: website_blog
 #. openerp-web
@@ -150,12 +200,57 @@ msgid ""
 "more graphical blogs."
 msgstr ""
 "<b>Напишіть вашу історію тут.</b> Використовуйте верхню панель інструментів,"
-" для зміни стилю вашого тексту: дойте зображення або таблицю, встановіть "
+" для зміни стилю вашого тексту: додайте зображення або таблицю, встановіть "
 "напівжирний або курсив тощо. Перетягніть основні блоки для більш графічних "
 "блогів."
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_view_kanban
+msgid "<i class=\"fa fa-clock-o\" role=\"img\" aria-label=\"Post date\" title=\"Post date\"/>"
+msgstr ""
+"<i class=\"fa fa-clock-o\" role=\"img\" aria-label=\"Post date\" "
+"title=\"Post date\"/>"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.tag_category
+msgid ""
+"<i class=\"fa fa-tag\" role=\"img\" aria-label=\"Tag category\" title=\"Tag "
+"category\"/>"
+msgstr ""
+"<i class=\"fa fa-tag\" role=\"img\" aria-label=\"Tag category\" title=\"Tag "
+"category\"/>"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
+msgid ""
+"<span class=\"fa fa-calendar mr8\" role=\"img\" aria-label=\"Post date\" "
+"title=\"Post date\"/>"
+msgstr ""
+"<span class=\"fa fa-calendar mr8\" role=\"img\" aria-label=\"Post date\" "
+"title=\"Post date\"/>"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
+msgid ""
+"<span class=\"fa fa-exclamation-triangle ml8\" title=\"Unpublished\" "
+"role=\"img\" aria-label=\"Unpublished\"/>"
+msgstr ""
+"<span class=\"fa fa-exclamation-triangle ml8\" title=\"Unpublished\" "
+"role=\"img\" aria-label=\"Unpublished\"/>"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
+msgid "<span class=\"fa fa-folder-open\"/> In"
+msgstr "<span class=\"fa fa-folder-open\"/> В"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_complete
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
+msgid "<span class=\"fa fa-tags\" role=\"img\" aria-label=\"Tags\" title=\"Tags\"/>"
+msgstr "<span class=\"fa fa-tags\" role=\"img\" aria-label=\"Tags\" title=\"Tags\"/>"
+
+#. module: website_blog
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid ""
 "A mix of push &amp; pull: Today, people\n"
 "                        are victims of what others decide to push to them.\n"
@@ -166,44 +261,64 @@ msgstr ""
 "                         Оdoo розрізняє:"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_template_new_post
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_template_new_post
 msgid "A new post"
 msgstr "Нова публікація"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_rc_about_us
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_about_us
 msgid "About us"
 msgstr "Про нас"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_template_new_post
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_template_new_post
 msgid "Access post"
 msgstr "Доступ до публікації"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_blog_active
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_active
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_needaction
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_needaction
+msgid "Action Needed"
+msgstr "Дія необхідна"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__active
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__active
 msgid "Active"
 msgstr "Активно"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_2
+#: model_terms:blog.post,content:website_blog.blog_post_2
 msgid "Adding to industry leading technology"
 msgstr "Додавання до провідних технологій галузі"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_blog_view_search
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_search
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "All blogs"
+msgstr ""
+
+#. module: website_blog
+#. openerp-web
+#: code:addons/website_blog/static/src/js/s_latest_posts_frontend.js:59
+#, python-format
+msgid ""
+"An error occured with this latest posts block. If the problem persists, "
+"please consider deleting it and adding a new one"
+msgstr ""
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_blog_view_search
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_search
 msgid "Archived"
 msgstr "Заархівовано"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_rc_history
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_history
 msgid "Archives"
 msgstr "Архіви"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_2
+#: model_terms:blog.post,content:website_blog.blog_post_2
 msgid ""
 "As it comes, there is a default website based on Bootstrap\n"
 "                    3, the latest industry standard for rapid development of\n"
@@ -218,7 +333,7 @@ msgstr ""
 "                     за замовчуванням."
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid ""
 "At Odoo, we build tools to bring productivity to\n"
 "                    enterprises. As emails and information flows are one of\n"
@@ -230,38 +345,43 @@ msgstr ""
 "                     найбільшої втрати часу в компаніях, які ми повинні виправити."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
 msgid "Atom Feed"
 msgstr "Розсилка новин"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_author_id
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_search
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_attachment_count
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_attachment_count
+msgid "Attachment Count"
+msgstr "Підрахунок прикріплення"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__author_id
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_search
 msgid "Author"
 msgstr "Автор"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_author_avatar
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__author_avatar
 msgid "Avatar"
 msgstr "Аватар"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Black"
 msgstr "Чорний"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_blog_id
-#: model:ir.ui.menu,name:website_blog.menu_website_blog_root
-#: model:ir.ui.view,arch_db:website_blog.blog_blog_view_search
-#: model:ir.ui.view,arch_db:website_blog.view_blog_blog_form
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_search
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__blog_id
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_blog_view_search
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_blog_form
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_search
 #: model:website.menu,name:website_blog.menu_news
 msgid "Blog"
 msgstr "Блог"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_blog_name
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__name
 msgid "Blog Name"
 msgstr "Назва блогу"
 
@@ -269,8 +389,8 @@ msgstr "Назва блогу"
 #: code:addons/website_blog/models/website.py:22
 #: code:addons/website_blog/models/website.py:47
 #: model:ir.model,name:website_blog.model_blog_post
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_form
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_search
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_form
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_search
 #, python-format
 msgid "Blog Post"
 msgstr "Допис блогу"
@@ -288,9 +408,9 @@ msgid "Blog Post <b>%s</b> seems to have a link to this page !"
 msgstr "Допис блогу <b>%s</b> посилається на цю сторінку !"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_complete
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_post_complete_read_next
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_form
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_complete
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_post_complete_read_next
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_form
 msgid "Blog Post Title"
 msgstr "Назва допису блогу"
 
@@ -298,15 +418,14 @@ msgstr "Назва допису блогу"
 #: code:addons/website_blog/models/website.py:24
 #: code:addons/website_blog/models/website.py:49
 #: model:ir.actions.act_window,name:website_blog.action_blog_post
-#: model:ir.ui.menu,name:website_blog.menu_page
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_list
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_list
 #, python-format
 msgid "Blog Posts"
 msgstr "Дописи блогу"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_blog_subtitle
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_form
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__subtitle
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_form
 msgid "Blog Subtitle"
 msgstr "Підзаголовок блогу"
 
@@ -316,36 +435,52 @@ msgid "Blog Tag"
 msgstr "Мітка блогу"
 
 #. module: website_blog
+#: model:ir.model,name:website_blog.model_blog_tag_category
+msgid "Blog Tag Category"
+msgstr ""
+
+#. module: website_blog
 #: model:ir.actions.act_window,name:website_blog.action_tags
-#: model:ir.ui.menu,name:website_blog.menu_blog_tag
 msgid "Blog Tags"
 msgstr "Мітки блогу"
 
 #. module: website_blog
 #: model:ir.actions.act_window,name:website_blog.action_blog_blog
 #: model:ir.model,name:website_blog.model_blog_blog
-#: model:ir.ui.menu,name:website_blog.menu_blog
-#: model:ir.ui.view,arch_db:website_blog.view_blog_blog_list
+#: model:ir.ui.menu,name:website_blog.menu_blog_global
+#: model:ir.ui.menu,name:website_blog.menu_website_blog_root
+#: model:ir.ui.menu,name:website_blog.menu_website_blog_root_global
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_blog_list
 msgid "Blogs"
 msgstr "Блоги"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Blue"
 msgstr "Синій"
 
 #. module: website_blog
 #: model:blog.post,subtitle:website_blog.blog_post_2
 msgid "Building your company's website and selling your products online easy."
-msgstr "Легко будувати вебсайт компанії та продавати товари онлайн."
+msgstr "Легко створіть веб-сайт компанії та продавайте товари онлайн."
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__category_id
+msgid "Category"
+msgstr "Категорія"
 
 #. module: website_blog
 #. openerp-web
 #: code:addons/website_blog/static/src/js/website.tour.blog.js:29
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 #, python-format
 msgid "Change Cover"
 msgstr "Змінити обкладинку"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "Choose a blog"
+msgstr ""
 
 #. module: website_blog
 #. openerp-web
@@ -362,11 +497,11 @@ msgid "Click here to change your post cover."
 msgstr "Натисніть тут, щоб змінити обкладинку вашої публікації."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
 msgid ""
 "Click on \"New Page\" in the top-right corner to write your first blog post."
 msgstr ""
-"Клацніть на \"Нову сторінку\" у верхньому правому куті, щоб написати свій "
+"Натисніть на \"Нову сторінку\" у верхньому правому куті, щоби написати свій "
 "перший блог."
 
 #. module: website_blog
@@ -377,62 +512,62 @@ msgid "Click on <b>Save</b> to set the picture as cover."
 msgstr "Натисніть <b>Зберегти</b> , щоби встановити зображення як фонове."
 
 #. module: website_blog
-#: model:ir.actions.act_window,help:website_blog.action_blog_post
-msgid "Click to create a new blog post."
-msgstr "Натисніть, щоб створити новий допис."
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
+msgid "Close"
+msgstr "Закрити"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_content
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_search
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__content
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_search
 msgid "Content"
 msgstr "Вміст"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_cover_properties
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__cover_properties
 msgid "Cover Properties"
 msgstr "Властивості обкладинки"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_blog_create_uid
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_create_uid
-#: model:ir.model.fields,field_description:website_blog.field_blog_tag_create_uid
+#: model_terms:ir.actions.act_window,help:website_blog.action_blog_post
+msgid "Create a new blog post"
+msgstr ""
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__create_uid
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__create_uid
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__create_uid
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag_category__create_uid
 msgid "Created by"
 msgstr "Створив"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_blog_create_date
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_create_date
-#: model:ir.model.fields,field_description:website_blog.field_blog_tag_create_date
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__create_date
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__create_date
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__create_date
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag_category__create_date
 msgid "Created on"
-msgstr "Дата створення"
+msgstr "Створено"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_mail_compose_message_path
-#: model:ir.model.fields,field_description:website_blog.field_mail_mail_path
-#: model:ir.model.fields,field_description:website_blog.field_mail_message_path
-#: model:ir.model.fields,field_description:website_blog.field_survey_mail_compose_message_path
-msgid "Discussion Path"
-msgstr "Шлях обговорення"
-
-#. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_blog_display_name
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_display_name
-#: model:ir.model.fields,field_description:website_blog.field_blog_tag_display_name
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__display_name
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__display_name
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__display_name
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag_category__display_name
 msgid "Display Name"
 msgstr "Назва для відображення"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_edit_options
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_edit_options
 msgid "Duplicate"
 msgstr "Дублювати"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid "Emails are broken."
 msgstr "Електронні пошти зламані."
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid ""
 "Emails make me waste my time. But I need them.\n"
 "                    Given the importance that emails have in our lives,\n"
@@ -441,21 +576,28 @@ msgid ""
 msgstr ""
 "Електронні листи змушують мене витрачати свій час. Але мені це потрібно.\n"
 "                     Враховуючи важливість електронних листів у нашому житті,\n"
-"                     це неймовірно, адже це єдине програмне забезпечення\n"
-"                     для районів, які не розвиваються за останні 20 років!"
+"                     це неймовірно, адже це єдине програмне забезпечення,\n"
+"                    в районі якого було розвитку останні 20 років!"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_complete
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_follow_us
+msgid "Facebook"
+msgstr "Facebook"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Filter Color"
-msgstr "Фільтер кольору"
+msgstr "Фільтр кольору"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Filter Intensity"
 msgstr "Інтенсивність фільтру"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid ""
 "Focus on the Content: Everything is\n"
 "                        stripped to emphasize on the real message. No more\n"
@@ -465,14 +607,14 @@ msgid ""
 "                        every message)"
 msgstr ""
 "Зосередьтеся на змісті: все \n"
-"                         забирається, щоби підкреслити реальне послання. Більше немає\n"
-"                         вступного введення, привітання, підписів та правових\n"
-"                         записів. Ми стандартизовуємо розташування кожного повідомлення.\n"
-"                         (підписи знаходяться в профілі контакту, а не в\n"
+"                         забирається, щоби підкреслити реальне повідомлення. Більше немає\n"
+"                         вступного введення, привітання, підписів та юридичних\n"
+"                         приміток. Ми стандартизовуємо розташування кожного повідомлення.\n"
+"                         (підписи знаходяться у профілі контакту, а не в\n"
 "                         кожному повідомленні)"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid ""
 "Folders and mailing lists are great tools but too\n"
 "                        complex in traditional email clients. In Odoo, a\n"
@@ -487,12 +629,30 @@ msgstr ""
 "                         власну адресу електронної пошти."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_follower_ids
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_follower_ids
+msgid "Followers"
+msgstr "Підписники"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_channel_ids
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_channel_ids
+msgid "Followers (Channels)"
+msgstr "Підписники (Канали)"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_partner_ids
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Підписники (Партнери)"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Full Screen"
 msgstr "На весь екран"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid ""
 "Get Things Done: your inbox is a\n"
 "                        todo list. You should be able to process (not only\n"
@@ -500,7 +660,7 @@ msgid ""
 "                        actions. Every inbox should be empty after having\n"
 "                        been processed; no more overload of information."
 msgstr ""
-"Отримати все, що готово: в папці \"Вхідні\" є\n"
+"Виконуйте свою роботу: у папці \"Вхідні\" є\n"
 "                         список справ. Ви повинні мати можливість обробляти (не тільки\n"
 "                         читати) папку \"Вхідні\" та легко позначати повідомлення для майбутньої\n"
 "                         дії. Кожна скринька повинна бути порожньою після\n"
@@ -512,27 +672,39 @@ msgid "Get in touch with us"
 msgstr "Зв’яжіться з нами"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
-msgid "Green"
-msgstr "Зелена"
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_follow_us
+msgid "Github"
+msgstr "Github"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_search
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_complete
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_follow_us
+msgid "Google Plus"
+msgstr "Google Plus"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
+msgid "Green"
+msgstr "Зелений"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_search
 msgid "Group By"
 msgstr "Групувати за"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid "Here are the ideas behind the Odoo communication tools:"
 msgstr "Ось ідеї інструментів комунікації Odoo:"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "High"
 msgstr "Високий"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_2
+#: model_terms:blog.post,content:website_blog.blog_post_2
 msgid ""
 "However, unlike other web content management systems, it\n"
 "                    fully integrates into the back-end database. This means\n"
@@ -547,21 +719,41 @@ msgstr ""
 "                     справжнє вікно самообслуговування у бізнес."
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_blog_id
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_id
-#: model:ir.model.fields,field_description:website_blog.field_blog_tag_id
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__id
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__id
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__id
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag_category__id
 msgid "ID"
 msgstr "ID"
 
 #. module: website_blog
 #: model:blog.post,subtitle:website_blog.blog_post_1
+#: model:blog.post,website_meta_description:website_blog.blog_post_1
 msgid "Ideas behind the Odoo communication tools."
 msgstr "Ідеї, що стоять за інструментами спілкування Odoo."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.latest_blogs
-msgid "In"
-msgstr "в"
+#: model:ir.model.fields,help:website_blog.field_blog_blog__message_unread
+#: model:ir.model.fields,help:website_blog.field_blog_post__message_unread
+msgid "If checked new messages require your attention."
+msgstr "Якщо позначено, то повідомленя потребує вашої уваги"
+
+#. module: website_blog
+#: model:ir.model.fields,help:website_blog.field_blog_blog__message_needaction
+#: model:ir.model.fields,help:website_blog.field_blog_post__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Якщо відмічено, то нові повідомлення будуть потребувати вашої уваги."
+
+#. module: website_blog
+#: model:ir.model.fields,help:website_blog.field_blog_blog__message_has_error
+#: model:ir.model.fields,help:website_blog.field_blog_post__message_has_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Якщо позначено, деякі повідомлення мають помилку доставки."
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_follow_us
+msgid "Instagram"
+msgstr "Instagram"
 
 #. module: website_blog
 #: model:blog.post,name:website_blog.blog_post_2
@@ -569,7 +761,18 @@ msgid "Integrating your CMS and E-Commerce"
 msgstr "Інтеграція Вашої CMS та Електронної комерції"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_is_follower
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_is_follower
+msgid "Is Follower"
+msgstr "Стежить"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__is_published
+msgid "Is published"
+msgstr "Опубліковано"
+
+#. module: website_blog
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid ""
 "Keep control of what you want to receive or don't want\n"
 "                        to receive. People should never receive spam. You\n"
@@ -582,64 +785,89 @@ msgstr ""
 "                         клік."
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_write_uid
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_search
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__write_uid
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_search
 msgid "Last Contributor"
 msgstr "Останній запис"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_blog___last_update
-#: model:ir.model.fields,field_description:website_blog.field_blog_post___last_update
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_write_date
-#: model:ir.model.fields,field_description:website_blog.field_blog_tag___last_update
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog____last_update
+#: model:ir.model.fields,field_description:website_blog.field_blog_post____last_update
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag____last_update
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag_category____last_update
 msgid "Last Modified on"
 msgstr "Остання модифікація"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_blog_write_uid
-#: model:ir.model.fields,field_description:website_blog.field_blog_tag_write_uid
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__write_uid
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__write_uid
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag_category__write_uid
 msgid "Last Updated by"
 msgstr "Востаннє оновив"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_blog_write_date
-#: model:ir.model.fields,field_description:website_blog.field_blog_tag_write_date
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__write_date
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__write_date
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__write_date
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag_category__write_date
 msgid "Last Updated on"
 msgstr "Останнє оновлення"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.latest_blogs
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_big_picture
 msgid "Latest Posts"
 msgstr "Останні дописи"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_2
+#: model_terms:blog.post,content:website_blog.blog_post_2
 msgid ""
 "Like many modern website editors, with Odoo you can edit\n"
 "                    content in-line, enabling you to see exactly what you are\n"
 "                    changing and ensure your changes suit the context."
 msgstr ""
-"Як і багато інших редакторів веб-сайтів, ви можете редагувати Odoo\n"
-"                     контент в режимі он-лайн, що дозволяє точно побачити, що ви \n"
+"Як і багато інших редакторів веб-сайтів, ви можете редагувати контент Odoo\n"
+"                     в режимі онлайн, що дозволяє точно побачити, що ви \n"
 "                     змінюєте, а також забезбечує зміни відповідно до контексту."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_complete
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_follow_us
+msgid "LinkedIn"
+msgstr "LinkedIn"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Low"
 msgstr "Низький"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
-msgid "Medium"
-msgstr "Засіб розповсюдження"
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_main_attachment_id
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Основне прикріплення"
 
 #. module: website_blog
-#: model:ir.model,name:website_blog.model_mail_message
-msgid "Message"
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
+msgid "Medium"
+msgstr "Середній"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_has_error
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_has_error
+msgid "Message Delivery error"
+msgstr "Помилка доставлення повідомлення"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_ids
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_ids
+msgid "Messages"
 msgstr "Повідомлення"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid ""
 "Messages \"for action\": they\n"
 "                                require your immediate attention and you need\n"
@@ -648,12 +876,12 @@ msgid ""
 "                                for these."
 msgstr ""
 "Повідомлення \"для дії\":\n"
-"                                 вимагають вашої негайної уваги і вам потрібно\n"
-"                                 обробляти їх усіх. Це становить 10%\n"
-"                                 ваших щоденних електронних листів. Використовуйте для цього меню \"Для: мене\"."
+"вимагають вашої негайної уваги і вам потрібно\n"
+"обробляти їх усіх. Це становить 10%\n"
+"ваших щоденних електронних листів. Використовуйте для цього меню \"Для: мене\"."
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid ""
 "Messages \"for information\":\n"
 "                                you can pull them when you need some specific\n"
@@ -663,80 +891,122 @@ msgid ""
 "                                emails.Use the \"Inbox\" menu for these."
 msgstr ""
 "Повідомлення \"для інформації\":\n"
-"                                 ви можете витягнути, коли вам потрібні деяка конкретна\n"
-"                                 інформація; їх не потрібно читати\n"
-"                                 кожен день. Ви отримуєте лише те, що ви вирішили\n"
-"                                 за потрібне. Це складає 90% від ваших щоденних\n"
-"                                 листів. Для цього використовуйте меню \"Вхідні\"."
+"ви можете витягнути, коли вам потрібні деяка конкретна\n"
+"інформація; їх не потрібно читати\n"
+"кожен день. Ви отримуєте лише те, що ви вирішили\n"
+"за потрібне. Це складає 90% від ваших щоденних\n"
+"листів. Для цього використовуйте меню \"Вхідні\"."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Mid screen"
 msgstr "Середній екран"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_tag_name
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__name
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag_category__name
 msgid "Name"
 msgstr "Назва"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Narrow"
 msgstr "Вузький"
 
 #. module: website_blog
 #. openerp-web
 #: code:addons/website_blog/static/src/js/website_blog.editor.js:37
-#: model:ir.ui.view,arch_db:website_blog.content_new_blogpost
 #, python-format
 msgid "New Blog Post"
 msgstr "Новий допис"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_2
+#: model_terms:blog.post,content:website_blog.blog_post_2
 msgid "New Features Launched"
 msgstr "Нові функції запущені"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.header_footer_custom
-msgid "News"
-msgstr "Новини"
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_history
+msgid "Next year"
+msgstr ""
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "No Cover"
 msgstr "Без обкладинки"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_short
+#. openerp-web
+#: code:addons/website_blog/static/src/js/s_latest_posts_frontend.js:44
+#, python-format
+msgid "No blog post was found. Make sure your posts are published."
+msgstr ""
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
 msgid "No blog post yet."
 msgstr "Ще немає жодного допису."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.latest_blogs
-msgid "No keywords defined!"
-msgstr "Не визначено жодного ключового слова!"
-
-#. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_visits
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__visits
 msgid "No of Views"
 msgstr "К-сть переглядів"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
+msgid "No tags defined!"
+msgstr ""
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "None"
 msgstr "Немає"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_2
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_needaction_counter
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Кількість дій"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_has_error_counter
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_has_error_counter
+msgid "Number of error"
+msgstr "Кількість помилок"
+
+#. module: website_blog
+#: model:ir.model.fields,help:website_blog.field_blog_blog__message_needaction_counter
+#: model:ir.model.fields,help:website_blog.field_blog_post__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr "Кількість повідомлень, які потебують дії"
+
+#. module: website_blog
+#: model:ir.model.fields,help:website_blog.field_blog_blog__message_has_error_counter
+#: model:ir.model.fields,help:website_blog.field_blog_post__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Кількість повідомлень з помилковою дставкою"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "Number of posts"
+msgstr ""
+
+#. module: website_blog
+#: model:ir.model.fields,help:website_blog.field_blog_blog__message_unread_counter
+#: model:ir.model.fields,help:website_blog.field_blog_post__message_unread_counter
+msgid "Number of unread messages"
+msgstr "Кількість непрочитаних повідомлень"
+
+#. module: website_blog
+#: model_terms:blog.post,content:website_blog.blog_post_2
 msgid ""
 "Odoo claims to be 'the Open Source software that makes\n"
 "                    building your company's website and selling your products\n"
 "                    online easy'. So how true is this statement?"
 msgstr ""
 "Odoo вимагає бути \"програмним забезпеченням з відкритим кодом, яке робить\n"
-"                     створення веб-сайту вашої компанії та продаж вашої продукції\n"
-"                     онлайн легко '. Тож на скільки це твердження є правдивим?"
+"створення веб-сайту вашої компанії та продаж вашої продукції\n"
+"онлайн легко '. Тож на скільки це твердження є правдивим?"
 
 #. module: website_blog
 #: model:blog.post,website_meta_keywords:website_blog.blog_post_1
@@ -751,27 +1021,32 @@ msgid "Once you have reviewed the content on mobile, close the preview."
 msgstr "Оглянувши вміст на мобільних пристроях, закрийте попередній перегляд."
 
 #. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_tags
+msgid "Others"
+msgstr "Інші"
+
+#. module: website_blog
 #: model:blog.blog,name:website_blog.blog_blog_1
 msgid "Our Blog"
 msgstr "Наш блог"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_rc_blogs
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_blogs
 msgid "Our Blogs"
 msgstr "Наші блоги"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_rc_follow_us
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_follow_us
 msgid "Participate on our social stream."
-msgstr "Візьміть участь в нашому соціальному потоці."
+msgstr "Візьміть участь у нашій прямій трансляції у соціальних мережах."
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_tag_post_ids
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__post_ids
 msgid "Posts"
 msgstr "Дописи"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid ""
 "Productivity is key: our smart user\n"
 "                        interface does not require you to click on every mail\n"
@@ -779,23 +1054,17 @@ msgid ""
 "                        attaching documents is super fast."
 msgstr ""
 "Продуктивність є ключовою: наш розумний користувач\n"
-"                         інтерфейсу не повинен натискати на кожен лист, щоби\n"
-"                         читати усі повідомлення. Читання повного потоку, відповідає\n"
-"                         додаванням документів, є надзвичайно швидким."
+"інтерфейсу не повинен натискати на кожен лист, щоби\n"
+"читати усі повідомлення. Читання повного потоку, відповідає\n"
+"додаванням документів, є надзвичайно швидким."
 
 #. module: website_blog
-#: code:addons/website_blog/controllers/main.py:270
-#, python-format
-msgid "Public user cannot post comments on blog post."
-msgstr "Звичайні користувачі не можуть залишати коментарі в блогах."
-
-#. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_rc_status
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_status
 msgid "Published"
 msgstr "Опубліковано"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_published_date
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__published_date
 msgid "Published Date"
 msgstr "Опублікована дата"
 
@@ -806,32 +1075,43 @@ msgid "Published Post"
 msgstr "Опублікований допис"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_form
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_form
 msgid "Publishing Options"
 msgstr "Опції публікування"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_post_date
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__post_date
 msgid "Publishing date"
 msgstr "Дата публікування"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Purple"
 msgstr "Пурпур"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_ranking
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_follow_us
+msgid "RSS"
+msgstr "RSS"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__ranking
 msgid "Ranking"
 msgstr "Ранжування"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_post_complete_read_next
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_big_picture_template
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_list_template
+msgid "Read More"
+msgstr "Читати більше"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_post_complete_read_next
 msgid "Read Next <span class=\"fa fa-long-arrow-right\"/>"
 msgstr "Читати наступний <span class=\"fa fa-long-arrow-right\"/>"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid ""
 "Reading my inbox is the most unproductive task I do\n"
 "                    on a daily basis. I have to spend one full hour a\n"
@@ -843,18 +1123,38 @@ msgid ""
 "                    my job in 10 minutes!"
 msgstr ""
 "Читання моєї поштової скриньки - це найбільш непродуктивне завдання, яке я роблю\n"
-"                     щодня. Я повинен витратити одну повну годину на\n"
-"                     день для обробки моїх електронних листів. Всі небажані листи в\n"
-"                     одній і тій же папці вхідних; спам, інформація, яка не має значення,\n"
-"                     відповіді на комерційні пропозиції і т. д. Наприкінці\n"
-"                     години лише 10 листів насправді вимагали\n"
-"                     від мене відповіді. З хорошим інструментом я міг би це зробити\n"
-"                     за 10 хвилин!"
+"щодня. Я повинен витратити одну повну годину на\n"
+"день для обробки моїх електронних листів. Всі небажані листи в\n"
+"одній і тій же вхідній папці; спам, інформація, яка не має значення,\n"
+"відповіді на комерційні пропозиції і т. д. Наприкінці\n"
+"години лише 10 листів насправді вимагали\n"
+"від мене відповіді. З хорошим інструментом я міг би це зробити\n"
+"за 10 хвилин!"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Red"
 msgstr "Червоний"
+
+#. module: website_blog
+#: model:ir.model.fields,help:website_blog.field_blog_blog__website_id
+#: model:ir.model.fields,help:website_blog.field_blog_post__website_id
+msgid "Restrict publishing to this website."
+msgstr "Обмеження публікації на цьому веб-сайті."
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__is_seo_optimized
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__is_seo_optimized
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__is_seo_optimized
+msgid "SEO optimized"
+msgstr "Оптимізовано SEO"
+
+#. module: website_blog
+#. openerp-web
+#: code:addons/website_blog/static/src/js/website_blog.editor.js:38
+#, python-format
+msgid "Select Blog"
+msgstr ""
 
 #. module: website_blog
 #. openerp-web
@@ -868,15 +1168,15 @@ msgstr "Виберіть цей пункт, щоб створити новий �
 #: code:addons/website_blog/static/src/js/website.tour.blog.js:26
 #, python-format
 msgid "Set a blog post <b>cover</b>."
-msgstr "Втсановіть <b>фонове зображення</b> публікації блогу."
+msgstr "Встановіть <b>фонове зображення</b> публікації блогу."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Size"
 msgstr "Розмір"
 
 #. module: website_blog
-#: model:ir.model.fields,help:website_blog.field_blog_post_author_avatar
+#: model:ir.model.fields,help:website_blog.field_blog_post__author_avatar
 msgid ""
 "Small-sized image of this contact. It is automatically resized as a 64x64px "
 "image, with aspect ratio preserved. Use this field anywhere a small image is"
@@ -888,42 +1188,63 @@ msgstr ""
 
 #. module: website_blog
 #. openerp-web
-#: code:addons/website_blog/models/website_blog.py:123
+#: code:addons/website_blog/models/website_blog.py:138
 #: code:addons/website_blog/static/src/js/website.tour.blog.js:52
 #, python-format
 msgid "Start writing here..."
 msgstr "Пишіть тут..."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_rc_status
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_status
 msgid "Status"
 msgstr "Статус"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_rc_follow_us
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_follow_us
 msgid "Stay updated :"
 msgstr "Залишається оновленим:"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_subtitle
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__subtitle
 msgid "Sub Title"
 msgstr "Підзаголовок"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_complete
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_post_complete_read_next
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_complete
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_post_complete_read_next
 msgid "Subtitle"
 msgstr "Підзаголовок"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_tag_form
+#: model:ir.ui.menu,name:website_blog.menu_website_blog_tag_category_global
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_tag_category_tree
+msgid "Tag Categories"
+msgstr ""
+
+#. module: website_blog
+#: model:ir.actions.act_window,name:website_blog.action_tag_category
+msgid "Tag Category"
+msgstr ""
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_tag_category_form
+msgid "Tag Category Form"
+msgstr ""
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_tag_form
 msgid "Tag Form"
 msgstr "Форма міток"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_tag_tree
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_tag_tree
 msgid "Tag List"
 msgstr "Список міток"
+
+#. module: website_blog
+#: sql_constraint:blog.tag.category:0
+msgid "Tag category already exists !"
+msgstr ""
 
 #. module: website_blog
 #: sql_constraint:blog.tag:0
@@ -931,39 +1252,41 @@ msgid "Tag name already exists !"
 msgstr "Така мітка вже існує!"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_tag_ids
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_rc_tags
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__tag_ids
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag_category__tag_ids
+#: model:ir.ui.menu,name:website_blog.menu_blog_tag_global
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_tags
 msgid "Tags"
 msgstr "Мітки"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_teaser
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__teaser
 msgid "Teaser"
 msgstr "Тизер"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_teaser_manual
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__teaser_manual
 msgid "Teaser Content"
 msgstr "Зміст тизеру"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_form
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_form
 msgid "Technical"
 msgstr "Технічний"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid "The Communication Mechanism of Odoo"
 msgstr "Механізм зв'язку Odoo"
 
 #. module: website_blog
 #: model:blog.post,name:website_blog.blog_post_1
-#: model:blog.post,website_meta_description:website_blog.blog_post_1
 msgid "The Future of Emails"
 msgstr "Майбутнє електронної пошти"
 
 #. module: website_blog
-#: model:ir.model.fields,help:website_blog.field_blog_post_post_date
+#: model:ir.model.fields,help:website_blog.field_blog_post__post_date
 msgid ""
 "The blog post will be visible for your visitors as of this date on the "
 "website if it is set as published."
@@ -972,7 +1295,12 @@ msgstr ""
 "якщо вона встановлена як опублікована."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.latest_blogs
+#: model:ir.model.fields,help:website_blog.field_blog_post__website_url
+msgid "The full URL to access the document through the website."
+msgstr "URL-адреса повністю, для доступу до документації через сайт"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
 msgid ""
 "This page is great to improve your <strong>Search Engine Optimization</strong>;\n"
 "                   You can review titles, keywords and descriptions of all blogs at once."
@@ -981,7 +1309,7 @@ msgstr ""
 "Ви можете переглянути заголовки, ключові слова та описи відразу з усіх блогів."
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_2
+#: model_terms:blog.post,content:website_blog.blog_post_2
 msgid ""
 "This provides a single source of data for your company and\n"
 "                    removes the need to create offline synchronisation between\n"
@@ -992,12 +1320,12 @@ msgstr ""
 "                     базою даних веб-сайтів і товарів."
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_name
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__name
 msgid "Title"
 msgstr "Заголовок"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_2
+#: model_terms:blog.post,content:website_blog.blog_post_2
 msgid ""
 "To add to an already comprehensive set of Odoo\n"
 "                features, a website content management system (CMS or WMS) has been developed and a beta release is\n"
@@ -1005,10 +1333,15 @@ msgid ""
 msgstr ""
 "Щоб додати до вже всеосяжного набору функцій Odoo,\n"
 "                  розроблена система управління контентом веб-сайту (CMS або WMS), а також є бета-версія\n"
-"                 доступна сьогодні, з 31 січня 2014 року."
+"                 доступна сьогодні."
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_complete
+msgid "To blog content"
+msgstr ""
+
+#. module: website_blog
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid ""
 "To disrupt emails, you need more than just another user\n"
 "                    interface. We need to rethink the whole communication flow."
@@ -1017,12 +1350,31 @@ msgstr ""
 "                    Нам потрібно переосмислити весь зв'язок."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_rc_status
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_complete
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_follow_us
+msgid "Twitter"
+msgstr "Twitter"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_status
 msgid "Unpublished"
 msgstr "Неопубліковано"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_unread
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_unread
+msgid "Unread Messages"
+msgstr "Непрочитані повідомлення"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_unread_counter
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr "Кількість непрочитаних повідомлень"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
 msgid "Untitled Post"
 msgstr "Допис без назви"
 
@@ -1036,48 +1388,79 @@ msgstr ""
 "пристроях</b>."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_tag_form
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_tag_form
 msgid "Used in:"
 msgstr "Використано:"
 
 #. module: website_blog
-#: model:ir.model.fields,help:website_blog.field_mail_compose_message_path
-#: model:ir.model.fields,help:website_blog.field_mail_mail_path
-#: model:ir.model.fields,help:website_blog.field_mail_message_path
-#: model:ir.model.fields,help:website_blog.field_survey_mail_compose_message_path
-msgid ""
-"Used to display messages in a paragraph-based chatter using a unique path;"
-msgstr ""
-"Відображав повідомлення у вигляді по-абзацного чату, використовуючи "
-"унікальний шлях;"
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__website_published
+msgid "Visible on current website"
+msgstr "Видимий на поточному веб-сайті"
 
 #. module: website_blog
 #: model:ir.model,name:website_blog.model_website
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__website_id
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__website_id
 msgid "Website"
-msgstr "Вебсайт"
+msgstr "Веб-сайт"
 
 #. module: website_blog
 #: model:ir.actions.act_url,name:website_blog.action_open_website
 msgid "Website Blogs"
-msgstr "Блоги вебсайту"
+msgstr "Блоги веб-сайту"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_website_message_ids
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__website_message_ids
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__website_message_ids
 msgid "Website Messages"
-msgstr "Повідомлення з вебсайту"
+msgstr "Повідомлення з веб-сайту"
 
 #. module: website_blog
-#: model:ir.model.fields,help:website_blog.field_blog_post_website_message_ids
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__website_url
+msgid "Website URL"
+msgstr "URL сайту"
+
+#. module: website_blog
+#: model:ir.model.fields,help:website_blog.field_blog_blog__website_message_ids
+#: model:ir.model.fields,help:website_blog.field_blog_post__website_message_ids
 msgid "Website communication history"
 msgstr "Історія бесіди на сайті"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__website_meta_description
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__website_meta_description
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__website_meta_description
+msgid "Website meta description"
+msgstr "Мета-опис сайту"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__website_meta_keywords
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__website_meta_keywords
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__website_meta_keywords
+msgid "Website meta keywords"
+msgstr "Мета-ключі сайту"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__website_meta_title
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__website_meta_title
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__website_meta_title
+msgid "Website meta title"
+msgstr "Мета-заголовок сайту"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__website_meta_og_img
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__website_meta_og_img
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__website_meta_og_img
+msgid "Website opengraph image"
+msgstr "Зображення веб-сайту opengraph"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "White"
 msgstr "Білий"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_rc_about_us
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_about_us
 msgid ""
 "Write a small text here for when <b>new visitors</b> find your website\n"
 "            through your <b>blog entries</b>, referenced in Google."
@@ -1093,35 +1476,46 @@ msgid "Write a title, the subtitle is optional."
 msgstr "Напишіть заголовок, підзаголовок не обов’язковий."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Yellow"
-msgstr "Жовта"
+msgstr "Жовтий"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.latest_blogs
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
 msgid ""
 "You should <strong>add a banner on the top</strong> as it is a frequent landing page for new visitors.\n"
 "                   <span class=\"text-muted\">This box will not be visible to your visitors.</span>"
 msgstr ""
-"Вам слід <strong>додати банер вверху</strong>, -туди зазвичай спочатку потрапляють нові відвідувачі.\n"
-"<span class=\"text-muted\">Ця частина не буде відображатися Вашим відвідувачам.</span>"
+"Вам слід <strong>додати банер вверху</strong>, туди зазвичай спочатку потрапляють нові відвідувачі.\n"
+"<span class=\"text-muted\">Ця частина не буде відображатися вашим відвідувачам.</span>"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_template_new_post
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_follow_us
+msgid "Youtube"
+msgstr "Youtube"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_template_new_post
 msgid "blog. Click here to access the blog :"
 msgstr "блог. Натисніть тут для доступу до блогу :"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_short
-#: model:ir.ui.view,arch_db:website_blog.latest_blogs
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
 msgid "comment"
 msgstr "кометар"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_short
-#: model:ir.ui.view,arch_db:website_blog.latest_blogs
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
 msgid "comments"
 msgstr "коментарі"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
+msgid "float-right"
+msgstr ""
 
 #. module: website_blog
 #: model:blog.tag,name:website_blog.blog_tag_1
@@ -1129,32 +1523,26 @@ msgid "functional"
 msgstr "функціональний"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_template_new_post
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_template_new_post
 msgid "has been published on the"
-msgstr "Було опубліковано на"
+msgstr "було опубліковано на"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_short
-#: model:ir.ui.view,arch_db:website_blog.latest_blogs
-msgid "pull-right"
-msgstr "зміщення вправо"
-
-#. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
 msgid "unpublished"
 msgstr "неопубліковано"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
 msgid "view"
 msgstr "перегляд"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
 msgid "views"
 msgstr "переглядів"
 
 #. module: website_blog
 #: model:blog.tag,name:website_blog.blog_tag_2
 msgid "website"
-msgstr "вебсайт"
+msgstr "веб-сайт"

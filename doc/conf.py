@@ -54,9 +54,9 @@ copyright = u'Odoo S.A.'
 # built documents.
 #
 # The short X.Y version.
-version = '11.0'
+version = '12.0'
 # The full version, including alpha/beta/rc tags.
-release = '11.0'
+release = '12.0'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -180,8 +180,6 @@ todo_include_todos = False
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3/', None),
     'werkzeug': ('http://werkzeug.pocoo.org/docs/', None),
-    'sqlalchemy': ('http://docs.sqlalchemy.org/en/rel_0_9/', None),
-    'django': ('https://django.readthedocs.org/en/latest/', None),
 }
 
 github_user = 'odoo'

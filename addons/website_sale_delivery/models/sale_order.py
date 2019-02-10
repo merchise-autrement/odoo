@@ -26,7 +26,7 @@ class SaleOrder(models.Model):
     @api.depends('order_line.price_unit', 'order_line.tax_id', 'order_line.discount', 'order_line.product_uom_qty')
     def _compute_amount_delivery(self):
         for order in self:
-            if self.env.user.has_group('sale.group_show_price_subtotal'):
+            if self.env.user.has_group('account.group_show_line_subtotals_tax_excluded'):
                 order.amount_delivery = sum(order.order_line.filtered('is_delivery').mapped('price_subtotal'))
             else:
                 order.amount_delivery = sum(order.order_line.filtered('is_delivery').mapped('price_total'))
@@ -75,6 +75,7 @@ class SaleOrder(models.Model):
 
     def _get_delivery_methods(self):
         address = self.partner_shipping_id
+        # searching on website_published will also search for available website (_search method on computed field)
         return self.env['delivery.carrier'].sudo().search([('website_published', '=', True)]).available_carriers(address)
 
     @api.multi
