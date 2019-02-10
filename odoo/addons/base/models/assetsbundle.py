@@ -75,10 +75,8 @@ class AssetsBundle(object):
                 self.javascripts.append(JavascriptAsset(self, url=f['url'], filename=f['filename'], inline=f['content']))
 
     # depreciated and will remove after v11
-    def to_html(self, sep=None, css=True, js=True, debug=False,
-                async_load=False, url_for=(lambda url: url), spdy=False):
-        nodes = self.to_node(css=css, js=js, debug=debug,
-                             async_load=async_load, spdy=spdy)
+    def to_html(self, sep=None, css=True, js=True, debug=False, async_load=False, url_for=(lambda url: url)):
+        nodes = self.to_node(css=css, js=js, debug=debug, async_load=async_load)
 
         if sep is None:
             sep = u'\n            '
@@ -96,31 +94,27 @@ class AssetsBundle(object):
 
         return sep + sep.join(response)
 
-    def to_node(self, css=True, js=True, debug=False, async_load=False, spdy=False):
+    def to_node(self, css=True, js=True, debug=False, async_load=False):
         """
         :returns [(tagName, attributes, content)] if the tag is auto close
         """
         response = []
-        if debug == 'assets' or spdy:
+        if debug == 'assets':
             if css and self.stylesheets:
                 is_css_preprocessed, old_attachments = self.is_css_preprocessed()
                 if not is_css_preprocessed:
-                    self.preprocess_css(
-                        debug=debug,
-                        old_attachments=old_attachments,
-                        spdy=spdy
-                    )
+                    self.preprocess_css(debug=debug, old_attachments=old_attachments)
                     if self.css_errors:
                         msg = '\n'.join(self.css_errors)
-                        response.append(JavascriptAsset(self, inline=self.dialog_message(msg)).to_node(spdy=spdy))
-                        response.append(StylesheetAsset(self, url="/web/static/lib/bootstrap/css/bootstrap.css").to_node(spdy=spdy))
+                        response.append(JavascriptAsset(self, inline=self.dialog_message(msg)).to_node())
+                        response.append(StylesheetAsset(self, url="/web/static/lib/bootstrap/css/bootstrap.css").to_node())
                 if not self.css_errors:
                     for style in self.stylesheets:
-                        response.append(style.to_node(spdy=spdy))
+                        response.append(style.to_node())
 
             if js:
                 for jscript in self.javascripts:
-                    response.append(jscript.to_node(spdy=spdy))
+                    response.append(jscript.to_node())
         else:
             if css and self.stylesheets:
                 css_attachments = self.css() or []
@@ -133,7 +127,7 @@ class AssetsBundle(object):
                     response.append(("link", attr, None))
                 if self.css_errors:
                     msg = '\n'.join(self.css_errors)
-                    response.append(JavascriptAsset(self, inline=self.dialog_message(msg)).to_node(spdy=spdy))
+                    response.append(JavascriptAsset(self, inline=self.dialog_message(msg)).to_node())
             if js and self.javascripts:
                 attr = OrderedDict([
                     ["async", "async" if async_load else None],
@@ -393,14 +387,13 @@ class AssetsBundle(object):
 
         return preprocessed, attachments
 
-    def preprocess_css(self, debug=False, old_attachments=None, spdy=False):
+    def preprocess_css(self, debug=False, old_attachments=None):
         """
             Checks if the bundle contains any sass/less content, then compiles it to css.
             If user language direction is Right to Left then consider css files to call run_rtlcss,
             css files are also stored in ir.attachment after processing done by rtlcss.
             Returns the bundle's flat css.
         """
-        from odoo.http import STATIC_CACHE
         if self.stylesheets:
             compiled = ""
             for atype in (SassStylesheetAsset, ScssStylesheetAsset, LessStylesheetAsset):
@@ -429,7 +422,7 @@ class AssetsBundle(object):
                 asset = next(asset for asset in self.stylesheets if asset.id == asset_id)
                 asset._content = fragments.pop(0)
 
-                if debug or spdy:
+                if debug:
                     try:
                         fname = os.path.basename(asset.url)
                         url = asset.html_url
@@ -443,7 +436,6 @@ class AssetsBundle(object):
                                 datas_fname=fname,
                                 res_model=False,
                                 res_id=False,
-                                cache_control_header='max-age=%d, public' % STATIC_CACHE
                             ))
 
                         if self.env.context.get('commit_assetsbundle') is True:
@@ -594,8 +586,8 @@ class WebAsset(object):
                 raise AssetNotFound("Could not find %s" % self.name)
 
     # depreciated and will remove after v11
-    def to_html(self, spdy=False):
-        tagName, attributes, content = self.to_node(spdy=spdy)
+    def to_html(self):
+        tagName, attributes, content = self.to_node()
         html = u"<%s " % tagName
         for name, value in attributes.items():
             if value or isinstance(value, string_types):
@@ -606,7 +598,7 @@ class WebAsset(object):
             html += u'>%s</%s>' % (escape(to_text(content)), tagName)
         return html
 
-    def to_node(self, spdy=False):
+    def to_node(self):
         raise NotImplementedError()
 
     @func.lazy_property
@@ -651,21 +643,6 @@ class WebAsset(object):
             content = self.content
         return '\n/* %s */\n%s' % (self.name, content)
 
-    @property
-    def versionhash(self):
-        self.stat()
-        if self._filename:
-            try:
-                return os.path.getmtime(self._filename)
-            except:
-                _logger.exception(
-                    "Error while hashing asset '%s'",
-                    self._filename
-                )
-                return None
-        else:
-            return None
-
 
 class JavascriptAsset(WebAsset):
     def minify(self):
@@ -677,7 +654,7 @@ class JavascriptAsset(WebAsset):
         except AssetError as e:
             return u"console.error(%s);" % json.dumps(to_text(e))
 
-    def to_node(self, spdy=False):
+    def to_node(self):
         if self.url:
             return ("script", OrderedDict([
                 ["type", "text/javascript"],
@@ -752,7 +729,7 @@ class StylesheetAsset(WebAsset):
         content = re.sub(r' *([{}]) *', r'\1', content)
         return self.with_header(content)
 
-    def to_node(self, spdy=False):
+    def to_node(self):
         if self.url:
             attr = OrderedDict([
                 ["type", "text/css"],
