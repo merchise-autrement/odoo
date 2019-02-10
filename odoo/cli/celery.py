@@ -39,6 +39,15 @@ class Celery(Command):
         odoo.tools.config.parse_config(args=args)
         from odoo.jobs import app  # noqa: discover the app
         from celery.bin.celery import main as _main
+        from raven.contrib.celery import (
+            register_signal,
+            register_logger_signal
+        )
+        from odoo.sentrylog import get_client
+        client = get_client()
         odoo.evented = False
         odoo.multi_process = True
+        if client:
+            register_logger_signal(client)
+            register_signal(client)
         _main(argv=['celery', ] + cmdargs)

@@ -12,12 +12,12 @@ class StockMoveLine(models.Model):
 
     workorder_id = fields.Many2one('mrp.workorder', 'Work Order')
     production_id = fields.Many2one('mrp.production', 'Production Order')
-    lot_produced_id = fields.Many2one('stock.production.lot', 'Finished Lot')
+    lot_produced_id = fields.Many2one('stock.production.lot', 'Finished Lot/Serial Number')
     lot_produced_qty = fields.Float(
         'Quantity Finished Product', digits=dp.get_precision('Product Unit of Measure'),
         help="Informative, not used in matching")
     done_wo = fields.Boolean('Done for Work Order', default=True, help="Technical Field which is False when temporarily filled in in work order")  # TDE FIXME: naming
-    done_move = fields.Boolean('Move Done', related='move_id.is_done', store=True)  # TDE FIXME: naming
+    done_move = fields.Boolean('Move Done', related='move_id.is_done', readonly=False, store=True)  # TDE FIXME: naming
 
     def _get_similar_move_lines(self):
         lines = super(StockMoveLine, self)._get_similar_move_lines()
@@ -182,6 +182,24 @@ class StockMove(models.Model):
         self.sudo().unlink()
         return processed_moves
 
+    def _decrease_reserved_quanity(self, quantity):
+        """ Decrease the reservation on move lines but keeps the
+        all other data.
+        """
+        move_line_to_unlink = self.env['stock.move.line']
+        for move in self:
+            reserved_quantity = quantity
+            for move_line in self.move_line_ids:
+                if move_line.product_uom_qty > reserved_quantity:
+                    move_line.product_uom_qty = reserved_quantity
+                else:
+                    move_line.product_uom_qty = 0
+                    reserved_quantity -= move_line.product_uom_qty
+                if not move_line.product_uom_qty and not move_line.qty_done:
+                    move_line_to_unlink |= move_line
+        move_line_to_unlink.unlink()
+        return True
+
     def _prepare_phantom_move_values(self, bom_line, quantity):
         return {
             'picking_id': self.picking_id.id if self.picking_id else False,
@@ -245,6 +263,7 @@ class StockMove(models.Model):
                 'move_id': self.id,
                 'product_id': self.product_id.id,
                 'location_id': location_id.id if location_id else self.location_id.id,
+                'production_id': self.raw_material_production_id.id,
                 'location_dest_id': self.location_dest_id.id,
                 'product_uom_qty': 0,
                 'product_uom_id': self.product_uom.id,
@@ -255,12 +274,12 @@ class StockMove(models.Model):
                 vals.update({'lot_id': lot.id})
             self.env['stock.move.line'].create(vals)
 
+    def _get_upstream_documents_and_responsibles(self, visited):
+            if self.created_production_id and self.created_production_id.state not in ('done', 'cancel'):
+                return [(self.created_production_id, self.created_production_id.user_id, visited)]
+            else:
+                return super(StockMove, self)._get_upstream_documents_and_responsibles(visited)
 
-class PushedFlow(models.Model):
-    _inherit = "stock.location.path"
-
-    def _prepare_move_copy_values(self, move_to_copy, new_date):
-        new_move_vals = super(PushedFlow, self)._prepare_move_copy_values(move_to_copy, new_date)
-        new_move_vals['production_id'] = False
-
-        return new_move_vals
+    def _should_be_assigned(self):
+        res = super(StockMove, self)._should_be_assigned()
+        return bool(res and not (self.production_id or self.raw_material_production_id))

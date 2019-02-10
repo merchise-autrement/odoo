@@ -8,7 +8,6 @@ from os.path import join, dirname
 exec(open(join(dirname(__file__), 'odoo', 'release.py'), 'rb').read())  # Load release variables
 lib_name = 'odoo'
 
-
 setup(
     name='odoo',
     version=version,
@@ -33,6 +32,7 @@ setup(
         'html2text',
         'Jinja2',
         'lxml',  # windows binary http://www.lfd.uci.edu/~gohlke/pythonlibs/
+        'libsass',
         'mako',
         'mock',
         'ofxparse',
@@ -48,7 +48,6 @@ setup(
         'python-dateutil',
         'pytz',
         'pyusb >= 1.0.0b1',
-        'pyyaml',
         'qrcode',
         'reportlab',  # windows binary pypi.python.org/pypi/reportlab
         'requests',

@@ -77,15 +77,14 @@ to manage followers on your record:
 
 .. rubric:: Posting messages
 
-.. method:: message_post(self, body='', subject=None, message_type='notification', subtype=None, parent_id=False, attachments=None, content_subtype='html', **kwargs)
+.. method:: message_post(self, body='', subject=None, message_type='notification', subtype=None, parent_id=False, attachments=None, **kwargs)
     
     Post a new message in an existing thread, returning the new
     mail.message ID.
     
     :param str body: body of the message, usually raw HTML that will
         be sanitized
-    :param str message_type: see mail_message.type field
-    :param str content_subtype: if plaintext: convert body into html
+    :param str message_type: see mail_message.message_type field
     :param int parent_id: handle reply to a previous message by adding the
         parent partners to the message in case of private discussion
     :param list(tuple(str,str)) attachments: list of attachment tuples in the form
@@ -171,17 +170,7 @@ a date or an e-mail address, add CC's addresses as followers, etc.).
         using the subtypes given in the parameters
     :return: Success/Failure
     :rtype: bool
-    
-.. method:: message_subscribe_users(user_ids=None, subtype_ids=None)
 
-    Wrapper on message_subscribe, using users instead of partners.
-    
-    :param list(int) user_ids: IDs of the users that will be subscribed
-        to the record; if ``None``, subscribe the current user instead.
-    :param list(int) subtype_ids: IDs of the subtypes that the channels/partners
-        will be subscribed to
-    :return: Success
-    :rtype: bool
 
 .. method:: message_unsubscribe(partner_ids=None, channel_ids=None)
 
@@ -552,7 +541,7 @@ Alias support integration
 
 Aliases are usually configured on a parent model which will then create specific
 record when contacted by e-mail. For example, Project have aliases to create tasks
-or issues, Sales Channel have aliases to generate Leads.
+or issues, Sales Team have aliases to generate Leads.
 
 .. note:: The model that will be created by the alias **must** inherit the
           ``mail_thread`` model.
@@ -925,7 +914,7 @@ buttons to website visitors:
 
 .. code-block:: xml
 
-    <div id="website_published_button" class="pull-right"
+    <div id="website_published_button" class="float-right"
          groups="base.group_website_publisher"> <!-- or any other meaningful group -->
         <t t-call="website.publish_management">
           <t t-set="object" t-value="blog_post"/>

@@ -2,7 +2,7 @@
 :types: api
 
 
-.. :code-column:
+:code-column:
 
 ============
 External API
@@ -23,7 +23,6 @@ easily available over XML-RPC_ and accessible from a variety of languages.
      into every call. Session would allow db to be stored as well
    These issues are especially visible in Java, somewhat less so in PHP
 
-
 Connection
 ==========
 
@@ -33,19 +32,15 @@ Connection
 
     .. rst-class:: setupcode hidden
 
-        **python**:
+        .. code-block:: python3
 
-        .. code-block:: python
-
-            import xmlrpclib
-            info = xmlrpclib.ServerProxy('https://demo.odoo.com/start').start()
+            import xmlrpc.client
+            info = xmlrpc.client.ServerProxy('https://demo.odoo.com/start').start()
             url, db, username, password = \
                 info['host'], info['database'], info['user'], info['password']
-            common = xmlrpclib.ServerProxy('{}/xmlrpc/2/common'.format(url))
+            common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
             uid = common.authenticate(db, username, password, {})
-            models = xmlrpclib.ServerProxy('{}/xmlrpc/2/object'.format(url))
-
-	**ruby**:
+            models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
 
         .. code-block:: ruby
 
@@ -57,8 +52,6 @@ Connection
             uid = common.call('authenticate', db, username, password, {})
             models = XMLRPC::Client.new2("#{url}/xmlrpc/2/object").proxy
 
-	**php**:
-
         .. code-block:: php
 
             require_once('ripcord.php');
@@ -68,8 +61,6 @@ Connection
             $common = ripcord::client("$url/xmlrpc/2/common");
             $uid = $common->authenticate($db, $username, $password, array());
             $models = ripcord::client("$url/xmlrpc/2/object");
-
-	**java**:
 
         .. code-block:: java
 
@@ -125,20 +116,14 @@ parameters
 
 .. rst-class:: setup doc-aside
 
-.. container::
+.. switcher::
 
-    .. switcher : :
-
-    **python**:
-
-    .. code-block:: python
+    .. code-block:: python3
 
         url = <insert server URL>
         db = <insert database name>
         username = 'admin'
         password = <insert password for your admin user (default: admin)>
-
-    **ruby**:
 
     .. code-block:: ruby
 
@@ -147,16 +132,12 @@ parameters
         username = "admin"
         password = <insert password for your admin user (default: admin)>
 
-    **php**:
-
     .. code-block:: php
 
         $url = <insert server URL>;
         $db = <insert database name>;
         $username = "admin";
         $password = <insert password for your admin user (default: admin)>;
-
-    **java**:
 
     .. code-block:: java
 
@@ -173,20 +154,14 @@ database:
 
 .. rst-class:: setup doc-aside
 
-.. container::
+.. switcher::
 
-    .. switcher : :
+    .. code-block:: python3
 
-    **python**:
-
-    .. code-block:: python
-
-        import xmlrpclib
-        info = xmlrpclib.ServerProxy('https://demo.odoo.com/start').start()
+        import xmlrpc.client
+        info = xmlrpc.client.ServerProxy('https://demo.odoo.com/start').start()
         url, db, username, password = \
             info['host'], info['database'], info['user'], info['password']
-
-    **ruby**:
 
     .. code-block:: ruby
 
@@ -194,8 +169,6 @@ database:
         info = XMLRPC::Client.new2('https://demo.odoo.com/start').call('start')
         url, db, username, password = \
             info['host'], info['database'], info['user'], info['password']
-
-    **php**:
 
     .. case:: PHP
 
@@ -218,8 +191,6 @@ database:
             `HTTPS <http://en.wikipedia.org/wiki/HTTP_Secure>`_, it also requires that
             the `OpenSSL extension
             <http://php.net/manual/en/openssl.installation.php>`_ be enabled.
-
-    **java**:
 
     .. case:: Java
 
@@ -248,7 +219,7 @@ database:
 Logging in
 ----------
 
-Odoo requires users of the API to be authenticated before they can query most
+Odoo requires users of the API to be authenticated before they can query most 
 data.
 
 The ``xmlrpc/2/common`` endpoint provides meta-calls which don't require
@@ -261,32 +232,22 @@ the login.
 
 .. rst-class:: setup doc-aside
 
-.. container::
+.. switcher::
 
-    .. switcher : :
+    .. code-block:: python3
 
-    **python**:
-
-    .. code-block:: python
-
-        common = xmlrpclib.ServerProxy('{}/xmlrpc/2/common'.format(url))
+        common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
         common.version()
-
-    **ruby**:
 
     .. code-block:: ruby
 
         common = XMLRPC::Client.new2("#{url}/xmlrpc/2/common")
         common.call('version')
 
-    **php**:
-
     .. code-block:: php
 
         $common = ripcord::client("$url/xmlrpc/2/common");
         $common->version();
-
-    **java**:
 
     .. code-block:: java
 
@@ -308,36 +269,25 @@ the login.
 
 .. rst-class:: setup doc-aside
 
-.. container::
+.. switcher::
 
-    .. switcher : :
-
-    **python**:
-
-    .. code-block:: python
+    .. code-block:: python3
 
         uid = common.authenticate(db, username, password, {})
-
-    **ruby**:
 
     .. code-block:: ruby
 
         uid = common.call('authenticate', db, username, password, {})
 
-    **php**:
-
     .. code-block:: php
 
         $uid = $common->authenticate($db, $username, $password, array());
-
-    **java**:
 
     .. code-block:: java
 
         int uid = (int)client.execute(
             common_config, "authenticate", asList(
                 db, username, password, emptyMap()));
-
 
 Calling methods
 ===============
@@ -364,20 +314,14 @@ Each call to ``execute_kw`` takes the following parameters:
 
     .. rst-class:: setup
 
-    .. container::
+    .. switcher::
 
-        .. switcher : :
+        .. code-block:: python3
 
-        **python**:
-
-        .. code-block:: python
-
-            models = xmlrpclib.ServerProxy('{}/xmlrpc/2/object'.format(url))
+            models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
             models.execute_kw(db, uid, password,
                 'res.partner', 'check_access_rights',
                 ['read'], {'raise_exception': False})
-
-        **ruby**:
 
         .. code-block:: ruby
 
@@ -386,16 +330,12 @@ Each call to ``execute_kw`` takes the following parameters:
                 'res.partner', 'check_access_rights',
                 ['read'], {raise_exception: false})
 
-        **php**:
-
         .. code-block:: php
 
             $models = ripcord::client("$url/xmlrpc/2/object");
             $models->execute_kw($db, $uid, $password,
                 'res.partner', 'check_access_rights',
                 array('read'), array('raise_exception' => false));
-
-        **java**:
 
         .. code-block:: java
 
@@ -411,14 +351,11 @@ Each call to ``execute_kw`` takes the following parameters:
                 new HashMap() {{ put("raise_exception", false); }}
             ));
 
-    **json**:
-
     .. code-block:: json
 
         true
 
     .. todo:: this should be runnable and checked
-
 
 List records
 ------------
@@ -432,19 +369,13 @@ companies for instance:
 
 .. container:: doc-aside
 
-    .. container::
+    .. switcher::
 
-        .. switcher : :
-
-        **python**:
-
-        .. code-block:: python
+        .. code-block:: python3
 
             models.execute_kw(db, uid, password,
                 'res.partner', 'search',
                 [[['is_company', '=', True], ['customer', '=', True]]])
-
-        **ruby**:
 
         .. code-block:: ruby
 
@@ -452,16 +383,12 @@ companies for instance:
                 'res.partner', 'search',
                 [[['is_company', '=', true], ['customer', '=', true]]])
 
-        **php**:
-
         .. code-block:: php
 
             $models->execute_kw($db, $uid, $password,
                 'res.partner', 'search', array(
                     array(array('is_company', '=', true),
                           array('customer', '=', true))));
-
-        **java**:
 
         .. code-block:: java
 
@@ -473,12 +400,9 @@ companies for instance:
                     asList("customer", "=", true)))
             )));
 
-    **json**:
-
     .. code-block:: json
 
         [7, 18, 12, 14, 17, 19, 8, 31, 26, 16, 13, 20, 30, 22, 29, 15, 23, 28, 74]
-
 
 Pagination
 ''''''''''
@@ -489,42 +413,32 @@ available to only retrieve a subset of all matched records.
 
 .. container:: doc-aside
 
-    .. container::
-
-        .. switcher : :
-
-        **python**:
-
-        .. code-block:: python
-
+    .. switcher::
+    
+        .. code-block:: python3
+    
             models.execute_kw(db, uid, password,
                 'res.partner', 'search',
                 [[['is_company', '=', True], ['customer', '=', True]]],
                 {'offset': 10, 'limit': 5})
-
-        **ruby**:
-
+    
         .. code-block:: ruby
-
+    
             models.execute_kw(db, uid, password,
                 'res.partner', 'search',
                 [[['is_company', '=', true], ['customer', '=', true]]],
                 {offset: 10, limit: 5})
-
-        **php**:
-
+    
         .. code-block:: php
-
+    
             $models->execute_kw($db, $uid, $password,
                 'res.partner', 'search',
                 array(array(array('is_company', '=', true),
                             array('customer', '=', true))),
                 array('offset'=>10, 'limit'=>5));
-
-        **java**:
-
+    
         .. code-block:: java
-
+    
             asList((Object[])models.execute("execute_kw", asList(
                 db, uid, password,
                 "res.partner", "search",
@@ -533,13 +447,10 @@ available to only retrieve a subset of all matched records.
                     asList("customer", "=", true))),
                 new HashMap() {{ put("offset", 10); put("limit", 5); }}
             )));
-
-    **json**:
-
+    
     .. code-block:: json
-
+    
         [13, 20, 30, 22, 29]
-
 
 Count records
 -------------
@@ -552,39 +463,29 @@ only the number of records matching the query. It takes the same
 
 .. container:: doc-aside
 
-    .. container::
-
-        .. switcher : :
-
-        **python**:
-
-        .. code-block:: python
-
+    .. switcher::
+    
+        .. code-block:: python3
+    
             models.execute_kw(db, uid, password,
                 'res.partner', 'search_count',
                 [[['is_company', '=', True], ['customer', '=', True]]])
-
-        **ruby**:
-
+    
         .. code-block:: ruby
-
+    
             models.execute_kw(db, uid, password,
                 'res.partner', 'search_count',
                 [[['is_company', '=', true], ['customer', '=', true]]])
-
-        **php**:
-
+    
         .. code-block:: php
-
+    
             $models->execute_kw($db, $uid, $password,
                 'res.partner', 'search_count',
                 array(array(array('is_company', '=', true),
                             array('customer', '=', true))));
-
-        **java**:
-
+    
         .. code-block:: java
-
+    
             (Integer)models.execute("execute_kw", asList(
                 db, uid, password,
                 "res.partner", "search_count",
@@ -592,11 +493,9 @@ only the number of records matching the query. It takes the same
                     asList("is_company", "=", true),
                     asList("customer", "=", true)))
             ));
-
-    **json**:
-
+    
     .. code-block:: json
-
+    
         19
 
 .. warning::
@@ -604,7 +503,6 @@ only the number of records matching the query. It takes the same
     calling ``search`` then ``search_count`` (or the other way around) may not
     yield coherent results if other users are using the server: stored data
     could have changed between the calls
-
 
 Read records
 ------------
@@ -616,15 +514,11 @@ fetch. By default, it will fetch all the fields the current user can read,
 which tends to be a huge amount.
 
 .. container:: doc-aside
-
-    .. container::
-
-        .. switcher : :
-
-        **python**:
-
-        .. code-block:: python
-
+    
+    .. switcher::
+    
+        .. code-block:: python3
+    
             ids = models.execute_kw(db, uid, password,
                 'res.partner', 'search',
                 [[['is_company', '=', True], ['customer', '=', True]]],
@@ -633,11 +527,9 @@ which tends to be a huge amount.
                 'res.partner', 'read', [ids])
             # count the number of fields fetched by default
             len(record)
-
-        **ruby**:
-
+    
         .. code-block:: ruby
-
+    
             ids = models.execute_kw(db, uid, password,
                 'res.partner', 'search',
                 [[['is_company', '=', true], ['customer', '=', true]]],
@@ -646,11 +538,9 @@ which tends to be a huge amount.
                 'res.partner', 'read', [ids]).first
             # count the number of fields fetched by default
             record.length
-
-        **php**:
-
+    
         .. code-block:: php
-
+    
             $ids = $models->execute_kw($db, $uid, $password,
                 'res.partner', 'search',
                 array(array(array('is_company', '=', true),
@@ -660,11 +550,9 @@ which tends to be a huge amount.
                 'res.partner', 'read', array($ids));
             // count the number of fields fetched by default
             count($records[0]);
-
-        **java**:
-
+    
         .. code-block:: java
-
+    
             final List ids = asList((Object[])models.execute(
                 "execute_kw", asList(
                     db, uid, password,
@@ -682,30 +570,22 @@ which tends to be a huge amount.
             ))[0];
             // count the number of fields fetched by default
             record.size();
-
-    **json**:
-
+    
     .. code-block:: json
-
+    
         121
 
 Conversedly, picking only three fields deemed interesting.
 
 .. container:: doc-aside
 
-    .. container::
+    .. switcher::
 
-        .. switcher : :
-
-        **python**:
-
-        .. code-block:: python
+        .. code-block:: python3
 
             models.execute_kw(db, uid, password,
                 'res.partner', 'read',
                 [ids], {'fields': ['name', 'country_id', 'comment']})
-
-        **ruby**:
 
         .. code-block:: ruby
 
@@ -713,16 +593,12 @@ Conversedly, picking only three fields deemed interesting.
                 'res.partner', 'read',
                 [ids], {fields: %w(name country_id comment)})
 
-        **php**:
-
         .. code-block:: php
 
             $models->execute_kw($db, $uid, $password,
                 'res.partner', 'read',
                 array($ids),
                 array('fields'=>array('name', 'country_id', 'comment')));
-
-        **java**:
 
         .. code-block:: java
 
@@ -735,14 +611,11 @@ Conversedly, picking only three fields deemed interesting.
                 }}
             )));
 
-    **json**:
-
     .. code-block:: json
 
         [{"comment": false, "country_id": [21, "Belgium"], "id": 7, "name": "Agrolait"}]
 
 .. note:: even if the ``id`` field is not requested, it is always returned
-
 
 Listing record fields
 ---------------------
@@ -758,19 +631,13 @@ updating a record):
 
 .. container:: doc-aside
 
-    .. container::
+    .. switcher::
 
-        .. switcher : :
-
-        **python**:
-
-        .. code-block:: python
+        .. code-block:: python3
 
             models.execute_kw(
                 db, uid, password, 'res.partner', 'fields_get',
                 [], {'attributes': ['string', 'help', 'type']})
-
-        **ruby**:
 
         .. code-block:: ruby
 
@@ -778,15 +645,11 @@ updating a record):
                 db, uid, password, 'res.partner', 'fields_get',
                 [], {attributes: %w(string help type)})
 
-        **php**:
-
         .. code-block:: php
 
             $models->execute_kw($db, $uid, $password,
                 'res.partner', 'fields_get',
                 array(), array('attributes' => array('string', 'help', 'type')));
-
-        **java**:
 
         .. code-block:: java
 
@@ -798,8 +661,6 @@ updating a record):
                     put("attributes", asList("string", "help", "type"));
                 }}
             ));
-
-    **json**:
 
     .. code-block:: json
 
@@ -855,20 +716,14 @@ if that list is not provided it will fetch all fields of matched records):
 
 .. container:: doc-aside
 
-    .. container::
+    .. switcher::
 
-        .. switcher : :
-
-        **python**:
-
-        .. code-block:: python
+        .. code-block:: python3
 
             models.execute_kw(db, uid, password,
                 'res.partner', 'search_read',
                 [[['is_company', '=', True], ['customer', '=', True]]],
                 {'fields': ['name', 'country_id', 'comment'], 'limit': 5})
-
-        **ruby**:
 
         .. code-block:: ruby
 
@@ -877,8 +732,6 @@ if that list is not provided it will fetch all fields of matched records):
                 [[['is_company', '=', true], ['customer', '=', true]]],
                 {fields: %w(name country_id comment), limit: 5})
 
-        **php**:
-
         .. code-block:: php
 
             $models->execute_kw($db, $uid, $password,
@@ -886,8 +739,6 @@ if that list is not provided it will fetch all fields of matched records):
                 array(array(array('is_company', '=', true),
                             array('customer', '=', true))),
                 array('fields'=>array('name', 'country_id', 'comment'), 'limit'=>5));
-
-        **java**:
 
         .. code-block:: java
 
@@ -902,8 +753,6 @@ if that list is not provided it will fetch all fields of matched records):
                     put("limit", 5);
                 }}
             )));
-
-    **json**:
 
     .. code-block:: json
 
@@ -953,19 +802,13 @@ set through the mapping argument, the default value will be used.
 
 .. container:: doc-aside
 
-    .. container::
+    .. switcher::
 
-        .. switcher : :
-
-        **python**:
-
-        .. code-block:: python
+        .. code-block:: python3
 
             id = models.execute_kw(db, uid, password, 'res.partner', 'create', [{
                 'name': "New Partner",
             }])
-
-        **ruby**:
 
         .. code-block:: ruby
 
@@ -973,15 +816,11 @@ set through the mapping argument, the default value will be used.
                 name: "New Partner",
             }])
 
-        **php**:
-
         .. code-block:: php
 
             $id = $models->execute_kw($db, $uid, $password,
                 'res.partner', 'create',
                 array(array('name'=>"New Partner")));
-
-        **java**:
 
         .. code-block:: java
 
@@ -990,8 +829,6 @@ set through the mapping argument, the default value will be used.
                 "res.partner", "create",
                 asList(new HashMap() {{ put("name", "New Partner"); }})
             ));
-
-    **json**:
 
     .. code-block:: json
 
@@ -1023,21 +860,15 @@ a record).
 
 .. container:: doc-aside
 
-    .. container::
+    .. switcher::
 
-        .. switcher : :
-
-        **python**:
-
-        .. code-block:: python
+        .. code-block:: python3
 
             models.execute_kw(db, uid, password, 'res.partner', 'write', [[id], {
                 'name': "Newer partner"
             }])
             # get record name after having changed it
             models.execute_kw(db, uid, password, 'res.partner', 'name_get', [[id]])
-
-        **ruby**:
 
         .. code-block:: ruby
 
@@ -1047,8 +878,6 @@ a record).
             # get record name after having changed it
             models.execute_kw(db, uid, password, 'res.partner', 'name_get', [[id]])
 
-        **php**:
-
         .. code-block:: php
 
             $models->execute_kw($db, $uid, $password, 'res.partner', 'write',
@@ -1056,8 +885,6 @@ a record).
             // get record name after having changed it
             $models->execute_kw($db, $uid, $password,
                 'res.partner', 'name_get', array(array($id)));
-
-        **java**:
 
         .. code-block:: java
 
@@ -1076,35 +903,26 @@ a record).
                 asList(asList(id))
             )));
 
-    **json**:
-
     .. code-block:: json
 
         [[78, "Newer partner"]]
 
-
 Delete records
 --------------
 
-Records can be deleted in bulk by providing their ids to
+Records can be deleted in bulk by providing their ids to 
 :meth:`~odoo.models.Model.unlink`.
 
 .. container:: doc-aside
 
-    .. container::
+    .. switcher::
 
-        .. switcher : :
-
-        **python**:
-
-        .. code-block:: python
+        .. code-block:: python3
 
             models.execute_kw(db, uid, password, 'res.partner', 'unlink', [[id]])
             # check if the deleted record is still in the database
             models.execute_kw(db, uid, password,
                 'res.partner', 'search', [[['id', '=', id]]])
-
-        **ruby**:
 
         .. code-block:: ruby
 
@@ -1112,8 +930,6 @@ Records can be deleted in bulk by providing their ids to
             # check if the deleted record is still in the database
             models.execute_kw(db, uid, password,
                 'res.partner', 'search', [[['id', '=', id]]])
-
-        **php**:
 
         .. code-block:: php
 
@@ -1124,8 +940,6 @@ Records can be deleted in bulk by providing their ids to
             $models->execute_kw($db, $uid, $password,
                 'res.partner', 'search',
                 array(array(array('id', '=', $id))));
-
-        **java**:
 
         .. code-block:: java
 
@@ -1140,12 +954,9 @@ Records can be deleted in bulk by providing their ids to
                 asList(asList(asList("id", "=", 78)))
             )));
 
-    **json**:
-
     .. code-block:: json
 
         []
-
 
 Inspection and introspection
 ----------------------------
@@ -1205,13 +1016,9 @@ Provides information about Odoo models via its various fields
     a custom model will initially contain only the "built-in" fields available
     on all models:
 
-    .. container::
+    .. switcher::
 
-        .. switcher : :
-
-        **python**:
-
-        .. code-block:: python
+        .. code-block:: python3
 
             models.execute_kw(db, uid, password, 'ir.model', 'create', [{
                 'name': "Custom Model",
@@ -1221,8 +1028,6 @@ Provides information about Odoo models via its various fields
             models.execute_kw(
                 db, uid, password, 'x_custom_model', 'fields_get',
                 [], {'attributes': ['string', 'help', 'type']})
-
-        **php**:
 
         .. code-block:: php
 
@@ -1241,8 +1046,6 @@ Provides information about Odoo models via its various fields
                 array('attributes' => array('string', 'help', 'type'))
             );
 
-        **ruby**:
-
         .. code-block:: ruby
 
             models.execute_kw(
@@ -1255,8 +1058,6 @@ Provides information about Odoo models via its various fields
             fields = models.execute_kw(
                 db, uid, password, 'x_custom_model', 'fields_get',
                 [], {attributes: %w(string help type)})
-
-        **java**:
 
         .. code-block:: java
 
@@ -1282,8 +1083,6 @@ Provides information about Odoo models via its various fields
                                 "type"));
                     }}
             ));
-
-    **json**:
 
     .. code-block:: json
 
@@ -1358,13 +1157,9 @@ activated as actual fields on the model.
 
 .. container:: doc-aside
 
-    .. container::
+    .. switcher::
 
-        .. switcher : :
-
-        **python**:
-
-        .. code-block:: python
+        .. code-block:: python3
 
             id = models.execute_kw(db, uid, password, 'ir.model', 'create', [{
                 'name': "Custom Model",
@@ -1386,8 +1181,6 @@ activated as actual fields on the model.
                     'x_name': "test record",
                 }])
             models.execute_kw(db, uid, password, 'x_custom', 'read', [[record_id]])
-
-        **php**:
 
         .. code-block:: php
 
@@ -1420,8 +1213,6 @@ activated as actual fields on the model.
                 'x_custom', 'read',
                 array(array($record_id)));
 
-        **ruby**:
-
         .. code-block:: ruby
 
             id = models.execute_kw(
@@ -1448,8 +1239,6 @@ activated as actual fields on the model.
             models.execute_kw(
                 db, uid, password,
                 'x_custom', 'read', [[record_id]])
-
-        **java**:
 
         .. code-block:: java
 
@@ -1490,8 +1279,6 @@ activated as actual fields on the model.
                     "x_custom", "read",
                     asList(asList(record_id))
             ));
-
-    **json**:
 
     .. code-block:: json
 

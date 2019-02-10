@@ -11,7 +11,7 @@ class CrmTeam(models.Model):
 
     use_quotations = fields.Boolean(string='Quotations', help="Check this box if you send quotations to your customers rather than confirming orders straight away. "
                                                               "This will add specific action buttons to your dashboard.")
-    use_invoices = fields.Boolean('Set Invoicing Target', help="Check this box to set an invoicing target for this sales channel.")
+    use_invoices = fields.Boolean('Set Invoicing Target', help="Check this box to set an invoicing target for this Sales Team.")
     invoiced = fields.Integer(
         compute='_compute_invoiced',
         string='Invoiced This Month', readonly=True,
@@ -39,13 +39,28 @@ class CrmTeam(models.Model):
     def _compute_quotations_to_invoice(self):
         non_website_teams = self.filtered(lambda team: team.team_type != 'website')
         if non_website_teams:
-            quotation_data = self.env['sale.report'].read_group([
+            query = self.env['sale.order']._where_calc([
                 ('team_id', 'in', non_website_teams.ids),
                 ('state', 'in', ['draft', 'sent']),
-            ], ['price_total', 'team_id', 'name'], ['team_id', 'name'], lazy=False)
+            ])
+            self.env['sale.order']._apply_ir_rules(query, 'read')
+            _, where_clause, where_clause_args = query.get_sql()
+            select_query = """
+                SELECT team_id, count(*), sum(amount_total /
+                    CASE COALESCE(currency_rate, 0)
+                    WHEN 0 THEN 1.0
+                    ELSE currency_rate
+                    END
+                ) as amount_total
+                FROM sale_order
+                WHERE %s
+                GROUP BY team_id
+            """ % where_clause
+            self.env.cr.execute(select_query, where_clause_args)
+            quotation_data = self.env.cr.dictfetchall()
             for datum in quotation_data:
-                self.browse(datum['team_id'][0]).quotations_amount += datum['price_total']
-                self.browse(datum['team_id'][0]).quotations_count += 1
+                self.browse(datum['team_id']).quotations_amount = datum['amount_total']
+                self.browse(datum['team_id']).quotations_count = datum['count']
 
     @api.multi
     def _compute_sales_to_invoice(self):
@@ -54,12 +69,12 @@ class CrmTeam(models.Model):
             ('order_line.qty_to_invoice', '>', 0),
         ], ['team_id'], ['team_id'])
         for datum in sale_order_data:
-            self.browse(datum['team_id'][0]).invoiced = datum['team_id_count']
+            self.browse(datum['team_id'][0]).sales_to_invoice_count = datum['team_id_count']
 
     @api.multi
     def _compute_invoiced(self):
         invoice_data = self.env['account.invoice'].read_group([
-            ('state', 'in', ['open', 'paid']),
+            ('state', 'in', ['open', 'in_payment', 'paid']),
             ('team_id', 'in', self.ids),
             ('date', '<=', date.today()),
             ('date', '>=', date.today().replace(day=1)),
@@ -86,7 +101,7 @@ class CrmTeam(models.Model):
         if self.dashboard_graph_model == 'sale.report':
             return "AND state in ('sale', 'done')"
         elif self.dashboard_graph_model == 'account.invoice.report':
-            return "AND state in ('open', 'paid')"
+            return "AND state in ('open', 'in_payment', 'paid')"
         return super(CrmTeam, self)._extra_sql_conditions()
 
     def _graph_title_and_key(self):
@@ -118,7 +133,6 @@ class CrmTeam(models.Model):
         if self.team_type == 'sales':
             self.use_quotations = True
             self.use_invoices = True
-            # do not override dashboard_graph_model 'crm.opportunity.report' if crm is installed
             if not self.dashboard_graph_model:
                 self.dashboard_graph_model = 'sale.report'
         else:

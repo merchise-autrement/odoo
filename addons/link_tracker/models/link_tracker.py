@@ -31,6 +31,7 @@ class link_tracker(models.Model):
 
     _name = "link.tracker"
     _rec_name = "short_url"
+    _description = 'Link Tracker'
 
     _inherit = ['utm.mixin']
 
@@ -184,7 +185,7 @@ class link_tracker(models.Model):
         link = super(link_tracker, self).create(create_vals)
 
         code = self.env['link.tracker.code'].get_random_code_string()
-        self.env['link.tracker.code'].create({'code': code, 'link_id': link.id})
+        self.env['link.tracker.code'].sudo().create({'code': code, 'link_id': link.id})
 
         return link
 
@@ -204,6 +205,7 @@ class link_tracker(models.Model):
 
 class link_tracker_code(models.Model):
     _name = "link.tracker.code"
+    _description = 'Link Tracker Code'
 
     code = fields.Char(string='Short URL Code', store=True)
     link_id = fields.Many2one('link.tracker', 'Link', required=True, ondelete='cascade')
@@ -227,6 +229,7 @@ class link_tracker_code(models.Model):
 class link_tracker_click(models.Model):
     _name = "link.tracker.click"
     _rec_name = "link_id"
+    _description = 'Link Tracker Click'
 
     click_date = fields.Date(string='Create Date')
     link_id = fields.Many2one('link.tracker', 'Link', required=True, ondelete='cascade')

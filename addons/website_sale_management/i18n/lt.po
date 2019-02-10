@@ -3,14 +3,15 @@
 # * website_sale_management
 # 
 # Translators:
-# Linas Versada <paulius.sladkevicius@gmail.com>, 2018
+# Linas Versada <linaskrisiukenas@gmail.com>, 2018
+# 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 11.0\n"
+"Project-Id-Version: Odoo Server saas~11.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-30 13:12+0000\n"
-"PO-Revision-Date: 2017-11-30 13:12+0000\n"
-"Last-Translator: Linas Versada <paulius.sladkevicius@gmail.com>, 2018\n"
+"POT-Creation-Date: 2018-09-18 09:49+0000\n"
+"PO-Revision-Date: 2018-08-24 09:35+0000\n"
+"Last-Translator: Linas Versada <linaskrisiukenas@gmail.com>, 2018\n"
 "Language-Team: Lithuanian (https://www.transifex.com/odoo/teams/41243/lt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,11 +24,11 @@ msgstr ""
 #: code:addons/website_sale_management/static/src/xml/website_sale_dashboard.xml:5
 #, python-format
 msgid "Generate an invoice from orders ready for invoicing."
-msgstr "Generuoti sąskaitą iš sąskaitos pateikimui parengtų užsakymų."
+msgstr "Generuoti sąskaitą-faktūrą iš sąskaitos pateikimui parengtų užsakymų."
 
 #. module: website_sale_management
 #. openerp-web
-#: code:addons/website_sale_management/static/src/xml/website_sale_dashboard.xml:7
+#: code:addons/website_sale_management/static/src/xml/website_sale_dashboard.xml:6
 #, python-format
 msgid "Orders to Invoice"
 msgstr "Užsakymai sąskaitos pateikimui"
