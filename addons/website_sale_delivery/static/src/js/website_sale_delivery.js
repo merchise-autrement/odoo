@@ -14,7 +14,7 @@ odoo.define('website_sale_delivery.checkout', function (require) {
         var $amount_untaxed = $('#order_total_untaxed span.oe_currency_value');
         var $amount_tax = $('#order_total_taxes span.oe_currency_value');
         var $amount_total = $('#order_total span.oe_currency_value');
-        var $carrier_badge = $('#delivery_carrier input[name="delivery_type"][value=' + result.carrier_id + '] ~ .badge.hidden');
+        var $carrier_badge = $('#delivery_carrier input[name="delivery_type"][value=' + result.carrier_id + '] ~ .badge.d-none');
         var $compute_badge = $('#delivery_carrier input[name="delivery_type"][value=' + result.carrier_id + '] ~ .o_delivery_compute');
         var $discount = $('#order_discounted');
 
@@ -33,9 +33,10 @@ odoo.define('website_sale_delivery.checkout', function (require) {
             $amount_tax.text(result.new_amount_tax);
             $amount_total.text(result.new_amount_total);
             $carrier_badge.children('span').text(result.new_amount_delivery);
-            $carrier_badge.removeClass('hidden');
-            $compute_badge.addClass('hidden');
-            $pay_button.prop('disabled', false);
+            $carrier_badge.removeClass('d-none');
+            $compute_badge.addClass('d-none');
+            $pay_button.data('disabled_reasons').carrier_selection = false;
+            $pay_button.prop('disabled', _.contains($pay_button.data('disabled_reasons'), true));
         }
         else {
             console.error(result.error_message);
@@ -48,6 +49,8 @@ odoo.define('website_sale_delivery.checkout', function (require) {
     };
 
     var _onCarrierClick = function(ev) {
+        $pay_button.data('disabled_reasons', $pay_button.data('disabled_reasons') || {});
+        $pay_button.data('disabled_reasons').carrier_selection = true;
         $pay_button.prop('disabled', true);
         var carrier_id = $(ev.currentTarget).val();
         var values = {'carrier_id': carrier_id};

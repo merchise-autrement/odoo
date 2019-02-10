@@ -28,9 +28,11 @@ class StockQuantityHistory(models.TransientModel):
                 'view_mode': 'tree,form',
                 'name': _('Products'),
                 'res_model': 'product.product',
+                'domain': "[('type', '=', 'product')]",
                 'context': dict(self.env.context, to_date=self.date),
             }
             return action
         else:
             self.env['stock.quant']._merge_quants()
+            self.env['stock.quant']._unlink_zero_quants()
             return self.env.ref('stock.quantsact').read()[0]

@@ -8,7 +8,7 @@
                     <h2>Pay Slip</h2>
                     <p t-field="o.name"/>
 
-                    <table class="table table-condensed table-bordered">
+                    <table class="table table-sm table-bordered">
                         <tr>
                             <td><strong>Name</strong></td>
                             <td><span t-field="o.employee_id"/></td>
@@ -42,7 +42,7 @@
                         </tr>
                     </table>
 
-                    <table class="table table-condensed">
+                    <table class="table table-sm">
                         <thead>
                             <tr>
                                 <th>Code</th>
@@ -58,9 +58,9 @@
                                 <td><span t-field="line.name"/></td>
                                 <td><span t-field="line.quantity"/></td>
                                 <td><span t-esc="line.amount"
-                                          t-esc-options='{"widget": "monetary", "display_currency": o.company_id.currency_id}'/></td>
+                                          t-options='{"widget": "monetary", "display_currency": o.company_id.currency_id}'/></td>
                                 <td><span t-esc="line.total"
-                                          t-esc-options='{"widget": "monetary", "display_currency": o.company_id.currency_id}'/></td>
+                                          t-options='{"widget": "monetary", "display_currency": o.company_id.currency_id}'/></td>
 
                             </tr>
                         </tbody>

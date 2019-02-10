@@ -7,7 +7,7 @@ var core = require('web.core');
 var time = require('web.time');
 var Widget = require('web.Widget');
 var local_storage = require('web.local_storage');
-var websiteRootInstance = require('website.WebsiteRoot.instance');
+require('root.widget');
 
 var _t = core._t;
 var page_widgets = {};
@@ -55,7 +55,7 @@ var page_widgets = {};
             if(is_public){
                 this.popover_alert(button, _.str.sprintf(_t('Please <a href="/web?redirect=%s">login</a> to vote this slide'), (document.URL)));
             }else{
-                var target = button.find('.fa');
+                var target = button.find('.o_wslides_like_dislike_count');
                 if (local_storage.getItem('slide_vote_' + slide_id) !== user_id.toString()) {
                     ajax.jsonRpc(href, 'call', {slide_id: slide_id}).then(function (data) {
                         target.text(data);
@@ -130,7 +130,7 @@ var page_widgets = {};
             var input = this.$('input');
             var slide_id = this.$('button').data('slide-id');
             if(input.val() && input[0].checkValidity()){
-                this.$el.removeClass('has-error');
+                this.$el.removeClass('o_has_error').find('.form-control, .custom-select').removeClass('is-invalid');
                 ajax.jsonRpc('/slides/slide/send_share_email', 'call', {
                     slide_id: slide_id,
                     email: input.val(),
@@ -138,7 +138,7 @@ var page_widgets = {};
                     self.$el.html($('<div class="alert alert-info" role="alert"><strong>Thank you!</strong> Mail has been sent.</div>'));
                 });
             }else{
-                this.$el.addClass('has-error');
+                this.$el.addClass('o_has_error').find('.form-control, .custom-select').addClass('is-invalid');
                 input.focus();
             }
         },

@@ -46,7 +46,7 @@ var FieldManagerMixin = {
      */
     _applyChanges: function (dataPointID, changes, event) {
         var self = this;
-        var options = _.pick(event.data, 'viewType', 'doNotSetDirty', 'notifyChange');
+        var options = _.pick(event.data, 'context', 'doNotSetDirty', 'notifyChange', 'viewType', 'allowWarning');
         return this.model.notifyChanges(dataPointID, changes, options)
             .then(function (result) {
                 if (event.data.force_save) {
@@ -130,8 +130,10 @@ var FieldManagerMixin = {
         if ('offset' in data) {
             params.offset = data.offset;
         }
-        this.model.reload(data.id, params).then(function (db_id) {
-            data.on_success(self.model.get(db_id));
+        this.mutex.exec(function () {
+            return self.model.reload(data.id, params).then(function (db_id) {
+                data.on_success(self.model.get(db_id));
+            });
         });
     },
     /**

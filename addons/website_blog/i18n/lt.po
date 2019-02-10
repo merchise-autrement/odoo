@@ -3,24 +3,24 @@
 # * website_blog
 # 
 # Translators:
-# Antanas Muliuolis <an.muliuolis@gmail.com>, 2017
-# Šarūnas Ažna <sarunas.azna@gmail.com>, 2017
-# Anatolij, 2017
-# digitouch UAB <digitouchagencyeur@gmail.com>, 2017
-# Audrius Palenskis <audrius.palenskis@gmail.com>, 2017
-# Martin Trigaux, 2017
-# Rolandas <info@paninfo.lt>, 2017
-# Monika Raciunaite <monika.raciunaite@gmail.com>, 2017
-# UAB "Draugiški sprendimai" <transifex@draugiskisprendimai.lt>, 2017
-# Linas Versada <paulius.sladkevicius@gmail.com>, 2018
+# Martin Trigaux, 2018
+# Arminas Grigonis <arminas@versada.lt>, 2018
+# UAB "Draugiški sprendimai" <transifex@draugiskisprendimai.lt>, 2018
+# Anatolij, 2018
+# Audrius Palenskis <audrius.palenskis@gmail.com>, 2018
+# Rolandas <info@paninfo.lt>, 2018
+# Antanas Muliuolis <an.muliuolis@gmail.com>, 2018
+# Monika Raciunaite <monika.raciunaite@gmail.com>, 2018
+# digitouch UAB <digitouchagencyeur@gmail.com>, 2018
+# Linas Versada <linaskrisiukenas@gmail.com>, 2019
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 11.0\n"
+"Project-Id-Version: Odoo Server 12.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-24 09:00+0000\n"
-"PO-Revision-Date: 2017-09-20 10:25+0000\n"
-"Last-Translator: Linas Versada <paulius.sladkevicius@gmail.com>, 2018\n"
+"POT-Creation-Date: 2019-01-09 10:32+0000\n"
+"PO-Revision-Date: 2018-08-24 09:33+0000\n"
+"Last-Translator: Linas Versada <linaskrisiukenas@gmail.com>, 2019\n"
 "Language-Team: Lithuanian (https://www.transifex.com/odoo/teams/41243/lt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -29,7 +29,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < 11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 : n % 1 != 0 ? 2: 3);\n"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_2
+#: model_terms:blog.post,content:website_blog.blog_post_2
 msgid ""
 "\"Finally, the leading edge is being brought to the masses.\n"
 "                        It will now be the turn of the big players to catch up to\n"
@@ -40,7 +40,7 @@ msgstr ""
 "įmonių technologinius sprendimus."
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_2
+#: model_terms:blog.post,content:website_blog.blog_post_2
 msgid ""
 "\"Odoo now competes on many fronts, with no real\n"
 "                    competition out there to knock them off the top spot.\n"
@@ -60,7 +60,7 @@ msgstr ""
 "šiame technologiniame lygmenyje."
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_2
+#: model_terms:blog.post,content:website_blog.blog_post_2
 msgid ""
 "\"Odoo's latest launch will allow a business to go from\n"
 "                    zero to trading online quicker than ever before,” Stuart\n"
@@ -82,7 +82,7 @@ msgstr ""
 "daug į IT investuojančioms kompanijoms.\""
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_2
+#: model_terms:blog.post,content:website_blog.blog_post_2
 msgid ""
 "\"This is another clever and highly disruptive move by\n"
 "                    Odoo,which will force other technology providers to\n"
@@ -95,28 +95,78 @@ msgstr ""
 "būtų užtikrintas jų sprendimų konkurencingumas."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
 msgid "&amp;mdash;"
 msgstr "&amp;mdash;"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.latest_blogs
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
 msgid "&amp;times;"
 msgstr "&amp;times;"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_feed
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_feed
 msgid "&lt;?xml version=\"1.0\" encoding=\"utf-8\"?&gt;"
-msgstr "&lt;?xml version=\"1.0\" encoding=\"utf-8\"?&gt;"
+msgstr "&lt;?xml version=\"1.0\" kodavimas=\"utf-8\"?&gt;"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.view_blog_blog_form
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_blog_form
 msgid ""
 "(Un)archiving a blog automatically (un)archives its posts. Do you want to "
 "proceed?"
 msgstr ""
 "Tinklaraščio (at)archyvavimas automatiškai (at)archyvuoja jo įrašus. Ar "
 "norite tęsti?"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "1 post"
+msgstr "1 įrašas"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "10 posts"
+msgstr "10 įrašų"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "2 posts"
+msgstr "2 įrašai"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "3 posts"
+msgstr "3 įrašai"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "4 posts"
+msgstr "4 įrašai"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "5 posts"
+msgstr "5 įrašai"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "6 posts"
+msgstr "6 įrašai"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "7 posts"
+msgstr "7 įrašai"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "8 posts"
+msgstr "8 įrašai"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "9 posts"
+msgstr "9 įrašai"
 
 #. module: website_blog
 #. openerp-web
@@ -160,52 +210,114 @@ msgstr ""
 "turinio blokų."
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_view_kanban
+msgid "<i class=\"fa fa-clock-o\" role=\"img\" aria-label=\"Post date\" title=\"Post date\"/>"
+msgstr ""
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.tag_category
+msgid ""
+"<i class=\"fa fa-tag\" role=\"img\" aria-label=\"Tag category\" title=\"Tag "
+"category\"/>"
+msgstr ""
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
+msgid ""
+"<span class=\"fa fa-calendar mr8\" role=\"img\" aria-label=\"Post date\" "
+"title=\"Post date\"/>"
+msgstr ""
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
+msgid ""
+"<span class=\"fa fa-exclamation-triangle ml8\" title=\"Unpublished\" "
+"role=\"img\" aria-label=\"Unpublished\"/>"
+msgstr ""
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
+msgid "<span class=\"fa fa-folder-open\"/> In"
+msgstr "<span class=\"fa fa-folder-open\"/>esantis"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_complete
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
+msgid "<span class=\"fa fa-tags\" role=\"img\" aria-label=\"Tags\" title=\"Tags\"/>"
+msgstr ""
+
+#. module: website_blog
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid ""
 "A mix of push &amp; pull: Today, people\n"
 "                        are victims of what others decide to push to them.\n"
 "                        Odoo differentiates:"
 msgstr ""
+"Traukimo ir stūmimo rinkinys. Šiandien\n"
+"žmonės tampa aukomis to, ką kiti nusprendžia\n"
+"jiems stumti. \"Odoo\" yra kitoks:"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_template_new_post
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_template_new_post
 msgid "A new post"
 msgstr "Naujas įrašas"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_rc_about_us
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_about_us
 msgid "About us"
 msgstr "Apie mus"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_template_new_post
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_template_new_post
 msgid "Access post"
 msgstr "Įrašo prieiga"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_blog_active
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_active
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_needaction
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_needaction
+msgid "Action Needed"
+msgstr "Reikia atlikti veiksmą"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__active
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__active
 msgid "Active"
 msgstr "Aktyvus"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_2
+#: model_terms:blog.post,content:website_blog.blog_post_2
 msgid "Adding to industry leading technology"
 msgstr "Prisidedant prie geriausios savo sektoriuje technologijos"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_blog_view_search
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_search
-msgid "Archived"
-msgstr "Archyvuojamas"
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "All blogs"
+msgstr "Visi tinklaraščiai"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_rc_history
+#. openerp-web
+#: code:addons/website_blog/static/src/js/s_latest_posts_frontend.js:59
+#, python-format
+msgid ""
+"An error occured with this latest posts block. If the problem persists, "
+"please consider deleting it and adding a new one"
+msgstr ""
+"Paskutiniame įrašų bloke įvyko klaida. Jei problema kartojasi, ištrinkite jį"
+" ir pridėkite naują."
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_blog_view_search
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_search
+msgid "Archived"
+msgstr "Archyvuotas"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_history
 msgid "Archives"
 msgstr "Archyvai"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_2
+#: model_terms:blog.post,content:website_blog.blog_post_2
 msgid ""
 "As it comes, there is a default website based on Bootstrap\n"
 "                    3, the latest industry standard for rapid development of\n"
@@ -221,7 +333,7 @@ msgstr ""
 "visuose įrenginiuose."
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid ""
 "At Odoo, we build tools to bring productivity to\n"
 "                    enterprises. As emails and information flows are one of\n"
@@ -234,38 +346,43 @@ msgstr ""
 "jas pakeisti."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
 msgid "Atom Feed"
 msgstr "Atom srautas"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_author_id
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_search
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_attachment_count
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_attachment_count
+msgid "Attachment Count"
+msgstr "Prisegtukų skaičius"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__author_id
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_search
 msgid "Author"
 msgstr "Autorius"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_author_avatar
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__author_avatar
 msgid "Avatar"
 msgstr "Portretas"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Black"
 msgstr "Juoda"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_blog_id
-#: model:ir.ui.menu,name:website_blog.menu_website_blog_root
-#: model:ir.ui.view,arch_db:website_blog.blog_blog_view_search
-#: model:ir.ui.view,arch_db:website_blog.view_blog_blog_form
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_search
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__blog_id
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_blog_view_search
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_blog_form
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_search
 #: model:website.menu,name:website_blog.menu_news
 msgid "Blog"
 msgstr "Tinklaraštis"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_blog_name
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__name
 msgid "Blog Name"
 msgstr "Tinklaraščio pavadinimas"
 
@@ -273,8 +390,8 @@ msgstr "Tinklaraščio pavadinimas"
 #: code:addons/website_blog/models/website.py:22
 #: code:addons/website_blog/models/website.py:47
 #: model:ir.model,name:website_blog.model_blog_post
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_form
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_search
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_form
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_search
 #, python-format
 msgid "Blog Post"
 msgstr "Tinklaraščio įrašas"
@@ -292,9 +409,9 @@ msgid "Blog Post <b>%s</b> seems to have a link to this page !"
 msgstr "Panašu, kad tinklaraščio įrašas <b>%s</b> turi nuorodą į šį puslapį!"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_complete
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_post_complete_read_next
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_form
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_complete
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_post_complete_read_next
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_form
 msgid "Blog Post Title"
 msgstr "Tinklaraščio įrašo pavadinimas"
 
@@ -302,15 +419,14 @@ msgstr "Tinklaraščio įrašo pavadinimas"
 #: code:addons/website_blog/models/website.py:24
 #: code:addons/website_blog/models/website.py:49
 #: model:ir.actions.act_window,name:website_blog.action_blog_post
-#: model:ir.ui.menu,name:website_blog.menu_page
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_list
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_list
 #, python-format
 msgid "Blog Posts"
 msgstr "Tinklaraščio įrašai"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_blog_subtitle
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_form
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__subtitle
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_form
 msgid "Blog Subtitle"
 msgstr "Tinklaraščio paantraštė"
 
@@ -320,21 +436,27 @@ msgid "Blog Tag"
 msgstr "Tinklaraščio žyma"
 
 #. module: website_blog
+#: model:ir.model,name:website_blog.model_blog_tag_category
+msgid "Blog Tag Category"
+msgstr "Tinklaraščio žymos kategorija"
+
+#. module: website_blog
 #: model:ir.actions.act_window,name:website_blog.action_tags
-#: model:ir.ui.menu,name:website_blog.menu_blog_tag
 msgid "Blog Tags"
 msgstr "Tinklaraščio žymos"
 
 #. module: website_blog
 #: model:ir.actions.act_window,name:website_blog.action_blog_blog
 #: model:ir.model,name:website_blog.model_blog_blog
-#: model:ir.ui.menu,name:website_blog.menu_blog
-#: model:ir.ui.view,arch_db:website_blog.view_blog_blog_list
+#: model:ir.ui.menu,name:website_blog.menu_blog_global
+#: model:ir.ui.menu,name:website_blog.menu_website_blog_root
+#: model:ir.ui.menu,name:website_blog.menu_website_blog_root_global
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_blog_list
 msgid "Blogs"
 msgstr "Tinklaraščiai"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Blue"
 msgstr "Mėlyna"
 
@@ -346,12 +468,22 @@ msgstr ""
 "internetu."
 
 #. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__category_id
+msgid "Category"
+msgstr "Kategorija"
+
+#. module: website_blog
 #. openerp-web
 #: code:addons/website_blog/static/src/js/website.tour.blog.js:29
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 #, python-format
 msgid "Change Cover"
 msgstr "Keisti viršelį"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "Choose a blog"
+msgstr "Pasirinkite tinklaraštį"
 
 #. module: website_blog
 #. openerp-web
@@ -368,7 +500,7 @@ msgid "Click here to change your post cover."
 msgstr "Paspauskite norėdami pakeisti savo įrašo viršelį."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
 msgid ""
 "Click on \"New Page\" in the top-right corner to write your first blog post."
 msgstr ""
@@ -384,62 +516,62 @@ msgstr ""
 "Paspauskite <b>Išsaugoti</b>, kad nustatytumėte paveikslėlį kaip viršelį."
 
 #. module: website_blog
-#: model:ir.actions.act_window,help:website_blog.action_blog_post
-msgid "Click to create a new blog post."
-msgstr "Paspauskite norėdami sukurti naują tinklaraščio įrašą."
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
+msgid "Close"
+msgstr "Uždaryti"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_content
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_search
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__content
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_search
 msgid "Content"
 msgstr "Turinys"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_cover_properties
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__cover_properties
 msgid "Cover Properties"
 msgstr "Viršelio savybės"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_blog_create_uid
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_create_uid
-#: model:ir.model.fields,field_description:website_blog.field_blog_tag_create_uid
+#: model_terms:ir.actions.act_window,help:website_blog.action_blog_post
+msgid "Create a new blog post"
+msgstr "Sukurkite naują tinklaraščio įrašą"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__create_uid
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__create_uid
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__create_uid
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag_category__create_uid
 msgid "Created by"
 msgstr "Sukūrė"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_blog_create_date
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_create_date
-#: model:ir.model.fields,field_description:website_blog.field_blog_tag_create_date
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__create_date
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__create_date
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__create_date
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag_category__create_date
 msgid "Created on"
 msgstr "Sukurta"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_mail_compose_message_path
-#: model:ir.model.fields,field_description:website_blog.field_mail_mail_path
-#: model:ir.model.fields,field_description:website_blog.field_mail_message_path
-#: model:ir.model.fields,field_description:website_blog.field_survey_mail_compose_message_path
-msgid "Discussion Path"
-msgstr "Diskusijos kelias"
-
-#. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_blog_display_name
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_display_name
-#: model:ir.model.fields,field_description:website_blog.field_blog_tag_display_name
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__display_name
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__display_name
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__display_name
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag_category__display_name
 msgid "Display Name"
-msgstr "Vaizduojamas pavadinimas"
+msgstr "Rodomas pavadinimas"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_edit_options
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_edit_options
 msgid "Duplicate"
 msgstr "Dubliuoti"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid "Emails are broken."
 msgstr "El. paštas neveikia."
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid ""
 "Emails make me waste my time. But I need them.\n"
 "                    Given the importance that emails have in our lives,\n"
@@ -452,17 +584,24 @@ msgstr ""
 "kurios nepatobulėjo paskutinius 20 metų!"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
-msgid "Filter Color"
-msgstr "Filtruoti spalvą"
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_complete
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_follow_us
+msgid "Facebook"
+msgstr "Facebook"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
+msgid "Filter Color"
+msgstr "Filtro spalva"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Filter Intensity"
 msgstr "Filtro intensyvumas"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid ""
 "Focus on the Content: Everything is\n"
 "                        stripped to emphasize on the real message. No more\n"
@@ -479,7 +618,7 @@ msgstr ""
 "kiekvienoje žinutėje)"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid ""
 "Folders and mailing lists are great tools but too\n"
 "                        complex in traditional email clients. In Odoo, a\n"
@@ -494,12 +633,30 @@ msgstr ""
 "turėti savo el. pašto adresą."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_follower_ids
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_follower_ids
+msgid "Followers"
+msgstr "Sekėjai"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_channel_ids
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_channel_ids
+msgid "Followers (Channels)"
+msgstr "Sekėjai (kanalai)"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_partner_ids
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Sekėjai (partneriai)"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Full Screen"
 msgstr "Visas ekranas"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid ""
 "Get Things Done: your inbox is a\n"
 "                        todo list. You should be able to process (not only\n"
@@ -519,27 +676,39 @@ msgid "Get in touch with us"
 msgstr "Susisiekite su mumis"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_follow_us
+msgid "Github"
+msgstr "Github"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_complete
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_follow_us
+msgid "Google Plus"
+msgstr "Google Plus"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Green"
 msgstr "Žalia"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_search
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_search
 msgid "Group By"
 msgstr "Grupuoti pagal"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid "Here are the ideas behind the Odoo communication tools:"
 msgstr "Idėjos, kuriomis pagrįsti \"Odoo\" komunikacijos įrankiai:"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "High"
 msgstr "Aukštas"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_2
+#: model_terms:blog.post,content:website_blog.blog_post_2
 msgid ""
 "However, unlike other web content management systems, it\n"
 "                    fully integrates into the back-end database. This means\n"
@@ -554,21 +723,41 @@ msgstr ""
 "kontrolę jūsų verslui."
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_blog_id
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_id
-#: model:ir.model.fields,field_description:website_blog.field_blog_tag_id
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__id
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__id
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__id
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag_category__id
 msgid "ID"
 msgstr "ID"
 
 #. module: website_blog
 #: model:blog.post,subtitle:website_blog.blog_post_1
+#: model:blog.post,website_meta_description:website_blog.blog_post_1
 msgid "Ideas behind the Odoo communication tools."
 msgstr "Idėjos, kuriomis pagrįsti \"Odoo\" komunikacijos įrankiai."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.latest_blogs
-msgid "In"
-msgstr ""
+#: model:ir.model.fields,help:website_blog.field_blog_blog__message_unread
+#: model:ir.model.fields,help:website_blog.field_blog_post__message_unread
+msgid "If checked new messages require your attention."
+msgstr "Jeigu pažymėta, naujiems pranešimams reikės jūsų dėmesio."
+
+#. module: website_blog
+#: model:ir.model.fields,help:website_blog.field_blog_blog__message_needaction
+#: model:ir.model.fields,help:website_blog.field_blog_post__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Jeigu pažymėta, naujiems pranešimams reikės jūsų dėmesio."
+
+#. module: website_blog
+#: model:ir.model.fields,help:website_blog.field_blog_blog__message_has_error
+#: model:ir.model.fields,help:website_blog.field_blog_post__message_has_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Jei pažymėta, yra žinučių, turinčių pristatymo klaidų."
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_follow_us
+msgid "Instagram"
+msgstr "Instagram"
 
 #. module: website_blog
 #: model:blog.post,name:website_blog.blog_post_2
@@ -576,7 +765,18 @@ msgid "Integrating your CMS and E-Commerce"
 msgstr "Integruojant jūsų TVS ir e-komerciją"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_is_follower
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_is_follower
+msgid "Is Follower"
+msgstr "Yra sekėjas"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__is_published
+msgid "Is published"
+msgstr "Yra paskelbtas"
+
+#. module: website_blog
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid ""
 "Keep control of what you want to receive or don't want\n"
 "                        to receive. People should never receive spam. You\n"
@@ -589,38 +789,43 @@ msgstr ""
 "paspaudimu."
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_write_uid
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_search
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__write_uid
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_search
 msgid "Last Contributor"
 msgstr "Paskutinis autorius"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_blog___last_update
-#: model:ir.model.fields,field_description:website_blog.field_blog_post___last_update
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_write_date
-#: model:ir.model.fields,field_description:website_blog.field_blog_tag___last_update
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog____last_update
+#: model:ir.model.fields,field_description:website_blog.field_blog_post____last_update
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag____last_update
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag_category____last_update
 msgid "Last Modified on"
 msgstr "Paskutinį kartą keista"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_blog_write_uid
-#: model:ir.model.fields,field_description:website_blog.field_blog_tag_write_uid
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__write_uid
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__write_uid
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag_category__write_uid
 msgid "Last Updated by"
 msgstr "Paskutinį kartą atnaujino"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_blog_write_date
-#: model:ir.model.fields,field_description:website_blog.field_blog_tag_write_date
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__write_date
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__write_date
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__write_date
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag_category__write_date
 msgid "Last Updated on"
 msgstr "Paskutinį kartą atnaujinta"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.latest_blogs
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_big_picture
 msgid "Latest Posts"
 msgstr "Naujausi įrašai"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_2
+#: model_terms:blog.post,content:website_blog.blog_post_2
 msgid ""
 "Like many modern website editors, with Odoo you can edit\n"
 "                    content in-line, enabling you to see exactly what you are\n"
@@ -631,22 +836,42 @@ msgstr ""
 "ir užtikrinti, kad jūsų pokyčiai tinka kontekste."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_complete
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_follow_us
+msgid "LinkedIn"
+msgstr "LinkedIn"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Low"
 msgstr "Žemas"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_main_attachment_id
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Pagrindinis prisegtukas"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Medium"
-msgstr "Vidutinis"
+msgstr "Kanalas"
 
 #. module: website_blog
-#: model:ir.model,name:website_blog.model_mail_message
-msgid "Message"
-msgstr "Pranešimas"
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_has_error
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_has_error
+msgid "Message Delivery error"
+msgstr "Žinutės pristatymo klaida"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_ids
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_ids
+msgid "Messages"
+msgstr "Žinutės"
+
+#. module: website_blog
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid ""
 "Messages \"for action\": they\n"
 "                                require your immediate attention and you need\n"
@@ -661,7 +886,7 @@ msgstr ""
 "man\" meniu, kad matytumėte jas."
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid ""
 "Messages \"for information\":\n"
 "                                you can pull them when you need some specific\n"
@@ -678,65 +903,107 @@ msgstr ""
 "naudokite įeinančių laiškų dėžutę."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Mid screen"
 msgstr "Vid. ekranas"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_tag_name
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__name
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag_category__name
 msgid "Name"
 msgstr "Pavadinimas"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Narrow"
 msgstr "Siauras"
 
 #. module: website_blog
 #. openerp-web
 #: code:addons/website_blog/static/src/js/website_blog.editor.js:37
-#: model:ir.ui.view,arch_db:website_blog.content_new_blogpost
 #, python-format
 msgid "New Blog Post"
 msgstr "Naujas tinklaraščio įrašas"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_2
+#: model_terms:blog.post,content:website_blog.blog_post_2
 msgid "New Features Launched"
 msgstr "Paleistos naujos funkcijos"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.header_footer_custom
-msgid "News"
-msgstr "Naujienos"
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_history
+msgid "Next year"
+msgstr "Kiti metai"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "No Cover"
 msgstr "Nėra viršelio"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_short
+#. openerp-web
+#: code:addons/website_blog/static/src/js/s_latest_posts_frontend.js:44
+#, python-format
+msgid "No blog post was found. Make sure your posts are published."
+msgstr "Tinklaraščio įrašų nerasta. Įsitikinkite, kad įrašai paskelbti."
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
 msgid "No blog post yet."
 msgstr "Tinklaraštyje dar nėra įrašų."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.latest_blogs
-msgid "No keywords defined!"
-msgstr "Neapibrėžti raktiniai žodžiai!"
-
-#. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_visits
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__visits
 msgid "No of Views"
 msgstr "Peržiūrų skaičius"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
+msgid "No tags defined!"
+msgstr "Nėra nustatytų žymų!"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "None"
 msgstr "Nieko"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_2
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_needaction_counter
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Veiksmų skaičius"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_has_error_counter
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_has_error_counter
+msgid "Number of error"
+msgstr "Klaidų skaičius"
+
+#. module: website_blog
+#: model:ir.model.fields,help:website_blog.field_blog_blog__message_needaction_counter
+#: model:ir.model.fields,help:website_blog.field_blog_post__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr "Žinučių, kurioms reikia jūsų veiksmo, skaičius"
+
+#. module: website_blog
+#: model:ir.model.fields,help:website_blog.field_blog_blog__message_has_error_counter
+#: model:ir.model.fields,help:website_blog.field_blog_post__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Žinučių su pristatymo klaida skaičius"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_options
+msgid "Number of posts"
+msgstr "Įrašų skaičius"
+
+#. module: website_blog
+#: model:ir.model.fields,help:website_blog.field_blog_blog__message_unread_counter
+#: model:ir.model.fields,help:website_blog.field_blog_post__message_unread_counter
+msgid "Number of unread messages"
+msgstr "Neperskaitytų žinučių skaičius"
+
+#. module: website_blog
+#: model_terms:blog.post,content:website_blog.blog_post_2
 msgid ""
 "Odoo claims to be 'the Open Source software that makes\n"
 "                    building your company's website and selling your products\n"
@@ -759,27 +1026,32 @@ msgid "Once you have reviewed the content on mobile, close the preview."
 msgstr "Po turinio patikrinimo mobiliuosiuose, uždarykite peržiūrą."
 
 #. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_tags
+msgid "Others"
+msgstr "Kiti"
+
+#. module: website_blog
 #: model:blog.blog,name:website_blog.blog_blog_1
 msgid "Our Blog"
 msgstr "Mūsų tinklaraštis"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_rc_blogs
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_blogs
 msgid "Our Blogs"
 msgstr "Mūsų tinklaraščiai"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_rc_follow_us
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_follow_us
 msgid "Participate on our social stream."
 msgstr "Dalyvaukite mūsų socialių tinklų sraute."
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_tag_post_ids
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__post_ids
 msgid "Posts"
 msgstr "Įrašai"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid ""
 "Productivity is key: our smart user\n"
 "                        interface does not require you to click on every mail\n"
@@ -794,18 +1066,12 @@ msgstr ""
 "greiti."
 
 #. module: website_blog
-#: code:addons/website_blog/controllers/main.py:270
-#, python-format
-msgid "Public user cannot post comments on blog post."
-msgstr "Viešas vartotojas negali paskelbti komentarų po tinklaraščio įrašu."
-
-#. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_rc_status
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_status
 msgid "Published"
 msgstr "Paskelbtas"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_published_date
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__published_date
 msgid "Published Date"
 msgstr "Paskelbimo data"
 
@@ -816,32 +1082,43 @@ msgid "Published Post"
 msgstr "Paskelbtas įrašas"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_form
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_form
 msgid "Publishing Options"
-msgstr "Publikavimo nustatymai"
+msgstr "Skelbimo nustatymai"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_post_date
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__post_date
 msgid "Publishing date"
-msgstr "Publikavimo data"
+msgstr "Skelbimo data"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Purple"
 msgstr "Violetinis"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_ranking
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_follow_us
+msgid "RSS"
+msgstr "RSS"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__ranking
 msgid "Ranking"
 msgstr "Reitingas"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_post_complete_read_next
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_big_picture_template
+#: model_terms:ir.ui.view,arch_db:website_blog.s_latest_posts_list_template
+msgid "Read More"
+msgstr "Skaityti daugiau"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_post_complete_read_next
 msgid "Read Next <span class=\"fa fa-long-arrow-right\"/>"
 msgstr "Skaityti kitą <span class=\"fa fa-long-arrow-right\"/>"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid ""
 "Reading my inbox is the most unproductive task I do\n"
 "                    on a daily basis. I have to spend one full hour a\n"
@@ -857,12 +1134,32 @@ msgstr ""
 "laiškus. Visas šlamštas įkrenta į tą pačią dėžutę: brukalas,\n"
 "nesvarbi informacija, atsakytų laiškų citatos ir pan. Galiausiai,\n"
 "iš visos valandos tik 10 laiškų reikėjo mano įsikišimo. Su tinkamais\n"
-"įrankiais, šį darbą galėčiau atlikti per 10 minučių!"
+"įrankiais šį darbą galėčiau atlikti per 10 minučių!"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Red"
 msgstr "Raudona"
+
+#. module: website_blog
+#: model:ir.model.fields,help:website_blog.field_blog_blog__website_id
+#: model:ir.model.fields,help:website_blog.field_blog_post__website_id
+msgid "Restrict publishing to this website."
+msgstr "Apriboti skelbimą šioje svetainėje."
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__is_seo_optimized
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__is_seo_optimized
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__is_seo_optimized
+msgid "SEO optimized"
+msgstr "SEO optimizuotas"
+
+#. module: website_blog
+#. openerp-web
+#: code:addons/website_blog/static/src/js/website_blog.editor.js:38
+#, python-format
+msgid "Select Blog"
+msgstr "Pasirinkti tinklaraštį"
 
 #. module: website_blog
 #. openerp-web
@@ -877,62 +1174,83 @@ msgstr ""
 #: code:addons/website_blog/static/src/js/website.tour.blog.js:26
 #, python-format
 msgid "Set a blog post <b>cover</b>."
-msgstr "Nustatyti tinklaraščio įrašo <b>viršelį</b>."
+msgstr "Nustatykite tinklaraščio įrašo <b>viršelį</b>."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Size"
 msgstr "Dydis"
 
 #. module: website_blog
-#: model:ir.model.fields,help:website_blog.field_blog_post_author_avatar
+#: model:ir.model.fields,help:website_blog.field_blog_post__author_avatar
 msgid ""
 "Small-sized image of this contact. It is automatically resized as a 64x64px "
 "image, with aspect ratio preserved. Use this field anywhere a small image is"
 " required."
 msgstr ""
 "Mažo dydžio kontakto paveikslėlis. Automatiškai pakeičiamas į 64x64px "
-"paveikslėlį, išlaikant kraštinių santykį. Naudokite šitą laukelį visur, kur "
-"reikia mažo paveikslėlio."
+"paveikslėlį, išsaugant kraštinių santykį. Naudokite šitą laukelį, kai "
+"reikalingas mažas paveikslėlis."
 
 #. module: website_blog
 #. openerp-web
-#: code:addons/website_blog/models/website_blog.py:123
+#: code:addons/website_blog/models/website_blog.py:138
 #: code:addons/website_blog/static/src/js/website.tour.blog.js:52
 #, python-format
 msgid "Start writing here..."
-msgstr "Pradėkite čia rašyti..."
+msgstr "Pradėkite rašyti čia..."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_rc_status
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_status
 msgid "Status"
 msgstr "Būsena"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_rc_follow_us
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_follow_us
 msgid "Stay updated :"
 msgstr "Sužinokite:"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_subtitle
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__subtitle
 msgid "Sub Title"
 msgstr "Paantraštė"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_complete
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_post_complete_read_next
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_complete
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_post_complete_read_next
 msgid "Subtitle"
 msgstr "Paantraštė"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_tag_form
+#: model:ir.ui.menu,name:website_blog.menu_website_blog_tag_category_global
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_tag_category_tree
+msgid "Tag Categories"
+msgstr "Žymų kategorijos"
+
+#. module: website_blog
+#: model:ir.actions.act_window,name:website_blog.action_tag_category
+msgid "Tag Category"
+msgstr "Žymos kategorija"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_tag_category_form
+msgid "Tag Category Form"
+msgstr "Žymos kategorijos forma"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_tag_form
 msgid "Tag Form"
 msgstr "Žymos forma"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_tag_tree
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_tag_tree
 msgid "Tag List"
 msgstr "Žymų sąrašas"
+
+#. module: website_blog
+#: sql_constraint:blog.tag.category:0
+msgid "Tag category already exists !"
+msgstr "Žymos kategorija jau egzistuoja!"
 
 #. module: website_blog
 #: sql_constraint:blog.tag:0
@@ -940,39 +1258,41 @@ msgid "Tag name already exists !"
 msgstr "Žymos pavadinimas jau egzistuoja!"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_tag_ids
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_rc_tags
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__tag_ids
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag_category__tag_ids
+#: model:ir.ui.menu,name:website_blog.menu_blog_tag_global
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_tags
 msgid "Tags"
 msgstr "Žymos"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_teaser
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__teaser
 msgid "Teaser"
 msgstr "Anonsas"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_teaser_manual
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__teaser_manual
 msgid "Teaser Content"
 msgstr "Anonso turinys"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.view_blog_post_form
+#: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_form
 msgid "Technical"
 msgstr "Techninis"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid "The Communication Mechanism of Odoo"
 msgstr "\"Odoo\" komunikacijos mechanizmas"
 
 #. module: website_blog
 #: model:blog.post,name:website_blog.blog_post_1
-#: model:blog.post,website_meta_description:website_blog.blog_post_1
 msgid "The Future of Emails"
 msgstr "El. pašto ateitis"
 
 #. module: website_blog
-#: model:ir.model.fields,help:website_blog.field_blog_post_post_date
+#: model:ir.model.fields,help:website_blog.field_blog_post__post_date
 msgid ""
 "The blog post will be visible for your visitors as of this date on the "
 "website if it is set as published."
@@ -981,7 +1301,12 @@ msgstr ""
 "nustatytas kaip paskelbtas."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.latest_blogs
+#: model:ir.model.fields,help:website_blog.field_blog_post__website_url
+msgid "The full URL to access the document through the website."
+msgstr "Pilna nuoroda dokumento pasiekimui per svetainę."
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
 msgid ""
 "This page is great to improve your <strong>Search Engine Optimization</strong>;\n"
 "                   You can review titles, keywords and descriptions of all blogs at once."
@@ -990,7 +1315,7 @@ msgstr ""
 "Galite peržiūrėti visų tinklaraščių antraštes, raktažodžius ir aprašymus vienoje vietoje."
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_2
+#: model_terms:blog.post,content:website_blog.blog_post_2
 msgid ""
 "This provides a single source of data for your company and\n"
 "                    removes the need to create offline synchronisation between\n"
@@ -1001,12 +1326,12 @@ msgstr ""
 "ir produktų duomenų bazės."
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_name
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__name
 msgid "Title"
-msgstr "Antraštė"
+msgstr "Pavadinimas"
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_2
+#: model_terms:blog.post,content:website_blog.blog_post_2
 msgid ""
 "To add to an already comprehensive set of Odoo\n"
 "                features, a website content management system (CMS or WMS) has been developed and a beta release is\n"
@@ -1017,7 +1342,12 @@ msgstr ""
 "yra pasiekiama nuo šiandien, 2014 sausio 31 d."
 
 #. module: website_blog
-#: model:blog.post,content:website_blog.blog_post_1
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_complete
+msgid "To blog content"
+msgstr "Rašant turinį"
+
+#. module: website_blog
+#: model_terms:blog.post,content:website_blog.blog_post_1
 msgid ""
 "To disrupt emails, you need more than just another user\n"
 "                    interface. We need to rethink the whole communication flow."
@@ -1027,12 +1357,31 @@ msgstr ""
 "srautą."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_rc_status
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_complete
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_follow_us
+msgid "Twitter"
+msgstr "Twitter"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_status
 msgid "Unpublished"
 msgstr "Nepaskelbtas"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_unread
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_unread
+msgid "Unread Messages"
+msgstr "Neperskaitytos žinutės"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_unread_counter
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr "Neperskaitytų žinučių skaičiuoklis"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
 msgid "Untitled Post"
 msgstr "Be pavadinimo"
 
@@ -1046,25 +1395,21 @@ msgstr ""
 " įrenginiuose</b>."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_tag_form
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_tag_form
 msgid "Used in:"
 msgstr "Naudojama:"
 
 #. module: website_blog
-#: model:ir.model.fields,help:website_blog.field_mail_compose_message_path
-#: model:ir.model.fields,help:website_blog.field_mail_mail_path
-#: model:ir.model.fields,help:website_blog.field_mail_message_path
-#: model:ir.model.fields,help:website_blog.field_survey_mail_compose_message_path
-msgid ""
-"Used to display messages in a paragraph-based chatter using a unique path;"
-msgstr ""
-"Naudojamas žinučių rodymui pastraipomis grįstame susirašinėjime, naudojant "
-"unikalų kelią;"
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__website_published
+msgid "Visible on current website"
+msgstr "Matomas esamoje svetainėje"
 
 #. module: website_blog
 #: model:ir.model,name:website_blog.model_website
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__website_id
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__website_id
 msgid "Website"
-msgstr "Interneto svetainė"
+msgstr "Svetainė"
 
 #. module: website_blog
 #: model:ir.actions.act_url,name:website_blog.action_open_website
@@ -1072,22 +1417,57 @@ msgid "Website Blogs"
 msgstr "Svetainės tinklaraščiai"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_post_website_message_ids
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__website_message_ids
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__website_message_ids
 msgid "Website Messages"
 msgstr "Interneto svetainės pranešimai"
 
 #. module: website_blog
-#: model:ir.model.fields,help:website_blog.field_blog_post_website_message_ids
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__website_url
+msgid "Website URL"
+msgstr "Svetainės nuoroda"
+
+#. module: website_blog
+#: model:ir.model.fields,help:website_blog.field_blog_blog__website_message_ids
+#: model:ir.model.fields,help:website_blog.field_blog_post__website_message_ids
 msgid "Website communication history"
 msgstr "Interneto svetainės komunikacijos istorija"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__website_meta_description
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__website_meta_description
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__website_meta_description
+msgid "Website meta description"
+msgstr "Svetainės meta aprašymas"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__website_meta_keywords
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__website_meta_keywords
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__website_meta_keywords
+msgid "Website meta keywords"
+msgstr "Svetainės meta raktažodžiai"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__website_meta_title
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__website_meta_title
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__website_meta_title
+msgid "Website meta title"
+msgstr "Svetainės meta pavadinimas"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__website_meta_og_img
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__website_meta_og_img
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__website_meta_og_img
+msgid "Website opengraph image"
+msgstr "Svetainės Opengraph paveikslėlis"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "White"
 msgstr "Baltas"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.opt_blog_rc_about_us
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_about_us
 msgid ""
 "Write a small text here for when <b>new visitors</b> find your website\n"
 "            through your <b>blog entries</b>, referenced in Google."
@@ -1103,12 +1483,12 @@ msgid "Write a title, the subtitle is optional."
 msgstr "Parašykite pavadinimą, paantraštė nebūtina."
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Yellow"
 msgstr "Geltonas"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.latest_blogs
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
 msgid ""
 "You should <strong>add a banner on the top</strong> as it is a frequent landing page for new visitors.\n"
 "                   <span class=\"text-muted\">This box will not be visible to your visitors.</span>"
@@ -1117,21 +1497,32 @@ msgstr ""
 "<span class=\"text-muted\">Šis blokelis nebus matomas jūsų lankytojams. </span>"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_template_new_post
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_rc_follow_us
+msgid "Youtube"
+msgstr "Youtube"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_template_new_post
 msgid "blog. Click here to access the blog :"
 msgstr "tinklaraštis. Paspauskite, kad pasiektumėte tinklaraštį:"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_short
-#: model:ir.ui.view,arch_db:website_blog.latest_blogs
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
 msgid "comment"
 msgstr "komentaras"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_short
-#: model:ir.ui.view,arch_db:website_blog.latest_blogs
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
 msgid "comments"
 msgstr "komentarai"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.latest_blogs
+msgid "float-right"
+msgstr "float-right"
 
 #. module: website_blog
 #: model:blog.tag,name:website_blog.blog_tag_1
@@ -1139,28 +1530,22 @@ msgid "functional"
 msgstr "funkcinis"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_template_new_post
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_template_new_post
 msgid "has been published on the"
 msgstr "buvo paskelbtas"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_short
-#: model:ir.ui.view,arch_db:website_blog.latest_blogs
-msgid "pull-right"
-msgstr "pull-right"
-
-#. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
 msgid "unpublished"
-msgstr "nepaskelbtas"
+msgstr "nepaskelbta"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
 msgid "view"
 msgstr "peržiūrėti"
 
 #. module: website_blog
-#: model:ir.ui.view,arch_db:website_blog.blog_post_short
+#: model_terms:ir.ui.view,arch_db:website_blog.blog_post_short
 msgid "views"
 msgstr "peržiūros"
 
