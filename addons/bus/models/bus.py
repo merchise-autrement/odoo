@@ -10,6 +10,7 @@ import time
 import odoo
 from odoo import api, fields, models, SUPERUSER_ID
 from odoo.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
+from odoo.tools import date_utils
 
 try:
     from kombu.asynchronous.hub import Hub  # kombu 4.2.0+
@@ -28,7 +29,7 @@ TIMEOUT_DELTA = datetime.timedelta(seconds=TIMEOUT)
 # Bus
 #----------------------------------------------------------
 def json_dump(v):
-    return json.dumps(v, separators=(',', ':'))
+    return json.dumps(v, separators=(',', ':'), default=date_utils.json_default)
 
 def hashable(key):
     if isinstance(key, list):
@@ -39,8 +40,8 @@ def hashable(key):
 class ImBus(models.Model):
 
     _name = 'bus.bus'
+    _description = 'Communication Bus'
 
-    create_date = fields.Datetime('Create date')
     channel = fields.Char('Channel')
     message = fields.Char('Message')
 
@@ -60,8 +61,6 @@ class ImBus(models.Model):
                 "message": json_dump(message)
             }
             self.sudo().create(values)
-            if random.random() < 0.01:
-                self.gc()
         if channels:
             # We have to wait until the notifications are commited in database.
             # When calling `NOTIFY imbus`, some concurrent threads will be

@@ -3,16 +3,18 @@
 # * hr_org_chart
 # 
 # Translators:
-# UAB "Draugiški sprendimai" <transifex@draugiskisprendimai.lt>, 2017
-# Martin Trigaux, 2017
-# Linas Versada <paulius.sladkevicius@gmail.com>, 2018
+# Aleksandr Jadov <a.jadov@tata.lt>, 2018
+# Martin Trigaux, 2018
+# UAB "Draugiški sprendimai" <transifex@draugiskisprendimai.lt>, 2018
+# Linas Versada <linaskrisiukenas@gmail.com>, 2019
+# 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 10.saas~18\n"
+"Project-Id-Version: Odoo Server saas~11.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-20 09:53+0000\n"
-"PO-Revision-Date: 2017-09-20 09:53+0000\n"
-"Last-Translator: Linas Versada <paulius.sladkevicius@gmail.com>, 2018\n"
+"POT-Creation-Date: 2018-09-18 09:49+0000\n"
+"PO-Revision-Date: 2018-08-24 09:19+0000\n"
+"Last-Translator: Linas Versada <linaskrisiukenas@gmail.com>, 2019\n"
 "Language-Team: Lithuanian (https://www.transifex.com/odoo/teams/41243/lt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,7 +24,7 @@ msgstr ""
 
 #. module: hr_org_chart
 #. openerp-web
-#: code:addons/hr_org_chart/static/src/js/hr_org_chart.js:136
+#: code:addons/hr_org_chart/static/src/js/hr_org_chart.js:137
 #, python-format
 msgid "Direct Subordinates of %s"
 msgstr "Tiesioginiai %s pavaldiniai"
@@ -50,13 +52,13 @@ msgstr ""
 
 #. module: hr_org_chart
 #. openerp-web
-#: code:addons/hr_org_chart/static/src/js/hr_org_chart.js:146
+#: code:addons/hr_org_chart/static/src/js/hr_org_chart.js:147
 #, python-format
 msgid "Indirect Subordinates of %s"
 msgstr "Netiesioginiai %s pavaldiniai"
 
 #. module: hr_org_chart
-#: model:ir.model.fields,field_description:hr_org_chart.field_hr_employee_child_all_count
+#: model:ir.model.fields,field_description:hr_org_chart.field_hr_employee__child_all_count
 msgid "Indirect Surbordinates Count"
 msgstr "Netiesioginių pavaldinių skaičius"
 
@@ -69,19 +71,33 @@ msgstr "Netiesioginiai pavaldiniai"
 
 #. module: hr_org_chart
 #. openerp-web
+#: code:addons/hr_org_chart/static/src/xml/hr_org_chart.xml:66
+#, python-format
+msgid "More managers"
+msgstr "Daugiau vadovų"
+
+#. module: hr_org_chart
+#. openerp-web
 #: code:addons/hr_org_chart/static/src/xml/hr_org_chart.xml:87
 #, python-format
 msgid "No hierarchy position."
 msgstr "Nėra pozicijos hierarchijoje."
 
 #. module: hr_org_chart
-#: model:ir.ui.view,arch_db:hr_org_chart.hr_employee_view_form_inherit_org_chart
+#: model_terms:ir.ui.view,arch_db:hr_org_chart.hr_employee_view_form_inherit_org_chart
 msgid "Organization Chart"
 msgstr "Organizacijos lentelė"
 
 #. module: hr_org_chart
 #. openerp-web
-#: code:addons/hr_org_chart/static/src/js/hr_org_chart.js:139
+#: code:addons/hr_org_chart/static/src/xml/hr_org_chart.xml:155
+#, python-format
+msgid "Redirect"
+msgstr "Nukreipti"
+
+#. module: hr_org_chart
+#. openerp-web
+#: code:addons/hr_org_chart/static/src/js/hr_org_chart.js:140
 #, python-format
 msgid "Subordinates of %s"
 msgstr "%s pavaldiniai"

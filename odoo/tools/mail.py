@@ -44,14 +44,14 @@ class _Cleaner(clean.Cleaner):
 
     _style_whitelist = [
         'font-size', 'font-family', 'font-weight', 'background-color', 'color', 'text-align',
-        'line-height', 'letter-spacing', 'text-transform', 'text-decoration',
+        'line-height', 'letter-spacing', 'text-transform', 'text-decoration', 'opacity',
         'float', 'vertical-align', 'display',
         'padding', 'padding-top', 'padding-left', 'padding-bottom', 'padding-right',
         'margin', 'margin-top', 'margin-left', 'margin-bottom', 'margin-right',
         'white-space',
         # box model
-        'border', 'border-color', 'border-radius', 'border-style', 'border-width',
-        'height', 'margin', 'padding', 'width', 'max-width', 'min-width',
+        'border', 'border-color', 'border-radius', 'border-style', 'border-width', 'border-top',
+        'height', 'width', 'max-width', 'min-width', 'min-height',
         # tables
         'border-collapse', 'border-spacing', 'caption-side', 'empty-cells', 'table-layout']
 
@@ -180,7 +180,7 @@ def html_sanitize(src, silent=True, sanitize_tags=True, sanitize_attributes=Fals
     part = re.compile(r"(<(([^a<>]|a[^<>\s])[^<>]*)@[^<>]+>)", re.IGNORECASE | re.DOTALL)
     # remove results containing cite="mid:email_like@address" (ex: blockquote cite)
     # cite_except = re.compile(r"^((?!cite[\s]*=['\"]).)*$", re.IGNORECASE)
-    src = part.sub(lambda m: (u'cite=' not in m.group(1) and u'alt=' not in m.group(1)) and misc.html_escape(m.group(1)) or m.group(1), src)
+    src = part.sub(lambda m: (u'cite=' not in m.group(1) and u'alt=' not in m.group(1) and u'src=' not in m.group(1)) and misc.html_escape(m.group(1)) or m.group(1), src)
     # html encode mako tags <% ... %> to decode them later and keep them alive, otherwise they are stripped by the cleaner
     src = src.replace(u'<%', misc.html_escape(u'<%'))
     src = src.replace(u'%>', misc.html_escape(u'%>'))
@@ -417,9 +417,6 @@ email_re = re.compile(r"""([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63})""",
 # matches a string containing only one email
 single_email_re = re.compile(r"""^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$""", re.VERBOSE)
 
-# update command in emails body
-command_re = re.compile("^Set-([a-z]+) *: *(.+)$", re.I + re.UNICODE)
-
 # Updated in 7.0 to match the model name as well
 # Typical form of references is <timestamp-openerp-record_id-model_name@domain>
 # group(1) = the record ID ; group(2) = the model (if any) ; group(3) = the domain
@@ -504,6 +501,10 @@ def email_split_and_format(text):
                 # is strictly required in RFC2822's `addr-spec`.
                 if addr[1]
                 if '@' in addr[1]]
+
+def email_escape_char(email_address):
+    """ Escape problematic characters in the given email address string"""
+    return email_address.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')
 
 def email_references(references):
     ref_match, model, thread_id, hostname, is_private = False, False, False, False, False

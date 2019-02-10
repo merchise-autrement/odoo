@@ -1,5 +1,10 @@
 odoo.define('document.tests', function (require) {
     "use strict";
+    /**
+     * The feature tested here is disabled as it was replaced by another feature
+     * while still holding unfixed bugs and doing unnecessary rpc.
+     */
+    return;
 
     var testUtils = require('web.test_utils');
     var FormView = require('web.FormView');
@@ -60,7 +65,7 @@ odoo.define('document.tests', function (require) {
                         '</sheet>' +
                     '</form>',
                 res_id: 1,
-                viewOptions: {sidebar: true},
+                viewOptions: {hasSidebar: true},
                 mockRPC: function (route, args) {
                     if (args.method === 'search_read' && args.model === 'ir.attachment') {
                         return $.when(this.data['ir.attachment'].records);
