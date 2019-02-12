@@ -27,13 +27,13 @@ odoo.define('web_celery', function(require){
             this.start_waiting();
         },
 
-        init: function(parent, options) {
+        init: function(parent, action, options) {
             var res = this._super.apply(this, arguments);
-            this.uuid = options.params.uuid;
+            this.uuid = action.params.uuid;
             this.title = _t('Working');
             this.message = _t('Your request is being processed (or about '+
                               'to be processed.)  Please wait.');
-            this.channel = get_progress_channel(options.params);
+            this.channel = get_progress_channel(action.params);
             this.finished = $.Deferred();
         },
 
