@@ -5,6 +5,8 @@ odoo.define('web_celery', function(require){
     var _t = core._t;
     var framework = require('web.framework');
     var CrashManager = require('web.CrashManager');
+    var concurrency = require('web.concurrency');
+    var delay = concurrency.delay;
 
     // That's 20 minutes!  This should account for the time in the queue plus
     // the running time.
@@ -101,7 +103,7 @@ odoo.define('web_celery', function(require){
         },
 
         start_waiting: function() {
-            var timer = $.elapsed(JOB_TIME_LIMIT);
+            var timer = delay(JOB_TIME_LIMIT);
             var finished = this.finished;
             var self = this;
             $.whichever(finished, timer).always(function(which){
