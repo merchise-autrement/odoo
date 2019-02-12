@@ -22,7 +22,13 @@ odoo.define('web_celery', function(require){
         xmlDependencies: [],
 
         canBeRemoved: function(){
-            return this.finished;
+            // We can be removed after the job is either done or failed, but
+            // not before.  We won't hold the controller hostage if the job
+            // failed.
+            console.debug('Asked if we can be removed');
+            var res = $.Deferred();
+            this.finished.done(function(){res.resolve()}).fail(function(){res.resolve()});
+            return res.promise();
         },
 
         on_attach_callback: function() {
