@@ -1,10 +1,15 @@
 odoo.define('web_celery', function(require){
+    // TODO: Move to a service?
     var pending_jobs = 0;
+
     var AbstractAction = require('web.AbstractAction');
+
     var core = require('web.core');
     var _t = core._t;
     var framework = require('web.framework');
     var CrashManager = require('web.CrashManager');
+    var concurrency = require('web.concurrency');
+    var delay = concurrency.delay;
 
     // That's 20 minutes!  This should account for the time in the queue plus
     // the running time.
@@ -20,20 +25,25 @@ odoo.define('web_celery', function(require){
         xmlDependencies: [],
 
         canBeRemoved: function(){
-            return this.finished;
+            // We can be removed after the job is either done or failed, but
+            // not before.  We won't hold the controller hostage if the job
+            // failed.
+            var res = $.Deferred();
+            this.finished.done(function(){res.resolve()}).fail(function(){res.resolve()});
+            return res.promise();
         },
 
         on_attach_callback: function() {
             this.start_waiting();
         },
 
-        init: function(parent, options) {
+        init: function(parent, action, options) {
             var res = this._super.apply(this, arguments);
-            this.uuid = options.params.uuid;
+            this.uuid = action.params.uuid;
             this.title = _t('Working');
             this.message = _t('Your request is being processed (or about '+
                               'to be processed.)  Please wait.');
-            this.channel = get_progress_channel(options.params);
+            this.channel = get_progress_channel(action.params);
             this.finished = $.Deferred();
         },
 
@@ -101,7 +111,7 @@ odoo.define('web_celery', function(require){
         },
 
         start_waiting: function() {
-            var timer = $.elapsed(JOB_TIME_LIMIT);
+            var timer = delay(JOB_TIME_LIMIT);
             var finished = this.finished;
             var self = this;
             $.whichever(finished, timer).always(function(which){
@@ -126,13 +136,12 @@ odoo.define('web_celery', function(require){
             this._super.apply(this, arguments);
         },
 
-        show_failure: function() {
-            throw ('Not implemented');
-        },
+        show_failure: function() { },
 
-        show_success: function() {
-            throw ('Not implemented');
-        },
+        show_success: function() { },
+
+        updateView: function() { },
+
     });
 
     var FailureSuccessReporting = JobThrobber.extend({
@@ -255,9 +264,6 @@ odoo.define('web_celery', function(require){
             // spinner will be showed after this amount of time.  If the job
             // sends a report before 250ms (which is rare) the spinner will
             // show at that moment.
-            //
-            // But we must not depend on the job to send a report to show the
-            // spinner.
             _.delay(_.bind(this.updateView, this), this.SPINNER_WAIT);
         },
 
