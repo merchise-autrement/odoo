@@ -43,6 +43,7 @@ def QUIETLY_WAIT_FOR_TASK(job, next_action=None):
     return dict(
         type='ir.actions.client',
         tag='quietly_wait_for_background_job',
+        pushState=False,
         params=dict(
             uuid=job.id,
             next_action=next_action,
@@ -68,6 +69,7 @@ def WAIT_FOR_TASK(job, next_action=None):
     return dict(
         type='ir.actions.client',
         tag='wait_for_background_job',
+        pushState=False,
         params=dict(
             uuid=job.id,
             next_action=next_action,
@@ -115,7 +117,7 @@ class Module(models.Model):
             self.env.cr.commit()
             for progress in range(progress, 101, 4):
                 report_progress(progress=progress)
-                time.sleep(0.86)
+                time.sleep(0.26)
             report_progress(progress=100)
             return res
         else:
