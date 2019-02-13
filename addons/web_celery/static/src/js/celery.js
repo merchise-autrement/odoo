@@ -1,6 +1,9 @@
 odoo.define('web_celery', function(require){
+    // TODO: Move to a service?
     var pending_jobs = 0;
+
     var AbstractAction = require('web.AbstractAction');
+
     var core = require('web.core');
     var _t = core._t;
     var framework = require('web.framework');
@@ -25,7 +28,6 @@ odoo.define('web_celery', function(require){
             // We can be removed after the job is either done or failed, but
             // not before.  We won't hold the controller hostage if the job
             // failed.
-            console.debug('Asked if we can be removed');
             var res = $.Deferred();
             this.finished.done(function(){res.resolve()}).fail(function(){res.resolve()});
             return res.promise();
@@ -134,13 +136,12 @@ odoo.define('web_celery', function(require){
             this._super.apply(this, arguments);
         },
 
-        show_failure: function() {
-            throw ('Not implemented');
-        },
+        show_failure: function() { },
 
-        show_success: function() {
-            throw ('Not implemented');
-        },
+        show_success: function() { },
+
+        updateView: function() { },
+
     });
 
     var FailureSuccessReporting = JobThrobber.extend({
@@ -263,9 +264,6 @@ odoo.define('web_celery', function(require){
             // spinner will be showed after this amount of time.  If the job
             // sends a report before 250ms (which is rare) the spinner will
             // show at that moment.
-            //
-            // But we must not depend on the job to send a report to show the
-            // spinner.
             _.delay(_.bind(this.updateView, this), this.SPINNER_WAIT);
         },
 
