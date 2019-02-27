@@ -16,15 +16,13 @@ odoo.define('web_gantt.relational_fields', function(require){
          */
         _render: function () {
             var self = this;
-            if (!this.view)
+            if (this.renderer || !this.view)
                 return this._super();
             if (this.view){
                 var arch = this.view.arch;
                 if (arch.tag !== 'gantt')
                     return this._super();
                 else{
-                    // always init gantt render
-                    self.$el.empty();
                     var viewType = 'gantt';
                     var options = _.extend(this.value,{
                         modelName:this.value.model,
