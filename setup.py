@@ -123,6 +123,7 @@ def py2exe_options():
                         'yaml',
 
                         # Merchise
+                        'tornado>5,<6',  # 6 is Python 3.5+
                         'celery>=3.1.19,<5.0.0',
                         'flower',
                         'hiredis',
