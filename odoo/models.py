@@ -1848,7 +1848,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
     def _read_group_prepare(self, orderby, aggregated_fields, annotated_groupbys, query):
         """
         Prepares the GROUP BY and ORDER BY terms for the read_group method. Adds the missing JOIN clause
-        to the query if order should be computed against m2o field. 
+        to the query if order should be computed against m2o field.
         :param orderby: the orderby definition in the form "%(field)s %(order)s"
         :param aggregated_fields: list of aggregated fields in the query
         :param annotated_groupbys: list of dictionaries returned by _read_group_process_groupby
@@ -1940,9 +1940,9 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         return {
             'field': split[0],
             'groupby': gb,
-            'type': field_type, 
+            'type': field_type,
             'display_format': display_formats[gb_function or 'month'] if temporal else None,
-            'interval': time_intervals[gb_function or 'month'] if temporal else None,                
+            'interval': time_intervals[gb_function or 'month'] if temporal else None,
             'tz_convert': tz_convert,
             'qualified_field': qualified_field,
         }
@@ -1967,8 +1967,8 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
     @api.model
     def _read_group_format_result(self, data, annotated_groupbys, groupby, domain):
         """
-            Helper method to format the data contained in the dictionary data by 
-            adding the domain corresponding to its values, the groupbys in the 
+            Helper method to format the data contained in the dictionary data by
+            adding the domain corresponding to its values, the groupbys in the
             context and by properly formatting the date/datetime values.
 
         :param data: a single group
@@ -2045,10 +2045,10 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                 The possible aggregation functions are the ones provided by PostgreSQL
                 (https://www.postgresql.org/docs/current/static/functions-aggregate.html)
                 and 'count_distinct', with the expected meaning.
-        :param list groupby: list of groupby descriptions by which the records will be grouped.  
+        :param list groupby: list of groupby descriptions by which the records will be grouped.
                 A groupby description is either a field (then it will be grouped by that field)
                 or a string 'field:groupby_function'.  Right now, the only functions supported
-                are 'day', 'week', 'month', 'quarter' or 'year', and they only make sense for 
+                are 'day', 'week', 'month', 'quarter' or 'year', and they only make sense for
                 date/datetime fields.
         :param int offset: optional number of records to skip
         :param int limit: optional max number of records to return
@@ -2056,7 +2056,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                              overriding the natural sort ordering of the
                              groups, see also :py:meth:`~osv.osv.osv.search`
                              (supported only for many2one fields currently)
-        :param bool lazy: if true, the results are only grouped by the first groupby and the 
+        :param bool lazy: if true, the results are only grouped by the first groupby and the
                 remaining groupbys are put in the __context key.  If false, all the groupbys are
                 done in one call.
         :return: list of dictionaries(one dictionary for each record) containing:
@@ -2201,7 +2201,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             # Right now, read_group only fill results in lazy mode (by default).
             # If you need to have the empty groups in 'eager' mode, then the
             # method _read_group_fill_results need to be completely reimplemented
-            # in a sane way 
+            # in a sane way
             result = self._read_group_fill_results(
                 domain, groupby_fields[0], groupby[len(annotated_groupbys):],
                 aggregated_fields, count_field, result, read_group_order=order,
@@ -2768,20 +2768,22 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         # retrieve results from records; this takes values from the cache and
         # computes remaining fields
         self = self.with_prefetch(self._prefetch.copy())
-        data = {record: {'id': record.id} for record in self}
-        missing = set()
+        data = [(record, {'id': record._ids[0]}) for record in self]
         use_name_get = (load == '_classic_read')
         for name in (stored + inherited + computed):
             convert = self._fields[name].convert_to_read
             # restrict the prefetching of self's model to self; this avoids
             # computing fields on a larger recordset than self
             self._prefetch[self._name] = set(self._ids)
-            for record in self:
+            for record, vals in data:
+                # missing records have their vals empty
+                if not vals:
+                    continue
                 try:
-                    data[record][name] = convert(record[name], record, use_name_get)
+                    vals[name] = convert(record[name], record, use_name_get)
                 except MissingError:
-                    missing.add(record)
-        result = [data[record] for record in self if record not in missing]
+                    vals.clear()
+        result = [vals for record, vals in data if vals]
 
         return result
 
@@ -2876,36 +2878,46 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                 res = 'pg_size_pretty(length(%s)::bigint)' % res
             return '%s as "%s"' % (res, col)
 
+        # selected fields are: 'id' followed by fields_pre
         qual_names = [qualify(name) for name in [self._fields['id']] + fields_pre]
 
         # determine the actual query to execute
         from_clause, where_clause, params = query.get_sql()
         query_str = "SELECT %s FROM %s WHERE %s" % (",".join(qual_names), from_clause, where_clause)
 
-        result = []
+        # fetch one list of record values per field
+        field_values_list = [[] for name in qual_names]
         param_pos = params.index(param_ids)
         for sub_ids in cr.split_for_in_conditions(self.ids):
             params[param_pos] = tuple(sub_ids)
             cr.execute(query_str, params)
-            result.extend(cr.dictfetchall())
+            for row in cr.fetchall():
+                for values, val in pycompat.izip(field_values_list, row):
+                    values.append(val)
 
-        ids = [vals['id'] for vals in result]
+        ids = field_values_list.pop(0)
         fetched = self.browse(ids)
 
         if ids:
             # translate the fields if necessary
             if context.get('lang'):
-                for field in fields_pre:
+                for field, values in pycompat.izip(fields_pre, field_values_list):
                     if not field.inherited and callable(field.translate):
                         name = field.name
                         translate = field.get_trans_func(fetched)
-                        for vals in result:
-                            vals[name] = translate(vals['id'], vals[name])
+                        for index in range(len(ids)):
+                            values[index] = translate(ids[index], values[index])
 
             # store result in cache
-            for vals in result:
-                record = self.browse(vals.pop('id'), self._prefetch)
-                record._cache.update(record._convert_to_cache(vals, validate=False))
+            target = self.browse([], self._prefetch)
+            for field, values in pycompat.izip(fields_pre, field_values_list):
+                convert = field.convert_to_cache
+                # Note that the target record passed to convert below is empty.
+                # This does not harm in practice, as it is only used in Monetary
+                # fields for rounding the value. As the value comes straight
+                # from the database, it is expected to be rounded already.
+                values = [convert(value, target, validate=False) for value in values]
+                self.env.cache.update(fetched, field, values)
 
             # determine the fields that must be processed now;
             # for the sake of simplicity, we ignore inherited fields
@@ -3267,6 +3279,9 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         with self.env.protecting(protected_fields, self):
             # write stored fields with (low-level) method _write
             if store_vals or inverse_vals or inherited_vals:
+                # if log_access is enabled, this updates 'write_date' and
+                # 'write_uid' and check access rules, even when old_vals is
+                # empty
                 self._write(store_vals)
 
             # update parent records (after possibly updating parent fields)
@@ -3283,6 +3298,8 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                 self.env[model_name].browse(parent_ids).write(parent_vals)
 
             if inverse_vals:
+                self.check_field_access_rights('write', list(inverse_vals))
+
                 self.modified(set(inverse_vals) - set(store_vals))
 
                 # group fields by inverse method (to call it once), and order
@@ -3344,7 +3361,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                 _logger.warning('Field %s is deprecated: %s', field, field.deprecated)
 
             if field.column_type:
-                if single_lang or not (has_translation and field.translate is True):
+                if single_lang or not (has_translation and field.translate):
                     # val is not a translation: update the table
                     val = field.convert_to_column(val, self, vals)
                     columns.append((name, field.column_format, val))
@@ -4613,7 +4630,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
     #
 
     @classmethod
-    def _browse(cls, ids, env, prefetch=None):
+    def _browse(cls, ids, env, prefetch=None, add_prefetch=True):
         """ Create a recordset instance.
 
         :param ids: a tuple of record ids
@@ -4626,7 +4643,8 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         if prefetch is None:
             prefetch = defaultdict(set)         # {model_name: set(ids)}
         records._prefetch = prefetch
-        prefetch[cls._name].update(ids)
+        if add_prefetch:
+            prefetch[cls._name].update(ids)
         return records
 
     def browse(self, arg=None, prefetch=None):
@@ -4665,9 +4683,13 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         """ Verifies that the current recorset holds a single record. Raises
         an exception otherwise.
         """
-        if len(self) == 1:
+        try:
+            # unpack to ensure there is only one value is faster than len when true and
+            # has a significant impact as this check is largely called
+            _id, = self._ids
             return self
-        raise ExpectedSingletonError("Expected singleton: %s" % self)
+        except ValueError:
+            raise ExpectedSingletonError("Expected singleton: %s" % self)
 
     def with_env(self, env):
         """ Returns a new version of this recordset attached to the provided
@@ -4933,7 +4955,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
     def __iter__(self):
         """ Return an iterator over ``self``. """
         for id in self._ids:
-            yield self._browse((id,), self.env, self._prefetch)
+            yield self._browse((id,), self.env, self._prefetch, False)
 
     def __contains__(self, item):
         """ Test whether ``item`` (record or field name) is an element of ``self``.
