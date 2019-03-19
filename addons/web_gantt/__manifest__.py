@@ -90,5 +90,5 @@ options
         'static/src/xml/*.xml',
     ],
     'auto_install': False,
-    'installable': False,
+    'installable': True,
 }

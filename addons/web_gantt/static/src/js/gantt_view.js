@@ -67,11 +67,11 @@ var GraphView = AbstractView.extend({
     },
     init: function(viewInfo, params) {
         this._super.apply(this, arguments);
-        var arch = viewInfo.arch;
+        var arch = $(viewInfo.arch);
         var fields = viewInfo.fields;
-        var attrs = arch.attrs;
+        var attrs = arch.getAttributes();
         // Warning: quotes and double quotes problem due to json and xml clash
-        var options = JSON.parse(attrs.options ? attrs.options.replace(/'/g, '"') : '{}');
+        var options = JSON.parse(attrs && attrs.options ? attrs.options.replace(/'/g, '"') : '{}');
         if (!attrs.date_start) {
             throw new Error(_lt("Gantt view has not defined 'date_start' attribute."));
         }
@@ -86,10 +86,10 @@ var GraphView = AbstractView.extend({
             configsOdoo.show_links = true;
         }
 
-        var groupBy = arch.attrs.default_group_by ? [arch.attrs.default_group_by] : (params.groupBy || [])
+        var groupBy = attrs.default_group_by ? [attrs.default_group_by] : (params.groupBy || [])
         fieldNames.concat(groupBy);
         _.each(fieldsToGather, function (gantt_field, field) {
-            if (arch.attrs[field]) {
+            if (attrs[field]) {
                 var fieldName = attrs[field];
             }
             else{
