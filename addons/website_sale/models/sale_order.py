@@ -62,7 +62,7 @@ class SaleOrder(models.Model):
         # is_abandoned domain possibilities
         if (operator not in expression.NEGATIVE_TERM_OPERATORS and value) or (operator in expression.NEGATIVE_TERM_OPERATORS and not value):
             return abandoned_domain
-        return expression.distribute_not(abandoned_domain)  # negative domain
+        return expression.distribute_not(['!'] + abandoned_domain)  # negative domain
 
     @api.multi
     def _cart_find_product_line(self, product_id=None, line_id=None, **kwargs):
@@ -280,14 +280,14 @@ class SaleOrder(models.Model):
 
             order_line.write(values)
 
-        # link a product to the sales order
-        if kwargs.get('linked_line_id'):
-            linked_line = SaleOrderLineSudo.browse(kwargs['linked_line_id'])
-            order_line.write({
-                'linked_line_id': linked_line.id,
-                'name': order_line.name + "\n" + _("Option for:") + ' ' + linked_line.product_id.display_name,
-            })
-            linked_line.write({"name": linked_line.name + "\n" + _("Option:") + ' ' + order_line.product_id.display_name})
+            # link a product to the sales order
+            if kwargs.get('linked_line_id'):
+                linked_line = SaleOrderLineSudo.browse(kwargs['linked_line_id'])
+                order_line.write({
+                    'linked_line_id': linked_line.id,
+                    'name': order_line.name + "\n" + _("Option for:") + ' ' + linked_line.product_id.display_name,
+                })
+                linked_line.write({"name": linked_line.name + "\n" + _("Option:") + ' ' + order_line.product_id.display_name})
 
         option_lines = self.order_line.filtered(lambda l: l.linked_line_id.id == order_line.id)
         for option_line_id in option_lines:
@@ -312,7 +312,8 @@ class SaleOrder(models.Model):
 
     @api.multi
     def action_recovery_email_send(self):
-        self._portal_ensure_token()
+        for order in self:
+            order._portal_ensure_token()
         composer_form_view_id = self.env.ref('mail.email_compose_message_wizard_form').id
         try:
             default_template = self.env.ref('website_sale.mail_template_sale_cart_recovery', raise_if_not_found=False)

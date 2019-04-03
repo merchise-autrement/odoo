@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 12.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-19 08:20+0000\n"
+"POT-Creation-Date: 2019-03-29 10:09+0000\n"
 "PO-Revision-Date: 2018-08-24 09:17+0000\n"
 "Last-Translator: Alagappan Karthikeyan <me@karthik.sg>, 2019\n"
 "Language-Team: Tamil (https://www.transifex.com/odoo/teams/41243/ta/)\n"
@@ -599,7 +599,7 @@ msgstr ""
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.view_event_search
 msgid "Archived"
-msgstr ""
+msgstr "காப்பகப்படுத்தியவை"
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.view_event_form
@@ -646,7 +646,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_mail_registration__registration_id
 #: model_terms:ir.ui.view,arch_db:event.view_event_registration_form
 msgid "Attendee"
-msgstr ""
+msgstr "பங்கேற்பாளர்"
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_registration__name
@@ -662,7 +662,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:event.view_event_form
 #: model_terms:ir.ui.view,arch_db:event.view_event_type_form
 msgid "Attendees"
-msgstr ""
+msgstr "வருகையாளர் நிலை"
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__auto_confirm
@@ -898,7 +898,7 @@ msgstr "வாடிக்கையாளர்"
 #: code:addons/event/models/event.py:457
 #, python-format
 msgid "Customer Email"
-msgstr ""
+msgstr "வாடிக்கையாளர் மின்னஞ்சல்"
 
 #. module: event
 #: model_terms:event.event,description:event.event_0
@@ -919,12 +919,12 @@ msgstr ""
 #: selection:event.mail,interval_unit:0
 #: selection:event.type.mail,interval_unit:0
 msgid "Day(s)"
-msgstr ""
+msgstr "நாட்களில்"
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.view_event_kanban
 msgid "Delete"
-msgstr ""
+msgstr "அழி"
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__description
@@ -970,7 +970,7 @@ msgstr "முடிந்தது"
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.view_event_kanban
 msgid "Dropdown menu"
-msgstr ""
+msgstr "துளி மெனு"
 
 #. module: event
 #: model_terms:event.event,description:event.event_2
@@ -994,7 +994,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_mail__template_id
 #: model:ir.model.fields,field_description:event.field_event_type_mail__template_id
 msgid "Email Template"
-msgstr ""
+msgstr "மின்னஞ்சல் டெம்ப்ளேட்"
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__date_end
@@ -1014,7 +1014,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:event.event_event_view_pivot
 #: model_terms:ir.ui.view,arch_db:event.view_registration_search
 msgid "Event"
-msgstr ""
+msgstr "நிகழ்வு"
 
 #. module: event
 #: model:ir.model,name:event.model_event_mail
@@ -1131,6 +1131,7 @@ msgstr ""
 #. module: event
 #: model:ir.actions.act_window,name:event.action_event_view
 #: model:ir.model.fields,field_description:event.field_res_partner__event_count
+#: model:ir.model.fields,field_description:event.field_res_users__event_count
 #: model:ir.ui.menu,name:event.event_event_menu_pivot_report
 #: model:ir.ui.menu,name:event.event_main_menu
 #: model:ir.ui.menu,name:event.menu_event_event
@@ -1259,7 +1260,7 @@ msgstr ""
 #: selection:event.mail,interval_unit:0
 #: selection:event.type.mail,interval_unit:0
 msgid "Hour(s)"
-msgstr ""
+msgstr "ஹவர் (ங்கள்)"
 
 #. module: event
 #: model_terms:event.event,description:event.event_0
@@ -1421,13 +1422,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_event__address_id
 #: model_terms:ir.ui.view,arch_db:event.view_event_type_form
 msgid "Location"
-msgstr ""
+msgstr "இருப்பிடம்"
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.event_event_report_template_badge
 #: model_terms:ir.ui.view,arch_db:event.event_registration_report_template_badge
 msgid "Logo"
-msgstr ""
+msgstr "சின்னம்"
 
 #. module: event
 #: model_terms:event.event,description:event.event_0
@@ -1544,7 +1545,7 @@ msgstr ""
 #: selection:event.mail,interval_unit:0
 #: selection:event.type.mail,interval_unit:0
 msgid "Month(s)"
-msgstr ""
+msgstr "மாதம் (ங்கள்)"
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.view_event_search
@@ -1587,6 +1588,7 @@ msgstr "பிழை எண்ணிக்கை"
 
 #. module: event
 #: model:ir.model.fields,help:event.field_res_partner__event_count
+#: model:ir.model.fields,help:event.field_res_users__event_count
 msgid "Number of events the partner has participated."
 msgstr ""
 
@@ -1622,7 +1624,7 @@ msgstr ""
 #: model:event.type,name:event.event_type_data_online
 #: model_terms:ir.ui.view,arch_db:event.view_event_form
 msgid "Online"
-msgstr ""
+msgstr "ஆன்லைன்"
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__is_online
@@ -1663,7 +1665,7 @@ msgstr ""
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.view_registration_search
 msgid "Participant"
-msgstr ""
+msgstr "பங்கேற்பாளர்"
 
 #. module: event
 #: model_terms:event.event,description:event.event_0
@@ -1687,7 +1689,7 @@ msgstr "கூட்டாளி"
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_registration__phone
 msgid "Phone"
-msgstr ""
+msgstr "தொலைபேசி"
 
 #. module: event
 #: model:event.type,name:event.event_type_data_physical
@@ -1789,7 +1791,7 @@ msgstr "அறிக்கையிடல்"
 #. module: event
 #: model_terms:event.event,description:event.event_0
 msgid "Requirements"
-msgstr ""
+msgstr "தேவைகள்"
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__seats_reserved
@@ -1868,7 +1870,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:event.action_event_configuration
 #: model:ir.ui.menu,name:event.menu_event_global_settings
 msgid "Settings"
-msgstr ""
+msgstr "அமைப்புகள்"
 
 #. module: event
 #: model:event.type,name:event.event_type_3
@@ -1951,7 +1953,7 @@ msgstr ""
 #. module: event
 #: model:event.type,name:event.event_type_4
 msgid "Training"
-msgstr ""
+msgstr "பயிற்சி"
 
 #. module: event
 #: model_terms:event.event,description:event.event_0
@@ -1979,7 +1981,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:event.view_event_search
 #: model_terms:ir.ui.view,arch_db:event.view_registration_search
 msgid "Unconfirmed"
-msgstr ""
+msgstr "உறுதிப்படுத்தப்படாத"
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__seats_unconfirmed
@@ -2005,7 +2007,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_mail__interval_unit
 #: model:ir.model.fields,field_description:event.field_event_type_mail__interval_unit
 msgid "Unit"
-msgstr ""
+msgstr "அலகு"
 
 #. module: event
 #: selection:event.event,seats_availability:0
@@ -2073,10 +2075,22 @@ msgid "Warehouse management, Manufacturing (MRP) &amp; Sales, Import/Export."
 msgstr ""
 
 #. module: event
+#: model:ir.model.fields,field_description:event.field_event_event__website_message_ids
+#: model:ir.model.fields,field_description:event.field_event_registration__website_message_ids
+msgid "Website Messages"
+msgstr "இணைய செய்திகள்"
+
+#. module: event
+#: model:ir.model.fields,help:event.field_event_event__website_message_ids
+#: model:ir.model.fields,help:event.field_event_registration__website_message_ids
+msgid "Website communication history"
+msgstr "வலைத்தள தகவல்தொடர்பு வரலாறு"
+
+#. module: event
 #: selection:event.mail,interval_unit:0
 #: selection:event.type.mail,interval_unit:0
 msgid "Week(s)"
-msgstr ""
+msgstr "வாரம் (கள்)"
 
 #. module: event
 #: model_terms:event.event,description:event.event_0

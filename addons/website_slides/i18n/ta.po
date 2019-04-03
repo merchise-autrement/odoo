@@ -357,7 +357,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_search
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_slide_search
 msgid "Archived"
-msgstr ""
+msgstr "காப்பகப்படுத்தியவை"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel__message_attachment_count
@@ -483,7 +483,7 @@ msgstr "கட்டமைப்பு அமைப்புகள்"
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide__datas
 msgid "Content"
-msgstr ""
+msgstr "உள்ளடக்க"
 
 #. module: website_slides
 #. openerp-web
@@ -566,7 +566,7 @@ msgstr "விளக்கம்"
 #: code:addons/website_slides/static/src/xml/website_slides.xml:71
 #, python-format
 msgid "Discard"
-msgstr ""
+msgstr "நிராகரி"
 
 #. module: website_slides
 #: model:slide.slide,description:website_slides.slide_6
@@ -620,12 +620,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_slide_form
 #: selection:slide.slide,slide_type:0
 msgid "Document"
-msgstr ""
+msgstr "ஆவணம்"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide__document_id
 msgid "Document ID"
-msgstr ""
+msgstr "ஆவண ஐடி"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide__url
@@ -640,7 +640,7 @@ msgstr ""
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.embed_slide
 msgid "Download"
-msgstr ""
+msgstr "பதிவிறக்க"
 
 #. module: website_slides
 #: model:slide.slide,description:website_slides.slide_5
@@ -705,7 +705,7 @@ msgstr ""
 #. module: website_slides
 #: selection:slide.slide,download_security:0
 msgid "Everyone"
-msgstr ""
+msgstr "அனைவரும்"
 
 #. module: website_slides
 #: selection:slide.channel,promote_strategy:0
@@ -922,7 +922,7 @@ msgstr "முக்கிய இணைப்பு"
 #. module: website_slides
 #: model:slide.tag,name:website_slides.tag2
 msgid "Marketing"
-msgstr ""
+msgstr "சந்தைப்படுத்தல்"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide__image_medium
@@ -1306,7 +1306,7 @@ msgstr ""
 #: code:addons/website_slides/static/src/js/website_slides.editor.js:44
 #, python-format
 msgid "Select"
-msgstr ""
+msgstr "தேர்வு"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.channels
@@ -1432,7 +1432,7 @@ msgstr ""
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_tag_form
 msgid "Tag"
-msgstr ""
+msgstr "டேக்"
 
 #. module: website_slides
 #. openerp-web
@@ -1454,7 +1454,7 @@ msgstr ""
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.home
 msgid "The"
-msgstr ""
+msgstr "தி"
 
 #. module: website_slides
 #: model:ir.model.fields,help:website_slides.field_slide_slide__slide_type
@@ -1506,7 +1506,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide__name
 #, python-format
 msgid "Title"
-msgstr ""
+msgstr "தலைப்பு"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_category__total
@@ -1653,7 +1653,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide__website_id
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_slide_form
 msgid "Website"
-msgstr ""
+msgstr "இணையதளம்"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel__website_message_ids

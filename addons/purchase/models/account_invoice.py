@@ -124,7 +124,6 @@ class AccountInvoice(models.Model):
         purchase_ids = self.invoice_line_ids.mapped('purchase_id')
         if purchase_ids:
             self.origin = ', '.join(purchase_ids.mapped('name'))
-            self.reference = ', '.join(purchase_ids.filtered('partner_ref').mapped('partner_ref')) or self.reference
 
     @api.onchange('partner_id', 'company_id')
     def _onchange_partner_id(self):
@@ -132,7 +131,7 @@ class AccountInvoice(models.Model):
         res = super(AccountInvoice, self)._onchange_partner_id()
         if payment_term_id:
             self.payment_term_id = payment_term_id
-        if not self.env.context.get('default_journal_id') and self.partner_id and self.currency_id and\
+        if not self.env.context.get('default_journal_id') and self.partner_id and\
                 self.type in ['in_invoice', 'in_refund'] and\
                 self.currency_id != self.partner_id.property_purchase_currency_id and\
                 self.partner_id.property_purchase_currency_id.id:
@@ -172,6 +171,11 @@ class AccountInvoice(models.Model):
                 message = _("This vendor bill has been modified from: %s") % (",".join(["<a href=# data-oe-model=purchase.order data-oe-id=" + str(order.id) + ">" + order.name + "</a>" for order in purchase]))
                 invoice.message_post(body=message)
         return result
+
+    def _get_onchange_create(self):
+        res = super()._get_onchange_create()
+        res['_onchange_partner_id'].append('currency_id')
+        return res
 
 
 class AccountInvoiceLine(models.Model):

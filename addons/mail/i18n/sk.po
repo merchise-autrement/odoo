@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 12.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-08 05:29+0000\n"
+"POT-Creation-Date: 2019-03-29 10:09+0000\n"
 "PO-Revision-Date: 2018-08-24 09:20+0000\n"
 "Last-Translator: Jan Prokop, 2019\n"
 "Language-Team: Slovak (https://www.transifex.com/odoo/teams/41243/sk/)\n"
@@ -1052,12 +1052,13 @@ msgstr "Telo"
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_res_partner__message_bounce
+#: model:ir.model.fields,field_description:mail.field_res_users__message_bounce
 msgid "Bounce"
 msgstr "Odraziť"
 
 #. module: mail
 #. openerp-web
-#: code:addons/mail/static/src/xml/thread.xml:398
+#: code:addons/mail/static/src/xml/thread.xml:391
 #: selection:mail.notification,email_status:0
 #, python-format
 msgid "Bounced"
@@ -3439,7 +3440,7 @@ msgstr "Vyhľadávanie správ"
 #: code:addons/mail/static/src/js/tour.js:20
 #, python-format
 msgid "Messages can be <b>starred</b> to remind you to check back later."
-msgstr ""
+msgstr "Správy možno <b>označiť hviezdičkou</b> pre neskorší návrat k nim."
 
 #. module: mail
 #: model:ir.model.fields,help:mail.field_mail_message_subtype__internal
@@ -3989,7 +3990,7 @@ msgstr "O zmene"
 msgid ""
 "Once a message has been starred, you can come back and review it at any time"
 " here."
-msgstr ""
+msgstr "Keď správu označíte hviezdičkou, môžete sa k nej hocikedy vrátiť."
 
 #. module: mail
 #. openerp-web
@@ -5344,7 +5345,7 @@ msgstr ""
 #. module: mail
 #: model:ir.model.fields,help:mail.field_mail_blacklist__email
 msgid "This field is case insensitive."
-msgstr ""
+msgstr "Toto pole nerozlišuje veľkosť písmen."
 
 #. module: mail
 #: model:ir.model.fields,help:mail.field_mail_channel__public

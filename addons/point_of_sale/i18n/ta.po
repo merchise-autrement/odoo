@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 12.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-04 08:39+0000\n"
+"POT-Creation-Date: 2019-03-29 10:09+0000\n"
 "PO-Revision-Date: 2018-08-24 09:22+0000\n"
 "Last-Translator: Alagappan Karthikeyan <me@karthik.sg>, 2019\n"
 "Language-Team: Tamil (https://www.transifex.com/odoo/teams/41243/ta/)\n"
@@ -408,7 +408,7 @@ msgstr ""
 #: code:addons/point_of_sale/static/src/xml/pos.xml:511
 #, python-format
 msgid "Address"
-msgstr ""
+msgstr "முகவரி"
 
 #. module: point_of_sale
 #: model_terms:ir.ui.view,arch_db:point_of_sale.res_config_settings_view_form
@@ -595,12 +595,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_config__barcode_nomenclature_id
 #: model_terms:ir.ui.view,arch_db:point_of_sale.pos_config_view_form
 msgid "Barcode Nomenclature"
-msgstr ""
+msgstr "பார்கோடு பெயரிடல்"
 
 #. module: point_of_sale
 #: model:ir.model,name:point_of_sale.model_barcode_rule
 msgid "Barcode Rule"
-msgstr ""
+msgstr "பார்கோடு விதி"
 
 #. module: point_of_sale
 #. openerp-web
@@ -720,7 +720,7 @@ msgstr ""
 #. module: point_of_sale
 #: selection:barcode.rule,type:0
 msgid "Cashier"
-msgstr ""
+msgstr "காசாளர்"
 
 #. module: point_of_sale
 #: model_terms:ir.ui.view,arch_db:point_of_sale.pos_config_view_form
@@ -871,12 +871,12 @@ msgstr ""
 #: code:addons/point_of_sale/static/src/xml/pos.xml:352
 #, python-format
 msgid "City"
-msgstr ""
+msgstr "பெருநகரம்"
 
 #. module: point_of_sale
 #: selection:barcode.rule,type:0
 msgid "Client"
-msgstr ""
+msgstr "வாடிக்கையாளர்"
 
 #. module: point_of_sale
 #. openerp-web
@@ -970,11 +970,17 @@ msgstr ""
 
 #. module: point_of_sale
 #. openerp-web
-#: code:addons/point_of_sale/static/src/js/chrome.js:829
+#: code:addons/point_of_sale/static/src/js/chrome.js:832
 #: code:addons/point_of_sale/static/src/xml/pos.xml:1059
 #, python-format
 msgid "Confirm"
 msgstr "உறுதிப்படுத்தவும்"
+
+#. module: point_of_sale
+#: model_terms:ir.ui.view,arch_db:point_of_sale.pos_config_view_form
+msgid ""
+"Connect devices to your PoS (ticket printer, barcode scanner, scale, etc.)"
+msgstr ""
 
 #. module: point_of_sale
 #. openerp-web
@@ -1065,7 +1071,7 @@ msgstr "உருவாக்கப்பட்ட தேதி"
 #. module: point_of_sale
 #: selection:barcode.rule,type:0
 msgid "Credit Card"
-msgstr ""
+msgstr "கடன் அட்டை"
 
 #. module: point_of_sale
 #: model_terms:ir.ui.view,arch_db:point_of_sale.res_config_settings_view_form
@@ -1132,7 +1138,7 @@ msgstr ""
 #. module: point_of_sale
 #: model:ir.ui.menu,name:point_of_sale.menu_point_of_sale_customer
 msgid "Customers"
-msgstr ""
+msgstr "வாடிக்கையாளர்கள்"
 
 #. module: point_of_sale
 #: model:ir.ui.menu,name:point_of_sale.menu_pos_dashboard
@@ -1217,7 +1223,7 @@ msgstr ""
 #: code:addons/point_of_sale/static/src/xml/pos.xml:1405
 #, python-format
 msgid "Delete"
-msgstr ""
+msgstr "அழி"
 
 #. module: point_of_sale
 #. openerp-web
@@ -1345,7 +1351,7 @@ msgstr ""
 #. module: point_of_sale
 #: selection:barcode.rule,type:0
 msgid "Discounted Product"
-msgstr ""
+msgstr "தள்ளுபடி தயாரிப்பு"
 
 #. module: point_of_sale
 #. openerp-web
@@ -1423,7 +1429,7 @@ msgstr ""
 #: code:addons/point_of_sale/static/src/xml/pos.xml:1023
 #, python-format
 msgid "Download"
-msgstr ""
+msgstr "பதிவிறக்க"
 
 #. module: point_of_sale
 #. openerp-web
@@ -1458,7 +1464,7 @@ msgstr ""
 #: code:addons/point_of_sale/static/src/xml/pos.xml:409
 #, python-format
 msgid "Edit"
-msgstr ""
+msgstr "தொகு"
 
 #. module: point_of_sale
 #. openerp-web
@@ -1568,7 +1574,7 @@ msgstr ""
 #. module: point_of_sale
 #: model_terms:ir.ui.view,arch_db:point_of_sale.view_pos_pos_form
 msgid "Extra Info"
-msgstr ""
+msgstr "கூடுதல் தகவல்"
 
 #. module: point_of_sale
 #. openerp-web
@@ -1581,7 +1587,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_order__fiscal_position_id
 #: model_terms:ir.ui.view,arch_db:point_of_sale.pos_config_view_form
 msgid "Fiscal Position"
-msgstr ""
+msgstr "நிதி நிலை"
 
 #. module: point_of_sale
 #: model_terms:ir.ui.view,arch_db:point_of_sale.pos_config_view_form
@@ -1752,7 +1758,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:point_of_sale.view_pos_config_kanban
 #: selection:pos.session,state:0
 msgid "In Progress"
-msgstr ""
+msgstr "முன்னேற்றம்"
 
 #. module: point_of_sale
 #: code:addons/point_of_sale/models/pos_order.py:568
@@ -1791,7 +1797,7 @@ msgstr ""
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_order__note
 msgid "Internal Notes"
-msgstr ""
+msgstr "உள் குறிப்புகள்"
 
 #. module: point_of_sale
 #. openerp-web
@@ -1841,11 +1847,6 @@ msgid "IoT Box"
 msgstr ""
 
 #. module: point_of_sale
-#: model_terms:ir.ui.view,arch_db:point_of_sale.pos_config_view_form
-msgid "IotBox / Hardware Proxy"
-msgstr ""
-
-#. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_config__module_pos_restaurant
 msgid "Is a Bar/Restaurant"
 msgstr ""
@@ -1877,7 +1878,7 @@ msgstr "ஜர்னல்"
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_order__account_move
 msgid "Journal Entry"
-msgstr ""
+msgstr "ஜர்னல் நுழைவு"
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_digest_digest__kpi_pos_total_value
@@ -1983,7 +1984,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_order__location_id
 #: model:ir.model.fields,field_description:point_of_sale.field_report_pos_order__location_id
 msgid "Location"
-msgstr ""
+msgstr "இருப்பிடம்"
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_session__login_number
@@ -2004,12 +2005,12 @@ msgstr ""
 #: code:addons/point_of_sale/static/src/xml/pos.xml:901
 #, python-format
 msgid "Logo"
-msgstr ""
+msgstr "சின்னம்"
 
 #. module: point_of_sale
 #: selection:barcode.rule,type:0
 msgid "Lot"
-msgstr ""
+msgstr "நிறைய"
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_pack_operation_lot__lot_name
@@ -2226,7 +2227,7 @@ msgstr ""
 #. module: point_of_sale
 #: model_terms:ir.ui.view,arch_db:point_of_sale.view_pos_pos_form
 msgid "Notes"
-msgstr ""
+msgstr "குறிப்புக்கள்"
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_order__nb_print
@@ -2244,7 +2245,7 @@ msgstr ""
 #: code:addons/point_of_sale/static/src/js/chrome.js:403
 #, python-format
 msgid "Offline"
-msgstr ""
+msgstr "ஆஃப்லைன்"
 
 #. module: point_of_sale
 #. openerp-web
@@ -2514,13 +2515,13 @@ msgstr ""
 #. module: point_of_sale
 #: selection:barcode.rule,type:0
 msgid "Package"
-msgstr ""
+msgstr "தொகுப்பு"
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_order__amount_paid
 #: selection:pos.order,state:0 selection:report.pos.order,state:0
 msgid "Paid"
-msgstr ""
+msgstr "பணம்"
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_category__parent_id
@@ -2570,7 +2571,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:point_of_sale.view_pos_pos_form
 #, python-format
 msgid "Payment"
-msgstr ""
+msgstr "கொடுப்பனவு"
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_make_payment__payment_date
@@ -2648,7 +2649,7 @@ msgstr ""
 #: code:addons/point_of_sale/static/src/xml/pos.xml:512
 #, python-format
 msgid "Phone"
-msgstr ""
+msgstr "தொலைபேசி"
 
 #. module: point_of_sale
 #. openerp-web
@@ -2959,7 +2960,7 @@ msgstr ""
 #. module: point_of_sale
 #: selection:barcode.rule,type:0
 msgid "Priced Product"
-msgstr ""
+msgstr "விலை தயாரிப்பு"
 
 #. module: point_of_sale
 #. openerp-web
@@ -3316,7 +3317,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:point_of_sale.view_pos_order_filter
 #: model_terms:ir.ui.view,arch_db:point_of_sale.view_report_pos_order_search
 msgid "Salesperson"
-msgstr ""
+msgstr "விற்பனையாளர்"
 
 #. module: point_of_sale
 #. openerp-web
@@ -3563,7 +3564,7 @@ msgstr ""
 #: model:ir.ui.menu,name:point_of_sale.menu_pos_global_settings
 #: model_terms:ir.ui.view,arch_db:point_of_sale.view_pos_config_kanban
 msgid "Settings"
-msgstr ""
+msgstr "அமைப்புகள்"
 
 #. module: point_of_sale
 #. openerp-web
@@ -3683,7 +3684,7 @@ msgstr ""
 #: code:addons/point_of_sale/static/src/xml/pos.xml:348
 #, python-format
 msgid "Street"
-msgstr ""
+msgstr "தெரு"
 
 #. module: point_of_sale
 #. openerp-web
@@ -4352,7 +4353,7 @@ msgstr "அலகு விலை"
 #. module: point_of_sale
 #: selection:barcode.rule,type:0
 msgid "Unit Product"
-msgstr ""
+msgstr "அலகு தயாரிப்பு"
 
 #. module: point_of_sale
 #: model:product.product,uom_name:point_of_sale.product_product_consumable
@@ -4406,11 +4407,6 @@ msgstr ""
 #. module: point_of_sale
 #: model_terms:ir.ui.view,arch_db:point_of_sale.pos_config_view_form
 msgid "Use a virtual keyboard for touchscreens"
-msgstr ""
-
-#. module: point_of_sale
-#: model_terms:ir.ui.view,arch_db:point_of_sale.pos_config_view_form
-msgid "Use an integrated hardware setup like"
 msgstr ""
 
 #. module: point_of_sale
@@ -4493,7 +4489,7 @@ msgstr ""
 #. module: point_of_sale
 #: selection:barcode.rule,type:0
 msgid "Weighted Product"
-msgstr ""
+msgstr "கனமான தயாரிப்பு"
 
 #. module: point_of_sale
 #: model_terms:ir.ui.view,arch_db:point_of_sale.pos_config_view_form
@@ -4676,7 +4672,7 @@ msgstr ""
 #: code:addons/point_of_sale/static/src/xml/pos.xml:356
 #, python-format
 msgid "ZIP"
-msgstr ""
+msgstr "ஜிப்"
 
 #. module: point_of_sale
 #. openerp-web

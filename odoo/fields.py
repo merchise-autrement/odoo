@@ -161,6 +161,7 @@ class Field(MetaField('DummyField', (object,), {})):
 
         :param compute_sudo: whether the field should be recomputed as superuser
             to bypass access rights (boolean, by default ``False``)
+            Note that this has no effects on non-stored computed fields
 
         The methods given for ``compute``, ``inverse`` and ``search`` are model
         methods. Their signature is shown in the following example::
@@ -2437,7 +2438,7 @@ class One2many(_RelationalMulti):
                 vals_list.clear()
 
         def drop(lines):
-            if comodel._fields[inverse].ondelete == 'cascade':
+            if getattr(comodel._fields[inverse], 'ondelete', False) == 'cascade':
                 lines.unlink()
             else:
                 lines.write({inverse: False})
@@ -2483,7 +2484,7 @@ class One2many(_RelationalMulti):
                 vals_list.clear()
 
         def drop(lines):
-            if comodel._fields[inverse].ondelete == 'cascade':
+            if getattr(comodel._fields[inverse], 'ondelete', False) == 'cascade':
                 lines.unlink()
             else:
                 lines.write({inverse: False})
