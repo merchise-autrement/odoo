@@ -195,6 +195,7 @@ setup(
         'xlwt',
 
         # Merchise
+        'tornado<6',
         'celery',
         'flower',
         'redis',

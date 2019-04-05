@@ -1093,6 +1093,7 @@ class BaseModel(object):
                 except (SoftTimeLimitExceeded, ValidationError):
                     raise
                 except Exception, e:
+                    _logger.exception('Exception while validating constraint')
                     raise ValidationError("%s\n\n%s" % (_("Error while validating constraint"), tools.ustr(e)))
 
     @api.model
