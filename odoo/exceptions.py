@@ -33,6 +33,10 @@ class UserError(except_orm):
         super(UserError, self).__init__(msg, value='')
 
 
+class ExpectedSingletonError(ValueError):
+    pass
+
+
 # deprecated due to collision with builtins, kept for compatibility
 Warning = UserError
 
