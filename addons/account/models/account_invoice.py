@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from collections import OrderedDict
 import json
 import re
 import uuid
@@ -97,6 +98,11 @@ class AccountInvoice(models.Model):
         journal = self._default_journal()
         return journal.currency_id or journal.company_id.currency_id or self.env.user.company_id.currency_id
 
+    def _get_aml_for_amount_residual(self):
+        """ Get the aml to consider to compute the amount residual of invoices """
+        self.ensure_one()
+        return self.sudo().move_id.line_ids.filtered(lambda l: l.account_id == self.account_id)
+
     @api.one
     @api.depends(
         'state', 'currency_id', 'invoice_line_ids.price_subtotal',
@@ -106,14 +112,13 @@ class AccountInvoice(models.Model):
         residual = 0.0
         residual_company_signed = 0.0
         sign = self.type in ['in_refund', 'out_refund'] and -1 or 1
-        for line in self.sudo().move_id.line_ids:
-            if line.account_id == self.account_id:
-                residual_company_signed += line.amount_residual
-                if line.currency_id == self.currency_id:
-                    residual += line.amount_residual_currency if line.currency_id else line.amount_residual
-                else:
-                    from_currency = line.currency_id or line.company_id.currency_id
-                    residual += from_currency._convert(line.amount_residual, self.currency_id, line.company_id, line.date or fields.Date.today())
+        for line in self._get_aml_for_amount_residual():
+            residual_company_signed += line.amount_residual
+            if line.currency_id == self.currency_id:
+                residual += line.amount_residual_currency if line.currency_id else line.amount_residual
+            else:
+                from_currency = line.currency_id or line.company_id.currency_id
+                residual += from_currency._convert(line.amount_residual, self.currency_id, line.company_id, line.date or fields.Date.today())
         self.residual_company_signed = abs(residual_company_signed) * sign
         self.residual_signed = abs(residual) * sign
         self.residual = abs(residual)
@@ -523,10 +528,7 @@ class AccountInvoice(models.Model):
         if not vals.get('journal_id') and vals.get('type'):
             vals['journal_id'] = self.with_context(type=vals.get('type'))._default_journal().id
 
-        onchanges = {
-            '_onchange_partner_id': ['account_id', 'payment_term_id', 'fiscal_position_id', 'partner_bank_id'],
-            '_onchange_journal_id': ['currency_id'],
-        }
+        onchanges = self._get_onchange_create()
         for onchange_method, changed_fields in onchanges.items():
             if any(f not in vals for f in changed_fields):
                 invoice = self.new(vals)
@@ -572,12 +574,15 @@ class AccountInvoice(models.Model):
         if res.get('type', False) not in ('out_invoice', 'in_refund') or not 'company_id' in res:
             return res
 
-        company = self.env['res.company'].browse(res['company_id'])
-        if company.partner_id:
-            partner_bank_result = self.env['res.partner.bank'].search([('partner_id', '=', company.partner_id.id)], limit=1)
-            if partner_bank_result:
-                res['partner_bank_id'] = partner_bank_result.id
+        partner_bank_result = self._get_partner_bank_id(res['company_id'])
+        if partner_bank_result:
+            res['partner_bank_id'] = partner_bank_result.id
         return res
+
+    def _get_partner_bank_id(self, company_id):
+        company = self.env['res.company'].browse(company_id)
+        if company.partner_id:
+            return self.env['res.partner.bank'].search([('partner_id', '=', company.partner_id.id)], limit=1)
 
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
@@ -661,7 +666,7 @@ class AccountInvoice(models.Model):
         """
         # Split `From` and `CC` email address from received email to look for related partners to subscribe on the invoice
         subscribed_emails = email_split((msg_dict.get('from') or '') + ',' + (msg_dict.get('cc') or ''))
-        subscribed_partner_ids = [pid for pid in self._find_partner_from_emails(subscribed_emails) if pid]
+        seen_partner_ids = [pid for pid in self._find_partner_from_emails(subscribed_emails) if pid]
 
         # Detection of the partner_id of the invoice:
         # 1) check if the email_from correspond to a supplier
@@ -685,7 +690,7 @@ class AccountInvoice(models.Model):
 
         # If the partner_id can be found, subscribe it to the bill, otherwise it's left empty to be manually filled
         if partner_id:
-            subscribed_partner_ids.append(partner_id)
+            seen_partner_ids.append(partner_id)
 
         # Find the right purchase journal based on the "TO" email address
         destination_emails = email_split((msg_dict.get('to') or '') + ',' + (msg_dict.get('cc') or ''))
@@ -701,9 +706,13 @@ class AccountInvoice(models.Model):
         # Passing `type` in context so that _default_journal(...) can correctly set journal for new vendor bill
         invoice = super(AccountInvoice, self.with_context(type=values.get('type'))).message_new(msg_dict, values)
 
-        # Subscribe people on the newly created bill
-        if subscribed_partner_ids:
-            invoice.message_subscribe(subscribed_partner_ids)
+        # Subscribe internal users on the newly created bill
+        partners = self.env['res.partner'].browse(seen_partner_ids)
+        is_internal = lambda p: (p.user_ids and
+                                 all(p.user_ids.mapped(lambda u: u.user_has_groups('base.group_user'))))
+        partners_to_subscribe = partners.filtered(is_internal)
+        if partners_to_subscribe:
+            invoice.message_subscribe([p.id for p in partners_to_subscribe])
         return invoice
 
     @api.model
@@ -1027,11 +1036,17 @@ class AccountInvoice(models.Model):
         return tax_grouped
 
     @api.multi
+    def _get_aml_for_register_payment(self):
+        """ Get the aml to consider to reconcile in register payment """
+        self.ensure_one()
+        return self.move_id.line_ids.filtered(lambda r: not r.reconciled and r.account_id.internal_type in ('payable', 'receivable'))
+
+    @api.multi
     def register_payment(self, payment_line, writeoff_acc_id=False, writeoff_journal_id=False):
         """ Reconcile payable/receivable lines from the invoice with payment_line """
         line_to_reconcile = self.env['account.move.line']
         for inv in self:
-            line_to_reconcile += inv.move_id.line_ids.filtered(lambda r: not r.reconciled and r.account_id.internal_type in ('payable', 'receivable'))
+            line_to_reconcile += inv._get_aml_for_register_payment()
         return (line_to_reconcile + payment_line).reconcile(writeoff_acc_id, writeoff_journal_id)
 
     @api.multi
@@ -1476,6 +1491,11 @@ class AccountInvoice(models.Model):
         values['payment_term_id'] = False
         values['refund_invoice_id'] = invoice.id
 
+        if values['type'] == 'in_refund':
+            partner_bank_result = self._get_partner_bank_id(values['company_id'])
+            if partner_bank_result:
+                values['partner_bank_id'] = partner_bank_result.id
+
         if date:
             values['date'] = date
         if description:
@@ -1565,12 +1585,14 @@ class AccountInvoice(models.Model):
             fmt = partial(formatLang, invoice.with_context(lang=invoice.partner_id.lang).env, currency_obj=currency)
             res = {}
             for line in invoice.tax_line_ids:
-                res.setdefault(line.tax_id.tax_group_id, {'base': 0.0, 'amount': 0.0})
-                res[line.tax_id.tax_group_id]['amount'] += line.amount_total
-                res[line.tax_id.tax_group_id]['base'] += line.base
-            res = sorted(res.items(), key=lambda l: l[0].sequence)
+                tax = line.tax_id
+                group_key = (tax.tax_group_id, tax.amount_type, tax.amount)
+                res.setdefault(group_key, {'base': 0.0, 'amount': 0.0})
+                res[group_key]['amount'] += line.amount_total
+                res[group_key]['base'] += line.base
+            res = sorted(res.items(), key=lambda l: l[0][0].sequence)
             invoice.amount_by_group = [(
-                r[0].name, r[1]['amount'], r[1]['base'],
+                r[0][0].name, r[1]['amount'], r[1]['base'],
                 fmt(r[1]['amount']), fmt(r[1]['base']),
                 len(res),
             ) for r in res]
@@ -1586,6 +1608,13 @@ class AccountInvoice(models.Model):
 
     def _get_intrastat_country_id(self):
         return self.partner_id.country_id.id
+
+    def _get_onchange_create(self):
+        return OrderedDict([
+            ('_onchange_partner_id', ['account_id', 'payment_term_id', 'fiscal_position_id', 'partner_bank_id']),
+            ('_onchange_journal_id', ['currency_id']),
+        ])
+
 
 class AccountInvoiceLine(models.Model):
     _name = "account.invoice.line"
@@ -1861,12 +1890,12 @@ class AccountInvoiceLine(models.Model):
         }
         return data
 
-    @api.model
-    def create(self, vals):
-        if vals.get('display_type', self.default_get(['display_type'])['display_type']):
-            vals.update(price_unit=0, account_id=False, quantity=0)
-
-        return super(AccountInvoiceLine, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('display_type', self.default_get(['display_type'])['display_type']):
+                vals.update(price_unit=0, account_id=False, quantity=0)
+        return super(AccountInvoiceLine, self).create(vals_list)
 
     @api.multi
     def write(self, values):

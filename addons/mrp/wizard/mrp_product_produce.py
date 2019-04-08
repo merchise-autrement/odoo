@@ -84,6 +84,7 @@ class MrpProductProduce(models.TransientModel):
                 existing_move_line.product_uom_qty += produced_qty
                 existing_move_line.qty_done += produced_qty
             else:
+                location_dest_id = produce_move.location_dest_id.get_putaway_strategy(self.product_id).id or produce_move.location_dest_id.id
                 vals = {
                   'move_id': produce_move.id,
                   'product_id': produce_move.product_id.id,
@@ -93,7 +94,7 @@ class MrpProductProduce(models.TransientModel):
                   'qty_done': self.product_qty,
                   'lot_id': self.lot_id.id,
                   'location_id': produce_move.location_id.id,
-                  'location_dest_id': produce_move.location_dest_id.id,
+                  'location_dest_id': location_dest_id,
                 }
                 self.env['stock.move.line'].create(vals)
 
@@ -176,9 +177,9 @@ class MrpProductProduceLine(models.TransientModel):
     lot_id = fields.Many2one('stock.production.lot', 'Lot/Serial Number')
     qty_to_consume = fields.Float('To Consume', digits=dp.get_precision('Product Unit of Measure'))
     product_uom_id = fields.Many2one('uom.uom', 'Unit of Measure')
-    qty_done = fields.Float('Consumed')
+    qty_done = fields.Float('Consumed', digits=dp.get_precision('Product Unit of Measure'))
     move_id = fields.Many2one('stock.move')
-    qty_reserved = fields.Float('Reserved')
+    qty_reserved = fields.Float('Reserved', digits=dp.get_precision('Product Unit of Measure'))
 
     @api.onchange('lot_id')
     def _onchange_lot_id(self):

@@ -7,7 +7,6 @@
 # Takuya Sawada <takuya@tuntunkun.com>, 2018
 # 城谷 龍弥 <tatsuya.shirotani@pro-spire.co.jp>, 2018
 # SHIMIZU Taku <shimizu.taku@gmail.com>, 2018
-# Martin Trigaux, 2018
 # Manami Hashi <manami@roomsfor.hk>, 2018
 # 高木正勝 <masakatsu.takagi@pro-spire.co.jp>, 2018
 # kent_ocean <ke.tanabe@gmail.com>, 2018
@@ -15,14 +14,15 @@
 # Norimichi Sugimoto <norimichi.sugimoto@tls-ltd.co.jp>, 2018
 # Yoon Nankyung <nankyung.yoon@pro-spire.co.jp>, 2019
 # Yoshi Tashiro <tashiro@roomsfor.hk>, 2019
+# Martin Trigaux, 2019
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 12.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-09 10:31+0000\n"
+"POT-Creation-Date: 2019-03-29 10:09+0000\n"
 "PO-Revision-Date: 2018-08-24 09:23+0000\n"
-"Last-Translator: Yoshi Tashiro <tashiro@roomsfor.hk>, 2019\n"
+"Last-Translator: Martin Trigaux, 2019\n"
 "Language-Team: Japanese (https://www.transifex.com/odoo/teams/41243/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -361,7 +361,7 @@ msgstr "請求管理"
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__invoice_count
 msgid "Bill Count"
-msgstr ""
+msgstr "請求件数"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__invoice_lines
@@ -447,7 +447,7 @@ msgstr ""
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__commercial_partner_id
 msgid "Commercial Entity"
-msgstr "取引先"
+msgstr "商業体"
 
 #. module: purchase
 #: model:ir.model,name:purchase.model_res_company
@@ -872,7 +872,7 @@ msgstr "ロック済"
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__message_main_attachment_id
 msgid "Main Attachment"
-msgstr ""
+msgstr "主な添付"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
@@ -968,7 +968,7 @@ msgstr "自分の活動"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_filter
 msgid "My Purchases"
-msgstr ""
+msgstr "自分の購買"
 
 #. module: purchase
 #: code:addons/purchase/controllers/portal.py:41
@@ -1159,7 +1159,7 @@ msgstr "予定済"
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__access_url
 msgid "Portal Access URL"
-msgstr ""
+msgstr "ポータルアクセスURL"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_product_category__property_account_creditor_price_difference_categ
@@ -1714,6 +1714,11 @@ msgstr "小計"
 #: model:ir.model.fields,field_description:purchase.field_res_users__property_purchase_currency_id
 msgid "Supplier Currency"
 msgstr "仕入先通貨"
+
+#. module: purchase
+#: model:ir.model,name:purchase.model_product_supplierinfo
+msgid "Supplier Pricelist"
+msgstr "仕入先価格リスト"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__price_tax

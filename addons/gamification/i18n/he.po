@@ -4,19 +4,20 @@
 # 
 # Translators:
 # ExcaliberX <excaliberx@gmail.com>, 2018
-# Martin Trigaux, 2018
 # Fishfur A Banter <fishfurbanter@gmail.com>, 2018
 # Leandro Noijovich <eliel.sorcerer@gmail.com>, 2018
 # Yihya Hugirat <hugirat@gmail.com>, 2018
 # שהאב חוסיין <shhab89@gmail.com>, 2018
+# Martin Trigaux, 2019
+# דודי מלכה <Dudimalka6@gmail.com>, 2019
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 12.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-09 10:32+0000\n"
+"POT-Creation-Date: 2019-03-29 10:10+0000\n"
 "PO-Revision-Date: 2018-08-24 09:18+0000\n"
-"Last-Translator: שהאב חוסיין <shhab89@gmail.com>, 2018\n"
+"Last-Translator: דודי מלכה <Dudimalka6@gmail.com>, 2019\n"
 "Language-Team: Hebrew (https://www.transifex.com/odoo/teams/41243/he/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -501,7 +502,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__message_attachment_count
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge__message_attachment_count
 msgid "Attachment Count"
-msgstr ""
+msgstr "ספירת קבצים מצורפים"
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__rule_auth_user_ids
@@ -908,13 +909,13 @@ msgstr "עוקבים"
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__message_channel_ids
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge__message_channel_ids
 msgid "Followers (Channels)"
-msgstr ""
+msgstr "עוקבים (ערוצים)"
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__message_partner_ids
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge__message_partner_ids
 msgid "Followers (Partners)"
-msgstr ""
+msgstr "עוקבים (שותפים)"
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge__reward_first_id
@@ -1168,13 +1169,13 @@ msgstr "אם מסומן אז הודעה חדשה דורשת התייחסותכם
 #: model:ir.model.fields,help:gamification.field_gamification_badge__message_needaction
 #: model:ir.model.fields,help:gamification.field_gamification_challenge__message_needaction
 msgid "If checked, new messages require your attention."
-msgstr ""
+msgstr "אם סומן, הודעות חדשות דורשות את תשומת הלב שלך."
 
 #. module: gamification
 #: model:ir.model.fields,help:gamification.field_gamification_badge__message_has_error
 #: model:ir.model.fields,help:gamification.field_gamification_challenge__message_has_error
 msgid "If checked, some messages have a delivery error."
-msgstr ""
+msgstr "אם סומן, לחלק מההודעות יש שגיאת משלוח."
 
 #. module: gamification
 #: model:ir.model.fields,help:gamification.field_gamification_badge_user__challenge_id
@@ -1233,7 +1234,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__message_is_follower
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge__message_is_follower
 msgid "Is Follower"
-msgstr ""
+msgstr "האם עוקב"
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge____last_update
@@ -1320,7 +1321,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__message_main_attachment_id
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge__message_main_attachment_id
 msgid "Main Attachment"
-msgstr ""
+msgstr "קובץ מצורף ראשי"
 
 #. module: gamification
 #: model_terms:ir.ui.view,arch_db:gamification.view_challenge_kanban
@@ -1331,7 +1332,7 @@ msgstr "חבר"
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__message_has_error
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge__message_has_error
 msgid "Message Delivery error"
-msgstr ""
+msgstr "הודעת שגיאת משלוח"
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__message_ids
@@ -1467,7 +1468,7 @@ msgstr "מספר הפעולות"
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__message_has_error_counter
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge__message_has_error_counter
 msgid "Number of error"
-msgstr ""
+msgstr "מספר שגיאה"
 
 #. module: gamification
 #: model:ir.model.fields,help:gamification.field_gamification_badge__message_needaction_counter
@@ -1479,7 +1480,7 @@ msgstr "מספר ההודעות שדורשות פעולה"
 #: model:ir.model.fields,help:gamification.field_gamification_badge__message_has_error_counter
 #: model:ir.model.fields,help:gamification.field_gamification_challenge__message_has_error_counter
 msgid "Number of messages with delivery error"
-msgstr ""
+msgstr "מספר הודעות עם שגיאת משלוח"
 
 #. module: gamification
 #: model:ir.model.fields,help:gamification.field_gamification_badge__message_unread_counter
@@ -2073,7 +2074,7 @@ msgstr "הודעות שלא נקראו"
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__message_unread_counter
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge__message_unread_counter
 msgid "Unread Messages Counter"
-msgstr ""
+msgstr "מונה הודעות שלא נקראו"
 
 #. module: gamification
 #: model_terms:ir.ui.view,arch_db:gamification.view_goal_wizard_update_current
@@ -2108,6 +2109,18 @@ msgstr "משתמשים"
 #: selection:gamification.challenge,category:0
 msgid "Website / Forum"
 msgstr ""
+
+#. module: gamification
+#: model:ir.model.fields,field_description:gamification.field_gamification_badge__website_message_ids
+#: model:ir.model.fields,field_description:gamification.field_gamification_challenge__website_message_ids
+msgid "Website Messages"
+msgstr "הודעות מהאתר אינטרנט"
+
+#. module: gamification
+#: model:ir.model.fields,help:gamification.field_gamification_badge__website_message_ids
+#: model:ir.model.fields,help:gamification.field_gamification_challenge__website_message_ids
+msgid "Website communication history"
+msgstr "היסטורית התקשרויות מהאתר"
 
 #. module: gamification
 #: selection:gamification.challenge,period:0

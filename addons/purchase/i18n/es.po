@@ -3,22 +3,22 @@
 # * purchase
 # 
 # Translators:
-# Martin Trigaux, 2018
 # Cristóbal Martí Oliver <info@moblesmarti.com>, 2018
 # Miquel Torner <miq@odoo.com>, 2018
 # Cristopher Cravioto <ccr@odoo.com>, 2018
-# Carlos Lopez <celm1990@hotmail.com>, 2018
 # Harald Panten <harald.panten@qubiq.es>, 2018
 # Rick Hunter <rick.hunter.ec@gmail.com>, 2018
-# Gabriel Umaña <gabriel.umana@delfixcr.com>, 2019
+# Gabriel Umana <gabriel.umana@delfixcr.com>, 2019
+# Martin Trigaux, 2019
+# Carlos Lopez <celm1990@hotmail.com>, 2019
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 12.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-09 10:31+0000\n"
+"POT-Creation-Date: 2019-03-29 10:09+0000\n"
 "PO-Revision-Date: 2018-08-24 09:23+0000\n"
-"Last-Translator: Gabriel Umaña <gabriel.umana@delfixcr.com>, 2019\n"
+"Last-Translator: Carlos Lopez <celm1990@hotmail.com>, 2019\n"
 "Language-Team: Spanish (https://www.transifex.com/odoo/teams/41243/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -135,9 +135,10 @@ msgid ""
 "specific.\" aria-label=\"Values set here are company-specific.\" "
 "groups=\"base.group_multi_company\" role=\"img\"/>"
 msgstr ""
-"<span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-"
-"specific.\" aria-label=\"Values set here are company-specific.\" "
-"groups=\"base.group_multi_company\" role=\"img\"/>"
+"<span class=\"fa fa-lg fa-building-o\" title=\"Los valores establecidos aquí"
+" son específicos de la empresa.\" aria-label=\"Los valores establecidos aquí"
+" son específicos de la empresa.\" groups=\"base.group_multi_company\" "
+"role=\"img\"/>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
@@ -1031,7 +1032,7 @@ msgstr "Siguiente tipo de actividad"
 #. module: purchase
 #: selection:purchase.order,invoice_status:0
 msgid "No Bill to Receive"
-msgstr "Sin factura para recibir"
+msgstr "Totalmente facturado"
 
 #. module: purchase
 #: selection:product.template,purchase_line_warn:0
@@ -1763,6 +1764,11 @@ msgstr "Subtotal"
 #: model:ir.model.fields,field_description:purchase.field_res_users__property_purchase_currency_id
 msgid "Supplier Currency"
 msgstr "Moneda de Proveedor"
+
+#. module: purchase
+#: model:ir.model,name:purchase.model_product_supplierinfo
+msgid "Supplier Pricelist"
+msgstr "Tarifa de proveedor"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__price_tax
