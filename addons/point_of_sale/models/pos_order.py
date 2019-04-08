@@ -492,13 +492,11 @@ class PosOrder(models.Model):
             aml = order.statement_ids.mapped('journal_entry_ids') | order.account_move.line_ids | order.invoice_id.move_id.line_ids
             aml = aml.filtered(lambda r: not r.reconciled and r.account_id.internal_type == 'receivable' and r.partner_id == order.partner_id.commercial_partner_id)
 
-            # Reconcile returns first
-            # to avoid mixing up the credit of a payment and the credit of a return
-            # in the receivable account
-            aml_returns = aml.filtered(lambda l: (l.journal_id.type == 'sale' and l.credit) or (l.journal_id.type != 'sale' and l.debit))
             try:
-                aml_returns.reconcile()
-                (aml - aml_returns).reconcile()
+                # Cash returns will be well reconciled
+                # Whereas freight returns won't be
+                # "c'est la vie..."
+                aml.reconcile()
             except Exception:
                 # There might be unexpected situations where the automatic reconciliation won't
                 # work. We don't want the user to be blocked because of this, since the automatic
@@ -886,6 +884,7 @@ class PosOrder(models.Model):
                 for pack_lot in pack_lots:
                     lot_id, qty = pack_lot['lot_id'], pack_lot['qty']
                     self.env['stock.move.line'].create({
+                        'picking_id': move.picking_id.id,
                         'move_id': move.id,
                         'product_id': move.product_id.id,
                         'product_uom_id': move.product_uom.id,

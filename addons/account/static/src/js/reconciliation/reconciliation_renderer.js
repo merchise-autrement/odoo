@@ -255,7 +255,7 @@ var LineRenderer = Widget.extend(FieldManagerMixin, {
         'click .accounting_view thead td': '_onTogglePanel',
         'click .accounting_view tfoot td:not(.cell_left,.cell_right)': '_onShowPanel',
         'click tfoot .cell_left, tfoot .cell_right': '_onSearchBalanceAmount',
-        'input input.filter': '_onFilterChange',
+        'change input.filter': '_onFilterChange',
         'click .match .load-more a': '_onLoadMore',
         'click .match .mv_line td': '_onSelectMoveLine',
         'click .accounting_view tbody .mv_line td': '_onSelectProposition',
@@ -560,7 +560,10 @@ var LineRenderer = Widget.extend(FieldManagerMixin, {
             type: 'char', //TODO is it a bug or a feature when type date exists ?
             name: 'date',
         }], {
-            account_id: {string: _t("Account")},
+            account_id: {
+                string: _t("Account"),
+                domain: [['deprecated', '=', false]],
+            },
             label: {string: _t("Label")},
             amount: {string: _t("Account")},
         }).then(function (recordID) {

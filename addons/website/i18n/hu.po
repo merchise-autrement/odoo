@@ -6,18 +6,18 @@
 # Kovács Tibor <kovika@gmail.com>, 2018
 # Martin Trigaux, 2018
 # gezza <geza.nagy@oregional.hu>, 2018
-# Ákos Nagy <akos.nagy@oregional.hu>, 2018
 # Zsofia Biro <zsbiro1205@gmail.com>, 2018
 # Tibor Kőnig <konig.tibor@evitalit.hu>, 2018
 # krnkris, 2018
+# Ákos Nagy <akos.nagy@oregional.hu>, 2019
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 12.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-09 10:31+0000\n"
+"POT-Creation-Date: 2019-03-29 10:08+0000\n"
 "PO-Revision-Date: 2018-08-24 09:33+0000\n"
-"Last-Translator: krnkris, 2018\n"
+"Last-Translator: Ákos Nagy <akos.nagy@oregional.hu>, 2019\n"
 "Language-Team: Hungarian (https://www.transifex.com/odoo/teams/41243/hu/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -78,6 +78,11 @@ msgstr "&times;"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.list_website_pages
 msgid "' did not match any pages."
+msgstr ""
+
+#. module: website
+#: model_terms:ir.ui.view,arch_db:website.500
+msgid "(!!! This view will be removed )"
 msgstr ""
 
 #. module: website
@@ -2580,7 +2585,7 @@ msgstr "Utolsó év"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.theme_customize
 msgid "Layout"
-msgstr ""
+msgstr "Elrendezés"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_text_image
@@ -2897,7 +2902,7 @@ msgstr "Új blog bejegyzés"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.user_navbar
 msgid "New Channel"
-msgstr ""
+msgstr "Új csatorna"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.user_navbar

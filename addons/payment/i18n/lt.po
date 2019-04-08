@@ -591,7 +591,7 @@ msgstr "Nustatyti"
 #. module: payment
 #: model_terms:ir.ui.view,arch_db:payment.onboarding_payment_acquirer_step
 msgid "Configure your payment methods."
-msgstr "Konfigūruoti jūsų mokėjimo būdus."
+msgstr "Konfigūruokite savo mokėjimo būdus."
 
 #. module: payment
 #. openerp-web
@@ -630,12 +630,12 @@ msgstr "Šalis"
 #. module: payment
 #: model_terms:ir.actions.act_window,help:payment.action_payment_acquirer
 msgid "Create a new payment acquirer"
-msgstr "Sukurti naują mokėjimo surinkėją"
+msgstr "Sukurkite naują mokėjimo surinkėją"
 
 #. module: payment
 #: model_terms:ir.actions.act_window,help:payment.action_payment_transaction
 msgid "Create a new payment transaction"
-msgstr "Sukurti naują mokėjimo operaciją"
+msgstr "Sukurkite naują mokėjimo operaciją"
 
 #. module: payment
 #: model_terms:ir.actions.act_window,help:payment.action_payment_icon
