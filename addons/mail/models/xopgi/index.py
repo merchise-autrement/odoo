@@ -209,6 +209,13 @@ class MailMessage(Model):
             if message.model:
                 model = self.env[message.model]
                 record = model.browse(message.res_id)
-                message.thread_index = record.thread_index
+                try:
+                    message.thread_index = record.thread_index
+                except AttributeError:
+                    # Some addons (for instance gamification) "create" a
+                    # virtual mail.thread with it's model and res_id to send
+                    # messages; but the model doesn't inherit from
+                    # mail.thread.
+                    message.thread_index = ''
 
     thread_index = fields.Char(compute='_get_thread_index')
