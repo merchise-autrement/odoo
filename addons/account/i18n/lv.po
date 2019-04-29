@@ -461,7 +461,7 @@ msgstr ""
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
 msgid "<span>New Bill</span>"
-msgstr ""
+msgstr "<span>Jauns Rēķins</span>"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
@@ -11537,6 +11537,22 @@ msgstr ""
 #: code:addons/account/wizard/pos_box.py:36
 #, python-format
 msgid "You cannot put/take money in/out for a bank statement which is closed."
+msgstr ""
+
+#. module: account
+#: code:addons/account/models/account_payment.py:99
+#, python-format
+msgid ""
+"You cannot register payments for customer invoices and credit notes at the "
+"same time."
+msgstr ""
+
+#. module: account
+#: code:addons/account/models/account_payment.py:96
+#, python-format
+msgid ""
+"You cannot register payments for vendor bills and supplier refunds at the "
+"same time."
 msgstr ""
 
 #. module: account
