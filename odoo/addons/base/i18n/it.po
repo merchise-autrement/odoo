@@ -10803,7 +10803,7 @@ msgstr "Passaggi Procedura guidata di configurazione"
 #. module: base
 #: model:ir.actions.server,name:base.action_run_ir_action_todo
 msgid "Config: Run Remaining Action Todo"
-msgstr "Configurazione: eseguire le azioni rimanenti"
+msgstr "Configurazione: esegui le azioni rimanenti"
 
 #. module: base
 #: model:ir.ui.menu,name:base.menu_reporting_config
@@ -12877,12 +12877,12 @@ msgstr "Eseguire ogni"
 #. module: base
 #: selection:ir.actions.server,state:0
 msgid "Execute Python Code"
-msgstr "Eseguire codice Python"
+msgstr "Esegui codice Python"
 
 #. module: base
 #: selection:ir.actions.server,state:0
 msgid "Execute several actions"
-msgstr "Eseguire alcune azioni"
+msgstr "Esegui alcune azioni"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.ir_cron_view_search
@@ -13226,7 +13226,7 @@ msgstr "F COSTRUZIONE"
 #: model:ir.actions.server,name:base.demo_failure_action
 msgid "Failed to install demo data for some modules, demo disabled"
 msgstr ""
-"Installazione dei dati dimostrativi fallita per alcuni moduli: demo "
+"Installazione dati dimostrativi non riuscita per alcuni moduli: demo "
 "disattivata"
 
 #. module: base
@@ -15404,7 +15404,7 @@ msgstr "Installazione lingua"
 #. module: base
 #: model:ir.actions.server,name:base.action_server_module_immediate_install
 msgid "Install Modules"
-msgstr "Installare moduli"
+msgstr "Installa moduli"
 
 #. module: base
 #: selection:ir.module.module,state:0
@@ -20837,7 +20837,7 @@ msgstr ""
 #, python-format
 msgid ""
 "Please contact your system administrator if you think this is an error."
-msgstr "Se è ritenuto un errore, contattare l'amministratore di sistema."
+msgstr "Se è un errore, contattare l'amministratore di sistema."
 
 #. module: base
 #: code:addons/base/models/ir_mail_server.py:242
@@ -22917,25 +22917,25 @@ msgstr "Talvolta chiamato BIC o Swift."
 #: code:addons/base/models/ir_model.py:1222
 #, python-format
 msgid "Sorry, you are not allowed to access this document."
-msgstr "Manca l'autorizzazione per accedere a questo documento."
+msgstr "Non si è autorizzati ad accedere a questo documento."
 
 #. module: base
 #: code:addons/base/models/ir_model.py:1224
 #, python-format
 msgid "Sorry, you are not allowed to create this kind of document."
-msgstr "Manca l'autorizzazione per creare questo tipo di documento."
+msgstr "Non si è autorizzati alla creazione di questo tipo di documento."
 
 #. module: base
 #: code:addons/base/models/ir_model.py:1225
 #, python-format
 msgid "Sorry, you are not allowed to delete this document."
-msgstr "Manca l'autorizzazione per eliminare questo documento."
+msgstr "Non si è autorizzati a eliminare questo documento."
 
 #. module: base
 #: code:addons/base/models/ir_model.py:1223
 #, python-format
 msgid "Sorry, you are not allowed to modify this document."
-msgstr "Manca l'autorizzazione per modificare questo documento."
+msgstr "Non si è autorizzati a modificare questo documento."
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_filters__sort
