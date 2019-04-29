@@ -5,11 +5,11 @@
 # Translators:
 # f5f0a0dac17dde787a1d812a6989680e, 2018
 # Fred Gilson <fgi@odoo.com>, 2018
-# Martin Trigaux, 2018
 # Marie Willemyns <mwi@odoo.com>, 2018
 # Nathan Grognet <ngr@odoo.com>, 2018
 # Eloïse Stilmant <est@odoo.com>, 2018
 # Nathan Noël <nathan070@me.com>, 2018
+# Martin Trigaux, 2019
 # Moka Tourisme <hello@mokatourisme.fr>, 2019
 # 
 msgid ""
@@ -183,7 +183,7 @@ msgid ""
 "                                <span class=\"o_stat_text\">Money Out</span>"
 msgstr ""
 "<span class=\"o_stat_text\">Sortir</span>\n"
-"<span class=\"o_stat_text\">de l'argentt</span>"
+"<span class=\"o_stat_text\">de l'argent</span>"
 
 #. module: point_of_sale
 #: model_terms:ir.ui.view,arch_db:point_of_sale.pos_config_view_form
@@ -845,6 +845,7 @@ msgstr ""
 #: model:ir.model.fields,help:point_of_sale.field_product_template__available_in_pos
 msgid "Check if you want this product to appear in the Point of Sale."
 msgstr ""
+"Cochez si vous souhaitez faire apparaître ce produit dans le Point de Vente"
 
 #. module: point_of_sale
 #: model:ir.model.fields,help:point_of_sale.field_uom_category__is_pos_groupable
@@ -3300,7 +3301,7 @@ msgstr "En-tête du ticket :"
 #. module: point_of_sale
 #: model_terms:ir.ui.view,arch_db:point_of_sale.pos_config_view_form
 msgid "Receipt Printer"
-msgstr "Imprimante du reçu"
+msgstr "Imprimante de reçu"
 
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_order__pos_reference
