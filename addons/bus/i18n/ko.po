@@ -26,7 +26,7 @@ msgstr ""
 #. module: bus
 #: sql_constraint:bus.presence:0
 msgid "A user can only have one IM status."
-msgstr "사용자는 하나의 메신저 상태를 가질 수있다."
+msgstr "사용자는 메신저 상태를 하나만 가질 수 있습니다."
 
 #. module: bus
 #: model:ir.model,name:bus.model_ir_autovacuum
@@ -46,7 +46,7 @@ msgstr "채널"
 #. module: bus
 #: model:ir.model,name:bus.model_bus_bus
 msgid "Communication Bus"
-msgstr ""
+msgstr "커뮤니케이션 버스"
 
 #. module: bus
 #: model:ir.model,name:bus.model_res_partner
@@ -96,7 +96,7 @@ msgstr "최근 투표"
 #. module: bus
 #: model:ir.model.fields,field_description:bus.field_bus_presence__last_presence
 msgid "Last Presence"
-msgstr "최근 존재"
+msgstr "최근 출석"
 
 #. module: bus
 #: model:ir.model.fields,field_description:bus.field_bus_bus__write_uid
@@ -126,7 +126,7 @@ msgstr "온라인"
 #. module: bus
 #: model:ir.model,name:bus.model_bus_presence
 msgid "User Presence"
-msgstr ""
+msgstr "사용자 출석"
 
 #. module: bus
 #: model:ir.model,name:bus.model_res_users
@@ -138,4 +138,4 @@ msgstr "사용자"
 #: code:addons/bus/controllers/main.py:41
 #, python-format
 msgid "bus.Bus not available in test mode"
-msgstr ""
+msgstr "bus.Bus는 시험 모드에서는 사용할 수 없음"
