@@ -822,7 +822,7 @@ class PreforkServer(CommonServer):
         if graceful:
             _logger.info("Stopping gracefully")
             limit = time.time() + self.timeout
-            for pid in self.workers:
+            for pid in list(self.workers):
                 self.worker_kill(pid, signal.SIGINT)
             while self.workers and time.time() < limit:
                 try:
