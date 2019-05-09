@@ -35,8 +35,8 @@ import unicodedata
 import odoo
 import odoo.modules.registry
 from odoo.api import call_kw, Environment
-from odoo.modules import get_resource_path
-from odoo.tools import limited_image_resize, topological_sort, html_escape, pycompat
+from odoo.modules import get_module_path, get_resource_path
+from odoo.tools import image_process, topological_sort, html_escape, pycompat
 from odoo.tools.mimetypes import guess_mimetype
 from odoo.tools.translate import _
 from odoo.tools.misc import str2bool, xlwt, file_open
@@ -599,6 +599,7 @@ class WebClient(http.Controller):
             lang_params = langs.read([
                 "name", "direction", "date_format", "time_format",
                 "grouping", "decimal_point", "thousands_sep", "week_start"])[0]
+            lang_params['week_start'] = int(lang_params['week_start'])
 
         # Regional languages (ll_CC) must inherit/override their parent lang (ll), but this is
         # done server-side when the language is loaded, so we only need to load the user's lang.
@@ -638,22 +639,6 @@ class WebClient(http.Controller):
 
 
 class Proxy(http.Controller):
-
-    @http.route('/web/proxy/load', type='json', auth="none")
-    def load(self, path):
-        """ Proxies an HTTP request through a JSON request.
-
-        It is strongly recommended to not request binary files through this,
-        as the result will be a binary data blob as well.
-
-        :param path: actual request path
-        :return: file content
-        """
-        from werkzeug.test import Client
-        from werkzeug.wrappers import BaseResponse
-
-        base_url = request.httprequest.base_url
-        return Client(request.httprequest.app, BaseResponse).get(path, base_url=base_url).data
 
     @http.route('/web/proxy/post/<path:path>', type='http', auth='user', methods=['GET'])
     def post(self, path):
@@ -893,8 +878,7 @@ class DataSet(http.Controller):
     def search_read(self, model, fields=False, offset=0, limit=False, domain=None, sort=None):
         return self.do_search_read(model, fields, offset, limit, domain, sort)
 
-    def do_search_read(self, model, fields=False, offset=0, limit=False, domain=None
-                       , sort=None):
+    def do_search_read(self, model, fields=False, offset=0, limit=False, domain=None, sort=None):
         """ Performs a search() followed by a read() (if needed) using the
         provided search criteria
 
@@ -911,22 +895,7 @@ class DataSet(http.Controller):
         :rtype: list
         """
         Model = request.env[model]
-
-        records = Model.search_read(domain, fields,
-                                    offset=offset or 0, limit=limit or False, order=sort or False)
-        if not records:
-            return {
-                'length': 0,
-                'records': []
-            }
-        if limit and len(records) == limit:
-            length = Model.search_count(domain)
-        else:
-            length = len(records) + (offset or 0)
-        return {
-            'length': length,
-            'records': records
-        }
+        return Model.web_search_read(domain, fields, offset=offset, limit=limit, order=sort)
 
     @http.route('/web/dataset/load', type='json', auth="user")
     def load(self, model, id, fields):
@@ -952,8 +921,8 @@ class DataSet(http.Controller):
         return self._call_kw(model, method, args, kwargs)
 
     @http.route('/web/dataset/call_button', type='json', auth="user")
-    def call_button(self, model, method, args, domain_id=None, context_id=None):
-        action = self._call_kw(model, method, args, {})
+    def call_button(self, model, method, args, kwargs):
+        action = self._call_kw(model, method, args, kwargs)
         if isinstance(action, dict) and action.get('type') != '':
             return clean_action(action)
         return False
@@ -1002,11 +971,6 @@ class Binary(http.Controller):
         addons_path = http.addons_manifest['web']['addons_path']
         return open(os.path.join(addons_path, 'web', 'static', 'src', 'img', image), 'rb').read()
 
-    def force_contenttype(self, headers, contenttype='image/png'):
-        dictheaders = dict(headers)
-        dictheaders['Content-Type'] = contenttype
-        return list(dictheaders.items())
-
     @http.route(['/web/content',
         '/web/content/<string:xmlid>',
         '/web/content/<string:xmlid>/<string:filename>',
@@ -1054,32 +1018,25 @@ class Binary(http.Controller):
         '/web/image/<int:id>-<string:unique>/<int:width>x<int:height>/<string:filename>'], type='http', auth="public")
     def content_image(self, xmlid=None, model='ir.attachment', id=None, field='datas',
                       filename_field='datas_fname', unique=None, filename=None, mimetype=None,
-                      download=None, width=0, height=0, crop=False, access_token=None, avoid_if_small=False,
-                      upper_limit=False, **kw):
-        status, headers, content = request.env['ir.http'].binary_content(
+                      download=None, width=0, height=0, crop=False, access_token=None,
+                      placeholder='placeholder.png', **kwargs):
+        status, headers, image_base64 = request.env['ir.http'].binary_content(
             xmlid=xmlid, model=model, id=id, field=field, unique=unique, filename=filename,
             filename_field=filename_field, download=download, mimetype=mimetype,
             default_mimetype='image/png', access_token=access_token)
 
-        if status != 200 and download:
-            return request.env['ir.http']._response_by_status(status, headers, content)
+        if status == 301 or (status != 200 and download):
+            return request.env['ir.http']._response_by_status(status, headers, image_base64)
+        if not image_base64:
+            image_base64 = base64.b64encode(self.placeholder(image=placeholder))
+            if not (width or height):
+                width, height = odoo.tools.image_guess_size_from_field_name(field)
 
-        content = limited_image_resize(
-            content, width=width, height=height, crop=crop, upper_limit=upper_limit, avoid_if_small=avoid_if_small)
+        image_base64 = image_process(image_base64, (width, height), crop=crop)
 
-        if content:
-            image_base64 = base64.b64decode(content)
-        else:
-            suffix = field.split('_')[-1]
-            if suffix in ('small', 'medium', 'big'):
-                encoded_placeholder = base64.b64encode(self.placeholder(image='placeholder.png'))
-                image_base64 = base64.b64decode(getattr(odoo.tools, 'image_resize_image_%s' % suffix)(encoded_placeholder))
-            else:
-                image_base64 = self.placeholder(image='placeholder.png')  # could return (contenttype, content) in master
-            headers = self.force_contenttype(headers, contenttype='image/png')
-
-        headers.append(('Content-Length', len(image_base64)))
-        response = request.make_response(image_base64, headers)
+        content = base64.b64decode(image_base64)
+        headers = http.set_safe_image_headers(headers, content)
+        response = request.make_response(content, headers)
         response.status_code = status
         return response
 
@@ -1135,6 +1092,7 @@ class Binary(http.Controller):
                     'res_model': model,
                     'res_id': int(id)
                 })
+                attachment._post_add_create()
             except Exception:
                 args.append({'error': _("Something horrible happened")})
                 _logger.exception("Fail to upload attachment %s" % ufile.filename)
@@ -1201,6 +1159,41 @@ class Binary(http.Controller):
                 response = http.send_file(placeholder(imgname + imgext))
 
         return response
+
+    @http.route(['/web/sign/get_fonts','/web/sign/get_fonts/<string:fontname>'], type='json', auth='public')
+    def get_fonts(self, fontname=None):
+        """This route will return a list of base64 encoded fonts.
+
+        Those fonts will be proposed to the user when creating a signature
+        using mode 'auto'.
+
+        :return: base64 encoded fonts
+        :rtype: list
+        """
+
+
+        fonts = []
+        if fontname:
+            module_path = get_module_path('web')
+            fonts_folder_path = os.path.join(module_path, 'static/src/fonts/sign/')
+            module_resource_path = get_resource_path('web', 'static/src/fonts/sign/' + fontname)
+            if fonts_folder_path and module_resource_path:
+                fonts_folder_path = os.path.join(os.path.normpath(fonts_folder_path), '')
+                module_resource_path = os.path.normpath(module_resource_path)
+                if module_resource_path.startswith(fonts_folder_path):
+                    with file_open(module_resource_path, 'rb') as font_file:
+                        font = base64.b64encode(font_file.read())
+                        fonts.append(font)
+        else:
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            fonts_directory = os.path.join(current_dir, '..', 'static', 'src', 'fonts', 'sign')
+            font_filenames = sorted(os.listdir(fonts_directory))
+
+            for filename in font_filenames:
+                font_file = open(os.path.join(fonts_directory, filename), 'rb')
+                font = base64.b64encode(font_file.read())
+                fonts.append(font)
+        return fonts
 
 class Action(http.Controller):
 

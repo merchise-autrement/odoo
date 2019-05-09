@@ -157,11 +157,14 @@ class AccountAnalyticAccount(models.Model):
         if operator not in ('ilike', 'like', '=', '=like', '=ilike'):
             return super(AccountAnalyticAccount, self)._name_search(name, args, operator, limit, name_get_uid=name_get_uid)
         args = args or []
-        domain = ['|', ('code', operator, name), ('name', operator, name)]
-        partners_ids = self.env['res.partner']._search([('name', operator, name)], access_rights_uid=name_get_uid)
-        if partners_ids:
-            domain = ['|'] + domain + [('partner_id', 'in', partners_ids)]
-        analytic_account_ids = self._search(domain + args, limit=limit, access_rights_uid=name_get_uid)
+        if operator == 'ilike' and not (name or '').strip():
+            domain = []
+        else:
+            # `partner_id` is in auto_join and the searches using ORs with auto_join fields doesn't work
+            # we have to cut the search in two searches ... https://github.com/odoo/odoo/issues/25175
+            partner_ids = self.env['res.partner']._search([('name', operator, name)], limit=limit, access_rights_uid=name_get_uid)
+            domain = ['|', '|', ('code', operator, name), ('name', operator, name), ('partner_id', 'in', partner_ids)]
+        analytic_account_ids = self._search(expression.AND([domain, args]), limit=limit, access_rights_uid=name_get_uid)
         return self.browse(analytic_account_ids).name_get()
 
 

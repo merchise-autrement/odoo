@@ -24,12 +24,13 @@ var BaseSettingRenderer = FormRenderer.extend({
     },
 
     start: function () {
-        this._super.apply(this, arguments);
+        var prom = this._super.apply(this, arguments);
         if (config.device.isMobile) {
             core.bus.on("DOM_updated", this, function () {
                 this._moveToTab(this.currentIndex || this._currentAppIndex());
             });
         }
+        return prom;
     },
 
     /**
@@ -180,19 +181,6 @@ var BaseSettingRenderer = FormRenderer.extend({
         }));
     },
     /**
-     * add placeholder attr in input element
-     * @override
-     * @private
-     * @param {jQueryElement} $el
-     * @param {Object} node
-     */
-    _handleAttributes: function ($el, node) {
-        this._super.apply(this, arguments);
-        if (node.attrs.placeholder) {
-            $el.attr('placeholder', node.attrs.placeholder);
-        }
-    },
-    /**
      * move to selected setting
      *
      * @private
@@ -266,14 +254,16 @@ var BaseSettingRenderer = FormRenderer.extend({
     },
 
     _render: function () {
-        var res = this._super.apply(this, arguments);
-        this._initModules();
-        this._renderLeftPanel();
-        this._initSearch();
-        if (config.device.isMobile) {
-            this._enableSwipe();
-        }
-        return res;
+        var self = this;
+        return this._super.apply(this, arguments).then(function() {
+            self._initModules();
+            self._renderLeftPanel();
+            self._initSearch();
+            
+            if (config.device.isMobile) {
+                self._enableSwipe();
+            }
+        });
     },
 
     _renderLeftPanel: function () {

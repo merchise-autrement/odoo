@@ -8,7 +8,7 @@
     'description': "",
     'website': 'https://www.odoo.com/page/warehouse',
     'depends': ['product', 'barcodes'],
-    'category': 'Warehouse',
+    'category': 'Operations/Inventory',
     'sequence': 13,
     'demo': [
         'data/stock_demo_pre.xml',
@@ -52,6 +52,7 @@
         'wizard/product_replenish_views.xml',
         'wizard/stock_track_confirmation_views.xml',
         'wizard/stock_package_destination_views.xml',
+        'wizard/stock_picking_responsible.xml',
 
         'views/res_partner_views.xml',
         'views/product_strategy_views.xml',

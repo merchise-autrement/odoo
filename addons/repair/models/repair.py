@@ -159,7 +159,8 @@ class Repair(models.Model):
     @api.onchange('product_id')
     def onchange_product_id(self):
         self.guarantee_limit = False
-        self.lot_id = False
+        if (self.product_id and self.lot_id and self.lot_id.product_id != self.product_id) or not self.product_id:
+            self.lot_id = False
         if self.product_id:
             self.product_uom = self.product_id.uom_id.id
 
@@ -274,7 +275,7 @@ class Repair(models.Model):
 
     def action_repair_invoice_create(self):
         for repair in self:
-            repair.action_invoice_create()
+            repair._create_invoices()
             if repair.invoice_method == 'b4repair':
                 repair.action_repair_ready()
             elif repair.invoice_method == 'after_repair':
@@ -282,7 +283,7 @@ class Repair(models.Model):
         return True
 
     @api.multi
-    def action_invoice_create(self, group=False):
+    def _create_invoices(self, group=False):
         """ Creates invoice(s) for repair order.
         @param group: It is set to true when group invoice is to be generated.
         @return: Invoice Ids.
@@ -598,17 +599,24 @@ class RepairLine(models.Model):
                     'title': _('No pricelist found.'),
                     'message':
                         _('You have to select a pricelist in the Repair form !\n Please set one before choosing a product.')}
-            else:
-                price = pricelist.get_product_price(self.product_id, self.product_uom_qty, partner)
-                if price is False:
-                    warning = {
-                        'title': _('No valid pricelist line found.'),
-                        'message':
-                            _("Couldn't find a pricelist line matching this product and quantity.\nYou have to change either the product, the quantity or the pricelist.")}
-                else:
-                    self.price_unit = price
-            if warning:
                 return {'warning': warning}
+            else:
+                self._onchange_product_uom()
+
+    @api.onchange('product_uom')
+    def _onchange_product_uom(self):
+        partner = self.repair_id.partner_id
+        pricelist = self.repair_id.pricelist_id
+        if pricelist and self.product_id and self.type != 'remove':
+            price = pricelist.get_product_price(self.product_id, self.product_uom_qty, partner, uom_id=self.product_uom.id)
+            if price is False:
+                warning = {
+                    'title': _('No valid pricelist line found.'),
+                    'message':
+                        _("Couldn't find a pricelist line matching this product and quantity.\nYou have to change either the product, the quantity or the pricelist.")}
+                return {'warning': warning}
+            else:
+                self.price_unit = price
 
 
 class RepairFee(models.Model):
@@ -658,14 +666,21 @@ class RepairFee(models.Model):
                 'title': _('No pricelist found.'),
                 'message':
                     _('You have to select a pricelist in the Repair form !\n Please set one before choosing a product.')}
+            return {'warning': warning}
         else:
-            price = pricelist.get_product_price(self.product_id, self.product_uom_qty, partner)
+            self._onchange_product_uom()
+
+    @api.onchange('product_uom')
+    def _onchange_product_uom(self):
+        partner = self.repair_id.partner_id
+        pricelist = self.repair_id.pricelist_id
+        if pricelist and self.product_id:
+            price = pricelist.get_product_price(self.product_id, self.product_uom_qty, partner, uom_id=self.product_uom.id)
             if price is False:
                 warning = {
                     'title': _('No valid pricelist line found.'),
                     'message':
                         _("Couldn't find a pricelist line matching this product and quantity.\nYou have to change either the product, the quantity or the pricelist.")}
+                return {'warning': warning}
             else:
                 self.price_unit = price
-        if warning:
-            return {'warning': warning}

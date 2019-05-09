@@ -423,7 +423,7 @@ class TestSaleMrpFlow(common.TransactionCase):
             'active_id': mnf_product_d.id,
             'active_ids': [mnf_product_d.id],
         }))
-        produce_form.product_qty = 20
+        produce_form.qty_producing = 20
         produce_d = produce_form.save()
         # produce_d.on_change_qty()
         produce_d.do_produce()
@@ -515,7 +515,7 @@ class TestSaleMrpFlow(common.TransactionCase):
 
         # invoice in on delivery, nothing should be invoiced
         with self.assertRaises(UserError):
-            so.action_invoice_create()
+            so._create_invoices()
         self.assertEqual(so.invoice_status, 'no', 'Sale MRP: so invoice_status should be "nothing to invoice" after invoicing')
 
         # deliver partially (1 of each instead of 5), check the so's invoice_status and delivered quantities
@@ -636,7 +636,7 @@ class TestSaleMrpFlow(common.TransactionCase):
         wiz = self.env[wiz_act['res_model']].browse(wiz_act['res_id'])
         wiz.process()
         # Create the invoice
-        self.so.action_invoice_create()
+        self.so._create_invoices()
         self.invoice = self.so.invoice_ids
         # Changed the invoiced quantity of the finished product to 2
         self.invoice.invoice_line_ids.write({'quantity': 2.0})
@@ -921,10 +921,10 @@ class TestSaleMrpFlow(common.TransactionCase):
         self.assertEquals(order_line.qty_delivered, 7.0)
 
         # Return all components processed by backorder_3
-        StockReturnPicking = self.env['stock.return.picking']
-        default_data = StockReturnPicking.with_context(active_ids=backorder_3.ids, active_id=backorder_3.ids[0]).default_get(
-            ['move_dest_exists', 'original_location_id', 'product_return_moves', 'parent_location_id', 'location_id'])
-        return_wiz = StockReturnPicking.with_context(active_ids=backorder_3.ids, active_id=backorder_3.ids[0]).create(default_data)
+        stock_return_picking_form = Form(self.env['stock.return.picking']
+            .with_context(active_ids=backorder_3.ids, active_id=backorder_3.ids[0],
+            active_model='stock.picking'))
+        return_wiz = stock_return_picking_form.save()
         for return_move in return_wiz.product_return_moves:
             return_move.write({
                 'quantity': expected_quantities[return_move.product_id],
@@ -941,10 +941,10 @@ class TestSaleMrpFlow(common.TransactionCase):
         # Now quantity delivered should be 3 again
         self.assertEquals(order_line.qty_delivered, 3)
 
-        default_data = StockReturnPicking.with_context(active_ids=return_pick.ids, active_id=return_pick.ids[0]).default_get(
-            ['move_dest_exists', 'original_location_id', 'product_return_moves', 'parent_location_id', 'location_id'])
-        return_wiz = StockReturnPicking.with_context(active_ids=return_pick.ids, active_id=return_pick.ids[0]).create(
-            default_data)
+        stock_return_picking_form = Form(self.env['stock.return.picking']
+            .with_context(active_ids=return_pick.ids, active_id=return_pick.ids[0],
+            active_model='stock.picking'))
+        return_wiz = stock_return_picking_form.save()
         for move in return_wiz.product_return_moves:
             move.quantity = expected_quantities[move.product_id]
         res = return_wiz.create_returns()

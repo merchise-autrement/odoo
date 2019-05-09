@@ -7,11 +7,10 @@ from datetime import datetime
 from dateutil import relativedelta
 import pprint
 
-from odoo import api, exceptions, fields, models, _
-from odoo.tools import consteq, float_round, image_resize_images, image_resize_image, ustr
+from odoo import api, exceptions, fields, models, _, SUPERUSER_ID
+from odoo.tools import consteq, float_round, image_resize_images, image_process, ustr
 from odoo.addons.base.models import ir_module
 from odoo.exceptions import ValidationError
-from odoo import api, SUPERUSER_ID
 from odoo.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
 from odoo.tools.misc import formatLang
 
@@ -75,7 +74,7 @@ class PaymentAcquirer(models.Model):
         'res.company', 'Company',
         default=lambda self: self.env.user.company_id.id, required=True)
     view_template_id = fields.Many2one(
-        'ir.ui.view', 'Form Button Template', required=True,
+        'ir.ui.view', 'Form Button Template',
         default=_get_default_view_template_id)
     registration_view_template_id = fields.Many2one(
         'ir.ui.view', 'S2S Form Template', domain=[('type', '=', 'qweb')],
@@ -101,6 +100,9 @@ class PaymentAcquirer(models.Model):
                 templates to do it in one-click.""")
     specific_countries = fields.Boolean(string="Specific Countries",
         help="If you leave it empty, the payment acquirer will be available for all the countries.")
+    check_validity = fields.Boolean(string="Verify Card Validity",
+        help="""Trigger a transaction of 1 currency unit and its refund to check the validity of new credit cards entered in the customer portal.
+        Without this check, the validity will be verified at the very first transaction.""")
     country_ids = fields.Many2many(
         'res.country', 'payment_country_rel',
         'payment_id', 'country_id', 'Countries',
@@ -297,6 +299,19 @@ class PaymentAcquirer(models.Model):
         return True
 
     @api.multi
+    def get_acquirer_extra_fees(self, amount, currency_id, country_id):
+        extra_fees = {
+            'currency_id': currency_id
+        }
+        acquirers = self.filtered(lambda x: x.fees_active)
+        for acq in acquirers:
+            custom_method_name = '%s_compute_fees' % acq.provider
+            if hasattr(acq, custom_method_name):
+                fees = getattr(acq, custom_method_name)(amount, currency_id, country_id)
+                extra_fees[acq] = fees
+        return extra_fees
+
+    @api.multi
     def get_form_action_url(self):
         """ Returns the form action URL, for form-based acquirer implementations. """
         if hasattr(self, '%s_get_form_action_url' % self.provider):
@@ -323,7 +338,7 @@ class PaymentAcquirer(models.Model):
             'acquirers': acquirers,
             'pms': self.env['payment.token'].search([
                 ('partner_id', '=', partner.id),
-                ('acquirer_id', 'in', acquirers.filtered(lambda acq: acq.payment_flow == 's2s').ids)]),
+                ('acquirer_id', 'in', acquirers.ids)]),
         }
 
     @api.multi
@@ -355,6 +370,10 @@ class PaymentAcquirer(models.Model):
         if values is None:
             values = {}
 
+        if not self.view_template_id:
+            return None
+
+        values.setdefault('return_url', '/payment/process')
         # reference and amount
         values.setdefault('reference', reference)
         amount = float_round(amount, 2)
@@ -446,7 +465,6 @@ class PaymentAcquirer(models.Model):
             'context': self._context,
             'type': values.get('type') or 'form',
         })
-        values.setdefault('return_url', False)
 
         _logger.info('payment.acquirer.render: <%s> values rendered for form payment:\n%s', self.provider, pprint.pformat(values))
         return self.view_template_id.render(values, engine='ir.qweb')
@@ -512,16 +530,16 @@ class PaymentIcon(models.Model):
         for vals in vals_list:
             if 'image' in vals:
                 image = ustr(vals['image'] or '').encode('utf-8')
-                vals['image_payment_form'] = image_resize_image(image, size=(45,30))
-                vals['image'] = image_resize_image(image, size=(64,64))
+                vals['image_payment_form'] = image_process(image, size=(45,30))
+                vals['image'] = image_process(image, size=(64,64))
         return super(PaymentIcon, self).create(vals_list)
 
     @api.multi
     def write(self, vals):
         if 'image' in vals:
             image = ustr(vals['image'] or '').encode('utf-8')
-            vals['image_payment_form'] = image_resize_image(image, size=(45,30))
-            vals['image'] = image_resize_image(image, size=(64,64))
+            vals['image_payment_form'] = image_process(image, size=(45,30))
+            vals['image'] = image_process(image, size=(64,64))
         return super(PaymentIcon, self).write(vals)
 
 class PaymentTransaction(models.Model):
@@ -673,6 +691,9 @@ class PaymentTransaction(models.Model):
         elif self.state == 'cancel' and self.state_message:
             message = _('The transaction %s with %s for %s has been cancelled with the following message: %s')
             message_vals.append(self.state_message)
+        elif self.state == 'error' and self.state_message:
+            message = _('The transaction %s with %s for %s has return failed with the following error message: %s')
+            message_vals.append(self.state_message)
         else:
             message = _('The transaction %s with %s for %s has been cancelled.')
         return message % tuple(message_vals)
@@ -771,6 +792,7 @@ class PaymentTransaction(models.Model):
             'date': datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
             'state_message': msg,
         })
+        self._log_payment_transaction_received()
 
     @api.multi
     def _post_process_after_done(self):
@@ -783,10 +805,13 @@ class PaymentTransaction(models.Model):
     def _cron_post_process_after_done(self):
         if not self:
             ten_minutes_ago = datetime.now() - relativedelta.relativedelta(minutes=10)
+            # we don't want to forever try to process a transaction that doesn't go through
+            retry_limit_date = datetime.now() - relativedelta.relativedelta(days=2)
             # we retrieve all the payment tx that need to be post processed
             self = self.search([('state', '=', 'done'),
                                 ('is_processed', '=', False),
                                 ('date', '<=', ten_minutes_ago),
+                                ('date', '>=', retry_limit_date),
                             ])
         for tx in self:
             try:
@@ -869,24 +894,25 @@ class PaymentTransaction(models.Model):
     def create(self, values):
         # call custom create method if defined (i.e. ogone_create for ogone)
         acquirer = self.env['payment.acquirer'].browse(values['acquirer_id'])
-        partner = self.env['res.partner'].browse(values['partner_id'])
+        if values.get('partner_id'):
+            partner = self.env['res.partner'].browse(values['partner_id'])
 
-        values.update({
-            'partner_name': partner.name,
-            'partner_lang': partner.lang or 'en_US',
-            'partner_email': partner.email,
-            'partner_zip': partner.zip,
-            'partner_address': _partner_format_address(partner.street or '', partner.street2 or ''),
-            'partner_city': partner.city,
-            'partner_country_id': partner.country_id.id or self._get_default_partner_country_id(),
-            'partner_phone': partner.phone,
-        })
+            values.update({
+                'partner_name': partner.name,
+                'partner_lang': partner.lang or 'en_US',
+                'partner_email': partner.email,
+                'partner_zip': partner.zip,
+                'partner_address': _partner_format_address(partner.street or '', partner.street2 or ''),
+                'partner_city': partner.city,
+                'partner_country_id': partner.country_id.id or self._get_default_partner_country_id(),
+                'partner_phone': partner.phone,
+            })
 
         # compute fees
         custom_method_name = '%s_compute_fees' % acquirer.provider
         if hasattr(acquirer, custom_method_name):
             fees = getattr(acquirer, custom_method_name)(
-                values.get('amount', 0.0), values.get('currency_id'), partner.country_id.id)
+                values.get('amount', 0.0), values.get('currency_id'), values['partner_country_id'])
             values['fees'] = fees
 
         # custom create
@@ -1108,6 +1134,7 @@ class PaymentToken(models.Model):
             'payment_token_id': self.id,
             'partner_id': self.partner_id.id,
             'partner_country_id': self.partner_id.country_id.id,
+            'state_message': _('This Transaction was automatically processed & refunded in order to validate a new credit card.'),
         })
 
         kwargs.update({'3d_secure': True})

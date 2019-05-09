@@ -4,8 +4,10 @@ odoo.define('web.PivotRenderer', function (require) {
 var AbstractRenderer = require('web.AbstractRenderer');
 var core = require('web.core');
 var field_utils = require('web.field_utils');
+var config = require('web.config');
 
 var QWeb = core.qweb;
+var _t = core._t;
 
 var PivotRenderer = AbstractRenderer.extend({
     tagName: 'table',
@@ -27,6 +29,7 @@ var PivotRenderer = AbstractRenderer.extend({
         this.fieldWidgets = params.widgets || {};
         this.timeRangeDescription = params.timeRangeDescription;
         this.comparisonTimeRangeDescription = params.comparisonTimeRangeDescription;
+        this.paddingLeftHeaderTabWidth = config.device.isMobile ? 5 : 30;
     },
 
     //--------------------------------------------------------------------------
@@ -69,7 +72,7 @@ var PivotRenderer = AbstractRenderer.extend({
     /**
      * @override
      * @private
-     * @returns {Deferred}
+     * @returns {Promise}
      */
     _render: function () {
         if (!this._hasContent()) {
@@ -171,7 +174,7 @@ var PivotRenderer = AbstractRenderer.extend({
             $thead.append($row);
         }
         if (this.compare) {
-            var colLabels = [this.timeRangeDescription, this.comparisonTimeRangeDescription, 'Variation'];
+            var colLabels = [this.timeRangeDescription, this.comparisonTimeRangeDescription, _t('Variation')];
             var dataTypes = ['data', 'comparisonData', 'variation'];
             $row = $('<tr>');
             for (i = 0; i < 3 * nbrCols; i++) {
@@ -225,7 +228,7 @@ var PivotRenderer = AbstractRenderer.extend({
             $header = $('<td>')
                 .text(rows[i].title)
                 .data('id', rows[i].id)
-                .css('padding-left', (5 + rows[i].indent * 30) + 'px')
+                .css('padding-left', (5 + rows[i].indent * self.paddingLeftHeaderTabWidth) + 'px')
                 .addClass(rows[i].expanded ? 'o_pivot_header_cell_opened' : 'o_pivot_header_cell_closed');
             if (rows[i].indent > 0) $header.attr('title', groupbyLabels[rows[i].indent - 1]);
             $header.appendTo($row);

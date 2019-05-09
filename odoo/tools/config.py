@@ -160,7 +160,7 @@ class configmanager(object):
                          dest='test_enable',
                          help="Enable unit tests.")
         group.add_option("--test-tags", dest="test_tags",
-                         help="Comma separated list of tags to filter which tests to excute. Enable unit tests if set.")
+                         help="Comma separated list of tags to filter which tests to execute. Enable unit tests if set.")
 
         parser.add_option_group(group)
 
@@ -219,7 +219,7 @@ class configmanager(object):
                          choices=['disable', 'allow', 'prefer', 'require', 'verify-ca', 'verify-full'],
                          help="specify the database ssl connection mode (see PostgreSQL documentation)")
         group.add_option("--db_maxconn", dest="db_maxconn", type='int', my_default=64,
-                         help="specify the the maximum number of physical connections to PostgreSQL")
+                         help="specify the maximum number of physical connections to PostgreSQL")
         group.add_option("--db-template", dest="db_template", my_default="template0",
                          help="specify a custom database template to create a new database")
         parser.add_option_group(group)

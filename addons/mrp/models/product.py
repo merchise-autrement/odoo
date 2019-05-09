@@ -42,11 +42,10 @@ class ProductTemplate(models.Model):
     @api.multi
     def action_view_mos(self):
         action = self.env.ref('mrp.mrp_production_report').read()[0]
-        action['domain'] = [('state', '=', 'done'), '&', ('product_tmpl_id', 'in', self.ids)]
+        action['domain'] = [('state', '=', 'done'), ('product_tmpl_id', 'in', self.ids)]
         action['context'] = {
             'graph_measure': 'product_uom_qty',
-            'search_default_confirmed': 0,
-            'time_ranges': {'field': 'date_finished', 'range': 'last_365_days'}
+            'time_ranges': {'field': 'date_planned_start', 'range': 'last_365_days'}
         }
         return action
 
@@ -131,10 +130,9 @@ class ProductProduct(models.Model):
     @api.multi
     def action_view_mos(self):
         action = self.env.ref('mrp.mrp_production_report').read()[0]
-        action['domain'] = [('state', '=', 'done'), '&', ('product_id', 'in', self.ids)]
+        action['domain'] = [('state', '=', 'done'), ('product_id', 'in', self.ids)]
         action['context'] = {
-            'search_default_last_year_mo_order': 1,
-            'search_default_status': 1, 'search_default_scheduled_month': 1,
+            'time_ranges': {'field': 'date_planned_start', 'range': 'last_365_days'},
             'graph_measure': 'product_uom_qty',
         }
         return action

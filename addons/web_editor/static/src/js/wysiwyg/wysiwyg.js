@@ -19,7 +19,10 @@ var Wysiwyg = Widget.extend({
         wysiwyg_blur: '_onWysiwygBlur',
     },
     defaultOptions: {
-        codeview: config.debug
+        codeview: config.debug,
+        recordInfo: {
+            context: {},
+        },
     },
 
     /**
@@ -75,7 +78,7 @@ var Wysiwyg = Widget.extend({
         if (this._summernote.invoke('HelperPlugin.hasJinja', value)) {
             this._summernote.invoke('codeview.forceActivate');
         }
-        return $.when();
+        return Promise.resolve();
     },
     /**
      * @override
@@ -200,6 +203,7 @@ var Wysiwyg = Widget.extend({
         $editable.find('[style=""]').removeAttr('style');
         $editable.find('[title=""]').removeAttr('title');
         $editable.find('[alt=""]').removeAttr('alt');
+        $editable.find('[data-original-title=""]').removeAttr('data-original-title');
         $editable.find('a.o_image, span.fa, i.fa').html('');
         $editable.find('[aria-describedby]').removeAttr('aria-describedby').removeAttr('data-original-title');
 
@@ -210,7 +214,7 @@ var Wysiwyg = Widget.extend({
      *      - in init option beforeSave
      *      - receive editable jQuery DOM as attribute
      *      - called after deactivate codeview if needed
-     * @returns {$.Promise}
+     * @returns {Promise}
      *      - resolve with true if the content was dirty
      */
     save: function () {
@@ -221,7 +225,7 @@ var Wysiwyg = Widget.extend({
         } else {
             this.$target.html(html);
         }
-        return $.when(isDirty, html);
+        return Promise.resolve({isDirty:isDirty, html:html});
     },
     /**
      * @param {String} value
@@ -475,7 +479,7 @@ var Wysiwyg = Widget.extend({
 
         this.$el.removeClass('card');
 
-        return $.when();
+        return Promise.resolve();
     },
 
     //--------------------------------------------------------------------------
@@ -606,7 +610,7 @@ var Wysiwyg = Widget.extend({
         this._editableHasFocus = true;
         this._justFocused = true;
         setTimeout(function () {
-            self._justFocused = true;
+            self._justFocused = false;
         });
     },
     /**
@@ -693,41 +697,6 @@ var Wysiwyg = Widget.extend({
 //--------------------------------------------------------------------------
 
 /**
- * Load wysiwyg assets if needed.
- *
- * @see Wysiwyg.createReadyFunction
- * @param {Widget} parent
- * @returns {$.Promise}
- */
-Wysiwyg.prepare = (function () {
-    var assetsLoaded = false;
-    var def;
-    return function prepare(parent) {
-        if (assetsLoaded) {
-            return $.when();
-        }
-        if (def) {
-            return def;
-        }
-        def = $.Deferred();
-        var timeout = setTimeout(function () {
-            throw _t("Can't load assets of the wysiwyg editor");
-        }, 10000);
-        var wysiwyg = new Wysiwyg(parent, {
-            recordInfo: {
-                context: {},
-            }
-        });
-        wysiwyg.attachTo($('<textarea>')).then(function () {
-            assetsLoaded = true;
-            clearTimeout(timeout);
-            wysiwyg.destroy();
-            def.resolve();
-        });
-        return def;
-    };
-})();
-/**
  * @param {Node} node (editable or node inside)
  * @returns {Object}
  * @returns {Node} sc - start container
@@ -745,7 +714,7 @@ Wysiwyg.getRange = function (node) {
     };
 };
 /**
- * @param {Node} startNode 
+ * @param {Node} startNode
  * @param {Number} startOffset
  * @param {Node} endNode
  * @param {Number} endOffset

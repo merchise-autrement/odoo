@@ -62,9 +62,6 @@ $o-dropdown-hpadding: 20px;
 
 $o-sheet-vpadding: 24px;
 
-$o-notification-error-bg-color: #F16567;
-$o-notification-info-bg-color: #FCFBEA;
-
 $o-modal-lg: 980px;
 $o-modal-md: 650px;
 
@@ -106,7 +103,7 @@ $o-kanban-inner-hmargin: 5px;
 $o-kanban-progressbar-height: 20px;
 
 $o-kanban-mobile-tabs-height: 40px;
-
+$o-kanban-mobile-empty-height: $o-kanban-image-width;
 // ------- Kanban dashboard variables -------
 
 // Used to manage spacing in complex dropdown menu

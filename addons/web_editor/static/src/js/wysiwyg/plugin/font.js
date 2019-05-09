@@ -534,6 +534,11 @@ registry.addJob(function (wysiwyg) {
     if ('web_editor.colorpicker' in QWeb.templates) {
         return;
     }
+
+    if (wysiwyg.isDestroyed()) {
+        throw new Error('The Wysiwyg are destroyed before this loading');
+    }
+
     var options = {};
     wysiwyg.trigger_up('getRecordInfo', {
         recordInfo: options,
@@ -549,6 +554,9 @@ registry.addJob(function (wysiwyg) {
             context: options.context,
         },
     }).then(function (template) {
+        if (!/^<templates>/.test(template)) {
+            template = _.str.sprintf('<templates>%s</templates>', template);
+        }
         QWeb.add_template(template);
     });
 });

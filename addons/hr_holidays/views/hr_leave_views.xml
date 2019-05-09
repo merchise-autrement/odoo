@@ -30,9 +30,10 @@
                 <separator/>
                 <filter string="Unread Messages" name="message_needaction" domain="[('message_needaction','=',True)]"/>
                 <separator/>
-                <filter string="My Department Time Off" name="department" domain="[('department_id.member_ids.user_id', '=', uid)]" help="My Department Time Off"/>
+                <filter string="My Department Time Off" name="department" domain="['|', ('department_id.member_ids.user_id', '=', uid), ('employee_id.user_id', '=', uid)]" help="My Department Time Off"/>
                 <filter string="People I Manage" name="managed_people" domain="[('employee_id.parent_id.user_id', '=', uid)]" help="Time off of people you are manager of"/>
                 <filter string="My Team Time Off" name="my_team_leaves" domain="[('employee_id.leave_manager_id', '=', uid)]" groups="hr_holidays.group_hr_holidays_team_leader" help="Time off of Your Team Members"/>
+                <filter string="My Time Off" name="my_leaves" domain="[('employee_id.user_id', '=', uid)]"/>
                 <separator/>
                 <filter string="To Report in Payslip" name="gray" domain="[('payslip_status', '=', False)]" groups="hr_holidays.group_hr_holidays_manager"/>
                 <separator/>
@@ -40,8 +41,6 @@
                 <separator/>
                 <filter name="year" string="Current Year"
                     domain="[('holiday_status_id.active', '=', True)]" help="Active Time Off"/>
-                <separator/>
-                <filter string="My Time Off" name="my_leaves" domain="[('employee_id.user_id', '=', uid)]"/>
                 <separator/>
                 <filter string="Late Activities" name="activities_overdue"
                     domain="[('activity_ids.date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"
@@ -142,6 +141,34 @@
         </field>
     </record>
 
+    <record id="hr_leave_view_activity" model="ir.ui.view">
+        <field name="name">hr.leave.view.activity</field>
+        <field name="model">hr.leave</field>
+        <field name="arch" type="xml">
+            <activity string="Time Off Request">
+                <field name="employee_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="number_of_days"/>
+                <templates>
+                    <div t-name="activity-box">
+                        <img t-att-src="activity_image('hr.employee', 'image_small', record.employee_id.raw_value)" t-att-title="record.employee_id.value" t-att-alt="record.employee_id.value" width="50" height="50"/>
+                        <div>
+                            <field name="name"/>
+                            <span class="ml-3 text-muted">
+                                <field name="number_of_days"/> days
+                            </span>
+                            <div class="text-muted">
+                                <div>From: <field name="date_from" widget="date"/></div>
+                                <div>To: <field name="date_to" widget="date"/></div>
+                            </div>
+                        </div>
+                    </div>
+                </templates>
+            </activity>
+        </field>
+    </record>
+
     <record id="hr_leave_view_form" model="ir.ui.view">
         <field name="name">hr.leave.view.form</field>
         <field name="model">hr.leave</field>
@@ -169,7 +196,7 @@
                         <div>
                             <field name="date_from" invisible="1"/>
                             <field name="date_to" invisible="1"/>
-                            <div class="o_row o_row_readonly">
+                            <div class="o_row o_row_readonly o_hr_holidays_dates">
                                 <field name="request_date_from" class="oe_inline"
                                     attrs="{'readonly': [('state', 'not in', ('draft', 'confirm'))]}"/>
                                 <span class="oe_inline"
@@ -247,7 +274,7 @@
                         </div>
 
                         <field name="name" attrs="{'readonly': [('state', 'not in', ('draft', 'confirm'))]}"/>
-
+                        <field name="out_of_office_message"/>
                     </group>
                     <group name="col_right">
                         <field name="employee_id" invisible="1"/>
@@ -368,7 +395,7 @@
         <field name="res_model">hr.leave</field>
         <field name="view_type">form</field>
         <field name="view_mode">calendar</field>
-        <field name="context">{'search_default_year': 1, 'search_default_group_employee': 1}</field>
+        <field name="context">{'search_default_year': 1, 'search_default_group_employee': 1, 'search_default_managed_people': 1, 'search_default_managed_people': 1, 'search_default_my_team_leaves': 1}</field>
         <field name="domain">[('holiday_type','=','employee'), ('state', '!=', 'refuse')]</field>
         <field name="search_view_id" ref="view_hr_holidays_filter"/>
         <field name="view_id" ref="hr_leave_view_calendar"/>
@@ -383,7 +410,7 @@
 
     <menuitem
         id="menu_hr_holidays_dashboard"
-        name="Overview"
+        name="My Team"
         parent="menu_hr_holidays_root"
         sequence="1"
         action="action_hr_holidays_dashboard"
@@ -453,7 +480,7 @@
         <field name="act_window_id" ref="hr_leave_action_new_request"/>
         <field name="view_id" ref="hr_leave_view_tree_my"/>
     </record>
-    <record id="hhr_leave_action_new_request_view_form" model="ir.actions.act_window.view">
+    <record id="hr_leave_action_new_request_view_form" model="ir.actions.act_window.view">
         <field name="sequence">3</field>
         <field name="view_mode">form</field>
         <field name="act_window_id" ref="hr_leave_action_new_request"/>
@@ -522,7 +549,8 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,kanban,form,calendar,activity</field>
         <field name="context">{
-            'search_default_department':1,
+            'search_default_managed_people':1,
+            'search_default_my_team_leaves':1,
             'search_default_approve':1}
         </field>
         <field name="domain">[]</field>

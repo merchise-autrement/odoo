@@ -15,6 +15,7 @@ Wysiwyg.include({
         snippet_cloned: '_onSnippetCloned',
         snippet_dropped: '_onSnippetDropped',
         snippet_focused: '_onSnippetFocused',
+        reload_snippet_dropzones: '_onReloadSnippetDropzones',
     }),
 
     selectorEditableArea: '.note-editable',
@@ -49,7 +50,6 @@ Wysiwyg.include({
      * snippets can by url begin with '/' or an view xml_id.
      *
      * @override
-     * @param {string} [options.snippets]
      */
     start: function () {
         var self = this;
@@ -121,7 +121,7 @@ Wysiwyg.include({
         }
         var defs = [];
         this.trigger_up('ready_to_save', {defs: defs});
-        return $.when.apply($, defs)
+        return Promise.all(defs)
             .then(this.snippets.cleanForSave.bind(this.snippets))
             .then(this._super.bind(this));
     },
@@ -150,6 +150,7 @@ Wysiwyg.include({
         if (this.snippets) {
             this.snippets.updateCurrentSnippetEditorOverlay();
         }
+        this._summernote.invoke('toolbar.update', true);
         this._super.apply(this, arguments);
     },
     /**
@@ -170,6 +171,14 @@ Wysiwyg.include({
         var context = this._summernote;
         var target = context.invoke('editor.restoreTarget', target);
         context.invoke('MediaPlugin.hidePopovers');
+    },
+    /**
+     * trigger reload_snippet_dropzones on snippets
+     *
+     * @private
+     */
+    _onReloadSnippetDropzones: function () {
+        this.snippets.trigger('reload_snippet_dropzones');
     },
     /**
      * Triggered when a snippet is cloned in the editable area
@@ -256,5 +265,7 @@ $.fn.extend({
         return this;
     },
 });
+
+return Wysiwyg;
 
 });

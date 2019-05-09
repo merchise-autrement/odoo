@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from . import assets
 from . import ir_actions
 from . import ir_attachment
 from . import ir_http
@@ -17,3 +18,4 @@ from . import res_company
 from . import res_partner
 from . import res_users
 from . import res_config_settings
+from . import res_lang

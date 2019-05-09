@@ -26,7 +26,7 @@
                                 options='{"terminology": "archive"}'/>
                         </button>
                     </div>
-                    <field name="image_medium" widget="image" class="oe_avatar"/>
+                    <field name="image" widget="image" class="oe_avatar" options="{'preview_image': 'image_medium'}"/>
                     <div class="oe_title">
                         <label class="oe_edit_only" for="name" string="Product Name"/>
                         <h1><field name="name" placeholder="Product Name"/></h1>
@@ -51,14 +51,18 @@
                                 <group name="group_standard_price">
                                     <field name="list_price" string="Sales Price" widget='monetary' options="{'currency_field': 'currency_id', 'field_digits': True}"/>
                                     <label for="standard_price" groups="base.group_user" attrs="{'invisible': [('product_variant_count', '&gt;', 1), ('is_product_variant', '=', False)]}"/>
-                                    <div name="standard_price_uom" groups="base.group_user" attrs="{'invisible': [('product_variant_count', '&gt;', 1), ('is_product_variant', '=', False)]}">
-                                        <field name="standard_price" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                    <div name="standard_price_uom" groups="base.group_user" attrs="{'invisible': [('product_variant_count', '&gt;', 1), ('is_product_variant', '=', False)]}" class="o_row">
+                                        <field name="standard_price" widget='monetary' options="{'currency_field': 'cost_currency_id'}"/>
+                                        <span groups="uom.group_uom" class="oe_read_only">per
+                                            <field name="uom_name"/>
+                                        </span>
                                     </div>
                                     <field name="company_id" groups="base.group_multi_company"
                                         options="{'no_create': True}"/>
                                     <field name="uom_id" groups="uom.group_uom" options="{'no_create': True}"/>
                                     <field name="uom_po_id" groups="uom.group_uom" options="{'no_create': True}"/>
                                     <field name="currency_id" invisible="1"/>
+                                    <field name="cost_currency_id" invisible="1"/>
                                     <field name="product_variant_id" invisible="1"/>
                                 </group>
                             </group>
@@ -193,7 +197,7 @@
                 <separator/>
                 <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
                 <field string="Attributes" name="attribute_line_ids" groups="product.group_product_variant"/>
-                <field name="pricelist_id" widget="selection" context="{'pricelist': self}" filter_domain="[]" groups="product.group_sale_pricelist"/> <!-- Keep widget=selection on this field to pass numeric `self` value, which is not the case for regular m2o widgets! -->
+                <field name="pricelist_id" context="{'pricelist': self}" filter_domain="[]" groups="product.group_sale_pricelist"/>
                 <separator/>
                 <filter string="Late Activities" name="activities_overdue"
                     domain="[('activity_ids.date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"
@@ -253,8 +257,8 @@
               <p class="o_view_nocontent_smiling_face">
                 Create a new product variant
               </p><p>
-                You must define a product for everything you purchase,
-                whether it's a physical product, a consumable or services.
+                You must define a product for everything you sell or purchase,
+                whether it's a storable product, a consumable or a service.
               </p>
             </field>
         </record>
@@ -275,7 +279,7 @@
                             </button>
                         </div>
                         <field name="id" invisible="1"/>
-                        <field name="image_medium" widget="image" class="oe_avatar"/>
+                        <field name="image" widget="image" class="oe_avatar" options="{'preview_image': 'image_medium'}"/>
                         <div class="oe_title">
                             <label class="oe_edit_only" for="name" string="Product Name"/>
                             <h1><field name="name" readonly="1" placeholder="e.g. Odoo Enterprise Subscription"/></h1>
@@ -296,8 +300,9 @@
                                 <div class="o_row col-5 pl-0">
                                     <field name="lst_price" widget='monetary' options="{'currency_field': 'currency_id', 'field_digits': True}" attrs="{'readonly': [('product_variant_count', '&gt;', 1)]}"/>
                                 </div>
-                                <field name="standard_price" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                <field name="standard_price" widget='monetary' options="{'currency_field': 'cost_currency_id'}"/>
                                 <field name="currency_id" invisible='1'/>
+                                <field name="cost_currency_id" invisible="1"/>
                             </group>
                         </group>
                         <group>
@@ -310,7 +315,7 @@
                                 <label for="weight"/>
                                 <div class="o_row">
                                     <field name="weight"/>
-                                    <span>kg</span>
+                                    <span><field name="weight_uom_name"/></span>
                                 </div>
                             </group>
                             <group name="packaging" string="Packaging" groups="product.group_stock_packaging">
@@ -338,8 +343,8 @@
               <p class="o_view_nocontent_smiling_face">
                 Create a new product variant
               </p><p>
-                You must define a product for everything you sell, whether it's a physical product,
-                a consumable or a service you offer to customers.
+                You must define a product for everything you sell or purchase,
+                whether it's a storable product, a consumable or a service.
                 The product form contains information to simplify the sale process:
                 price, notes in the quotation, accounting data, procurement methods, etc.
               </p>
@@ -426,6 +431,8 @@
                     <field name="id"/>
                     <field name="image_small"/>
                     <field name="lst_price"/>
+                    <field name="activity_state"/>
+                    <progressbar field="activity_state" colors='{"planned": "success", "today": "warning", "overdue": "danger"}'/>
                     <templates>
                         <t t-name="kanban-box">
                             <div class="oe_kanban_global_click">
@@ -449,6 +456,28 @@
                         </t>
                     </templates>
                 </kanban>
+            </field>
+        </record>
+
+        <record id="product_product_view_activity" model="ir.ui.view">
+            <field name="name">product.product.activity</field>
+            <field name="model">product.product</field>
+            <field name="arch" type="xml">
+                <activity string="Product Variants">
+                    <field name="id"/>
+                    <field name="default_code"/>
+                    <templates>
+                        <div t-name="activity-box">
+                            <img t-att-src="activity_image('product.product', 'image_small', record.id.raw_value)" role="img" t-att-title="record.id.value" t-att-alt="record.id.value"/>
+                            <div>
+                                <field name="name" display="full"/>
+                                <div t-if="record.default_code.value" class="text-muted">
+                                    [<field name="default_code"/>]
+                                </div>
+                            </div>
+                        </div>
+                    </templates>
+                </activity>
             </field>
         </record>
 
@@ -612,7 +641,7 @@
             <field name="arch" type="xml">
                 <form string="Vendor Information">
                     <group>
-                        <group string="Vendor">
+                        <group name="vendor" string="Vendor">
                             <field name="product_variant_count" invisible="1"/>
                             <field name="product_id" groups="product.group_product_variant" domain="[('product_tmpl_id', '=', product_tmpl_id)]" options="{'no_create_edit': True}"/>
                             <field name="name" context="{'default_customer': 0, 'search_default_supplier': 1, 'default_supplier': 1}"/>
@@ -626,16 +655,16 @@
                         <group string="Price List">
                             <field name="product_tmpl_id" string="Product" invisible="context.get('visible_product_tmpl_id', True)"/>
                             <label for="min_qty"/>
-                            <div>
-                                <field name="min_qty" class="oe_inline"/>
-                                <field name="product_uom" class="oe_inline" groups="uom.group_uom"/>
+                            <div class="o_row">
+                                <field name="min_qty"/>
+                                <field name="product_uom" groups="uom.group_uom"/>
                             </div>
                             <label for="price"/>
-                            <div>
-                                <field name="price" class="oe_inline"/><field name="currency_id" class="oe_inline" groups="base.group_multi_currency"/>
+                            <div class="o_row">
+                                <field name="price"/><field name="currency_id" groups="base.group_multi_currency"/>
                             </div>
                             <label for="date_start" string="Validity"/>
-                            <div><field name="date_start" class="oe_inline"/> to <field name="date_end" class="oe_inline"/></div>
+                            <div class="o_row"><field name="date_start"/> to <field name="date_end"/></div>
                         </group>
                         <group string="Other Information" groups="base.group_multi_company">
                             <field name="company_id" options="{'no_create': True}"/>

@@ -6,7 +6,7 @@ var DropzonePlugin = require('web_editor.wysiwyg.plugin.dropzone');
 var HelperPlugin = require('web_editor.wysiwyg.plugin.helper');
 var TextPlugin = require('web_editor.wysiwyg.plugin.text');
 var HistoryPlugin = require('web_editor.wysiwyg.plugin.history');
-var Wysiwyg = require('web_editor.wysiwyg');
+var Wysiwyg = require('web_editor.wysiwyg.snippets');
 
 var _t = core._t;
 
@@ -70,8 +70,6 @@ DropzonePlugin.include({
 
 
 
-
-
 /**
  * HtmlEditor
  * Intended to edit HTML content. This widget uses the Wysiwyg editor
@@ -91,7 +89,7 @@ var WysiwygMultizone = Wysiwyg.extend({
                 }
             }
             if (ev.key.length === 1) {
-                this._onChange();
+                this._onChangeThrottled();
             }
         },
         'click .note-editable': function (ev) {
@@ -125,6 +123,7 @@ var WysiwygMultizone = Wysiwyg.extend({
         options.addDropSelector = ':o_editable';
         this.savingMutex = new concurrency.Mutex();
         this._super(parent, options);
+        this._onChangeThrottled = _.throttle(this._onChange.bind(this), 300);
     },
     /**
      * Prevent some default features for the editable area.
@@ -201,7 +200,6 @@ var WysiwygMultizone = Wysiwyg.extend({
             self.$('[data-oe-readonly]').addClass('o_not_editable').attr('contenteditable', false);
             self.$('.oe_structure').attr('contenteditable', false).addClass('o_fake_not_editable');
             self.$('[data-oe-field][data-oe-type="image"]').attr('contenteditable', false).addClass('o_fake_not_editable');
-            self.$('[data-oe-field]:not([contenteditable])').attr('contenteditable', true).addClass('o_fake_editable');
         });
     },
     /**
@@ -240,20 +238,20 @@ var WysiwygMultizone = Wysiwyg.extend({
             this.savingMutex.exec(this._saveCroppedImages.bind(this));
         }
         var _super = this._super.bind(this);
-        return this.savingMutex.def.then(function () {
+        return this.savingMutex.lock.then(function () {
             return _super().then(function (_isDirty, html) {
                 this._summernote.layoutInfo.editable.html(html);
 
                 var $editable = this._getEditableArea();
                 var $areaDirty = $editable.filter('.o_dirty');
                 if (!$areaDirty.length) {
-                    return false;
+                    return { isDirty: false };
                 }
                 $areaDirty.each(function (index, editable) {
                     this.savingMutex.exec(this._saveEditable.bind(this, editable));
                 }.bind(this));
-                return this.savingMutex.def.then(function () {
-                    return true;
+                return this.savingMutex.lock.then(function () {
+                    return { isDirty: true };
                 });
             }.bind(this));
         }.bind(this));
@@ -333,7 +331,7 @@ var WysiwygMultizone = Wysiwyg.extend({
         var data = this._super();
         var res_id = $editable.data('oe-id');
         var res_model = $editable.data('oe-model');
-        if (!$editable.data('oe-model')) {
+        if (!$editable.data('oe-model') && $('html').data('editable')) {
             var object = $('html').data('main-object');
             res_model = object.split('(')[0];
             res_id = +object.split('(')[1].split(',')[0];
@@ -404,9 +402,9 @@ var WysiwygMultizone = Wysiwyg.extend({
         var recordInfo = this._getRecordInfo({target: editable});
         var outerHTML = this._getCleanedHtml(editable).prop('outerHTML');
         var def = this._saveElement(outerHTML, recordInfo, editable);
-        def.done(function () {
+        def.then(function () {
             self.trigger_up('saved', recordInfo);
-        }).fail(function () {
+        }).guardedCatch(function () {
             self.trigger_up('canceled', recordInfo);
         });
         return def;
@@ -458,7 +456,7 @@ var WysiwygMultizone = Wysiwyg.extend({
                 });
             }
         }).get();
-        return $.when.apply($, defs);
+        return Promise.all(defs);
     },
     /**
      * Saves one (dirty) element of the page.

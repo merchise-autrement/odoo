@@ -125,7 +125,7 @@ var HelperPlugin = AbstractPlugin.extend({
      * Returns the number of leading breakable space in the textNode.
      * Note: returns 0 if the node is not a textNode.
      *
-     * @param {Node}
+     * @param {Node} node
      */
     countLeadingBreakableSpace: function (node) {
         if (!dom.isText(node)) {
@@ -151,26 +151,27 @@ var HelperPlugin = AbstractPlugin.extend({
     },
     /**
      * Remove the dom between 2 points (respecting unbreakable rules).
-     * Returns an object:
-     * {
-     *  node: pointA.node (updated if necessary),
-     *  offset: pointA.offset (updated if necessary),
-     *  changed: bool (whether changes were applied)
-     * }
+     * Returns an object::
+     *
+     *     {
+     *         node: pointA.node (updated if necessary),
+     *         offset: pointA.offset (updated if necessary),
+     *         changed: bool (whether changes were applied)
+     *     }
      * 
      * @param {Object} pointA
      * @param {Node} pointA.node
-     * @param {Integer} pointA.offset
+     * @param {number} pointA.offset
      * @param {Object} pointB
      * @param {Node} pointB.node
-     * @param {Integer} pointB.offset
+     * @param {number} pointB.offset
      * @returns {Object} {node, offset, changed}
      */
     deleteBetween: function (pointA, pointB) {
         var self = this;
         if (pointB.node.childNodes[pointB.offset]) {
             var firstLeaf = this.firstLeaf(pointB.node.childNodes[pointB.offset]);
-            pointB = this.makeRange(firstLeaf, 0);
+            pointB = this.makePoint(firstLeaf, 0);
         }
         if (pointB.node.tagName && pointB.node.tagName !== 'BR' && pointB.offset >= dom.nodeLength(pointB.node)) {
             pointB = dom.nextPoint(pointB);
@@ -704,7 +705,7 @@ var HelperPlugin = AbstractPlugin.extend({
     /**
      * Returns the node targeted by a path
      *
-     * @param {Object[]} list of object (tagName, offset)
+     * @param {Object[]} path list of object (tagName, offset)
      * @returns {Node}
      */
     fromPath: function (path) {
@@ -1361,6 +1362,28 @@ var HelperPlugin = AbstractPlugin.extend({
         }).open();
     },
     /**
+     * Return true if the `container` contains the `contained` and only
+     * the `contained` (blank text nodes are ignored).
+     *
+     * @param {Node} container
+     * @param {Node} contained
+     * @returns {Boolean}
+     */
+    onlyContains: function (container, contained) {
+        var self = this;
+        if (!$.contains(container, contained)) {
+            return false;
+        }
+        var $contents = $(container).contents();
+        var otherContents = $contents.filter(function (index, node) {
+            if (node === contained || dom.isText(node) && !self.isVisibleText(node)) {
+                return false;
+            }
+            return true;
+        });
+        return !otherContents.length;
+    },
+    /**
      * Reorders the classes in the node's class attribute and returns it.
      *
      * @param {Node} node
@@ -1815,6 +1838,9 @@ var HelperPlugin = AbstractPlugin.extend({
         return range;
     },
     _wrapTextWithP: function (textNode) {
+        if (dom.ancestor(textNode, dom.isAnchor)) {
+            return;
+        }
         var self = this;
         var isFormatNode = dom.ancestor(textNode, this.isFormatNode.bind(this));
         if (!isFormatNode) {

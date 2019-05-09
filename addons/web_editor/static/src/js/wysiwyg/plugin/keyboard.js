@@ -218,10 +218,18 @@ var KeyboardPlugin = AbstractPlugin.extend({
      * @returns {Boolean} true if case handled
      */
     _handleDeletion: function (direction) {
-        var didDeleteNodes = this.context.invoke('HelperPlugin.deleteSelection')
         var range = this.context.invoke('editor.createRange');
+        range = direction === 'prev' && this._replaceEmptyParentWithEmptyP(range);
+        if (range) {
+            range = this._afterDeletion(range, direction);
+            range.select();
+            return true;
+        }
+        var didDeleteNodes = this.context.invoke('HelperPlugin.deleteSelection');
+        range = this.context.invoke('editor.createRange');
         var wasOnStartOfBR = direction === 'prev' && !range.so && range.sc.tagName === 'BR';
 
+        this._removeNextEmptyUnbreakable(range.sc);
         var temp = this._beforeDeletion(range, direction, didDeleteNodes);
         didDeleteNodes = temp.didDeleteNodes;
         range = temp.range;
@@ -370,14 +378,14 @@ var KeyboardPlugin = AbstractPlugin.extend({
                 return $(n).hasClass('btn');
             });
 
-            // Move carret to the new button
-            range = this.context.invoke('editor.setRange', next.firstChild, 0);
-            range.select();
-
             // Force content in empty buttons, the carret can be moved there
             this.context.invoke('LinkPopover.hide');
             this.context.invoke('LinkPopover.fillEmptyLink', next, true);
             this.context.invoke('LinkPopover.fillEmptyLink', btn, true);
+
+            // Move carret to the new button
+            range = this.context.invoke('editor.setRange', next.firstChild, 0);
+            range.select();
         } else {
             range = this.context.invoke('editor.setRange', point.node, point.offset);
             range.normalize().select();
@@ -809,6 +817,55 @@ var KeyboardPlugin = AbstractPlugin.extend({
         }
     },
     /**
+     * Remove the first unbreakable ancestor's next sibling if empty.
+     *
+     * @private
+     * @param {Node} node
+     */
+    _removeNextEmptyUnbreakable: function (node) {
+        var self = this;
+        var unbreakable = dom.ancestor(node, this.options.isUnbreakableNode);
+        if (unbreakable === this.editable) {
+            return;
+        }
+        var nextUnbreakable = unbreakable && unbreakable.nextElementSibling;
+        var isNextEmpty = nextUnbreakable && dom.isEmpty(nextUnbreakable) && !dom.isVoid(nextUnbreakable);
+        var isNextContainsOnlyInvisibleText = nextUnbreakable && _.all($(nextUnbreakable).contents(), function (n) {
+            return dom.isText(n) && !self.context.invoke('HelperPlugin.isVisibleText', n);
+        });
+        if (isNextEmpty || isNextContainsOnlyInvisibleText) {
+            $(nextUnbreakable).remove();
+        }
+    },
+    /**
+     * If the range's start container is empty and constitutes the only contents of its parent,
+     * replace it with an empty p, then rerange.
+     *
+     * @private
+     * @param {Object} range
+     * @returns {Object|undefined} range
+     */
+    _replaceEmptyParentWithEmptyP: function (range) {
+        var node = range.sc.childElementCount === 1 && range.sc.firstChild.tagName === 'BR' ? range.sc.firstChild : range.sc;
+        if (node === this.editable || !node.parentNode || node.parentNode === this.editable) {
+            return;
+        }
+        if (
+            dom.isEmpty(node) &&
+            this.context.invoke('HelperPlugin.onlyContains', node.parentNode, node) &&
+            ['LI', 'P'].indexOf(node.parentNode.tagName) === -1
+        ) {
+            var emptyP = this.document.createElement('p');
+            var br = this.document.createElement('br');
+            $(emptyP).append(br);
+            $(node.parentNode).before(emptyP).remove();
+            range.sc = range.ec = br;
+            range.so = range.eo = 0;
+            return range.collapse(true);
+        }
+        return;
+    },
+    /**
      * Replace all leading space from a text node with one non-breakable space.
      *
      * @param {Node} node
@@ -901,6 +958,31 @@ var KeyboardPlugin = AbstractPlugin.extend({
         return range;
     },
     /**
+     * Select all the contents of the current unbreakable ancestor.
+     */
+    _selectAll: function () {
+        var self = this;
+        var range = this.context.invoke('editor.createRange');
+        var unbreakable = dom.ancestor(range.sc, this.options.isUnbreakableNode);
+        var $contents = $(unbreakable).contents();
+        var startNode = $contents.length ? $contents[0] : unbreakable;
+        var pointA = this.context.invoke('HelperPlugin.makePoint', startNode, 0);
+        pointA = dom.nextPointUntil(pointA, function (point) {
+            return self.context.invoke('HelperPlugin.isVisibleText', point.node);
+        }) || pointA;
+        var endNode = $contents.length ? $contents[$contents.length - 1] : unbreakable;
+        var endOffset = $contents.length ? dom.nodeLength($contents[$contents.length - 1]) : 1;
+        var pointB = this.context.invoke('HelperPlugin.makePoint', endNode, endOffset);
+        pointB = dom.prevPointUntil(pointB, function (point) {
+            return self.context.invoke('HelperPlugin.isVisibleText', point.node);
+        }) || pointB;
+        range.sc = pointA.node;
+        range.so = pointA.offset;
+        range.ec = pointB.node;
+        range.eo = pointB.offset;
+        range.select().normalize();
+    },
+    /**
      * Before a deletion, if necessary, slice the text content at range, then rerange.
      *
      * @param {Object} range
@@ -933,6 +1015,12 @@ var KeyboardPlugin = AbstractPlugin.extend({
     _onKeydown: function (se, e) {
         var self = this;
         var handled = false;
+
+        if (e.ctrlKey && e.key === 'a') {
+            e.preventDefault();
+            this._selectAll();
+            return;
+        }
 
         if (e.key &&
             (e.key.length === 1 || e.key === "Dead" || e.key === "Unidentified") &&

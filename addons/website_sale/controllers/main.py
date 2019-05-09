@@ -12,7 +12,6 @@ from odoo.addons.payment.controllers.portal import PaymentProcessing
 from odoo.addons.website.controllers.main import QueryURL
 from odoo.exceptions import ValidationError
 from odoo.addons.website.controllers.main import Website
-from odoo.addons.sale.controllers.product_configurator import ProductConfiguratorController
 from odoo.addons.website_form.controllers.main import WebsiteForm
 from odoo.osv import expression
 
@@ -131,7 +130,7 @@ class Website(Website):
         return views
 
 
-class WebsiteSale(ProductConfiguratorController):
+class WebsiteSale(http.Controller):
 
     def _get_compute_currency_and_context(self, product=None):
         pricelist_context, pricelist = self._get_pricelist_context()
@@ -150,25 +149,32 @@ class WebsiteSale(ProductConfiguratorController):
         return pricelist_context, pricelist
 
     def _get_compute_currency(self, pricelist, product=None):
-        from_currency = (product or request.env.user.company_id).currency_id
+        company = product and product._get_current_company(pricelist=pricelist, website=request.website) or pricelist.company_id or request.website.company_id
+        from_currency = (product or request.env['res.company']._get_main_company()).currency_id
         to_currency = pricelist.currency_id
-        return lambda price: from_currency._convert(price, to_currency, (product or request.env.user).company_id, fields.Date.today())
+        return lambda price: from_currency._convert(price, to_currency, company, fields.Date.today())
 
     def _get_search_order(self, post):
         # OrderBy will be parsed in orm and so no direct sql injection
         # id is added to be sure that order is a unique sort key
-        return 'is_published desc,%s , id desc' % post.get('order', 'website_sequence desc')
+        order = post.get('order') or 'website_sequence ASC'
+        return 'is_published desc, %s, id desc' % order
 
-    def _get_search_domain(self, search, category, attrib_values):
-        domain = request.website.sale_product_domain()
+    def _get_search_domain(self, search, category, attrib_values, search_in_description=True):
+        domains = [request.website.sale_product_domain()]
         if search:
             for srch in search.split(" "):
-                domain += [
-                    '|', '|', '|', ('name', 'ilike', srch), ('description', 'ilike', srch),
-                    ('description_sale', 'ilike', srch), ('product_variant_ids.default_code', 'ilike', srch)]
+                subdomains = [
+                    [('name', 'ilike', srch)],
+                    [('product_variant_ids.default_code', 'ilike', srch)]
+                ]
+                if search_in_description:
+                    subdomains.append([('description', 'ilike', srch)])
+                    subdomains.append([('description_sale', 'ilike', srch)])
+                domains.append(expression.OR(subdomains))
 
         if category:
-            domain += [('public_categ_ids', 'child_of', int(category))]
+            domains.append([('public_categ_ids', 'child_of', int(category))])
 
         if attrib_values:
             attrib = None
@@ -180,13 +186,13 @@ class WebsiteSale(ProductConfiguratorController):
                 elif value[0] == attrib:
                     ids.append(value[1])
                 else:
-                    domain += [('attribute_line_ids.value_ids', 'in', ids)]
+                    domains.append([('attribute_line_ids.value_ids', 'in', ids)])
                     attrib = value[0]
                     ids = [value[1]]
             if attrib:
-                domain += [('attribute_line_ids.value_ids', 'in', ids)]
+                domains.append([('attribute_line_ids.value_ids', 'in', ids)])
 
-        return domain
+        return expression.AND(domains)
 
     @http.route([
         '''/shop''',
@@ -229,7 +235,7 @@ class WebsiteSale(ProductConfiguratorController):
         if attrib_list:
             post['attrib'] = attrib_list
 
-        Product = request.env['product.template']
+        Product = request.env['product.template'].with_context(bin_size=True)
 
         Category = request.env['product.public.category']
         search_categories = False
@@ -291,6 +297,9 @@ class WebsiteSale(ProductConfiguratorController):
         if not product.can_access_from_current_website():
             raise NotFound()
 
+        return request.render("website_sale.product", self._prepare_product_values(product, category, search, **kwargs))
+
+    def _prepare_product_values(self, product, category, search, **kwargs):
         add_qty = int(kwargs.get('add_qty', 1))
 
         product_context = dict(request.env.context, quantity=add_qty,
@@ -312,30 +321,24 @@ class WebsiteSale(ProductConfiguratorController):
         pricelist = request.website.get_current_pricelist()
 
         def compute_currency(price):
-            return product.currency_id._convert(price, pricelist.currency_id, product.company_id, fields.Date.today())
+            return product.currency_id._convert(price, pricelist.currency_id, product._get_current_company(pricelist=pricelist, website=request.website), fields.Date.today())
 
         if not product_context.get('pricelist'):
             product_context['pricelist'] = pricelist.id
             product = product.with_context(product_context)
 
-        values = {
+        return {
             'search': search,
             'category': category,
             'pricelist': pricelist,
             'attrib_values': attrib_values,
-            # compute_currency deprecated, get from product
-            'compute_currency': compute_currency,
             'attrib_set': attrib_set,
             'keep': keep,
             'categories': categs,
             'main_object': product,
             'product': product,
             'add_qty': add_qty,
-            'optional_product_ids': [p.with_context({'active_id': p.id}) for p in product.optional_product_ids],
-            # get_attribute_exclusions deprecated, use product method
-            'get_attribute_exclusions': self._get_attribute_exclusions,
         }
-        return request.render("website_sale.product", values)
 
     @http.route(['/shop/change_pricelist/<model("product.pricelist"):pl_id>'], type='http', auth="public", website=True, sitemap=False)
     def pricelist_change(self, pl_id, **post):
@@ -431,6 +434,10 @@ class WebsiteSale(ProductConfiguratorController):
             product_custom_attribute_values=product_custom_attribute_values,
             no_variant_attribute_values=no_variant_attribute_values
         )
+
+        if kw.get('express'):
+            return request.redirect("/shop/checkout?express=1")
+
         return request.redirect("/shop/cart")
 
     @http.route(['/shop/cart/update_json'], type='json', auth="public", methods=['POST'], website=True, csrf=False)
@@ -458,9 +465,6 @@ class WebsiteSale(ProductConfiguratorController):
 
         value['website_sale.cart_lines'] = request.env['ir.ui.view'].render_template("website_sale.cart_lines", {
             'website_sale_order': order,
-            # compute_currency deprecated (not used in view)
-            'compute_currency': lambda price: from_currency._convert(
-                price, to_currency, order.company_id, fields.Date.today()),
             'date': fields.Date.today(),
             'suggested_products': order._cart_accessories()
         })
@@ -567,7 +571,7 @@ class WebsiteSale(ProductConfiguratorController):
             except ValidationError:
                 error["vat"] = 'error'
 
-        if [err for err in error.items() if err == 'missing']:
+        if [err for err in error.values() if err == 'missing']:
             error_message.append(_('Some required fields are empty.'))
 
         return error, error_message
@@ -788,10 +792,6 @@ class WebsiteSale(ProductConfiguratorController):
     # ------------------------------------------------------
 
     def _get_shop_payment_values(self, order, **kwargs):
-        shipping_partner_id = False
-        if order:
-            shipping_partner_id = order.partner_shipping_id.id or order.partner_invoice_id.id
-
         values = dict(
             website_sale_order=order,
             errors=[],
@@ -816,6 +816,8 @@ class WebsiteSale(ProductConfiguratorController):
             [('partner_id', '=', order.partner_id.id),
             ('acquirer_id', 'in', acquirers.ids)])
 
+        if order:
+            values['acq_extra_fees'] = acquirers.get_acquirer_extra_fees(order.amount_total, order.currency_id, order.partner_id.country_id.id)
         return values
 
     @http.route(['/shop/payment'], type='http', auth="public", website=True)
@@ -1104,125 +1106,74 @@ class WebsiteSale(ProductConfiguratorController):
             phone_code=country.phone_code
         )
 
-    @http.route(['/shop/update_carrier'], type='json', auth='public', methods=['POST'], website=True, csrf=False)
-    def update_eshop_carrier(self, **post):
-        results = {}
-        if hasattr(self, '_update_website_sale_delivery'):
-            results.update(self._update_website_sale_delivery(**post))
+    # --------------------------------------------------------------------------
+    # Products Search Bar
+    # --------------------------------------------------------------------------
 
-        if hasattr(self, '_update_website_sale_coupon'):
-            results.update(self._update_website_sale_coupon(**post))
-
-        return results
-
-    def _format_amount(self, amount, currency):
-        fmt = "%.{0}f".format(currency.decimal_places)
-        lang = request.env['res.lang']._lang_get(request.env.context.get('lang') or 'en_US')
-        return lang.format(fmt, currency.round(amount), grouping=True, monetary=True)\
-            .replace(r' ', u'\N{NO-BREAK SPACE}').replace(r'-', u'-\N{ZERO WIDTH NO-BREAK SPACE}')
-
-    @http.route(['/shop/cart/update_option'], type='http', auth="public", methods=['POST'], website=True, multilang=False)
-    def cart_options_update_json(self, product_id, add_qty=1, set_qty=0, goto_shop=None, lang=None, **kw):
-        """This route is called when submitting the optional product modal."""
-        if lang:
-            request.website = request.website.with_context(lang=lang)
-
-        order = request.website.sale_get_order(force_create=True)
-        if order.state != 'draft':
-            request.session['sale_order_id'] = None
-            order = request.website.sale_get_order(force_create=True)
-        optional_product_ids = []
-        for k, v in kw.items():
-            if "optional-product-" in k and int(kw.get(k.replace("product", "add"))):
-                optional_product_ids.append(int(v))
-
-        custom_values = []
-        if kw.get('custom_values'):
-            custom_values = json.loads(kw.get('custom_values'))
-
-        value = {}
-        if add_qty or set_qty:
-            value = order._cart_update(
-                product_id=int(product_id),
-                add_qty=add_qty,
-                set_qty=set_qty,
-                optional_product_ids=optional_product_ids,
-                product_custom_attribute_values=self._get_product_custom_value(
-                    int(product_id),
-                    custom_values,
-                    'product_custom_attribute_values'
-                ),
-                no_variant_attribute_values=self._get_product_custom_value(
-                    int(product_id),
-                    custom_values,
-                    'no_variant_attribute_values'
-                )
-            )
-
-        # options have all time the same quantity
-        for option_id in optional_product_ids:
-            order._cart_update(
-                product_id=option_id,
-                set_qty=value.get('quantity'),
-                linked_line_id=value.get('line_id'),
-                product_custom_attribute_values=self._get_product_custom_value(
-                    option_id,
-                    custom_values,
-                    'product_custom_attribute_values'
-                ),
-                no_variant_attribute_values=self._get_product_custom_value(
-                    option_id,
-                    custom_values,
-                    'no_variant_attribute_values'
-                )
-            )
-
-        return str(order.cart_quantity)
-
-    def _get_product_custom_value(self, product_id, custom_values, field):
-        if custom_values:
-            for custom_value in custom_values:
-                if custom_value['product_id'] == product_id:
-                    return custom_value[field]
-
-        return None
-
-    # ------------------------------------------------------
-    # Product Configurator
-    # ------------------------------------------------------
-
-    @http.route(auth="public")
-    def create_product_variant(self, product_template_id, product_template_attribute_value_ids, **kwargs):
-        """Override because on the website the public user must access it."""
-        return super(WebsiteSale, self).create_product_variant(product_template_id, product_template_attribute_value_ids, **kwargs)
-
-    @http.route(['/product_configurator/show_optional_products_website'], type='json', auth="public", methods=['POST'], website=True)
-    def show_optional_products_website(self, product_id, variant_values, **kw):
-        """Special route to use website logic in get_combination_info override.
-        This route is called in JS by appending _website to the base route.
+    @http.route('/shop/products/autocomplete', type='json', auth='public', website=True)
+    def products_autocomplete(self, term, options={}, **kwargs):
         """
-        kw.pop('pricelist_id')
-        return self.show_optional_products(product_id, variant_values, request.website.get_current_pricelist(), **kw)
+        Returns list of products according to the term and product options
 
-    @http.route(['/product_configurator/optional_product_items_website'], type='json', auth="public", methods=['POST'], website=True)
-    def optional_product_items_website(self, product_id, **kw):
-        """Special route to use website logic in get_combination_info override.
-        This route is called in JS by appending _website to the base route.
+        Params:
+            term (str): search term written by the user
+            options (dict)
+                - 'limit' (int), default to 5: number of products to consider
+                - 'display_description' (bool), default to True
+                - 'display_price' (bool), default to True
+                - 'order' (str)
+                - 'max_nb_chars' (int): max number of characters for the
+                                        description if returned
+
+        Returns:
+            dict (or False if no result)
+                - 'products' (list): products (only their needed field values)
+                        note: the prices will be strings properly formatted and
+                        already containing the currency
+                - 'products_count' (int): the number of products in the database
+                        that matched the search query
         """
-        kw.pop('pricelist_id')
-        return self.optional_product_items(product_id, request.website.get_current_pricelist(), **kw)
+        ProductTemplate = request.env['product.template']
 
-    @http.route(['/product_configurator/get_combination_info_website'], type='json', auth="public", methods=['POST'], website=True)
-    def get_combination_info_website(self, product_template_id, product_id, combination, add_qty, **kw):
-        """Special route to use website logic in get_combination_info override.
-        This route is called in JS by appending _website to the base route.
-        """
-        kw.pop('pricelist_id')
-        res = self.get_combination_info(product_template_id, product_id, combination, add_qty, request.website.get_current_pricelist(), **kw)
+        display_description = options.get('display_description', True)
+        display_price = options.get('display_price', True)
+        order = self._get_search_order(options)
+        max_nb_chars = options.get('max_nb_chars', 999)
 
-        if request.env.ref('website_sale.shop_product_carousel', raise_if_not_found=False):  # IF for compatibility 12.0
-            res.update(carousel=request.env['ir.ui.view'].render_template('website_sale.shop_product_carousel', values={
-                'product': request.env['product.template'].browse(res['product_template_id']),
-                'product_variant': request.env['product.product'].browse(res['product_id']),
-            }))
+        category = options.get('category')
+        attrib_values = options.get('attrib_values')
+
+        domain = self._get_search_domain(term, category, attrib_values, display_description)
+        products = ProductTemplate.search(
+            domain,
+            limit=min(20, options.get('limit', 5)),
+            order=order
+        )
+
+        fields = ['id', 'name', 'website_url']
+        if display_description:
+            fields.append('description_sale')
+
+        res = {
+            'products': products.read(fields),
+            'products_count': ProductTemplate.search_count(domain),
+        }
+
+        if display_description:
+            for res_product in res['products']:
+                desc = res_product['description_sale']
+                if desc and len(desc) > max_nb_chars:
+                    res_product['description_sale'] = "%s..." % desc[:(max_nb_chars - 3)]
+
+        if display_price:
+            FieldMonetary = request.env['ir.qweb.field.monetary']
+            monetary_options = {
+                'display_currency': request.website.get_current_pricelist().currency_id,
+            }
+            for res_product, product in zip(res['products'], products):
+                combination_info = product._get_combination_info(only_template=True)
+                res_product.update(combination_info)
+                res_product['list_price'] = FieldMonetary.value_to_html(res_product['list_price'], monetary_options)
+                res_product['price'] = FieldMonetary.value_to_html(res_product['price'], monetary_options)
+
         return res

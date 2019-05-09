@@ -50,6 +50,7 @@ from .service.server import memory_info
 from .service import security, model as service_model
 from .tools.func import lazy_property
 from .tools import ustr, consteq, frozendict, pycompat, unique, date_utils
+from .tools.mimetypes import guess_mimetype
 
 from .modules.module import module_manifest, load_information_from_description_file
 
@@ -637,34 +638,14 @@ class JsonRequest(WebRequest):
     def __init__(self, *args):
         super(JsonRequest, self).__init__(*args)
 
-        self.jsonp_handler = None
         self.params = {}
 
         args = self.httprequest.args
-        jsonp = args.get('jsonp')
-        self.jsonp = jsonp
         request = None
         request_id = args.get('id')
 
-        if jsonp and self.httprequest.method == 'POST':
-            # jsonp 2 steps step1 POST: save call
-            def handler():
-                self.session['jsonp_request_%s' % (request_id,)] = self.httprequest.form['r']
-                self.session.modified = True
-                headers=[('Content-Type', 'text/plain; charset=utf-8')]
-                r = werkzeug.wrappers.Response(request_id, headers=headers)
-                return r
-            self.jsonp_handler = handler
-            return
-        elif jsonp and args.get('r'):
-            # jsonp method GET
-            request = args.get('r')
-        elif jsonp and request_id:
-            # jsonp 2 steps step2 GET: run and return result
-            request = self.session.pop('jsonp_request_%s' % (request_id,), '{}')
-        else:
-            # regular jsonrpc2
-            request = self.httprequest.get_data().decode(self.httprequest.charset)
+        # regular jsonrpc2
+        request = self.httprequest.get_data().decode(self.httprequest.charset)
 
         # Read POST content or POST Form Data named "request"
         try:
@@ -688,16 +669,8 @@ class JsonRequest(WebRequest):
         if result is not None:
             response['result'] = result
 
-        if self.jsonp:
-            # If we use jsonp, that's mean we are called from another host
-            # Some browser (IE and Safari) do no allow third party cookies
-            # We need then to manage http sessions manually.
-            response['session_id'] = self.session.sid
-            mime = 'application/javascript'
-            body = "%s(%s);" % (self.jsonp, json.dumps(response, default=date_utils.json_default))
-        else:
-            mime = 'application/json'
-            body = json.dumps(response, default=date_utils.json_default)
+        mime = 'application/json'
+        body = json.dumps(response, default=date_utils.json_default)
 
         return Response(
             body, status=error and error.pop('http_status', 200) or 200,
@@ -732,8 +705,6 @@ class JsonRequest(WebRequest):
             return self._json_response(error=error)
 
     def dispatch(self):
-        if self.jsonp_handler:
-            return self.jsonp_handler()
         try:
             rpc_request_flag = rpc_request.isEnabledFor(logging.DEBUG)
             rpc_response_flag = rpc_response.isEnabledFor(logging.DEBUG)
@@ -1516,8 +1487,6 @@ class Root(object):
 
     def get_request(self, httprequest):
         # deduce type of request
-        if httprequest.args.get('jsonp'):
-            return JsonRequest(httprequest)
         if httprequest.mimetype in ("application/json", "application/json-rpc"):
             return JsonRequest(httprequest)
         else:
@@ -1594,10 +1563,12 @@ class Root(object):
             httprequest = WerkzeugOdooRequest(environ)
             httprequest.app = self
             httprequest.parameter_storage_class = werkzeug.datastructures.ImmutableOrderedMultiDict
-            threading.current_thread().url = httprequest.url
-            threading.current_thread().query_count = 0
-            threading.current_thread().query_time = 0
-            threading.current_thread().perf_t0 = time.time()
+
+            current_thread = threading.current_thread()
+            current_thread.url = httprequest.url
+            current_thread.query_count = 0
+            current_thread.query_time = 0
+            current_thread.perf_t0 = time.time()
 
             explicit_session = self.setup_session(httprequest)
             self.setup_db(httprequest)
@@ -1799,15 +1770,39 @@ def content_disposition(filename):
 
     return "attachment; filename*=UTF-8''%s" % escaped
 
-#----------------------------------------------------------
-# RPC controller
-#----------------------------------------------------------
-class CommonController(Controller):
 
-    @route('/gen_session_id', type='json', auth="none")
-    def gen_session_id(self):
-        nsession = root.session_store.new()
-        return nsession.sid
+def set_safe_image_headers(headers, content):
+    """Return new headers based on `headers` but with `Content-Length` and
+    `Content-Type` set appropriately depending on the given `content` only if it
+    is safe to do."""
+    content_type = guess_mimetype(content)
+    safe_types = ['image/jpeg', 'image/png', 'image/gif', 'image/x-icon']
+    if content_type in safe_types:
+        headers = set_header_field(headers, 'Content-Type', content_type)
+    set_header_field(headers, 'Content-Length', len(content))
+    return headers
+
+
+def set_header_field(headers, name, value):
+    """ Return new headers based on `headers` but with `value` set for the
+    header field `name`.
+
+    :param headers: the existing headers
+    :type headers: list of tuples (name, value)
+
+    :param name: the header field name
+    :type name: string
+
+    :param value: the value to set for the `name` header
+    :type value: string
+
+    :return: the updated headers
+    :rtype: list of tuples (name, value)
+    """
+    dictheaders = dict(headers)
+    dictheaders[name] = value
+    return list(dictheaders.items())
+
 
 #  main wsgi handler
 root = Root()

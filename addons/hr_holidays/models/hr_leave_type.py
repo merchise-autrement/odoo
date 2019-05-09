@@ -10,6 +10,7 @@ from collections import defaultdict
 
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.osv import expression
 from odoo.tools.translate import _
 from odoo.tools.float_utils import float_round
 
@@ -64,11 +65,14 @@ class HolidaysType(models.Model):
     group_days_leave = fields.Float(
         compute='_compute_group_days_leave', string='Group Time Off')
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.user.company_id)
+    responsible_id = fields.Many2one('res.users', 'Responsible', domain=lambda self: [('groups_id', 'in', self.env.ref('hr_holidays.group_hr_holidays_user').id)],
+                                     help="This user will be responsible for approving this type of times off"
+                                     "This is only used when validation is 'hr' or 'both'",)
     validation_type = fields.Selection([
         ('no_validation', 'No Validation'),
-        ('hr', 'Payroll Officer'),
+        ('hr', 'Time Off Officer'),
         ('manager', 'Team Leader'),
-        ('both', 'Team Leader and Payroll Officer')], default='hr', string='Validation')
+        ('both', 'Team Leader and Time Off Officer')], default='hr', string='Validation')
     allocation_type = fields.Selection([
         ('no', 'No Allocation Needed'),
         ('fixed_allocation', 'Free Allocation Request'),
@@ -185,7 +189,7 @@ class HolidaysType(models.Model):
 
         return result
 
-    @api.multi
+    @api.model
     def get_days_all_request(self):
         employee_id = self._get_contextual_employee_id()
 
@@ -204,7 +208,7 @@ class HolidaysType(models.Model):
         elif 'default_employee_id' in self._context:
             employee_id = self._context['default_employee_id']
         else:
-            employee_id = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1).id
+            employee_id = self.env['hr.employee'].search([('user_id', '=', self.env.user.id), ('company_id', '=', self.env.user.company_id.id)], limit=1).id
         return employee_id
 
     @api.multi
@@ -224,9 +228,18 @@ class HolidaysType(models.Model):
 
     @api.multi
     def _compute_group_days_allocation(self):
+        domain = [
+            ('holiday_status_id', 'in', self.ids),
+            ('holiday_type', '!=', 'employee'),
+            ('state', '=', 'validate'),
+        ]
+        domain2 = [
+            '|',
+            ('date_from', '>=', fields.Datetime.to_string(datetime.datetime.now().replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0))),
+            ('date_from', '=', False),
+        ]
         grouped_res = self.env['hr.leave.allocation'].read_group(
-            [('holiday_status_id', 'in', self.ids), ('holiday_type', '!=', 'employee'), ('state', '=', 'validate'),
-             ('date_from', '>=', fields.Datetime.to_string(datetime.datetime.now().replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)))],
+            expression.AND([domain, domain2]),
             ['holiday_status_id', 'number_of_days'],
             ['holiday_status_id'],
         )
@@ -257,7 +270,10 @@ class HolidaysType(models.Model):
             if record.allocation_type != 'no':
                 name = "%(name)s (%(count)s)" % {
                     'name': name,
-                    'count': _('%g remaining out of %g') % (float_round(record.virtual_remaining_leaves, precision_digits=2) or 0.0, float_round(record.max_leaves, precision_digits=2) or 0.0)
+                    'count': _('%g remaining out of %g') % (
+                        float_round(record.virtual_remaining_leaves, precision_digits=2) or 0.0,
+                        float_round(record.max_leaves, precision_digits=2) or 0.0,
+                    )
                 }
             res.append((record.id, name))
         return res
@@ -287,11 +303,16 @@ class HolidaysType(models.Model):
     def action_see_days_allocated(self):
         self.ensure_one()
         action = self.env.ref('hr_holidays.hr_leave_allocation_action_all').read()[0]
-        action['domain'] = [
+        domain = [
+            ('holiday_status_id', 'in', self.ids),
             ('holiday_type', '!=', 'employee'),
-            ('holiday_status_id', '=', self.ids[0]),
-            ('date_from', '>=', fields.Datetime.to_string(datetime.datetime.now().replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)))
         ]
+        domain2 = [
+            '|',
+            ('date_from', '>=', fields.Datetime.to_string(datetime.datetime.now().replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0))),
+            ('date_from', '=', False),
+        ]
+        action['domain'] = expression.AND([domain, domain2])
         action['context'] = {
             'default_holiday_type': 'department',
             'default_holiday_status_id': self.ids[0],

@@ -2,12 +2,10 @@ odoo.define('website_sale.tour_shop_customize', function (require) {
     'use strict';
 
     var tour = require("web_tour.tour");
-    var base = require("web_editor.base");
 
     tour.register('shop_customize', {
         test: true,
         url: '/shop',
-        wait_for: base.ready()
     },
         [
             {
@@ -47,8 +45,8 @@ odoo.define('website_sale.tour_shop_customize', function (require) {
                         args: ['product.group_product_variant', false],
                         kwargs: {}
                     };
-                    ajax.jsonpRpc('/web/dataset/call_kw', 'call', get_group_payload).then(function(group_id) {
-                        ajax.jsonpRpc('/web/dataset/call_kw', 'call', {
+                    ajax.jsonRpc('/web/dataset/call_kw', 'call', get_group_payload).then(function(group_id) {
+                        ajax.jsonRpc('/web/dataset/call_kw', 'call', {
                             model: 'res.groups',
                             method: 'write',
                             args: [group_id, {'users': [[4, 1]]}],
@@ -70,6 +68,11 @@ odoo.define('website_sale.tour_shop_customize', function (require) {
                 run: function () {}, // it's a check
             },
             {
+                content: "check list view of variants is disabled initially",
+                trigger: 'body:not(:has(.js_product_change))',
+                run: function () {},
+            },
+            {
                 content: "click on 'List View of Variants'",
                 trigger: "#customize-menu a:contains(List View of Variants)",
             },
@@ -77,6 +80,11 @@ odoo.define('website_sale.tour_shop_customize', function (require) {
                 content: "check page loaded after list of variant customization enabled",
                 trigger: '.js_product_change',
                 run: function () {}, // it's a check
+            },
+            {
+                context: "check variant price",
+                trigger: '.custom-radio:contains("Aluminium") .badge:contains("+") .oe_currency_value:contains("50.4")',
+                run: function () {},
             },
             {
                 content: "check price is 750",

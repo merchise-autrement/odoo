@@ -14,6 +14,7 @@
                         <field name="website_url"/>
                         <field name="activity_ids"/>
                         <field name="activity_state"/>
+                        <progressbar field="kanban_state" colors='{"done": "success", "blocked": "danger"}'/>
                         <t t-name="kanban-box">
                             <div t-attf-class="oe_kanban_color_#{kanban_getcolor(record.color.raw_value)} oe_kanban_card oe_kanban_global_click">
                                 <div class="o_dropdown_kanban dropdown" groups="base.group_user">
@@ -187,7 +188,7 @@
         <record model="ir.actions.act_window" id="action_event_track">
             <field name="name">Event Tracks</field>
             <field name="res_model">event.track</field>
-            <field name="view_mode">kanban,tree,form,calendar,graph</field>
+            <field name="view_mode">kanban,tree,form,calendar,graph,activity</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                   Add a new track
@@ -201,7 +202,7 @@
             <field name="res_model">event.track</field>
             <field name="name">Event Tracks</field>
             <field name="view_type">form</field>
-            <field name="view_mode">kanban,tree,form,calendar,graph</field>
+            <field name="view_mode">kanban,tree,form,calendar,graph,activity</field>
             <field name="context">{'search_default_event_id': active_id, 'default_event_id': active_id, 'group_by': 'stage_id'}</field>
             <field name="help" type="html">
               <p class="o_view_nocontent_smiling_face">

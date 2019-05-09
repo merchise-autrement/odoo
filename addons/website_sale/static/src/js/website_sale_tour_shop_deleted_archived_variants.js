@@ -2,18 +2,20 @@ odoo.define('website_sale.tour_shop_deleted_archived_variants', function (requir
 'use strict';
 
 var tour = require('web_tour.tour');
-var base = require('web_editor.base');
 
 // This tour relies on a data created from the python test.
 tour.register('tour_shop_deleted_archived_variants', {
     test: true,
-    url: '/shop?search=Test Product',
-    wait_for: base.ready(),
+    url: '/shop?search=Test Product 2',
 },
 [
     {
-        content: "select Test Product",
-        trigger: '.oe_product_cart a:containsExact("Test Product")',
+        content: "check price on /shop (template price)",
+        trigger: '.oe_product_cart .oe_currency_value:contains("1.00")',
+    },
+    {
+        content: "select Test Product 2",
+        trigger: '.oe_product_cart a:containsExact("Test Product 2")',
     },
     {
         content: "check price (3rd variant)",

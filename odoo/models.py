@@ -519,7 +519,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         cls._inherits = {}
         cls._depends = {}
         cls._constraints = {}
-        cls._sql_constraints = []
+        cls._sql_constraints = {}
 
         for base in reversed(cls.__bases__):
             if not getattr(base, 'pool', None):
@@ -540,10 +540,12 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                 # cons may override a constraint with the same function name
                 cls._constraints[getattr(cons[0], '__name__', id(cons[0]))] = cons
 
-            cls._sql_constraints += base._sql_constraints
+            for cons in base._sql_constraints:
+                cls._sql_constraints[cons[0]] = cons
 
         cls._sequence = cls._sequence or (cls._table + '_id_seq')
         cls._constraints = list(cls._constraints.values())
+        cls._sql_constraints = list(cls._sql_constraints.values())
 
         # update _inherits_children of parent models
         for parent_name in cls._inherits:
@@ -1265,15 +1267,6 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         """
         element = E.field(name=self._rec_name_fallback())
         return E.tree(element, string=self._description)
-
-    @api.model
-    def _get_default_activity_view(self):
-        """ Generates an empty activity view.
-
-        :returns: a activity view as an lxml document
-        :rtype: etree._Element
-        """
-        return E.activity(string=self._description)
 
     @api.model
     def _get_default_pivot_view(self):
@@ -2732,10 +2725,53 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             invalid_fields = {name for name in fields if not valid(name)}
             if invalid_fields:
                 _logger.info('Access Denied by ACLs for operation: %s, uid: %s, model: %s, fields: %s',
-                    operation, self._uid, self._name, ', '.join(invalid_fields))
-                raise AccessError(_('The requested operation cannot be completed due to security restrictions. '
-                                    'Please contact your system administrator.\n\n(Document type: %s, Operation: %s)') % \
-                                  (self._description, operation))
+                             operation, self._uid, self._name, ', '.join(invalid_fields))
+
+                description = self.env['ir.model']._get(self._name).name
+                if not self.env.user.has_group('base.group_no_one'):
+                    raise AccessError(
+                        _('The requested operation cannot be completed due to security restrictions. '
+                          'Please contact your system administrator.\n\n(Document type: %(document_kind)s (%(document_model)s), Operation: %(operation)s)') % {
+                        'document_kind': description,
+                        'document_model': self._name,
+                        'operation': operation,
+                    })
+
+                def format_groups(field):
+                    anyof = self.env['res.groups']
+                    noneof = self.env['res.groups']
+                    for g in field.groups.split(','):
+                        if g.startswith('!'):
+                            noneof |= self.env.ref(g[1:])
+                        else:
+                            anyof |= self.env.ref(g)
+                    strs = []
+                    if anyof:
+                        strs.append(_("allowed for groups %s") % ', '.join(
+                            anyof.sorted(lambda g: g.id)
+                                 .mapped(lambda g: repr(g.display_name))
+                        ))
+                    if noneof:
+                        strs.append(_("forbidden for groups %s") % ', '.join(
+                            noneof.sorted(lambda g: g.id)
+                                  .mapped(lambda g: repr(g.display_name))
+                        ))
+                    return '; '.join(strs)
+
+                raise AccessError(_("""The requested operation can not be completed due to security restrictions.
+
+Document type: %(document_kind)s (%(document_model)s)
+Operation: %(operation)s
+Fields:
+%(fields_list)s""") % {
+                    'document_model': self._name,
+                    'document_kind': description or self._name,
+                    'operation': operation,
+                    'fields_list': '\n'.join(
+                        '- %s (%s)' % (f, format_groups(self._fields[f]))
+                        for f in sorted(invalid_fields)
+                    )
+                })
 
         return fields
 
@@ -2776,19 +2812,19 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
 
         # retrieve results from records; this takes values from the cache and
         # computes remaining fields
-        data = {record: {'id': record.id} for record in self}
-        missing = set()
+        data = [(record, {'id': record._ids[0]}) for record in self]
         use_name_get = (load == '_classic_read')
         for name in (stored + inherited + computed):
             convert = self._fields[name].convert_to_read
-            # read every field with prefetching limited to self; this avoids
-            # computing fields on a larger recordset than self
-            for record in self.with_prefetch():
+            for record, vals in data:
+                # missing records have their vals empty
+                if not vals:
+                    continue
                 try:
-                    data[record][name] = convert(record[name], record, use_name_get)
+                    vals[name] = convert(record[name], record, use_name_get)
                 except MissingError:
-                    missing.add(record)
-        result = [data[record] for record in self if record not in missing]
+                    vals.clear()
+        result = [vals for record, vals in data if vals]
 
         return result
 
@@ -2827,7 +2863,6 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
 
         # fetch records with read()
         assert self in records and field in fs
-        records = records.with_prefetch(self._prefetch)
         result = []
         try:
             result = records.read([f.name for f in fs], load='_classic_write')
@@ -2838,7 +2873,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         # check the cache, and update it if necessary
         if not self.env.cache.contains_value(self, field):
             for values in result:
-                record = self.browse(values.pop('id'), self._prefetch)
+                record = self.browse(values.pop('id'))
                 record._cache.update(record._convert_to_cache(values, validate=False))
             if not self.env.cache.contains(self, field):
                 exc = AccessError("No value found for %s.%s" % (self, field.name))
@@ -2883,36 +2918,46 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                 res = 'pg_size_pretty(length(%s)::bigint)' % res
             return '%s as "%s"' % (res, col)
 
+        # selected fields are: 'id' followed by fields_pre
         qual_names = [qualify(name) for name in [self._fields['id']] + fields_pre]
 
         # determine the actual query to execute
         from_clause, where_clause, params = query.get_sql()
         query_str = "SELECT %s FROM %s WHERE %s" % (",".join(qual_names), from_clause, where_clause)
 
-        result = []
+        # fetch one list of record values per field
+        field_values_list = [[] for name in qual_names]
         param_pos = params.index(param_ids)
         for sub_ids in cr.split_for_in_conditions(self.ids):
             params[param_pos] = tuple(sub_ids)
             cr.execute(query_str, params)
-            result.extend(cr.dictfetchall())
+            for row in cr.fetchall():
+                for values, val in zip(field_values_list, row):
+                    values.append(val)
 
-        ids = [vals['id'] for vals in result]
+        ids = field_values_list.pop(0)
         fetched = self.browse(ids)
 
         if ids:
             # translate the fields if necessary
             if context.get('lang'):
-                for field in fields_pre:
+                for field, values in zip(fields_pre, field_values_list):
                     if not field.inherited and callable(field.translate):
                         name = field.name
                         translate = field.get_trans_func(fetched)
-                        for vals in result:
-                            vals[name] = translate(vals['id'], vals[name])
+                        for index in range(len(ids)):
+                            values[index] = translate(ids[index], values[index])
 
             # store result in cache
-            for vals in result:
-                record = self.browse(vals.pop('id'), self._prefetch)
-                record._cache.update(record._convert_to_cache(vals, validate=False))
+            target = self.browse()
+            for field, values in zip(fields_pre, field_values_list):
+                convert = field.convert_to_cache
+                # Note that the target record passed to convert below is empty.
+                # This does not harm in practice, as it is only used in Monetary
+                # fields for rounding the value. As the value comes straight
+                # from the database, it is expected to be rounded already.
+                values = [convert(value, target, validate=False) for value in values]
+                self.env.cache.update(fetched, field, values)
 
             # determine the fields that must be processed now;
             # for the sake of simplicity, we ignore inherited fields
@@ -2939,14 +2984,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             # mark non-existing records in missing
             forbidden = missing.exists()
             if forbidden:
-                _logger.info(
-                    _('The requested operation cannot be completed due to record rules: Document type: %s, Operation: %s, Records: %s, User: %s') % \
-                    (self._name, 'read', ','.join([str(r.id) for r in self][:6]), self._uid))
-                # store an access error exception in existing records
-                exc = AccessError(
-                    _('The requested operation cannot be completed due to security restrictions. Please contact your system administrator.\n\n(Document type: %s, Operation: %s)') % \
-                    (self._name, 'read')
-                )
+                exc = self.env['ir.rule']._make_access_error('read', forbidden)
                 self.env.cache.set_failed(forbidden, self._fields.values(), exc)
 
     @api.multi
@@ -3033,10 +3071,8 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             # the invalid records are (partially) hidden by access rules
             if self.is_transient():
                 raise AccessError(_('For this kind of document, you may only access records you created yourself.\n\n(Document type: %s)') % (self._description,))
-            else:
-                _logger.info('Access Denied by record rules for operation: %s on record ids: %r, uid: %s, model: %s', operation, forbidden.ids, self._uid, self._name)
-                raise AccessError(_('The requested operation cannot be completed due to security restrictions. Please contact your system administrator.\n\n(Document type: %s, Operation: %s)') % \
-                                  (self._description, operation))
+
+            raise self.env['ir.rule']._make_access_error(operation, forbidden)
 
         # If we get here, the invalid records are not in the database.
         if operation in ('read', 'unlink'):
@@ -3050,6 +3086,9 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
     def _filter_access_rules(self, operation):
         """ Return the subset of ``self`` for which ``operation`` is allowed. """
         if self._uid == SUPERUSER_ID:
+            return self
+
+        if not self._ids:
             return self
 
         if self.is_transient():
@@ -3110,6 +3149,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             Data = self.env['ir.model.data'].sudo().with_context({})
             Defaults = self.env['ir.default'].sudo()
             Attachment = self.env['ir.attachment']
+            Translation = self.env['ir.translation'].sudo()
 
             for sub_ids in cr.split_for_in_conditions(self.ids):
                 query = "DELETE FROM %s WHERE id IN %%s" % self._table
@@ -3138,7 +3178,16 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                 cr.execute(query, (self._name, sub_ids))
                 attachments = Attachment.browse([row[0] for row in cr.fetchall()])
                 if attachments:
-                    attachments.unlink()
+                    attachments.sudo().unlink()
+
+                if any(field.translate for field in self._fields.values()):
+                    # For the same reason, remove the relevant records in ir_translation
+                    translations = Translation.search([
+                        ('type', 'in', ['model', 'model_terms']),
+                        ('name', '=like', self._name+',%'),
+                        ('res_id', 'in', sub_ids)])
+                    if translations:
+                        translations.unlink()
 
             # invalidate the *whole* cache, since the orm does not handle all
             # changes made in the database, like cascading delete!
@@ -3274,6 +3323,9 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         with self.env.protecting(protected_fields, self):
             # write stored fields with (low-level) method _write
             if store_vals or inverse_vals or inherited_vals:
+                # if log_access is enabled, this updates 'write_date' and
+                # 'write_uid' and check access rules, even when old_vals is
+                # empty
                 self._write(store_vals)
 
             # update parent records (after possibly updating parent fields)
@@ -3287,9 +3339,21 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                     cr.execute(query, [sub_ids])
                     parent_ids.update(row[0] for row in cr.fetchall())
 
-                self.env[model_name].browse(parent_ids).write(parent_vals)
+                try:
+                    self.env[model_name].browse(parent_ids).write(parent_vals)
+                except AccessError as e:
+                    description = self.env['ir.model']._get(self._name).name
+                    raise AccessError(
+                        _("%(previous_message)s\n\nImplicitly accessed through '%(document_kind)s' (%(document_model)s).") % {
+                            'previous_message': e.args[0],
+                            'document_kind': description,
+                            'document_model': self._name,
+                        }
+                    )
 
             if inverse_vals:
+                self.check_field_access_rights('write', list(inverse_vals))
+
                 self.modified(set(inverse_vals) - set(store_vals))
 
                 # group fields by inverse method (to call it once), and order
@@ -3736,6 +3800,12 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         modified_ids = {row[0] for row in cr.fetchall()}
         self.browse(modified_ids).modified(['parent_path'])
 
+    def _load_records_write(self, values):
+        self.write(values)
+
+    def _load_records_create(self, values):
+        return self.create(values)
+
     def _load_records(self, data_list, update=False):
         """ Create or update records of this model, and assign XMLIDs.
 
@@ -3793,7 +3863,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
 
         # update existing records
         for data in to_update:
-            data['record'].write(data['values'])
+            data['record']._load_records_write(data['values'])
 
         # determine existing parents for new records
         for parent_model, parent_field in self._inherits.items():
@@ -3820,7 +3890,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                     _logger.warning("Creating record %s in module %s.", data['xml_id'], module)
 
         # create records
-        records = self.create([data['values'] for data in to_create])
+        records = self._load_records_create([data['values'] for data in to_create])
         for data, record in zip(to_create, records):
             data['record'] = record
 
@@ -4227,11 +4297,12 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                     if vals['lang'] == old.env.lang and field.translate is True:
                         # force a source if the new_val was not changed by copy override
                         if new_val == old[name]:
-                            vals['source'] = old_wo_lang[name]
+                            new_wo_lang[name] = old_wo_lang[name]
+                            vals['src'] = old_wo_lang[name]
                         # the value should be the new value (given by copy())
                         vals['value'] = new_val
                     vals_list.append(vals)
-                Translation.create(vals_list)
+                Translation._upsert_translations(vals_list)
 
     @api.multi
     @api.returns('self', lambda value: value.id)
@@ -4349,7 +4420,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
     def _get_external_ids(self):
         """Retrieve the External ID(s) of any database record.
 
-        **Synopsis**: ``_get_xml_ids() -> { 'id': ['module.xml_id'] }``
+        **Synopsis**: ``_get_external_ids() -> { 'id': ['module.external_id'] }``
 
         :return: map of ids to the list of their fully qualified External IDs
                  in the form ``module.key``, or an empty list when there's no External
@@ -4614,33 +4685,34 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
     #
 
     @classmethod
-    def _browse(cls, ids, env, prefetch=None):
+    def _browse(cls, env, ids, prefetch_ids):
         """ Create a recordset instance.
 
-        :param ids: a tuple of record ids
         :param env: an environment
-        :param prefetch: an optional prefetch object
+        :param ids: a tuple of record ids
+        :param prefetch_ids: a collection of record ids (for prefetching)
         """
         records = object.__new__(cls)
         records.env = env
         records._ids = ids
-        if prefetch is None:
-            prefetch = defaultdict(set)         # {model_name: set(ids)}
-        records._prefetch = prefetch
-        prefetch[cls._name].update(ids)
+        records._prefetch_ids = prefetch_ids
         return records
 
-    def browse(self, arg=None, prefetch=None):
+    def browse(self, ids=None):
         """ browse([ids]) -> records
 
         Returns a recordset for the ids provided as parameter in the current
         environment.
 
-        Can take no ids, a single id or a sequence of ids.
+        Can take no ids, a single id or an iterable of ids.
         """
-        ids = _normalize_ids(arg)
-        #assert all(isinstance(id, IdType) for id in ids), "Browsing invalid ids: %s" % ids
-        return self._browse(ids, self.env, prefetch)
+        if not ids:
+            ids = ()
+        elif ids.__class__ in IdType:
+            ids = (ids,)
+        else:
+            ids = tuple(ids)
+        return self._browse(self.env, ids, ids)
 
     #
     # Internal properties, for manipulating the instance's implementation
@@ -4666,9 +4738,13 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         """ Verifies that the current recorset holds a single record. Raises
         an exception otherwise.
         """
-        if len(self) == 1:
+        try:
+            # unpack to ensure there is only one value is faster than len when true and
+            # has a significant impact as this check is largely called
+            _id, = self._ids
             return self
-        raise ValueError("Expected singleton: %s" % self)
+        except ValueError:
+            raise ValueError("Expected singleton: %s" % self)
 
     def with_env(self, env):
         """ Returns a new version of this recordset attached to the provided
@@ -4682,7 +4758,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
 
         :type env: :class:`~odoo.api.Environment`
         """
-        return self._browse(self._ids, env, self._prefetch)
+        return self._browse(env, self._ids, self._prefetch_ids)
 
     def sudo(self, user=SUPERUSER_ID):
         """ sudo([user=SUPERUSER])
@@ -4738,13 +4814,15 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         context = dict(args[0] if args else self._context, **kwargs)
         return self.with_env(self.env(context=context))
 
-    def with_prefetch(self, prefetch=None):
-        """ with_prefetch([prefetch]) -> records
+    def with_prefetch(self, prefetch_ids=None):
+        """ with_prefetch([prefetch_ids]) -> records
 
-        Return a new version of this recordset that uses the given prefetch
-        object, or a new prefetch object if not given.
+        Return a new version of this recordset that uses the given prefetch ids,
+        or ``self``'s ids if not given.
         """
-        return self._browse(self._ids, self.env, prefetch)
+        if prefetch_ids is None:
+            prefetch_ids = self._ids
+        return self._browse(self.env, self._ids, prefetch_ids)
 
     def _convert_to_cache(self, values, update=False, validate=True):
         """ Convert the ``values`` dictionary into cached values.
@@ -4754,7 +4832,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             :param validate: whether values must be checked
         """
         fields = self._fields
-        target = self if update else self.browse([], self._prefetch)
+        target = self if update else self.browse()
         return {
             name: fields[name].convert_to_cache(value, target, validate=validate)
             for name, value in values.items()
@@ -4934,7 +5012,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
     def __iter__(self):
         """ Return an iterator over ``self``. """
         for id in self._ids:
-            yield self._browse((id,), self.env, self._prefetch)
+            yield self._browse(self.env, (id,), self._prefetch_ids)
 
     def __contains__(self, item):
         """ Test whether ``item`` (record or field name) is an element of ``self``.
@@ -5066,9 +5144,9 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             # important: one must call the field's getter
             return self._fields[key].__get__(self, type(self))
         elif isinstance(key, slice):
-            return self._browse(self._ids[key], self.env)
+            return self.browse(self._ids[key])
         else:
-            return self._browse((self._ids[key],), self.env)
+            return self.browse((self._ids[key],))
 
     def __setitem__(self, key, value):
         """ Assign the field ``key`` to ``value`` in record ``self``. """
@@ -5090,7 +5168,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             (:class:`Field` instance), including ``self``.
             Return at most ``limit`` records.
         """
-        recs = self.browse(self._prefetch[self._name])
+        recs = self.browse(self._prefetch_ids)
         ids = [self.id]
         for record_id in self.env.cache.get_missing_ids(recs - self, field):
             if not record_id:
@@ -5629,33 +5707,6 @@ PGERROR_TO_OE = defaultdict(
     '23502': convert_pgerror_not_null,
     '23505': convert_pgerror_unique,
 })
-
-def _normalize_ids(arg, atoms=set(IdType)):
-    """ Normalizes the ids argument for ``browse`` (v7 and v8) to a tuple.
-
-    Various implementations were tested on the corpus of all browse() calls
-    performed during a full crawler run (after having installed all website_*
-    modules) and this one was the most efficient overall.
-
-    A possible bit of correctness was sacrificed by not doing any test on
-    Iterable and just assuming that any non-atomic type was an iterable of
-    some kind.
-
-    :rtype: tuple
-    """
-    # much of the corpus is falsy objects (empty list, tuple or set, None)
-    if not arg:
-        return ()
-
-    # `type in set` is significantly faster (because more restrictive) than
-    # isinstance(arg, set) or issubclass(type, set); and for new-style classes
-    # obj.__class__ is equivalent to but faster than type(obj). Not relevant
-    # (and looks much worse) in most cases, but over millions of calls it
-    # does have a very minor effect.
-    if arg.__class__ in atoms:
-        return arg,
-
-    return tuple(arg)
 
 
 def lazy_name_get(self):

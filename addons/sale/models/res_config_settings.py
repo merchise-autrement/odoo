@@ -7,11 +7,6 @@ from odoo import api, fields, models
 class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
-    sale_note = fields.Text(related='company_id.sale_note', string="Terms & Conditions", readonly=False)
-    use_sale_note = fields.Boolean(
-        string='Default Terms & Conditions',
-        oldname='default_use_sale_note',
-        config_parameter='sale.use_sale_note')
     group_discount_per_so_line = fields.Boolean("Discounts", implied_group='sale.group_discount_per_so_line')
     module_sale_margin = fields.Boolean("Margins")
     quotation_validity_days = fields.Integer(related='company_id.quotation_validity_days', string="Default Quotation Validity (Days)", readonly=False)
@@ -76,9 +71,15 @@ class ResConfigSettings(models.TransientModel):
                                   domain="[('model', '=', 'account.invoice')]",
                                   config_parameter='sale.default_email_template',
                                   default=lambda self: self.env.ref('account.email_template_edi_invoice', False))
+    confirmation_template_id = fields.Many2one('mail.template', string='Confirmation Email',
+                                               domain="[('model', '=', 'sale.order')]",
+                                               config_parameter='sale.default_confirmation_template',
+                                               help="Email sent to the customer once the order is paid.")
 
     def set_values(self):
         super(ResConfigSettings, self).set_values()
+        if self.default_invoice_policy != 'order':
+            self.env['ir.config_parameter'].set_param('sale.automatic_invoice', False)
         if not self.group_discount_per_so_line:
             pl = self.env['product.pricelist'].search([('discount_policy', '=', 'without_discount')])
             pl.write({'discount_policy': 'with_discount'})

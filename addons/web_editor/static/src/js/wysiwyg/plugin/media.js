@@ -54,7 +54,14 @@ var MediaPlugin = AbstractPlugin.extend({
         this.context.invoke('editor.saveRange');
         var media = this.context.invoke('editor.restoreTarget');
 
-        var mediaDialog = new weWidgets.MediaDialog(this.options.parent, {},
+        var $mediaParent = $(media).parent();
+        if ($mediaParent.hasClass('media_iframe_video')) {
+            media = $mediaParent[0];
+            $mediaParent = $mediaParent.parent();
+        }
+        var mediaDialog = new weWidgets.MediaDialog(this.options.parent, {
+            onlyImages: $mediaParent.data('oeField') === 'image' || $mediaParent.data('oeType') === 'image',
+        },
             $(media).clone()[0]
         );
 
@@ -86,10 +93,13 @@ var MediaPlugin = AbstractPlugin.extend({
      * @param {Node} target
      */
     update: function (target) {
-        if (!target) {
+        if (!target || !dom.isMedia(target)) {
             return;
         }
         if (!this.options.displayPopover(target)) {
+            if (dom.isImg(target)) {
+                this.context.invoke('HandlePlugin.update', target);
+            }
             return;
         }
 
@@ -148,6 +158,9 @@ var MediaPlugin = AbstractPlugin.extend({
      * @param {Object} data contains the media to insert
      */
     insertMedia: function (previous, data) {
+        if (!data.media) {
+            return;
+        }
         var newMedia = data.media;
         this._wrapCommand(function () {
             this.$editable.focus();
@@ -162,8 +175,10 @@ var MediaPlugin = AbstractPlugin.extend({
                 this.context.invoke('editor.clearTarget');
                 var start = previous.parentNode;
                 rng = this.context.invoke('editor.setRange', start, _.indexOf(start.childNodes, previous));
-                if (previous.tagName === "IMG" && $(previous).hasClass('img-fluid')) {
-                    $(newMedia).addClass('img img-fluid mx-auto');
+                if (previous.tagName === newMedia.tagName) {
+                    // Eg: replace an image with an image -> reapply classes removed by `clear`
+                    var reFaIcons = /fa-(?!spin(\s|$))\S+/g; // do not keep fontawesome icons but keep fa-spin
+                    $(newMedia).addClass(previous.className.replace(reFaIcons, ''));
                 }
 
                 if (dom.isVideo(previous) || dom.isVideo(newMedia)) {
@@ -202,11 +217,13 @@ var MediaPlugin = AbstractPlugin.extend({
                             point.node.insertBefore(newMedia, node || null);
                         }
                     }
-                    if (!newMedia.previousSibling) {
-                        $(newMedia).before(this.document.createTextNode('\u200B'), newMedia);
-                    }
-                    if (!newMedia.nextSibling) {
-                        $(newMedia).after(this.document.createTextNode('\u200B'), newMedia);
+                    if (!this._isFakeNotEditable(newMedia)) {
+                        if (!newMedia.previousSibling) {
+                            $(newMedia).before(this.document.createTextNode('\u200B'), newMedia);
+                        }
+                        if (!newMedia.nextSibling) {
+                            $(newMedia).after(this.document.createTextNode('\u200B'), newMedia);
+                        }
                     }
                 } else {
                     var next = this.document.createTextNode(point.node.textContent.slice(point.offset));
@@ -214,11 +231,13 @@ var MediaPlugin = AbstractPlugin.extend({
 
                     $(point.node).after(next).after(newMedia);
                     point.node.parentNode.normalize();
-                    if (!newMedia.previousSibling) {
-                        $(newMedia).before(this.document.createTextNode('\u200B'), newMedia);
-                    }
-                    if (!newMedia.nextSibling) {
-                        $(newMedia).after(this.document.createTextNode('\u200B'), newMedia);
+                    if (!this._isFakeNotEditable(newMedia)) {
+                        if (!newMedia.previousSibling) {
+                            $(newMedia).before(this.document.createTextNode('\u200B'), newMedia);
+                        }
+                        if (!newMedia.nextSibling) {
+                            $(newMedia).after(this.document.createTextNode('\u200B'), newMedia);
+                        }
                     }
                     rng = this.context.invoke('editor.setRange', newMedia.nextSibling || newMedia, 0);
                     rng.normalize().select();
@@ -302,6 +321,18 @@ var MediaPlugin = AbstractPlugin.extend({
             };
         });
         this._createDropdownButton('padding', this.options.icons.padding, this.lang.image.padding, values);
+    },
+    /**
+     * Return true if the node is a fake not-editable.
+     *
+     * @param {Node} node
+     * @returns {Boolean}
+     */
+    _isFakeNotEditable: function (node) {
+        var contentEditableAncestor = dom.ancestor(node, function (n) {
+            return !!n.contentEditable && n.contentEditable !== 'inherit';
+        });
+        return !!contentEditableAncestor && contentEditableAncestor.contentEditable === 'false';
     },
     /**
      * Select the target media based on the
@@ -431,7 +462,7 @@ var MediaPlugin = AbstractPlugin.extend({
             this.showImageDialog();
         }
     },
-    /** 
+    /**
      * @private
      **/
     _onKeydown: function () {
@@ -789,7 +820,7 @@ var ImagePlugin = AbstractMediaPlugin.extend({
                 });
             }
         }).get();
-        return $.when.apply($, defs);
+        return Promise.all(defs);
     },
     /**
      * Add the image popovers' buttons:
@@ -1184,6 +1215,7 @@ var HandlePlugin = Plugins.handle.extend({
             w: $target.outerWidth(false),
             h: $target.outerHeight(false)
         };
+
         $selection.css({
             display: 'block',
             left: pos.left - posContainer.left,
@@ -1193,12 +1225,23 @@ var HandlePlugin = Plugins.handle.extend({
         }).data('target', $target); // save current target element.
 
         var src = $target.attr('src');
-        var sizingText = imageSize.w + 'x' + imageSize.h;
+        var displayInfo = imageSize.w >= 170 || (imageSize.w >= 120 && imageSize.h >= 58) || (imageSize.w >= 80 && imageSize.h >= 76);
+
+        var sizingText = '';
+        if (displayInfo) {
+            sizingText = imageSize.w + 'x' + imageSize.h;
+            sizingText += ' (' + this.lang.image.original + ': ';
+        } else if (src && imageSize.w >= 80 && imageSize.h >= 32) {
+            displayInfo = true;
+            sizingText = '(';
+        }
+
         if (src) {
             var origImageObj = new Image();
             origImageObj.src = src;
-            sizingText += ' (' + this.lang.image.original + ': ' + origImageObj.width + 'x' + origImageObj.height + ')';
+            sizingText += origImageObj.width + 'x' + origImageObj.height + ')';
         }
+
         $selection.find('.note-control-selection-info').text(sizingText);
         this.context.invoke('editor.saveTarget', target);
 

@@ -33,12 +33,12 @@ class HrExpense(models.Model):
     def _get_employee_id_domain(self):
 
         res= [('id', '=', 0)] # Nothing accepted by domain, by default
-        if self.user_has_groups('hr_expense.group_hr_expense_manager') or self.user_has_groups('account.group_account_user'):
+        if self.user_has_groups('hr_expense.group_hr_expense_user') or self.user_has_groups('account.group_account_user'):
             res = [] # Then, domain accepts everything
-        elif self.user_has_groups('hr_expense.group_hr_expense_user') and self.env.user.employee_ids:
+        elif self.user_has_groups('hr_expense.group_hr_expense_team_approver') and self.env.user.employee_ids:
             employee = self.env.user.employee_ids[0]
-            res = ['|', '|', ('department_id.manager_id.id', '=', employee.id),
-                   ('parent_id.id', '=', employee.id), ('expense_manager_id.id', '=', employee.id)]
+            res = ['|', '|', '|', ('department_id.manager_id.id', '=', employee.id),
+                   ('parent_id.id', '=', employee.id), ('expense_manager_id.id', '=', employee.user_id.id), ('id', '=', employee.id)]
         elif self.env.user.employee_ids:
             employee = self.env.user.employee_ids[0]
             res = [('id', '=', employee.id)]
@@ -276,7 +276,7 @@ class HrExpense(models.Model):
             account_date = expense.sheet_id.accounting_date or expense.date or fields.Date.context_today(expense)
 
             company_currency = expense.company_id.currency_id
-            different_currency = expense.currency_id != company_currency
+            different_currency = expense.currency_id and expense.currency_id != company_currency
 
             move_line_values = []
             taxes = expense.tax_ids.with_context(round=True).compute_all(expense.unit_amount, expense.currency_id, expense.quantity, expense.product_id)
@@ -285,13 +285,17 @@ class HrExpense(models.Model):
             partner_id = expense.employee_id.address_home_id.commercial_partner_id.id
 
             # source move line
-            amount_currency = expense.total_amount if different_currency else False
+            amount = taxes['total_excluded']
+            amount_currency = False
+            if different_currency:
+                amount = expense.currency_id._convert(amount, company_currency, expense.company_id, account_date)
+                amount_currency = taxes['total_excluded']
             move_line_src = {
                 'name': move_line_name,
                 'quantity': expense.quantity or 1,
-                'debit': taxes['total_excluded'] > 0 and taxes['total_excluded'],
-                'credit': taxes['total_excluded'] < 0 and -taxes['total_excluded'],
-                'amount_currency': taxes['total_excluded'] > 0 and abs(amount_currency) or -abs(amount_currency),
+                'debit': amount if amount > 0 else 0,
+                'credit': -amount if amount < 0 else 0,
+                'amount_currency': amount_currency if different_currency else 0.0,
                 'account_id': account_src.id,
                 'product_id': expense.product_id.id,
                 'product_uom_id': expense.product_uom_id.id,
@@ -308,23 +312,25 @@ class HrExpense(models.Model):
 
             # taxes move lines
             for tax in taxes['taxes']:
-                price = expense.currency_id._convert(
-                    tax['amount'], company_currency, expense.company_id, account_date)
-                amount_currency = price if different_currency else False
+                amount = tax['amount']
+                amount_currency = False
+                if different_currency:
+                    amount = expense.currency_id._convert(amount, company_currency, expense.company_id, account_date)
+                    amount_currency = tax['amount']
                 move_line_tax_values = {
                     'name': tax['name'],
                     'quantity': 1,
-                    'debit': price > 0 and price,
-                    'credit': price < 0 and -price,
-                    'amount_currency': price > 0 and abs(amount_currency) or -abs(amount_currency),
+                    'debit': amount if amount > 0 else 0,
+                    'credit': -amount if amount < 0 else 0,
+                    'amount_currency': amount_currency if different_currency else 0.0,
                     'account_id': tax['account_id'] or move_line_src['account_id'],
                     'tax_line_id': tax['id'],
                     'expense_id': expense.id,
                     'partner_id': partner_id,
-                    'currency_id': expense.currency_id if different_currency else False,
+                    'currency_id': expense.currency_id.id if different_currency else False,
                 }
-                total_amount -= price
-                total_amount_currency -= move_line_tax_values['amount_currency'] or price
+                total_amount -= amount
+                total_amount_currency -= move_line_tax_values['amount_currency'] or amount
                 move_line_values.append(move_line_tax_values)
 
             # destination move line
@@ -334,7 +340,7 @@ class HrExpense(models.Model):
                 'credit': total_amount < 0 and -total_amount,
                 'account_id': account_dst,
                 'date_maturity': account_date,
-                'amount_currency': total_amount > 0 and abs(amount_currency) or -abs(amount_currency),
+                'amount_currency': total_amount_currency if different_currency else 0.0,
                 'currency_id': expense.currency_id.id if different_currency else False,
                 'expense_id': expense.id,
                 'partner_id': partner_id,
@@ -586,7 +592,7 @@ class HrExpenseSheet(models.Model):
     ], string='Status', index=True, readonly=True, tracking=True, copy=False, default='draft', required=True, help='Expense Report State')
     employee_id = fields.Many2one('hr.employee', string="Employee", required=True, readonly=True, states={'draft': [('readonly', False)]}, default=lambda self: self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1))
     address_id = fields.Many2one('res.partner', string="Employee Home Address")
-    payment_mode = fields.Selection([("own_account", "Employee (to reimburse)"), ("company_account", "Company")], related='expense_line_ids.payment_mode', default='own_account', readonly=True, string="Paid By")
+    payment_mode = fields.Selection(related='expense_line_ids.payment_mode', default='own_account', readonly=True, string="Paid By")
     user_id = fields.Many2one('res.users', 'Manager', readonly=True, copy=False, states={'draft': [('readonly', False)]}, tracking=True, oldname='responsible_id')
     total_amount = fields.Monetary('Total Amount', currency_field='currency_id', compute='_compute_amount', store=True, digits=dp.get_precision('Account'))
     company_id = fields.Many2one('res.company', string='Company', readonly=True, states={'draft': [('readonly', False)]}, default=lambda self: self.env.user.company_id)
@@ -617,7 +623,7 @@ class HrExpenseSheet(models.Model):
 
     @api.multi
     def _compute_can_reset(self):
-        is_expense_user = self.user_has_groups('hr_expense.group_hr_expense_user')
+        is_expense_user = self.user_has_groups('hr_expense.group_hr_expense_team_approver')
         for sheet in self:
             sheet.can_reset = is_expense_user if is_expense_user else sheet.employee_id.user_id == self.env.user
 
@@ -731,15 +737,15 @@ class HrExpenseSheet(models.Model):
 
     @api.multi
     def approve_expense_sheets(self):
-        if not self.user_has_groups('hr_expense.group_hr_expense_user'):
+        if not self.user_has_groups('hr_expense.group_hr_expense_team_approver'):
             raise UserError(_("Only Managers and HR Officers can approve expenses"))
         elif not self.user_has_groups('hr_expense.group_hr_expense_manager'):
-            current_managers = self.employee_id.parent_id.user_id | self.employee_id.department_id.manager_id.user_id
+            current_managers = self.employee_id.expense_manager_id | self.employee_id.parent_id.user_id | self.employee_id.department_id.manager_id.user_id
 
             if self.employee_id.user_id == self.env.user:
                 raise UserError(_("You cannot approve your own expenses"))
 
-            if not self.env.user in current_managers:
+            if not self.env.user in current_managers and not self.user_has_groups('hr_expense.group_hr_expense_user') and self.employee_id.expense_manager_id != self.env.user:
                 raise UserError(_("You can only approve your department expenses"))
 
         responsible_id = self.user_id.id or self.env.user.id
@@ -752,15 +758,15 @@ class HrExpenseSheet(models.Model):
 
     @api.multi
     def refuse_sheet(self, reason):
-        if not self.user_has_groups('hr_expense.group_hr_expense_user'):
+        if not self.user_has_groups('hr_expense.group_hr_expense_team_approver'):
             raise UserError(_("Only Managers and HR Officers can approve expenses"))
         elif not self.user_has_groups('hr_expense.group_hr_expense_manager'):
-            current_managers = self.employee_id.parent_id.user_id | self.employee_id.department_id.manager_id.user_id
+            current_managers = self.employee_id.expense_manager_id | self.employee_id.parent_id.user_id | self.employee_id.department_id.manager_id.user_id
 
             if self.employee_id.user_id == self.env.user:
                 raise UserError(_("You cannot refuse your own expenses"))
 
-            if not self.env.user in current_managers:
+            if not self.env.user in current_managers and not self.user_has_groups('hr_expense.group_hr_expense_user') and self.employee_id.expense_manager_id != self.env.user:
                 raise UserError(_("You can only refuse your department expenses"))
 
         self.write({'state': 'cancel'})

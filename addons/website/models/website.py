@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import base64
 import inspect
 import logging
 import hashlib
@@ -14,6 +15,7 @@ from odoo.addons.http_routing.models.ir_http import slugify, _guess_mimetype
 from odoo.addons.website.models.ir_http import sitemap_qs2dom
 from odoo.addons.portal.controllers.portal import pager
 from odoo.http import request
+from odoo.modules.module import get_resource_path
 from odoo.osv.expression import FALSE_DOMAIN
 from odoo.tools.translate import _
 
@@ -100,7 +102,13 @@ class Website(models.Model):
     partner_id = fields.Many2one(related='user_id.partner_id', relation='res.partner', string='Public Partner', readonly=False)
     menu_id = fields.Many2one('website.menu', compute='_compute_menu', string='Main Menu')
     homepage_id = fields.Many2one('website.page', string='Homepage')
-    favicon = fields.Binary(string="Website Favicon", help="This field holds the image used to display a favicon on the website.")
+
+    def _default_favicon(self):
+        img_path = get_resource_path('web', 'static/src/img/favicon.ico')
+        with tools.file_open(img_path, 'rb') as f:
+            return base64.b64encode(f.read())
+
+    favicon = fields.Binary(string="Website Favicon", help="This field holds the image used to display a favicon on the website.", default=_default_favicon)
     theme_id = fields.Many2one('ir.module.module', help='Installed theme')
 
     specific_user_account = fields.Boolean('Specific User Account', help='If True, new accounts will be associated to the current website')
@@ -122,6 +130,8 @@ class Website(models.Model):
 
     @api.model
     def create(self, vals):
+        self._handle_favicon(vals)
+
         if 'user_id' not in vals:
             company = self.env['res.company'].browse(vals.get('company_id'))
             vals['user_id'] = company._get_public_user().id if company else self.env.ref('base.public_user').id
@@ -138,6 +148,8 @@ class Website(models.Model):
 
     @api.multi
     def write(self, values):
+        self._handle_favicon(values)
+
         self._get_languages.clear_cache(self)
         if 'company_id' in values and 'user_id' not in values:
             company = self.env['res.company'].browse(values['company_id'])
@@ -148,6 +160,11 @@ class Website(models.Model):
             # invalidate the caches from static node at compile time
             self.env['ir.qweb'].clear_caches()
         return result
+
+    @api.model
+    def _handle_favicon(self, vals):
+        if 'favicon' in vals:
+            vals['favicon'] = tools.image_process(vals['favicon'], size=(256, 256), crop='center', output_format='ICO')
 
     # ----------------------------------------------------------
     # Page Management
@@ -454,7 +471,8 @@ class Website(models.Model):
         if website_id:
             return self.browse(website_id)
 
-        domain_name = request and request.httprequest.environ.get('HTTP_HOST', '').split(':')[0] or None
+        # The format of `httprequest.host` is `domain:port`
+        domain_name = request and request.httprequest.host or ''
 
         country = request.session.geoip.get('country_code') if request and request.session.geoip else False
         country_id = False
@@ -465,9 +483,64 @@ class Website(models.Model):
         return self.browse(website_id)
 
     @tools.cache('domain_name', 'country_id', 'fallback')
+    @api.model
     def _get_current_website_id(self, domain_name, country_id, fallback=True):
-        # sort on country_group_ids so that we fall back on a generic website (empty country_group_ids)
-        websites = self.search([('domain', '=', domain_name)]).sorted('country_group_ids')
+        """Get the current website id.
+
+        First find all the websites for which the configured `domain` (after
+        ignoring a potential scheme) is equal to the given
+        `domain_name`. If there is only one result, return it immediately.
+
+        If there are no website found for the given `domain_name`, either
+        fallback to the first found website (no matter its `domain`) or return
+        False depending on the `fallback` parameter.
+
+        If there are multiple websites for the same `domain_name`, we need to
+        filter them out by country. We return the first found website matching
+        the given `country_id`. If no found website matching `domain_name`
+        corresponds to the given `country_id`, the first found website for
+        `domain_name` will be returned (no matter its country).
+
+        :param domain_name: the domain for which we want the website.
+            In regard to the `url_parse` method, only the `netloc` part should
+            be given here, no `scheme`.
+        :type domain_name: string
+
+        :param country_id: id of the country for which we want the website
+        :type country_id: int
+
+        :param fallback: if True and no website is found for the specificed
+            `domain_name`, return the first website (without filtering them)
+        :type fallback: bool
+
+        :return: id of the found website, or False if no website is found and
+            `fallback` is False
+        :rtype: int or False
+
+        :raises: if `fallback` is True but no website at all is found
+        """
+        def _remove_port(domain_name):
+            return (domain_name or '').split(':')[0]
+
+        def _filter_domain(website, domain_name, ignore_port=False):
+            """Ignore `scheme` from the `domain`, just match the `netloc` which
+            is host:port in the version of `url_parse` we use."""
+            # Here we add http:// to the domain if it's not set because
+            # `url_parse` expects it to be set to correctly return the `netloc`.
+            website_domain = urls.url_parse(website._get_http_domain()).netloc
+            if ignore_port:
+                website_domain = _remove_port(website_domain)
+                domain_name = _remove_port(domain_name)
+            return website_domain.lower() == (domain_name or '').lower()
+
+        # Sort on country_group_ids so that we fall back on a generic website:
+        # websites with empty country_group_ids will be first.
+        found_websites = self.search([('domain', 'ilike', _remove_port(domain_name))]).sorted('country_group_ids')
+        # Filter for the exact domain (to filter out potential subdomains) due
+        # to the use of ilike.
+        websites = found_websites.filtered(lambda w: _filter_domain(w, domain_name))
+        # If there is no domain matching for the given port, ignore the port.
+        websites = websites or found_websites.filtered(lambda w: _filter_domain(w, domain_name, ignore_port=True))
 
         if not websites:
             if not fallback:
@@ -502,12 +575,18 @@ class Website(models.Model):
     def viewref(self, view_id, raise_if_not_found=True):
         ''' Given an xml_id or a view_id, return the corresponding view record.
             In case of website context, return the most specific one.
+
+            If no website_id is in the context, it will return the generic view,
+            instead of a random one like `get_view_id`.
+
+            Look also for archived views, no matter the context.
+
             :param view_id: either a string xml_id or an integer view_id
             :param raise_if_not_found: should the method raise an error if no view found
             :return: The view record or empty recordset
         '''
         View = self.env['ir.ui.view']
-        view = None
+        view = View
         if isinstance(view_id, str):
             if 'website_id' in self._context:
                 domain = [('key', '=', view_id)] + self.env['website'].website_domain(self._context.get('website_id'))
@@ -519,20 +598,20 @@ class Website(models.Model):
             if views:
                 view = views.filter_duplicate()
             else:
-                view = self.env.ref(view_id)
+                # we handle the raise below
+                view = self.env.ref(view_id, raise_if_not_found=False)
                 # self.env.ref might return something else than an ir.ui.view (eg: a theme.ir.ui.view)
-                if view._name != 'ir.ui.view':
-                    view = None
+                if not view or view._name != 'ir.ui.view':
+                    # make sure we always return a recordset
+                    view = View
         elif isinstance(view_id, int):
             view = View.browse(view_id)
         else:
             raise ValueError('Expecting a string or an integer, not a %s.' % (type(view_id)))
 
-        if view:
-            return view
-        if raise_if_not_found:
+        if not view and raise_if_not_found:
             raise ValueError('No record found for unique ID %s. It may have been deleted.' % (view_id))
-        return None
+        return view
 
     @api.model
     def get_template(self, template):
@@ -722,3 +801,16 @@ class Website(models.Model):
             'url': '/',
             'target': 'self',
         }
+
+    @api.multi
+    def _get_http_domain(self):
+        """Get the domain of the current website, prefixed by http if no
+        scheme is specified.
+
+        Empty string if no domain is specified on the website.
+        """
+        self.ensure_one()
+        if not self.domain:
+            return ''
+        res = urls.url_parse(self.domain)
+        return 'http://' + self.domain if not res.scheme else self.domain

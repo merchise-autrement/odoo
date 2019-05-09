@@ -148,10 +148,12 @@ class ProductTemplate(models.Model):
     @api.onchange('type')
     def _onchange_type(self):
         """ Force values to stay consistent with integrity constraints """
+        res = super(ProductTemplate, self)._onchange_type()
         if self.type == 'consu':
             if not self.invoice_policy:
                 self.invoice_policy = 'order'
             self.service_type = 'manual'
+        return res
 
     @api.model
     def get_import_templates(self):
@@ -169,7 +171,7 @@ class ProductTemplate(models.Model):
         return res
 
     @api.multi
-    def _get_combination_info(self, combination=False, product_id=False, add_qty=1, pricelist=False, parent_combination=False):
+    def _get_combination_info(self, combination=False, product_id=False, add_qty=1, pricelist=False, parent_combination=False, only_template=False):
         """ Return info about a given combination.
 
         Note: this method does not take into account whether the combination is
@@ -194,6 +196,9 @@ class ProductTemplate(models.Model):
             given, it will try to find the first possible combination, taking
             into account parent_combination (if set) for the exclusion rules.
 
+        :param only_template: boolean, if set to True, get the info for the
+            template only: ignore combination and don't try to find variant
+
         :return: dict with product/combination info:
 
             - product_id: the variant id matching the combination (if it exists)
@@ -215,17 +220,22 @@ class ProductTemplate(models.Model):
                 discount applied (price < list_price), else False
         """
         self.ensure_one()
+        # get the name before the change of context to benefit from prefetch
+        display_name = self.name
 
+        display_image = True
         quantity = self.env.context.get('quantity', add_qty)
         context = dict(self.env.context, quantity=quantity, pricelist=pricelist.id if pricelist else False)
         product_template = self.with_context(context)
 
         combination = combination or product_template.env['product.template.attribute.value']
 
-        if not product_id and not combination:
+        if not product_id and not combination and not only_template:
             combination = product_template._get_first_possible_combination(parent_combination)
 
-        if product_id and not combination:
+        if only_template:
+            product = product_template.env['product.product']
+        elif product_id and not combination:
             product = product_template.env['product.product'].browse(product_id)
         else:
             product = product_template._get_variant_for_combination(combination)
@@ -248,12 +258,11 @@ class ProductTemplate(models.Model):
                 )
             list_price = product.price_compute('list_price')[product.id]
             price = product.price if pricelist else list_price
+            display_image = bool(product.image)
         else:
             product_template = product_template.with_context(current_attributes_price_extra=[v.price_extra or 0.0 for v in combination])
             list_price = product_template.price_compute('list_price')[product_template.id]
             price = product_template.price if pricelist else list_price
-
-        display_name = product_template.name
 
         filtered_combination = combination._without_no_variant_attributes()
         if filtered_combination:
@@ -261,7 +270,7 @@ class ProductTemplate(models.Model):
 
         if pricelist and pricelist.currency_id != product_template.currency_id:
             list_price = product_template.currency_id._convert(
-                list_price, pricelist.currency_id, product_template.company_id,
+                list_price, pricelist.currency_id, product_template._get_current_company(pricelist=pricelist),
                 fields.Date.today()
             )
 
@@ -272,6 +281,7 @@ class ProductTemplate(models.Model):
             'product_id': product.id,
             'product_template_id': product_template.id,
             'display_name': display_name,
+            'display_image': display_image,
             'price': price,
             'list_price': list_price,
             'has_discounted_price': has_discounted_price,
@@ -281,8 +291,7 @@ class ProductTemplate(models.Model):
     def _is_add_to_cart_possible(self, parent_combination=None):
         """
         It's possible to add to cart (potentially after configuration) if
-        there is at least one possible combination, or if there is no
-        `product.template.attribute.line` at all.
+        there is at least one possible combination.
 
         :param parent_combination: the combination from which `self` is an
             optional or accessory product.
@@ -293,6 +302,14 @@ class ProductTemplate(models.Model):
         """
         self.ensure_one()
         if not self.active:
+            # for performance: avoid calling `_get_possible_combinations`
             return False
-        combination = self._get_first_possible_combination(parent_combination)
-        return True if combination else self._is_combination_possible(combination, parent_combination)
+        return next(self._get_possible_combinations(parent_combination), False) is not False
+
+    @api.multi
+    def _get_current_company_fallback(self, **kwargs):
+        """Override: if a pricelist is given, fallback to the company of the
+        pricelist if it is set, otherwise use the one from parent method."""
+        res = super(ProductTemplate, self)._get_current_company_fallback(**kwargs)
+        pricelist = kwargs.get('pricelist')
+        return pricelist and pricelist.company_id or res

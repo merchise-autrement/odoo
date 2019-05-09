@@ -18,6 +18,7 @@
 .note-popover.popover {
     z-index: $o-wysiwyg-zindex;
     height: auto;
+    background-color: $o-wysiwyg-bg-color;
 
     .popover-content {
         padding-bottom: 0;
@@ -38,7 +39,6 @@
 .note-popover.popover .popover-content,
 .note-editor .note-toolbar {
     font-family: $o-wysiwyg-font-family;
-    background-color: $o-wysiwyg-bg-color;
 
     h1,
     h2,
@@ -372,22 +372,6 @@ body .modal {
                             min-height: 95px;
                             padding-bottom: 25px;
                             overflow-y: scroll;
-                        }
-
-                        .o_validate_feedback {
-                            @include o-position-absolute(auto, 10px, 10px);
-
-                            >.fa {
-                                display: none;
-                            }
-                        }
-
-                        &.o_has_error .o_validate_feedback>.fa-exclamation-triangle {
-                            display: block;
-                        }
-
-                        &.o_has_success .o_validate_feedback>.fa-check {
-                            display: block;
                         }
                     }
                 }

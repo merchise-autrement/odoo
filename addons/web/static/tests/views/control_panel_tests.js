@@ -353,7 +353,7 @@ QUnit.module('Views', {
                 search_disable_custom_filters: true,
             },
         });
-        testUtils.dom.click(controlPanel.$('.o_filters_menu_button'));
+        await testUtils.dom.click(controlPanel.$('.o_filters_menu_button'));
         assert.containsOnce(controlPanel, '.o_menu_item a:contains("A")');
         assert.containsNone(controlPanel, '.o_menu_item a:contains("B")');
 
@@ -371,8 +371,8 @@ QUnit.module('Views', {
             data: this.data,
             searchMenuTypes: ['filter'],
         });
-        testUtils.dom.click(controlPanel.$('.o_filters_menu_button'));
-        testUtils.dom.click($('.o_menu_item a'));
+        await testUtils.dom.click(controlPanel.$('.o_filters_menu_button'));
+        await testUtils.dom.click($('.o_menu_item a'));
         assert.strictEqual($('.o_searchview .o_searchview_facet .o_facet_values span').text().trim(), 'A',
             'should have a facet with A');
 
@@ -381,14 +381,16 @@ QUnit.module('Views', {
             which: $.ui.keyCode.BACKSPACE,
             keyCode: $.ui.keyCode.BACKSPACE,
         }));
+        await testUtils.nextTick();
         assert.strictEqual($('.o_searchview .o_searchview_facet .o_facet_values span').length, 0,
-            'there should be no facet');
+        'there should be no facet');
 
         // delete nothing (should not crash)
         controlPanel.$('input.o_searchview_input').trigger($.Event('keydown', {
             which: $.ui.keyCode.BACKSPACE,
             keyCode: $.ui.keyCode.BACKSPACE,
         }));
+        await testUtils.nextTick();
 
         controlPanel.destroy();
     });
@@ -409,9 +411,90 @@ QUnit.module('Views', {
                 search_disable_custom_filters: true,
             },
         });
-        testUtils.dom.click(controlPanel.$('.o_filters_menu_button'));
+        await testUtils.dom.click(controlPanel.$('.o_filters_menu_button'));
         assert.containsOnce(controlPanel, '.o_menu_item a:contains("A")');
         assert.containsNone(controlPanel, '.o_menu_item a:contains("B")');
+
+        controlPanel.destroy();
+    });
+
+    QUnit.test('load filter', async function (assert) {
+        assert.expect(1);
+
+        var controlPanel = await createControlPanel({
+            model: 'partner',
+            arch: "<search></search>",
+            data: this.data,
+            searchMenuTypes: ['filter'],
+            intercepts: {
+                load_filters: function (ev) {
+                    ev.data.on_success([
+                        {
+                            user_id: [2,"Mitchell Admin"],
+                            name: 'sorted filter',
+                            id: 5,
+                            context: {},
+                            sort: "[\"foo\", \"-bar\"]",
+                            domain: "[('user_id', '=', uid)]",
+                        }
+                    ]);
+                }
+            }
+        });
+
+         _.each(controlPanel.exportState().filters, function (filter) {
+            if (filter.type === 'favorite') {
+                assert.deepEqual(filter.orderedBy, 
+                    [{
+                        name: 'foo',
+                        asc: true,
+                    }, {
+                        name: 'bar',
+                        asc: false,
+                    }],
+                    'the filter should have the right orderedBy values');
+            }
+        });
+
+        controlPanel.destroy();
+    });
+
+    QUnit.test('save filter', async function (assert) {
+        assert.expect(1);
+
+        var controlPanel = await createControlPanel({
+            model: 'partner',
+            arch: "<search></search>",
+            data: this.data,
+            searchMenuTypes: ['filter'],
+            intercepts: {
+                create_filter: function (ev) {
+                    assert.strictEqual(ev.data.filter.sort, "[\"foo\",\"bar desc\"]",
+                        'The right format for the string "sort" should be sent to the server');
+                },
+                get_controller_query_params: function (ev) {
+                    ev.data.callback({
+                        orderedBy: [
+                            {
+                                name: 'foo',
+                                asc: true,
+                            }, {
+                                name: 'bar',
+                                asc: false,
+                            }
+                        ]
+                    });
+                }
+            }
+        });
+
+        controlPanel._onNewFavorite({
+            data: {
+                description: 'Morbier',
+                type: 'favorite',
+            },
+            stopPropagation: function () {return;}
+        });
 
         controlPanel.destroy();
     });

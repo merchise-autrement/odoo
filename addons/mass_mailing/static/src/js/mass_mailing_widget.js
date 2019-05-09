@@ -11,7 +11,11 @@ var _t = core._t;
 
 
 var MassMailingFieldHtml = FieldHtml.extend({
+    description: "",
     xmlDependencies: (FieldHtml.prototype.xmlDependencies || []).concat(["/mass_mailing/static/src/xml/mass_mailing.xml"]),
+    jsLibs: [
+       '/mass_mailing/static/src/js/mass_mailing_snippets.js',
+    ],
 
     custom_events: _.extend({}, FieldHtml.prototype.custom_events, {
         snippets_loaded: '_onSnippetsLoaded',
@@ -32,14 +36,17 @@ var MassMailingFieldHtml = FieldHtml.extend({
     //--------------------------------------------------------------------------
 
     /**
-     * Commit the change in 'style-inline' on an other field
-     * nodeOptions:
-     *      - inline-field: fieldName to save the html value converted into inline code
+     * Commit the change in 'style-inline' on an other field nodeOptions:
+     *
+     * - inline-field: fieldName to save the html value converted into inline code
      *
      * @override
      */
     commitChanges: function () {
         var self = this;
+        if (this.mode === 'readonly' || !this.isRendered) {
+            return this._super();
+        }
         var fieldName = this.nodeOptions['inline-field'];
 
         if (this.$content.find('.o_basic_theme').length) {
@@ -48,8 +55,8 @@ var MassMailingFieldHtml = FieldHtml.extend({
 
         var $editable = this.wysiwyg.getEditable();
 
-        return this.wysiwyg.save().then(function (isDirty) {
-            self._isDirty = isDirty;
+        return this.wysiwyg.save().then(function (result) {
+            self._isDirty = result.isDirty;
 
             convertInline.attachmentThumbnailToLinkImg($editable);
             convertInline.fontToImg($editable);
@@ -305,7 +312,7 @@ var MassMailingFieldHtml = FieldHtml.extend({
                 this.$content.focusIn();
             }
         }
-        this.wysiwyg.snippets.trigger('reload_snippet_dropzones');
+        this.wysiwyg.trigger('reload_snippet_dropzones');
     },
 
     //--------------------------------------------------------------------------
@@ -442,7 +449,7 @@ var MassMailingFieldHtml = FieldHtml.extend({
             selectedTheme = themeParams;
 
             // Notify form view
-            self.wysiwyg._onChange();
+            self.wysiwyg.getEditable().trigger('change');
             $dropdown.find('.dropdown-menu').removeClass('show');
             $dropdown.find('.dropdown-item.selected').removeClass('selected');
             $dropdown.find('.dropdown-item:eq(' + themesParams.indexOf(selectedTheme) + ')').addClass('selected');

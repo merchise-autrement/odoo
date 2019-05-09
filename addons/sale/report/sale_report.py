@@ -35,6 +35,7 @@ class SaleReport(models.Model):
     analytic_account_id = fields.Many2one('account.analytic.account', 'Analytic Account', readonly=True)
     team_id = fields.Many2one('crm.team', 'Sales Team', readonly=True, oldname='section_id')
     country_id = fields.Many2one('res.country', 'Customer Country', readonly=True)
+    industry_id = fields.Many2one('res.partner.industry', 'Customer Industry', readonly=True)
     commercial_partner_id = fields.Many2one('res.partner', 'Customer Entity', readonly=True)
     state = fields.Selection([
         ('draft', 'Draft Quotation'),
@@ -48,6 +49,9 @@ class SaleReport(models.Model):
 
     discount = fields.Float('Discount %', readonly=True)
     discount_amount = fields.Float('Discount Amount', readonly=True)
+    campaign_id = fields.Many2one('utm.campaign', 'Campaign')
+    medium_id = fields.Many2one('utm.medium', 'Medium')
+    source_id = fields.Many2one('utm.source', 'Source')
 
     order_id = fields.Many2one('sale.order', 'Order #', readonly=True)
 
@@ -74,6 +78,9 @@ class SaleReport(models.Model):
             s.partner_id as partner_id,
             s.user_id as user_id,
             s.company_id as company_id,
+            s.campaign_id as campaign_id,
+            s.medium_id as medium_id,
+            s.source_id as source_id,
             extract(epoch from avg(date_trunc('day',s.date_order)-date_trunc('day',s.create_date)))/(24*60*60)::decimal(16,2) as delay,
             t.categ_id as categ_id,
             s.pricelist_id as pricelist_id,
@@ -81,6 +88,7 @@ class SaleReport(models.Model):
             s.team_id as team_id,
             p.product_tmpl_id,
             partner.country_id as country_id,
+            partner.industry_id as industry_id,
             partner.commercial_partner_id as commercial_partner_id,
             sum(p.weight * l.product_uom_qty / u.factor * u2.factor) as weight,
             sum(p.volume * l.product_uom_qty / u.factor * u2.factor) as volume,
@@ -116,11 +124,15 @@ class SaleReport(models.Model):
             s.user_id,
             s.state,
             s.company_id,
+            s.campaign_id,
+            s.medium_id,
+            s.source_id,
             s.pricelist_id,
             s.analytic_account_id,
             s.team_id,
             p.product_tmpl_id,
             partner.country_id,
+            partner.industry_id,
             partner.commercial_partner_id,
             l.discount,
             s.id %s

@@ -5,19 +5,14 @@ from odoo import api, fields, models, _
 
 
 class AccountInvoice(models.Model):
-    _inherit = 'account.invoice'
+    _name = 'account.invoice'
+    _inherit = ['account.invoice', 'utm.mixin']
 
     @api.model
     def _get_default_team(self):
         return self.env['crm.team']._get_default_team_id()
 
-    def _default_comment(self):
-        invoice_type = self.env.context.get('type', 'out_invoice')
-        if invoice_type == 'out_invoice' and self.env['ir.config_parameter'].sudo().get_param('sale.use_sale_note'):
-            return self.env.user.company_id.sale_note
-
     team_id = fields.Many2one('crm.team', string='Sales Team', default=_get_default_team, oldname='section_id')
-    comment = fields.Text(default=_default_comment)
     partner_shipping_id = fields.Many2one(
         'res.partner',
         string='Delivery Address',
@@ -46,9 +41,18 @@ class AccountInvoice(models.Model):
     def _onchange_delivery_address(self):
         addr = self.partner_id.address_get(['delivery'])
         self.partner_shipping_id = addr and addr.get('delivery')
-        if self.env.context.get('type', 'out_invoice') == 'out_invoice':
+        inv_type = self.type or self.env.context.get('type', 'out_invoice')
+        if inv_type == 'out_invoice':
             company = self.company_id or self.env.user.company_id
-            self.comment = company.with_context(lang=self.partner_id.lang).sale_note
+            self.comment = company.with_context(lang=self.partner_id.lang).invoice_terms
+
+    @api.multi
+    def _prepare_refund(self, invoice, date_invoice=None, date=None, description=None, journal_id=None):
+        values = super(AccountInvoice, self)._prepare_refund(invoice, date_invoice, date, description, journal_id)
+        values.update({'campaign_id': invoice.campaign_id.id,
+                       'medium_id': invoice.medium_id.id,
+                       'source_id': invoice.source_id.id})
+        return values
 
     @api.multi
     def action_invoice_open(self):

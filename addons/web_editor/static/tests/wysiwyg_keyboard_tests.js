@@ -1665,9 +1665,9 @@ var keyboardTestsEnter = [{
             key: 'a',
         }],
         test: {
-            content: "<div class=\"unbreakable\"><a class=\"btn\" href=\"#\">&#8203;a&#8203;</a><a class=\"btn\" href=\"#\">dom to edit</a></div>",
+            content: "<div class=\"unbreakable\"><a class=\"btn\" href=\"#\">Label</a><a class=\"btn\" href=\"#\">&#8203;adom to edit&#8203;</a></div>",
             // split button has no text so the placeholder text is selected then replaced by 'a'
-            start: "a:contents()[0]->2",
+            start: "a:eq(1):contents()[0]->2",
         },
     },
     {
@@ -1680,9 +1680,9 @@ var keyboardTestsEnter = [{
             key: 'a',
         }],
         test: {
-            content: "<div class=\"unbreakable\"><a class=\"btn\" href=\"#\">&#8203;a&#8203;</a><a class=\"btn\" href=\"#\">dom to edit</a></div>",
+            content: "<div class=\"unbreakable\"><a class=\"btn\" href=\"#\">Label</a><a class=\"btn\" href=\"#\">&#8203;adom to edit&#8203;</a></div>",
             // split button has no text so the placeholder text is selected then replaced by 'a'
-            start: "a:contents()[0]->2",
+            start: "a:eq(1):contents()[0]->2",
         },
     },
     {
@@ -1767,9 +1767,9 @@ var keyboardTestsEnter = [{
             key: 'a',
         }],
         test: {
-            content: "<div class=\"unbreakable\"><a class=\"btn\" href=\"#\">&#8203;a&#8203;</a><a class=\"btn\" href=\"#\">Label</a></div>",
+            content: "<div class=\"unbreakable\"><a class=\"btn\" href=\"#\">Label</a><a class=\"btn\" href=\"#\">&#8203;a&#8203;</a></div>",
             // Removing all text in a link replaces that text with "Label"
-            start: "a:contents()[0]->2",
+            start: "a:eq(1):contents()[0]->2",
         },
     },
     {
@@ -1781,9 +1781,8 @@ var keyboardTestsEnter = [{
             key: 'ENTER',
         }],
         test: {
-            content: "<div class=\"unbreakable\"><a class=\"btn\" href=\"#\">&#8203;Label&#8203;</a><a class=\"btn\" href=\"#\">ot to edit</a></div>",
-            start: "a:contents()[0]->1",
-            end: "a:contents()[0]->6",
+            content: "<div class=\"unbreakable\"><a class=\"btn\" href=\"#\">Label</a><a class=\"btn\" href=\"#\">&#8203;ot to edit&#8203;</a></div>",
+            start: "a:eq(1):contents()[0]->1",
         },
     },
 ];
@@ -3094,22 +3093,6 @@ var keyboardTestsBackspace = [{
         },
     },
     {
-        name: "in complex-dom (empty-td (td before) -> 2x SHIFT-ENTER): 3x BACKSPACE",
-        content: '<table class="table table-bordered"><tbody><tr><td><p>dom not to edit</p></td><td><p><br><br><br></p></td></tr></tbody></table>',
-        steps: [{
-            start: 'p:eq(1)->3',
-            key: 'BACKSPACE',
-        }, {
-            key: 'BACKSPACE',
-        }, {
-            key: 'BACKSPACE',
-        }],
-        test: {
-            content: '<table class="table table-bordered"><tbody><tr><td><p>dom not to edit</p></td><td><p><br></p></td></tr></tbody></table>',
-            start: "p:eq(1)->0",
-        },
-    },
-    {
         name: "in complex-dom (empty-td (td before) -> 2x SHIFT-ENTER): 3x BACKSPACE -> 'a'",
         content: '<table class="table table-bordered"><tbody><tr><td><p>dom not to edit</p></td><td><p><br><br><br></p></td></tr></tbody></table>',
         steps: [{
@@ -3125,6 +3108,55 @@ var keyboardTestsBackspace = [{
         test: {
             content: '<table class="table table-bordered"><tbody><tr><td><p>dom not to edit</p></td><td><p>a</p></td></tr></tbody></table>',
             start: "p:eq(1):contents()[0]->1",
+        },
+    },
+    {
+        name: "in h1: BACKSPACE on full selection -> 'a'",
+        content: '<h1>dom to delete</h1>',
+        steps: [{
+            start: 'h1:contents()[0]->0',
+            end: 'h1:contents()[0]->13',
+            key: 'BACKSPACE',
+        }, {
+            key: 'a',
+        }],
+        test: {
+            content: '<h1>a</h1>',
+            start: "h1:contents()[0]->1",
+        },
+    },
+    {
+        name: "in h1: BACKSPACE on full selection -> BACKSPACE -> 'a'",
+        content: '<h1>dom to delete</h1>',
+        steps: [{
+            start: 'h1:contents()[0]->0',
+            end: 'h1:contents()[0]->13',
+            key: 'BACKSPACE',
+        }, {
+            key: 'BACKSPACE',
+        }, {
+            key: 'a',
+        }],
+        test: {
+            content: '<p>a</p>',
+            start: "p:contents()[0]->1",
+        },
+    },
+    {
+        name: "in h1: BACKSPACE on full selection -> DELETE -> 'a'",
+        content: '<h1>dom to delete</h1>',
+        steps: [{
+            start: 'h1:contents()[0]->0',
+            end: 'h1:contents()[0]->13',
+            key: 'BACKSPACE',
+        }, {
+            key: 'DELETE',
+        }, {
+            key: 'a',
+        }],
+        test: {
+            content: '<h1>a</h1>',
+            start: "h1:contents()[0]->1",
         },
     },
 

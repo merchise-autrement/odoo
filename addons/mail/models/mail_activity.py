@@ -33,12 +33,12 @@ class MailActivityType(models.Model):
         return super(MailActivityType, self).default_get(fields)
 
     name = fields.Char('Name', required=True, translate=True)
-    summary = fields.Char('Summary', translate=True)
+    summary = fields.Char('Default Summary', translate=True)
     sequence = fields.Integer('Sequence', default=10)
     active = fields.Boolean(default=True)
     create_uid = fields.Many2one('res.users', index=True)
     delay_count = fields.Integer(
-        'After', default=0, oldname='days',
+        'Scheduled Date', default=0, oldname='days',
         help='Number of days/week/month before executing the action. It allows to plan the action deadline.')
     delay_unit = fields.Selection([
         ('days', 'days'),
@@ -59,7 +59,7 @@ class MailActivityType(models.Model):
              ' and not available when managing activities for other models.')
     default_next_type_id = fields.Many2one('mail.activity.type', 'Default Next Activity',
         domain="['|', ('res_model_id', '=', False), ('res_model_id', '=', res_model_id)]")
-    force_next = fields.Boolean("Auto Schedule Next Activity", default=False)
+    force_next = fields.Boolean("Trigger Next Activity", default=False)
     next_type_ids = fields.Many2many(
         'mail.activity.type', 'mail_activity_rel', 'activity_id', 'recommended_id',
         domain="['|', ('res_model_id', '=', False), ('res_model_id', '=', res_model_id)]",
@@ -69,10 +69,10 @@ class MailActivityType(models.Model):
         domain="['|', ('res_model_id', '=', False), ('res_model_id', '=', res_model_id)]",
         string='Preceding Activities')
     category = fields.Selection([
-        ('default', 'Other'), ('upload_file', 'Upload Document')
+        ('default', 'Standard'), ('upload_file', 'Upload Document')
     ], default='default', string='Category',
         help='Categories may trigger specific behavior like opening calendar view or automatically mark as done when a document is uploaded')
-    mail_template_ids = fields.Many2many('mail.template', string='Mails templates')
+    mail_template_ids = fields.Many2many('mail.template', string='Email templates')
 
     #Fields for display purpose only
     initial_res_model_id = fields.Many2one('ir.model', 'Initial model', compute="_compute_initial_res_model_id", store=False,
@@ -87,6 +87,12 @@ class MailActivityType(models.Model):
     def _compute_initial_res_model_id(self):
         for activity_type in self:
             activity_type.initial_res_model_id = activity_type.res_model_id
+
+    @api.multi
+    def unlink(self):
+        if any(self.get_external_id().values()):
+            raise exceptions.ValidationError("You can not delete activity type that are used as master data.")
+        return super(MailActivityType, self).unlink()
 
 
 class MailActivity(models.Model):
@@ -120,11 +126,11 @@ class MailActivity(models.Model):
         help="Display name of the related document.", readonly=True)
     # activity
     activity_type_id = fields.Many2one(
-        'mail.activity.type', 'Activity',
+        'mail.activity.type', string='Activity Type',
         domain="['|', ('res_model_id', '=', False), ('res_model_id', '=', res_model_id)]", ondelete='restrict')
-    activity_category = fields.Selection(related='activity_type_id.category', readonly=False)
-    activity_decoration = fields.Selection(related='activity_type_id.decoration_type', readonly=False)
-    icon = fields.Char('Icon', related='activity_type_id.icon', readonly=False)
+    activity_category = fields.Selection(related='activity_type_id.category', readonly=True)
+    activity_decoration = fields.Selection(related='activity_type_id.decoration_type', readonly=True)
+    icon = fields.Char('Icon', related='activity_type_id.icon', readonly=True)
     summary = fields.Char('Summary')
     note = fields.Html('Note')
     date_deadline = fields.Date('Due Date', index=True, required=True, default=fields.Date.context_today)
@@ -141,14 +147,14 @@ class MailActivity(models.Model):
         ('today', 'Today'),
         ('planned', 'Planned')], 'State',
         compute='_compute_state')
-    recommended_activity_type_id = fields.Many2one('mail.activity.type', string="Recommended Activity Type")
-    previous_activity_type_id = fields.Many2one('mail.activity.type', string='Previous Activity Type')
+    recommended_activity_type_id = fields.Many2one('mail.activity.type', string="Recommended Activity Type", readonly=True)
+    previous_activity_type_id = fields.Many2one('mail.activity.type', string='Previous Activity Type', readonly=True)
     has_recommended_activities = fields.Boolean(
         'Next activities available',
         compute='_compute_has_recommended_activities',
         help='Technical field for UX purpose')
-    mail_template_ids = fields.Many2many(related='activity_type_id.mail_template_ids', readonly=False)
-    force_next = fields.Boolean(related='activity_type_id.force_next', readonly=False)
+    mail_template_ids = fields.Many2many(related='activity_type_id.mail_template_ids', readonly=True)
+    force_next = fields.Boolean(related='activity_type_id.force_next', readonly=True)
     # access
     can_write = fields.Boolean(compute='_compute_can_write', help='Technical field to hide buttons if the current user has no access.')
 
@@ -288,6 +294,12 @@ class MailActivity(models.Model):
                     activity.user_id.display_name)
             else:
                 try:
+                    target_user = activity.user_id
+                    target_record = self.env[activity.res_model].browse(activity.res_id)
+                    if hasattr(target_record, 'company_id') and (
+                        target_record.company_id != target_user.company_id and (
+                            len(target_user.company_ids) > 1)):
+                        return  # in that case we skip the check, assuming it would fail because of the company
                     model.browse(activity.res_id).check_access_rule('read')
                 except exceptions.AccessError:
                     raise exceptions.UserError(
@@ -489,19 +501,19 @@ class MailActivity(models.Model):
             activity_domain.append(('res_id', 'in', res.ids))
         grouped_activities = self.env['mail.activity'].read_group(
             activity_domain,
-            ['res_id', 'activity_type_id', 'res_name:max(res_name)', 'ids:array_agg(id)', 'date_deadline:min(date_deadline)'],
+            ['res_id', 'activity_type_id', 'ids:array_agg(id)', 'date_deadline:min(date_deadline)'],
             ['res_id', 'activity_type_id'],
             lazy=False)
-        activity_type_ids = self.env['mail.activity.type']
-        res_id_to_name = {}
+        # filter out unreadable records
+        if not domain:
+            res_ids = tuple(a['res_id'] for a in grouped_activities)
+            res = self.env[res_model].search([('id', 'in', res_ids)])
+            grouped_activities = [a for a in grouped_activities if a['res_id'] in res.ids]
         res_id_to_deadline = {}
         activity_data = defaultdict(dict)
         for group in grouped_activities:
             res_id = group['res_id']
-            res_name = group['res_name']
             activity_type_id = group['activity_type_id'][0]
-            activity_type_ids |= self.env['mail.activity.type'].browse(activity_type_id)  # we will get the name when reading mail_template_ids
-            res_id_to_name[res_id] = res_name
             res_id_to_deadline[res_id] = group['date_deadline'] if (res_id not in res_id_to_deadline or group['date_deadline'] < res_id_to_deadline[res_id]) else res_id_to_deadline[res_id]
             state = self._compute_state_from_date(group['date_deadline'], self.user_id.sudo().tz)
             activity_data[res_id][activity_type_id] = {
@@ -510,8 +522,8 @@ class MailActivity(models.Model):
                 'state': state,
                 'o_closest_deadline': group['date_deadline'],
             }
-        res_ids_sorted = sorted(res_id_to_deadline, key=lambda item: res_id_to_deadline[item])
         activity_type_infos = []
+        activity_type_ids = self.env['mail.activity.type'].search(['|', ('res_model_id.model', '=', res_model), ('res_model_id', '=', False)])
         for elem in sorted(activity_type_ids, key=lambda item: item.sequence):
             mail_template_info = []
             for mail_template_id in elem.mail_template_ids:
@@ -520,9 +532,8 @@ class MailActivity(models.Model):
 
         return {
             'activity_types': activity_type_infos,
-            'res_ids': [(rid, res_id_to_name[rid]) for rid in res_ids_sorted],
+            'activity_res_ids': sorted(res_id_to_deadline, key=lambda item: res_id_to_deadline[item]),
             'grouped_activities': activity_data,
-            'model': res_model,
         }
 
 

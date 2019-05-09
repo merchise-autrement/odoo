@@ -56,6 +56,7 @@
         'static/src/xml/thread.xml',
         'static/src/xml/abstract_thread_window.xml',
         'static/src/xml/announcement.xml',
+        'static/src/xml/user_menu.xml',
         'static/src/xml/web_kanban_activity.xml',
     ],
 }

@@ -91,6 +91,19 @@
       parent="base.menu_email"
     />
 
+    <record id="mail_activity_action" model="ir.actions.act_window">
+        <field name="name">Activities</field>
+        <field name="res_model">mail.activity</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+      id="menu_mail_activities"
+      action="mail_activity_action"
+      parent="base.menu_email"
+    />
+
     <record id="mail_activity_view_form_popup" model="ir.ui.view">
         <field name="name">mail.activity.view.form.popup</field>
         <field name="model">mail.activity</field>
@@ -127,8 +140,11 @@
                     </group>
                     <field name="note" placeholder="Log a note..."/>
                     <footer>
-                        <button string="Schedule" name="action_close_dialog"
-                            type="object" class="btn-primary"/>
+                        <field name="id" invisible="1"/>
+                        <button string="Schedule" name="action_close_dialog" type="object" class="btn-primary"
+                            attrs="{'invisible': [('id', '!=', False)]}"/>
+                        <button string="Save" name="action_close_dialog" type="object" class="btn-primary"
+                            attrs="{'invisible': [('id', '=', False)]}"/>
                         <button attrs="{'invisible': [('force_next', '=', True)]}" string="Mark as Done" name="action_done"
                             type="object" class="btn-secondary"
                             context="{'mail_activity_quick_update': True}"/>

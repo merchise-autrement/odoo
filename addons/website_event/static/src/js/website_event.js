@@ -3,7 +3,7 @@ odoo.define('website_event.website_event', function (require) {
 var ajax = require('web.ajax');
 var core = require('web.core');
 var Widget = require('web.Widget');
-var sAnimations = require('website.content.snippets.animation');
+var publicWidget = require('web.public.widget');
 
 var _t = core._t;
 
@@ -36,7 +36,7 @@ var EventRegistrationForm = Widget.extend({
             $('<div class="alert alert-info"/>')
                 .text(_t('Please select at least one ticket.'))
                 .insertAfter('#registration_form table');
-            return $.Deferred();
+            return new Promise(function () {});
         } else {
             $button.attr('disabled', true);
             return ajax.jsonRpc($form.attr('action'), 'call', post).then(function (modal) {
@@ -56,7 +56,7 @@ var EventRegistrationForm = Widget.extend({
     },
 });
 
-sAnimations.registry.EventRegistrationFormInstance = sAnimations.Class.extend({
+publicWidget.registry.EventRegistrationFormInstance = publicWidget.Widget.extend({
     selector: '#registration_form',
 
     /**
@@ -65,7 +65,7 @@ sAnimations.registry.EventRegistrationFormInstance = sAnimations.Class.extend({
     start: function () {
         var def = this._super.apply(this, arguments);
         var instance = new EventRegistrationForm(this);
-        return $.when(def, instance.appendTo(this.$el));
+        return Promise.all([def, instance.appendTo(this.$el)]);
     },
 });
 

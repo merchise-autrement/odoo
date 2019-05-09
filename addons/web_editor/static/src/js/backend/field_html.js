@@ -4,12 +4,15 @@ odoo.define('web_editor.field.html', function (require) {
 var ajax = require('web.ajax');
 var basic_fields = require('web.basic_fields');
 var core = require('web.core');
-var Wysiwyg = require('web_editor.wysiwyg');
+var Wysiwyg = require('web_editor.wysiwyg.root');
 var field_registry = require('web.field_registry');
+// must wait for web/ to add the default html widget, otherwise it would override the web_editor one
+require('web._field_registry');
 
+var _lt = core._lt;
 var TranslatableFieldMixin = basic_fields.TranslatableFieldMixin;
-
 var QWeb = core.qweb;
+var assetsLoaded;
 
 /**
  * FieldHtml Widget
@@ -25,6 +28,7 @@ var QWeb = core.qweb;
  *  - wrapper
  */
 var FieldHtml = basic_fields.DebouncedField.extend(TranslatableFieldMixin, {
+    description: _lt("Html"),
     className: 'oe_form_field oe_form_field_html',
     supportedFieldTypes: ['html'],
 
@@ -39,9 +43,25 @@ var FieldHtml = basic_fields.DebouncedField.extend(TranslatableFieldMixin, {
      * @override
      */
     willStart: function () {
+        var self = this;
+        this.isRendered = false;
         this._onUpdateIframeId = 'onLoad_' + _.uniqueId('FieldHtml');
-        var defAsset = this.nodeOptions.cssReadonly && ajax.loadAsset(this.nodeOptions.cssReadonly);
-        return $.when(this._super().then(Wysiwyg.prepare.bind(Wysiwyg, this)), defAsset);
+        var defAsset;
+        if (this.nodeOptions.cssReadonly) {
+            defAsset = ajax.loadAsset(this.nodeOptions.cssReadonly);
+        }
+
+        if (!assetsLoaded) { // avoid flickering when begin to edit
+            assetsLoaded = new Promise(function (resolve) {
+                var wysiwyg = new Wysiwyg(self, {});
+                wysiwyg.attachTo($('<textarea>')).then(function () {
+                    wysiwyg.destroy();
+                    resolve();
+                });
+            });
+        }
+
+        return Promise.all([this._super(), assetsLoaded, defAsset]);
     },
     /**
      * @override
@@ -76,12 +96,12 @@ var FieldHtml = basic_fields.DebouncedField.extend(TranslatableFieldMixin, {
      */
     commitChanges: function () {
         var self = this;
-        if (!this.wysiwyg) {
+        if (this.mode == "readonly" || !this.isRendered) {
             return this._super();
         }
         var _super = this._super.bind(this);
-        return this.wysiwyg.save().then(function (isDirty, html) {
-            self._isDirty = isDirty;
+        return this.wysiwyg.save().then(function (result) {
+            self._isDirty = result.isDirty;
             _super();
         });
     },
@@ -116,7 +136,7 @@ var FieldHtml = basic_fields.DebouncedField.extend(TranslatableFieldMixin, {
                 this.$content.html(value);
             }
         }
-        return $.when();
+        return Promise.resolve();
     },
 
     //--------------------------------------------------------------------------
@@ -147,8 +167,9 @@ var FieldHtml = basic_fields.DebouncedField.extend(TranslatableFieldMixin, {
         // by default this is synchronous because the assets are already loaded in willStart
         // but it can be async in the case of options such as iframe, snippets...
         return this.wysiwyg.attachTo(this.$target).then(function () {
-            self.$content = self.wysiwyg.$el;
+            self.$content = self.wysiwyg.$editor;
             self._onLoadWysiwyg();
+            self.isRendered = true;
         });
     },
     /**
@@ -253,8 +274,10 @@ var FieldHtml = basic_fields.DebouncedField.extend(TranslatableFieldMixin, {
         }
 
         this.$el.empty();
-
-        var def = $.Deferred();
+        var resolver;
+        var def = new Promise(function (resolve) {
+            resolver = resolve;
+        });
         if (this.nodeOptions.cssReadonly) {
             this.$iframe = $('<iframe class="o_readonly"/>');
             this.$iframe.appendTo(this.$el);
@@ -263,14 +286,14 @@ var FieldHtml = basic_fields.DebouncedField.extend(TranslatableFieldMixin, {
 
             // inject content in iframe
 
-            this.$iframe.data('load-def', def); // for unit test
+            this.$iframe.data('loadDef', def); // for unit test
             window.top[this._onUpdateIframeId] = function (_avoidDoubleLoad) {
                 if (_avoidDoubleLoad !== avoidDoubleLoad) {
                     console.warn('Wysiwyg iframe double load detected');
                     return;
                 }
                 self.$content = $('#iframe_target', self.$iframe[0].contentWindow.document.body);
-                def.resolve();
+                resolver();
             };
 
             this.$iframe.one('load', function onLoad() {
@@ -311,7 +334,7 @@ var FieldHtml = basic_fields.DebouncedField.extend(TranslatableFieldMixin, {
         } else {
             this.$content = $('<div class="o_readonly"/>').html(value);
             this.$content.appendTo(this.$el);
-            def.resolve();
+            resolver();
         }
 
         def.then(function () {
@@ -444,7 +467,7 @@ var FieldHtml = basic_fields.DebouncedField.extend(TranslatableFieldMixin, {
             position: 'absolute',
             right: '+5px',
         });
-        var $toolbar = this.$content.closest('.note-editor').find('.note-toolbar');
+        var $toolbar = this.$content.find('.note-toolbar');
         $toolbar.css('position', 'relative');
         $toolbar.append($button);
     },

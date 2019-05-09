@@ -25,17 +25,21 @@ var _t = core._t;
  *
  * @param {Widget} self a widget instance that can perform RPCs
  * @param {Array} ids the ids of activities to read
- * @return {Deferred<Array>} resolved with the activities
+ * @return {Promise<Array>} resolved with the activities
  */
 function _readActivities(self, ids) {
     if (!ids.length) {
-        return $.when([]);
+        return Promise.resolve([]);
+    }
+    var context = self.getSession().user_context;
+    if (self.record && !_.isEmpty(self.record.getContext())) {
+        context = self.record.getContext();
     }
     return self._rpc({
         model: 'mail.activity',
         method: 'activity_format',
         args: [ids],
-        context: (self.record && self.record.getContext()) || self.getSession().user_context,
+        context: context,
     }).then(function (activities) {
         // convert create_date and date_deadline to moments
         _.each(activities, function (activity) {
@@ -60,7 +64,7 @@ BasicModel.include({
      * @private
      * @param {Object} record - an element from the localData
      * @param {string} fieldName
-     * @return {Deferred<Array>} resolved with the activities
+     * @return {Promise<Array>} resolved with the activities
      */
     _fetchSpecialActivity: function (record, fieldName) {
         var localID = (record._changes && fieldName in record._changes) ?
@@ -140,7 +144,7 @@ var BasicActivity = AbstractField.extend({
 
     /**
      * @param {integer} previousActivityTypeID
-     * @return {$.Promise}
+     * @return {Promise}
      */
     scheduleActivity: function () {
         var callback = this._reload.bind(this, { activity: true, thread: true });
@@ -209,11 +213,12 @@ var BasicActivity = AbstractField.extend({
      * @param {integer} id
      * @param {integer} previousActivityTypeID
      * @param {function} callback
-     * @return {$.Deferred}
+     * @return {Promise}
      */
     _openActivityForm: function (id, callback) {
         var action = {
             type: 'ir.actions.act_window',
+            name: _t("Schedule Activity"),
             res_model: 'mail.activity',
             view_mode: 'form',
             view_type: 'form',
@@ -232,7 +237,7 @@ var BasicActivity = AbstractField.extend({
      * @param {integer} activityID
      * @param {string} feedback
      * @param {integer[]} attachmentIds
-     * @return {$.Promise}
+     * @return {Promise}
      */
     _sendActivityFeedback: function (activityID, feedback, attachmentIds) {
         return this._rpc({
@@ -298,7 +303,7 @@ var BasicActivity = AbstractField.extend({
     /**
      * @private
      * @param {MouseEvent} ev
-     * @returns {$.Promise}
+     * @returns {Promise}
      */
     _onEditActivity: function (ev) {
         ev.preventDefault();
@@ -333,7 +338,7 @@ var BasicActivity = AbstractField.extend({
         var self = this;
         var $markDoneBtn = $(ev.currentTarget);
         var activityID = $markDoneBtn.data('activity-id');
-        var previousActivityTypeID = $markDoneBtn.data('previous-activity-type-id');
+        var previousActivityTypeID = $markDoneBtn.data('previous-activity-type-id') || false;
         var forceNextActivity = $markDoneBtn.data('force-next-activity');
 
         if ($markDoneBtn.data('toggle') == 'collapse') {
@@ -444,7 +449,7 @@ var BasicActivity = AbstractField.extend({
     /**
      * @private
      * @param {MouseEvent} ev
-     * @returns {$.Deferred}
+     * @returns {Promise}
      */
     _onPreviewMailTemplate: function (ev) {
         ev.stopPropagation();
@@ -472,7 +477,7 @@ var BasicActivity = AbstractField.extend({
     /**
      * @private
      * @param {MouseEvent} ev
-     * @returns {$.Promise}
+     * @returns {Promise}
      */
     _onSendMailTemplate: function (ev) {
         ev.stopPropagation();
@@ -488,7 +493,7 @@ var BasicActivity = AbstractField.extend({
     /**
      * @private
      * @param {MouseEvent} ev
-     * @returns {$.Deferred}
+     * @returns {Promise}
      */
     _onScheduleActivity: function (ev) {
         ev.preventDefault();
@@ -499,7 +504,7 @@ var BasicActivity = AbstractField.extend({
      * @private
      * @param {MouseEvent} ev
      * @param {Object} options
-     * @returns {$.Promise}
+     * @returns {Promise}
      */
     _onUnlinkActivity: function (ev, options) {
         ev.preventDefault();

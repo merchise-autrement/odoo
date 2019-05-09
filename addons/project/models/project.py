@@ -268,11 +268,18 @@ class Project(models.Model):
         """ copy and map tasks from old to new project """
         tasks = self.env['project.task']
         # We want to copy archived task, but do not propagate an active_test context key
-        task_ids = self.env['project.task'].with_context(active_test=False).search([('project_id', '=', self.id)]).ids
+        task_ids = self.env['project.task'].with_context(active_test=False).search([('project_id', '=', self.id)], order='parent_id').ids
+        old_to_new_tasks = {}
         for task in self.env['project.task'].browse(task_ids):
             # preserve task name and stage, normally altered during copy
             defaults = self._map_tasks_default_valeus(task)
-            tasks += task.copy(defaults)
+            if task.parent_id:
+                # set the parent to the duplicated task
+                defaults['parent_id'] = old_to_new_tasks[task.parent_id.id]
+            new_task = task.copy(defaults)
+            old_to_new_tasks[task.id] = new_task.id
+            tasks += new_task
+
         return self.browse(new_project_id).write({'tasks': [(6, 0, tasks.ids)]})
 
     @api.multi
@@ -283,6 +290,8 @@ class Project(models.Model):
         if not default.get('name'):
             default['name'] = _("%s (copy)") % (self.name)
         project = super(Project, self).copy(default)
+        if self.subtask_project_id == self:
+            project.subtask_project_id = project
         for follower in self.message_follower_ids:
             project.message_subscribe(partner_ids=follower.partner_id.ids, subtype_ids=follower.subtype_ids.ids)
         if 'tasks' not in default:
@@ -389,8 +398,8 @@ class Project(models.Model):
 class Task(models.Model):
     _name = "project.task"
     _description = "Task"
-    _date_name = "date_start"
-    _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin', 'rating.mixin']
+    _date_name = "date_assign"
+    _inherit = ['portal.mixin', 'mail.thread.cc', 'mail.activity.mixin', 'rating.mixin']
     _mail_post_access = 'read'
     _order = "priority desc, sequence, id desc"
 
@@ -445,9 +454,6 @@ class Task(models.Model):
     kanban_state_label = fields.Char(compute='_compute_kanban_state_label', string='Kanban State Label', tracking=True)
     create_date = fields.Datetime("Created On", readonly=True, index=True)
     write_date = fields.Datetime("Last Updated On", readonly=True, index=True)
-    date_start = fields.Datetime(string='Starting Date',
-    default=fields.Datetime.now,
-    index=True, copy=False)
     date_end = fields.Datetime(string='Ending Date', index=True, copy=False)
     date_assign = fields.Datetime(string='Assigning Date', index=True, copy=False, readonly=True)
     date_deadline = fields.Date(string='Deadline', index=True, copy=False, tracking=True)
@@ -490,8 +496,6 @@ class Task(models.Model):
     subtask_project_id = fields.Many2one('project.project', related="project_id.subtask_project_id", string='Sub-task Project', readonly=True)
     subtask_count = fields.Integer("Sub-task count", compute='_compute_subtask_count')
     email_from = fields.Char(string='Email', help="These people will receive email.", index=True)
-    email_cc = fields.Char(string='Watchers Emails', help="""These email addresses will be added to the CC field of all inbound
-        and outbound emails for this record before being sent. Separate multiple email addresses with a comma""")
     # Computed field about working time elapsed between record creation and assignation/closing.
     working_hours_open = fields.Float(compute='_compute_elapsed', string='Working hours to assign', store=True, group_operator="avg")
     working_hours_close = fields.Float(compute='_compute_elapsed', string='Working hours to close', store=True, group_operator="avg")
@@ -586,11 +590,6 @@ class Task(models.Model):
         else:
             self.stage_id = False
 
-    @api.onchange('user_id')
-    def _onchange_user(self):
-        if self.user_id:
-            self.date_start = fields.Datetime.now()
-
     @api.constrains('parent_id', 'child_ids')
     def _check_subtask_level(self):
         for task in self:
@@ -659,10 +658,11 @@ class Task(models.Model):
     @api.model
     def create(self, vals):
         # context: no_log, because subtype already handle this
-        context = dict(self.env.context, mail_create_nolog=True)
+        context = dict(self.env.context)
         # force some parent values, if needed
         if 'parent_id' in vals and vals['parent_id']:
             vals.update(self._subtask_values_from_parent(vals['parent_id']))
+            context.pop('default_parent_id', None)
         # for default stage
         if vals.get('project_id') and not context.get('default_project_id'):
             context['default_project_id'] = vals.get('project_id')
@@ -743,10 +743,9 @@ class Task(models.Model):
     # ---------------------------------------------------
 
     @api.multi
-    def _track_template(self, tracking):
-        res = super(Task, self)._track_template(tracking)
+    def _track_template(self, changes):
+        res = super(Task, self)._track_template(changes)
         test_task = self[0]
-        changes, tracking_value_ids = tracking[test_task.id]
         if 'stage_id' in changes and test_task.stage_id.mail_template_id:
             res['stage_id'] = (test_task.stage_id.mail_template_id, {
                 'auto_delete_message': True,
@@ -756,14 +755,16 @@ class Task(models.Model):
         return res
 
     @api.multi
+    def _creation_subtype(self):
+        return self.env.ref('project.mt_task_new')
+
+    @api.multi
     def _track_subtype(self, init_values):
         self.ensure_one()
         if 'kanban_state_label' in init_values and self.kanban_state == 'blocked':
             return self.env.ref('project.mt_task_blocked')
         elif 'kanban_state_label' in init_values and self.kanban_state == 'done':
             return self.env.ref('project.mt_task_ready')
-        elif 'stage_id' in init_values and self.stage_id and self.stage_id.sequence <= 1:  # start stage -> new
-            return self.env.ref('project.mt_task_new')
         elif 'stage_id' in init_values:
             return self.env.ref('project.mt_task_stage')
         return super(Task, self)._track_subtype(init_values)
@@ -833,7 +834,6 @@ class Task(models.Model):
         defaults = {
             'name': msg.get('subject') or _("No Subject"),
             'email_from': msg.get('from'),
-            'email_cc': msg.get('cc'),
             'planned_hours': 0.0,
             'partner_id': msg.get('author_id')
         }

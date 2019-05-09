@@ -2,7 +2,6 @@ odoo.define('website.editMenu', function (require) {
 'use strict';
 
 var core = require('web.core');
-var wContext = require('website.context');
 var EditorMenu = require('website.editor.menu');
 var websiteNavbarData = require('website.navbar');
 
@@ -12,6 +11,8 @@ var _t = core._t;
  * Adds the behavior when clicking on the 'edit' button (+ editor interaction)
  */
 var EditPageMenu = websiteNavbarData.WebsiteNavbarActionWidget.extend({
+    assetLibs: ['web_editor.compiled_assets_wysiwyg', 'website.compiled_assets_wysiwyg'],
+
     xmlDependencies: ['/website/static/src/xml/website.editor.xml'],
     actions: _.extend({}, websiteNavbarData.WebsiteNavbarActionWidget.prototype.actions, {
         edit: '_startEditMode',
@@ -31,7 +32,16 @@ var EditPageMenu = websiteNavbarData.WebsiteNavbarActionWidget.extend({
      */
     init: function () {
         this._super.apply(this, arguments);
-        this._editorAutoStart = (wContext.getExtra().editable && window.location.search.indexOf('enable_editor') >= 0);
+        var context;
+        this.trigger_up('context_get', {
+            extra: true,
+            callback: function (ctx) {
+                context = ctx;
+            },
+        });
+        this._editorAutoStart = (context.editable && window.location.search.indexOf('enable_editor') >= 0);
+        var url = window.location.href.replace(/([?&])&*enable_editor[^&#]*&?/, '\$1');
+        window.history.replaceState({}, null, url);
     },
     /**
      * Auto-starts the editor if necessary or add the welcome message otherwise.
@@ -41,9 +51,13 @@ var EditPageMenu = websiteNavbarData.WebsiteNavbarActionWidget.extend({
     start: function () {
         var def = this._super.apply(this, arguments);
 
+        // If we auto start the editor, do not show a welcome message
+        if (this._editorAutoStart) {
+            return Promise.all([def, this._startEditMode()]);
+        }
+
         // Check that the page is empty
-        var $wrap = this._targetForEdition().find('#wrap');
-        this.$wrap = $wrap;
+        var $wrap = this._targetForEdition().filter('#wrapwrap.homepage').find('#wrap');
 
         if ($wrap.length && $wrap.html().trim() === '') {
             // If readonly empty page, show the welcome message
@@ -59,10 +73,6 @@ var EditPageMenu = websiteNavbarData.WebsiteNavbarActionWidget.extend({
             }
         }, 1000); // ugly hack to wait that tooltip is loaded
 
-        // If we auto start the editor, do not show a welcome message
-        if (this._editorAutoStart) {
-            return $.when(def, this._startEditMode());
-        }
         return def;
     },
 
@@ -75,30 +85,39 @@ var EditPageMenu = websiteNavbarData.WebsiteNavbarActionWidget.extend({
      * welcome message if necessary.
      *
      * @private
-     * @returns {Deferred}
+     * @returns {Promise}
      */
     _startEditMode: function () {
         var self = this;
-        this.trigger_up('animation_stop_demand', {
+        if (this.editModeEnable) {
+            return;
+        }
+        this.trigger_up('widgets_stop_request', {
             $target: this._targetForEdition(),
         });
+        var $welcomeMessageParent = null;
         if (this.$welcomeMessage) {
+            $welcomeMessageParent = this.$welcomeMessage.parent();
             this.$welcomeMessage.detach(); // detach from the readonly rendering before the clone by summernote
         }
+        this.editModeEnable = true;
         return new EditorMenu(this).prependTo(document.body).then(function () {
             if (self.$welcomeMessage) {
-                self.$wrap.append(self.$welcomeMessage); // reappend if the user cancel the edition
+                $welcomeMessageParent.append(self.$welcomeMessage); // reappend if the user cancel the edition
             }
-            var $wrapwrap = self._targetForEdition();
-            var $htmlEditable = $wrapwrap.find('.oe_structure.oe_empty, [data-oe-type="html"]').not('[data-editor-message]');
-            $htmlEditable.attr('data-editor-message', _t('DRAG BUILDING BLOCKS HERE'));
-            var def = $.Deferred();
-            self.trigger_up('animation_start_demand', {
-                editableMode: true,
-                onSuccess: def.resolve.bind(def),
-                onFailure: def.reject.bind(def),
+
+            var $target = self._targetForEdition();
+            self.$editorMessageElements = $target
+                .find('.oe_structure.oe_empty, [data-oe-type="html"]')
+                .not('[data-editor-message]')
+                .attr('data-editor-message', _t('DRAG BUILDING BLOCKS HERE'));
+            new Promise(function (resolve, reject) {
+                self.trigger_up('widgets_start_request', {
+                    editableMode: true,
+                    onSuccess: resolve,
+                    onFailure: reject,
+                });
             });
-            return def;
         });
     },
     /**
@@ -126,8 +145,7 @@ var EditPageMenu = websiteNavbarData.WebsiteNavbarActionWidget.extend({
      * @returns {JQuery}
      */
     _targetForEdition: function () {
-        // in edit mode, we have .note-editable className
-        return $('#wrapwrap:not(.note-editable), #wrapwrap.note-editable');
+        return $('#wrapwrap'); // TODO should know about this element another way
     },
 
     //--------------------------------------------------------------------------
@@ -136,78 +154,77 @@ var EditPageMenu = websiteNavbarData.WebsiteNavbarActionWidget.extend({
 
     /**
      * Called when content will be destroyed in the page. Notifies the
-     * WebsiteRoot that is should stop the animations.
+     * WebsiteRoot that is should stop the public widgets.
      *
      * @private
      * @param {OdooEvent} ev
      */
     _onContentWillBeDestroyed: function (ev) {
-        this.trigger_up('animation_stop_demand', {
+        this.trigger_up('widgets_stop_request', {
             $target: ev.data.$target,
         });
     },
     /**
      * Called when content was recreated in the page. Notifies the
-     * WebsiteRoot that is should start the animations.
+     * WebsiteRoot that is should start the public widgets.
      *
      * @private
      * @param {OdooEvent} ev
      */
     _onContentWasRecreated: function (ev) {
-        this.trigger_up('animation_start_demand', {
+        this.trigger_up('widgets_start_request', {
             editableMode: true,
             $target: ev.data.$target,
         });
     },
     /**
      * Called when edition will stop. Notifies the
-     * WebsiteRoot that is should stop the animations.
+     * WebsiteRoot that is should stop the public widgets.
      *
      * @private
      * @param {OdooEvent} ev
      */
     _onEditionWillStop: function (ev) {
-        var $target = this._targetForEdition();
-        $target.find('[data-editor-message]').removeAttr('data-editor-message');
-        this.trigger_up('animation_stop_demand', {
-            $target: $target,
+        this.$editorMessageElements.removeAttr('data-editor-message');
+        this.trigger_up('widgets_stop_request', {
+            $target: this._targetForEdition(),
         });
     },
     /**
      * Called when edition was stopped. Notifies the
-     * WebsiteRoot that is should start the animations.
+     * WebsiteRoot that is should start the public widgets.
      *
      * @private
      * @param {OdooEvent} ev
      */
     _onEditionWasStopped: function (ev) {
-        var $target = this._targetForEdition();
-        this.trigger_up('animation_start_demand', {
-            $target: $target,
+        this.trigger_up('widgets_start_request', {
+            $target: this._targetForEdition(),
         });
+        this.editModeEnable = false;
     },
     /**
      * Called when a snippet is cloned in the page. Notifies the WebsiteRoot
-     * that is should start the animations for this snippet.
+     * that is should start the public widgets for this snippet.
      *
      * @private
      * @param {OdooEvent} ev
      */
     _onSnippetCloned: function (ev) {
-        this.trigger_up('animation_start_demand', {
+        this.trigger_up('widgets_start_request', {
             editableMode: true,
             $target: ev.data.$target,
         });
     },
     /**
      * Called when a snippet is dropped in the page. Notifies the WebsiteRoot
-     * that is should start the animations for this snippet.
+     * that is should start the public widgets for this snippet.
      *
      * @private
      * @param {OdooEvent} ev
      */
     _onSnippetDropped: function (ev) {
-        this.trigger_up('animation_start_demand', {
+        this.trigger_up('widgets_start_request', {
             editableMode: true,
             $target: ev.data.$target,
         });

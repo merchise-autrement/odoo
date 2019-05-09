@@ -292,11 +292,7 @@ def split_context(method, args, kwargs):
     """ Extract the context from a pair of positional and keyword arguments.
         Return a triple ``context, args, kwargs``.
     """
-    pos = len(getargspec(method).args) - 1
-    if pos < len(args):
-        return args[pos], args[:pos], kwargs
-    else:
-        return kwargs.pop('context', None), args, kwargs
+    return kwargs.pop('context', None), args, kwargs
 
 
 def model(method):
@@ -818,7 +814,7 @@ class Environment(Mapping):
 
     def __getitem__(self, model_name):
         """ Return an empty recordset from the given model. """
-        return self.registry[model_name]._browse((), self)
+        return self.registry[model_name]._browse(self, (), ())
 
     def __iter__(self):
         """ Return an iterator on model names. """
@@ -1036,7 +1032,7 @@ class Cache(object):
         """ Return the value of ``field`` for ``record``. """
         key = record.env.cache_key(field)
         try:
-            value = self._data[key][field][record.id]
+            value = self._data[key][field][record._ids[0]]
         except KeyError:
             raise CacheMiss(record, field)
 
@@ -1045,7 +1041,12 @@ class Cache(object):
     def set(self, record, field, value):
         """ Set the value of ``field`` for ``record``. """
         key = record.env.cache_key(field)
-        self._data[key][field][record.id] = value
+        self._data[key][field][record._ids[0]] = value
+
+    def update(self, records, field, values):
+        """ Set the values of ``field`` for several ``records``. """
+        key = records.env.cache_key(field)
+        self._data[key][field].update(zip(records._ids, values))
 
     def remove(self, record, field):
         """ Remove the value of ``field`` for ``record``. """
@@ -1063,6 +1064,14 @@ class Cache(object):
         key = record.env.cache_key(field)
         value = self._data[key][field].get(record.id, SpecialValue(None))
         return default if isinstance(value, SpecialValue) else value
+
+    def get_values(self, records, field, default=None):
+        """ Return the regular values of ``field`` for ``records``. """
+        key = records.env.cache_key(field)
+        field_cache = self._data[key][field]
+        for record_id in records._ids:
+            value = field_cache.get(record_id, SpecialValue(None))
+            yield default if isinstance(value, SpecialValue) else value
 
     def get_special(self, record, field, default=None):
         """ Return the special value of ``field`` for ``record``. """

@@ -41,6 +41,9 @@ class SaleReport(models.Model):
             pos.partner_id AS partner_id,
             pos.user_id AS user_id,
             pos.company_id AS company_id,
+            NULL AS campaign_id,
+            NULL AS medium_id,
+            NULL AS source_id,
             extract(epoch from avg(date_trunc('day',pos.date_order)-date_trunc('day',pos.create_date)))/(24*60*60)::decimal(16,2) AS delay,
             t.categ_id AS categ_id,
             pos.pricelist_id AS pricelist_id,
@@ -48,6 +51,7 @@ class SaleReport(models.Model):
             config.crm_team_id AS team_id,
             p.product_tmpl_id,
             partner.country_id AS country_id,
+            partner.industry_id AS industry_id,
             partner.commercial_partner_id AS commercial_partner_id,
             (select sum(t.weight*l.qty/u.factor) from pos_order_line l
                join product_product p on (l.product_id=p.id)
@@ -95,6 +99,7 @@ class SaleReport(models.Model):
             pos.pricelist_id,
             p.product_tmpl_id,
             partner.country_id,
+            partner.industry_id,
             partner.commercial_partner_id,
             pol_tax.amount,
             u.factor,

@@ -1,7 +1,6 @@
 odoo.define('web_editor.convertInline', function (require) {
 'use strict';
 
-var fonts = require('wysiwyg.fonts');
 var FieldHtml = require('web_editor.field.html');
 
 /**
@@ -176,7 +175,7 @@ function getMatchedCSSRules(a) {
                 break;
             }
             $el = $el.parent();
-        } while (!$el.is('html'));
+        } while ($el.length && !$el.is('html'));
     }
 
     return style;
@@ -189,6 +188,8 @@ function getMatchedCSSRules(a) {
  *                           converted to images
  */
 function fontToImg($editable) {
+    var fonts = odoo.__DEBUG__.services["wysiwyg.fonts"];
+
     $editable.find('.fa').each(function () {
         var $font = $(this);
         var icon, content;
@@ -395,10 +396,7 @@ FieldHtml.include({
      * @override
      */
     commitChanges: function () {
-        if (!this.wysiwyg) {
-            return this._super();
-        }
-        if (this.nodeOptions['style-inline']) {
+        if (this.nodeOptions['style-inline'] && this.isRendered) {
             this._toInline();
         }
         return this._super();

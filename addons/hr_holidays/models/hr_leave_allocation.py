@@ -167,19 +167,18 @@ class HolidaysAllocation(models.Model):
 
             # We have to check when the employee has been created
             # in order to not allocate him/her too much leaves
-            creation_date = fields.Datetime.from_string(holiday.employee_id.create_date)
-
+            start_date = holiday.employee_id._get_date_start_work()
             # If employee is created after the period, we cancel the computation
-            if period_end <= creation_date:
+            if period_end <= start_date:
                 holiday.write(values)
                 continue
 
             # If employee created during the period, taking the date at which he has been created
-            if period_start <= creation_date:
-                period_start = creation_date
+            if period_start <= start_date:
+                period_start = start_date
 
-            worked = holiday.employee_id.get_work_days_data(period_start, period_end, domain=[('holiday_id.holiday_status_id.unpaid', '=', True), ('time_type', '=', 'leave')])['days']
-            left = holiday.employee_id.get_leave_days_data(period_start, period_end, domain=[('holiday_id.holiday_status_id.unpaid', '=', True), ('time_type', '=', 'leave')])['days']
+            worked = holiday.employee_id._get_work_days_data(period_start, period_end, domain=[('holiday_id.holiday_status_id.unpaid', '=', True), ('time_type', '=', 'leave')])['days']
+            left = holiday.employee_id._get_leave_days_data(period_start, period_end, domain=[('holiday_id.holiday_status_id.unpaid', '=', True), ('time_type', '=', 'leave')])['days']
             prorata = worked / (left + worked) if worked else 0
 
             days_to_give = holiday.number_per_interval
@@ -252,7 +251,7 @@ class HolidaysAllocation(models.Model):
             if self.env.user.employee_ids:
                 self.department_id = self.department_id or self.env.user.employee_ids[0].department_id
             self.employee_id = None
-        elif self.holiday_type == 'category':
+        else:
             self.employee_id = None
             self.department_id = None
 
@@ -336,8 +335,10 @@ class HolidaysAllocation(models.Model):
         employee_id = values.get('employee_id', False)
         if not values.get('department_id'):
             values.update({'department_id': self.env['hr.employee'].browse(employee_id).department_id.id})
-        holiday = super(HolidaysAllocation, self.with_context(mail_create_nolog=True, mail_create_nosubscribe=True)).create(values)
+        holiday = super(HolidaysAllocation, self.with_context(mail_create_nosubscribe=True)).create(values)
         holiday.add_follower(employee_id)
+        if holiday.validation_type == 'hr':
+            holiday.message_subscribe(partner_ids=(holiday.employee_id.parent_id.user_id.partner_id | holiday.employee_id.leave_manager_id.partner_id).ids)
         if 'employee_id' in values:
             holiday._onchange_employee()
         holiday.activity_update()
@@ -484,6 +485,8 @@ class HolidaysAllocation(models.Model):
     def _check_approval_update(self, state):
         """ Check if target state is achievable. """
         current_employee = self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1)
+        if not current_employee or self.env.in_onchange:
+            return
         is_officer = self.env.user.has_group('hr_holidays.group_hr_holidays_user')
         is_manager = self.env.user.has_group('hr_holidays.group_hr_holidays_manager')
         for holiday in self:
@@ -520,11 +523,18 @@ class HolidaysAllocation(models.Model):
     # ------------------------------------------------------------
 
     def _get_responsible_for_approval(self):
+        self.ensure_one()
+        responsible = self.env.user
+
+        if self.validation_type == 'hr' or (self.validation_type == 'both' and self.state == 'validate1'):
+            if self.holiday_status_id.responsible_id:
+                responsible = self.holiday_status_id.responsible_id
         if self.state == 'confirm' and self.employee_id.parent_id.user_id:
-            return self.employee_id.parent_id.user_id
+            responsible = self.employee_id.parent_id.user_id
         elif self.department_id.manager_id.user_id:
-            return self.department_id.manager_id.user_id
-        return self.env.user
+            responsible = self.department_id.manager_id.user_id
+
+        return responsible
 
     def activity_update(self):
         to_clean, to_do = self.env['hr.leave.allocation'], self.env['hr.leave.allocation']
