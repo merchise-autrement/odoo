@@ -1,28 +1,17 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# index
-# ---------------------------------------------------------------------
-# Copyright (c) 2015-2017 Merchise Autrement and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2015-06-03
-
 '''Maintains an referenced index to mail-threaded models.
 
 The generated keys will contain only letters and digits, so you may easily
 embed it using other symbol as a boundary mark.
 
 '''
-
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
-
 from odoo.models import AbstractModel, Model
 from odoo import fields, api
 
@@ -31,7 +20,7 @@ from odoo import fields, api
 # DONE LIGHTLY.
 
 
-# TODO: Move this to xoutil ?
+# TODO: Move this to xotl.tools ?
 def generate_reference(search, maxtries=4, start=1, lower=True):
     '''Generates an unused reference.
 
@@ -57,7 +46,7 @@ def generate_reference(search, maxtries=4, start=1, lower=True):
         _TABLE += "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
     def encoder(*uuids):
-        from xoutil.bases import int2str
+        from xotl.tools.bases import int2str
         return ''.join(
             int2str(sum(uuid.fields), _TABLE)
             for uuid in uuids

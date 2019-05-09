@@ -259,7 +259,7 @@ class Wrapping(HookDefinition):
 class Hook(object):
     '''Wraps a hook function, so that we can store some metadata.'''
     def __init__(self, func, **kwargs):
-        from xoutil.objects import smart_copy
+        from xotl.tools.objects import smart_copy
         hash(func)  # Fail if func is not hashable
         self.func = func
         smart_copy(
@@ -389,7 +389,7 @@ def mock_replace(hook, func, **replacement_attrs):
 
     '''
     import contextlib
-    from xoutil.symbols import Undefined
+    from xotl.tools.symbols import Undefined
     try:
         from unittest.mock import MagicMock
     except ImportError:
@@ -636,7 +636,7 @@ models.BaseModel.write = _write_for_wrappers
 
 
 # Don't require xoeuf to be installed.  Odoo should not depend on `xoeuf`,
-# shouldn't it?  But it's fine it depends on xoutil.
+# shouldn't it?  But it's fine it depends on xotl.tools.
 import re
 _ADDONS_NAMESPACE = re.compile(r'^openerp\.addons\.(?P<module>[^\.]+)\.')
 
@@ -648,7 +648,7 @@ def get_object_module(obj, typed=False):
     namespace, return None.
 
     '''
-    from xoutil.names import nameof
+    from xotl.tools.names import nameof
     name = nameof(obj, inner=True, full=True, typed=typed)
     match = _ADDONS_NAMESPACE.match(name)
     if match:

@@ -1,17 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# celeryapp
-# ---------------------------------------------------------------------
-# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2015-09-26
-
 '''Odoo Celery Application.
 
 Integrates Odoo and Celery, so that jobs can be started from the Odoo HTTP
@@ -19,11 +13,6 @@ workers and tasks can use the Odoo ORM.
 
 
 '''
-
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
-
 import contextlib
 import threading
 
@@ -31,7 +20,7 @@ import logging
 logger = logging.getLogger(__name__)
 del logging
 
-from xoutil.context import context as ExecutionContext
+from xotl.tools.context import context as ExecutionContext
 
 from kombu import Exchange, Queue
 
@@ -155,21 +144,6 @@ class DeferredType(object):
 Deferred = DeferredType()
 
 
-from xoutil.deprecation import deprecated   # noqa
-DefaultDeferredType = deprecated(DeferredType)(DeferredType)
-LowPriorityDeferredType = HighPriorityDeferredType = deprecated(
-    DeferredType,
-    'LowPriorityDeferredType and HighPriorityDeferredType '
-    'are deprecated, use DeferredType'
-)(DeferredType)
-LowPriorityDeferrred = HighPriorityDeferred = deprecated(
-    Deferred,
-    'LowPriorityDeferred and HighPriorityDeferred '
-    'are deprecated, use Deferred'
-)(Deferred)
-del deprecated
-
-
 def iter_and_report(iterator, valuemax=None, report_rate=1,
                     messagetmpl='Progress: {progress}'):
     '''Iterate over 'iterator' while reporting progress.
@@ -200,10 +174,9 @@ def iter_and_report(iterator, valuemax=None, report_rate=1,
     message template.
 
     '''
-    from xoutil.eight import integer_types, string_types
-    if not all(isinstance(x, integer_types) for x in (valuemax, report_rate)):
+    if not all(isinstance(x, int) for x in (valuemax, report_rate)):
         raise TypeError('valuemax and step most be integers')
-    if not isinstance(messagetmpl, string_types):
+    if not isinstance(messagetmpl, str):
         raise TypeError('messagetmpl must a string')
     for progress, x in enumerate(iterator):
         if valuemax and progress % report_rate == 0:
@@ -213,7 +186,7 @@ def iter_and_report(iterator, valuemax=None, report_rate=1,
                 progress=progress, valuemax=valuemax, valuemin=0
             )
         msg = yield x
-        if msg and isinstance(msg, string_types):
+        if msg and isinstance(msg, str):
             messagetmpl = msg
     if valuemax:
         report_progress(progress=valuemax)  # 100%
@@ -258,7 +231,7 @@ def until_timeout(iterator, on_timeout=None):
     running code.
 
     '''
-    from xoutil.context import context
+    from xotl.tools.context import context
     # Allow linear nested calls`: ``until_timeout(... until_timeout(...))``.
     #
     # Each call to until_timeout sets an event counter (which may be `wrapped
@@ -286,7 +259,7 @@ def until_timeout(iterator, on_timeout=None):
 _UNTIL_TIMEOUT_CONTEXT = object()
 
 
-# TODO (med, manu):  Should we have this in xoutil?
+# TODO (med, manu):  Should we have this in xotl.tools?
 @total_ordering
 class EventCounter(object):
     '''A simple counter of an event.
@@ -370,14 +343,10 @@ class EventCounter(object):
         self.seen += 1
 
     def __lt__(self, o):
-        from xoutil.eight import integer_types
-        Int = integer_types[-1]
-        return self.seen < Int(o)
+        return self.seen < int(o)
 
     def __eq__(self, o):
-        from xoutil.eight import integer_types
-        Int = integer_types[-1]
-        return self.seen == Int(o)
+        return self.seen == int(o)
 
     def __trunc__(self):
         return self.seen
@@ -390,9 +359,8 @@ class EventCounter(object):
     __ror__ = __or__
 
     def __repr__(self):
-        from xoutil.string import safe_str
         if self.name:
-            name = safe_str(self.name)
+            name = str(self.name)
         else:
             name = super(EventCounter, self).__repr__()[1:-1]
         if self:
@@ -684,7 +652,7 @@ def _extract_signature(args, kwargs):
     '''Detect the proper signature.
 
     '''
-    from xoutil.symbols import Unset
+    from xotl.tools.symbols import Unset
     from odoo.models import BaseModel
     from odoo.sql_db import Cursor
     from odoo.tools import frozendict
@@ -806,7 +774,7 @@ def MaybeRecords(dbname, uid, model, ids=None, cr=None, context=None):
 
 @contextlib.contextmanager
 def OdooEnvironment(dbname, uid, cr=None, context=None):
-    from xoutil.objects import temp_attributes
+    from xotl.tools.objects import temp_attributes
     __traceback_hide__ = True  # noqa: hide from Celery Tracebacks
     with Environment.manage():
         Registry(dbname).check_signaling()

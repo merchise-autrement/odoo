@@ -98,7 +98,7 @@ class Module(models.Model):
         import time
         import odoo.tools.config as config
         from odoo.jobs import CELERY_JOB, report_progress, Deferred
-        from xoutil.context import context
+        from xotl.tools.context import context
         if CELERY_JOB in context or not config.get('dev_mode'):
             report_progress(
                 message=_('Installing has begun, wait for a minute '

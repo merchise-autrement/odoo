@@ -43,12 +43,12 @@ except ImportError:
 # This module is about logging-only, not wrapping the WSGI application in a
 # middleware, etc.
 
-from xoutil.objects import setdefaultattr
+from xotl.tools.objects import setdefaultattr
 
 from odoo import models
 
-from xoutil.symbols import Unset
-from xoutil.symbols import boolean as Logical
+from xotl.tools.symbols import Unset
+from xotl.tools.symbols import boolean as Logical
 
 Bail = Logical('Bail', False)
 del Logical
@@ -218,7 +218,7 @@ def patch_logging(override=True, force=False):
                 tags['db'] = db
 
         def _handle_fingerprint(self, record):
-            from xoutil.names import nameof
+            from xotl.tools.names import nameof
             exc_info = record.exc_info
             if exc_info:
                 _type, value, _tb = exc_info
@@ -319,7 +319,7 @@ class OdooRecordSerializer(Serializer):
 
 
 def safe_getattr(which, attr):
-    from xoutil.symbols import Undefined
+    from xotl.tools.symbols import Undefined
     try:
         return repr(getattr(which, attr, None))
     except:
