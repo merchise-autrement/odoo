@@ -167,7 +167,7 @@ class ImDispatch(object):
             return callback
 
         _logger.info("Bus.loop listen imbus on db postgres")
-        from kombu.async.hub import Hub
+        from kombu.asynchronous.hub import Hub
 
         with odoo.sql_db.db_connect('postgres').cursor() as cr:
             conn = cr._cnx
