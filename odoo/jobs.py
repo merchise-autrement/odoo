@@ -214,10 +214,9 @@ def iter_and_report(iterator, valuemax=None, report_rate=1,
     message template.
 
     '''
-    from xoutil.eight import integer_types, string_types
-    if not all(isinstance(x, integer_types) for x in (valuemax, report_rate)):
+    if not all(isinstance(x, int) for x in (valuemax, report_rate)):
         raise TypeError('valuemax and step most be integers')
-    if not isinstance(messagetmpl, string_types):
+    if not isinstance(messagetmpl, str):
         raise TypeError('messagetmpl must a string')
     for progress, x in enumerate(iterator):
         if valuemax and progress % report_rate == 0:
@@ -227,7 +226,7 @@ def iter_and_report(iterator, valuemax=None, report_rate=1,
                 progress=progress, valuemax=valuemax, valuemin=0
             )
         msg = yield x
-        if msg and isinstance(msg, string_types):
+        if msg and isinstance(msg, str):
             messagetmpl = msg
     if valuemax:
         report_progress(progress=valuemax)  # 100%
@@ -390,14 +389,10 @@ class EventCounter(object):
         self.seen += 1
 
     def __lt__(self, o):
-        from xoutil.eight import integer_types
-        Int = integer_types[-1]
-        return self.seen < Int(o)
+        return self.seen < int(o)
 
     def __eq__(self, o):
-        from xoutil.eight import integer_types
-        Int = integer_types[-1]
-        return self.seen == Int(o)
+        return self.seen == int(o)
 
     def __trunc__(self):
         return self.seen
