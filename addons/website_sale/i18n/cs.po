@@ -180,7 +180,7 @@ msgstr "<b>Vaše objednávka: </b>"
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.payment
 msgid "<i class=\"fa fa-arrow-right\"/> Add payment acquirers"
-msgstr ""
+msgstr "<i class=\"fa fa-arrow-right\"/> Přidat příjemce platby"
 
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.address_kanban
@@ -193,6 +193,8 @@ msgid ""
 "<i class=\"fa fa-chevron-left\"/>\n"
 "                                            <span>Back</span>"
 msgstr ""
+"<i class=\"fa fa-chevron-left\"/>\n"
+"                                            <span>Zpět</span>"
 
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.checkout
@@ -200,6 +202,8 @@ msgid ""
 "<i class=\"fa fa-chevron-left\"/>\n"
 "                                    <span>Return to Cart</span>"
 msgstr ""
+"<i class=\"fa fa-chevron-left\"/>\n"
+"                                    <span>Zpět do Košíku</span>"
 
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.payment
@@ -372,7 +376,7 @@ msgstr "<strong>Přidat do košíku</strong>"
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.confirmation
 msgid "<strong>Payment Information:</strong>"
-msgstr ""
+msgstr "<strong>Platební informace:</strong>"
 
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.confirmation
@@ -928,7 +932,7 @@ msgstr "Zákazník"
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.sale_report_view_search_website
 msgid "Customer Country"
-msgstr ""
+msgstr "Země zákazníka"
 
 #. module: website_sale
 #: model:ir.ui.menu,name:website_sale.menu_orders_customers
@@ -1008,7 +1012,7 @@ msgstr "Zobrazovaný název"
 #: code:addons/website_sale/models/digest.py:16
 #, python-format
 msgid "Do not have access, skip this data for user's digest email"
-msgstr ""
+msgstr "Nemáte přístup, přeskočte tato data pro e-mail uživatele"
 
 #. module: website_sale
 #: selection:res.company,website_sale_onboarding_payment_acquirer_state:0
@@ -1501,7 +1505,7 @@ msgstr "Zde otevřete aplikaci webových stránek."
 #: code:addons/website_sale/models/sale_order.py:236
 #, python-format
 msgid "Option for:"
-msgstr ""
+msgstr "Možnost pro:"
 
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.product_price
@@ -1678,7 +1682,7 @@ msgstr "Pokračujte prosím v aktuálním košíku."
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.brand_promotion
 msgid "Powered by"
-msgstr "Založeno na"
+msgstr "Běží na"
 
 #. module: website_sale
 #: code:addons/website_sale/controllers/backend.py:113

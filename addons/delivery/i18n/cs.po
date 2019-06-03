@@ -254,7 +254,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:delivery.field_res_users__property_delivery_carrier_id
 #: model:ir.model.fields,field_description:delivery.field_sale_order__carrier_id
 msgid "Delivery Method"
-msgstr "Metoda doručení"
+msgstr "Způsob dodání"
 
 #. module: delivery
 #: model:ir.actions.act_window,name:delivery.action_delivery_carrier_form
@@ -275,7 +275,7 @@ msgstr ""
 #: model:ir.ui.menu,name:delivery.menu_delivery_packagings
 #: model_terms:ir.ui.view,arch_db:delivery.product_packaging_delivery_tree
 msgid "Delivery Packages"
-msgstr ""
+msgstr "Dodací balíčky"
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_choose_delivery_package__delivery_packaging_id
