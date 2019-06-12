@@ -2382,6 +2382,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         cr = self._cr
         update_custom_fields = self._context.get('update_custom_fields', False)
         must_create_table = not tools.table_exists(cr, self._table)
+        parent_path_compute = False
 
         if self._auto:
             if must_create_table:
@@ -2390,6 +2391,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             if self._parent_store:
                 if not tools.column_exists(cr, self._table, 'parent_path'):
                     self._create_parent_columns()
+                    parent_path_compute = True
 
             self._check_removed_columns(log=False)
 
@@ -2417,6 +2419,9 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
 
         if must_create_table:
             self._execute_sql()
+
+        if parent_path_compute:
+            self._parent_store_compute()
 
     @api.model_cr
     def init(self):
@@ -2724,9 +2729,13 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             if invalid_fields:
                 _logger.info('Access Denied by ACLs for operation: %s, uid: %s, model: %s, fields: %s',
                     operation, self._uid, self._name, ', '.join(invalid_fields))
-                raise AccessError(_('The requested operation cannot be completed due to security restrictions. '
-                                    'Please contact your system administrator.\n\n(Document type: %s, Operation: %s)') % \
-                                  (self._description, operation))
+                raise AccessError(
+                    _(
+                        'The requested operation cannot be completed due to security restrictions. '
+                        'Please contact your system administrator.\n\n(Document type: %s, Operation: %s)'
+                    ) % (self._description, operation)
+                    + ' - ({} {}, {} {})'.format(_('User:'), self._uid, _('Fields:'), ', '.join(invalid_fields))
+                )
 
         return fields
 
@@ -2949,8 +2958,8 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                     (self._name, 'read', ','.join([str(r.id) for r in self][:6]), self._uid))
                 # store an access error exception in existing records
                 exc = AccessError(
-                    _('The requested operation cannot be completed due to security restrictions. Please contact your system administrator.\n\n(Document type: %s, Operation: %s)') % \
-                    (self._name, 'read')
+                    _('The requested operation cannot be completed due to security restrictions. Please contact your system administrator.\n\n(Document type: %s, Operation: %s)') % (self._description, 'read')
+                    + ' - ({} {}, {} {})'.format(_('Records:'), self.ids[:6], _('User:'), self._uid)
                 )
                 self.env.cache.set_failed(forbidden, self._fields.values(), exc)
 
@@ -3040,8 +3049,12 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                 raise AccessError(_('For this kind of document, you may only access records you created yourself.\n\n(Document type: %s)') % (self._description,))
             else:
                 _logger.info('Access Denied by record rules for operation: %s on record ids: %r, uid: %s, model: %s', operation, forbidden.ids, self._uid, self._name)
-                raise AccessError(_('The requested operation cannot be completed due to security restrictions. Please contact your system administrator.\n\n(Document type: %s, Operation: %s)') % \
-                                  (self._description, operation))
+                raise AccessError(
+                    _(
+                        'The requested operation cannot be completed due to security restrictions. Please contact your system administrator.\n\n(Document type: %s, Operation: %s)'
+                    ) % (self._description, operation)
+                    + ' - ({} {}, {} {})'.format(_('Records:'), invalid.ids[:6], _('User:'), self._uid)
+                )
 
         # If we get here, the invalid records are not in the database.
         if operation in ('read', 'unlink'):
@@ -3050,7 +3063,13 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             # errors for non-transactional search/read sequences coming from clients.
             return
         _logger.info('Failed operation on deleted record(s): %s, uid: %s, model: %s', operation, self._uid, self._name)
-        raise MissingError(_('Missing document(s)') + ':' + _('One of the documents you are trying to access has been deleted, please try again after refreshing.'))
+        raise MissingError(
+            _('Missing document(s)') + ':' + _('One of the documents you are trying to access has been deleted, please try again after refreshing.')
+            + '\n\n({} {}, {} {}, {} {}, {} {})'.format(
+                _('Document type:'), self._name, _('Operation:'), operation,
+                _('Records:'), invalid.ids[:6], _('User:'), self._uid,
+            )
+        )
 
     def _filter_access_rules(self, operation):
         """ Return the subset of ``self`` for which ``operation`` is allowed. """
@@ -3277,14 +3296,12 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                             self._name, ', '.join(sorted(unknown_names)))
 
         with self.env.protecting(protected_fields, self):
-            # write stored fields with (low-level) method _write
-            if store_vals or inverse_vals or inherited_vals:
-                # if log_access is enabled, this updates 'write_date' and
-                # 'write_uid' and check access rules, even when old_vals is
-                # empty
-                self._write(store_vals)
+            # update references to parents
+            ref_store_vals = {k: store_vals[k] for k in self._inherits.values() if k in store_vals}
+            if ref_store_vals:
+                self._write(ref_store_vals)
 
-            # update parent records (after possibly updating parent fields)
+            # update parent records
             cr = self.env.cr
             for model_name, parent_vals in inherited_vals.items():
                 parent_name = self._inherits[model_name]
@@ -3296,6 +3313,13 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                     parent_ids.update(row[0] for row in cr.fetchall())
 
                 self.env[model_name].browse(parent_ids).write(parent_vals)
+
+            # write stored fields with (low-level) method _write
+            if store_vals or inverse_vals or inherited_vals:
+                # if log_access is enabled, this updates 'write_date' and
+                # 'write_uid' and check access rules, even when old_vals is
+                # empty
+                self._write(store_vals)
 
             if inverse_vals:
                 self.check_field_access_rights('write', list(inverse_vals))
@@ -3390,7 +3414,10 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             for sub_ids in cr.split_for_in_conditions(set(self.ids)):
                 cr.execute(query, params + [sub_ids])
                 if cr.rowcount != len(sub_ids):
-                    raise MissingError(_('One of the records you are trying to modify has already been deleted (Document type: %s).') % self._description)
+                    raise MissingError(
+                        _('One of the records you are trying to modify has already been deleted (Document type: %s).') % self._description
+                        + '\n\n({} {}, {} {})'.format(_('Records:'), sub_ids[:6], _('User:'), self._uid)
+                    )
 
             for name in updated:
                 field = self._fields[name]
@@ -3952,8 +3979,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             # The quotes surrounding `ir_translation` are important as well.
             unique_translation_subselect = """
                 (SELECT res_id, value FROM "ir_translation"
-                 WHERE name=%s AND lang=%s AND value!=''
-                 ORDER BY res_id, id DESC)
+                 WHERE type='model' AND name=%s AND lang=%s AND value!='')
             """
             alias, alias_statement = query.add_join(
                 (table_alias, unique_translation_subselect, 'id', 'res_id', field),
@@ -4293,7 +4319,10 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         existing = self.browse(ids + new_ids)
         if len(existing) < len(self):
             # mark missing records in cache with a failed value
-            exc = MissingError(_("Record does not exist or has been deleted."))
+            exc = MissingError(
+                _("Record does not exist or has been deleted.")
+                + '\n\n({} {}, {} {})'.format(_('Records:'), (self - existing).ids[:6], _('User:'), self._uid)
+            )
             self.env.cache.set_failed(self - existing, self._fields.values(), exc)
         return existing
 
@@ -5380,6 +5409,19 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                         if subnames else record[name]
                     )
 
+            def has_changed(self, name):
+                """ Return whether a field on record has changed. """
+                record = self['<record>']
+                subnames = self['<tree>'][name]
+                if not subnames:
+                    return self[name] != record[name]
+                else:
+                    return len(self[name]) != len(record[name]) or any(
+                        line_snapshot.has_changed(subname)
+                        for line_snapshot in self[name]
+                        for subname in subnames
+                    )
+
             def diff(self, other):
                 """ Return the values in ``self`` that differ from ``other``.
                     Requires record cache invalidation for correct output!
@@ -5457,25 +5499,24 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
 
         result = {'warnings': OrderedSet()}
 
-        # process names in order (or the keys of values if no name given)
-        while todo:
-            name = todo.pop(0)
-            if name in done:
-                continue
-            done.add(name)
-
-            with env.do_in_onchange():
+        # process names in order
+        with env.do_in_onchange():
+            while todo:
                 # apply field-specific onchange methods
-                if field_onchange.get(name):
-                    record._onchange_eval(name, field_onchange[name], result)
+                for name in todo:
+                    if field_onchange.get(name):
+                        record._onchange_eval(name, field_onchange[name], result)
+                    done.add(name)
 
-                # make a snapshot (this forces evaluation of computed fields)
-                snapshot1 = Snapshot(record, nametree)
+                # determine which fields to process for the next pass
+                todo = [
+                    name
+                    for name in nametree
+                    if name not in done and snapshot0.has_changed(name)
+                ]
 
-                # determine which fields have been modified
-                for name in nametree:
-                    if snapshot1[name] != snapshot0[name]:
-                        todo.append(name)
+            # make the snapshot with the final values of record
+            snapshot1 = Snapshot(record, nametree)
 
         # determine values that have changed by comparing snapshots
         self.invalidate_cache()
