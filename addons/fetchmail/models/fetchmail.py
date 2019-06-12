@@ -212,7 +212,7 @@ class FetchmailServer(models.Model):
                                     res_id = MailThread.with_context(**additionnal_context).message_process(server.object_id.model, message, save_original=server.original, strip_attachments=(not server.attach))
                                 pop_server.dele(num)
                             except Exception:
-                                _logger.info('Failed to process mail from %s server %s.', server.type, server.name, exc_info=True)
+                                _logger.exception('Failed to process mail from %s server %s.', server.type, server.name)
                                 failed += 1
                             if res_id and server.action_id:
                                 server.action_id.with_context({

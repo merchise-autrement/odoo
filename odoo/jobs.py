@@ -661,6 +661,7 @@ class CELERY_JOB(ExecutionContext):
             cr = env.cr
             _cr = env.cr
             db = env.cr.dbname
+            login = env.user.login
 
             def __nonzero__(self):
                 return False
