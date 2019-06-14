@@ -13,15 +13,17 @@
 # Created on 2017-04-20
 
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
+from __future__ import (
+    division as _py3_division,
+    print_function as _py3_print,
+    absolute_import as _py3_abs_import,
+)
 
 
 import pytest
 import contextlib
-from xoutil.objects import extract_attrs
-from xoutil.future.collections import opendict
+from xotl.tools.objects import extract_attrs
+from xotl.tools.future.collections import opendict
 
 try:
     from odoo.jobs import (
@@ -95,20 +97,20 @@ class Producer(object):
         self.closed = False
 
     def __repr__(self):
-        return 'Producer(%r)' % self.name
+        return "Producer(%r)" % self.name
 
     def __iter__(self):
         try:
             while True:
                 yield self.a
                 self.a += 1
-                assert self.a < 10, 'Test gone wild'
+                assert self.a < 10, "Test gone wild"
         except GeneratorExit:
             self.closed = True
 
 
 def test_iterator_will_be_closed():
-    producer = Producer('producer')
+    producer = Producer("producer")
     g = until_timeout(producer)
     next(g)  # Up to the first yield
     with pytest.raises(StopIteration):
@@ -129,7 +131,7 @@ def izip(*iters):
             yield tuple(res)
     finally:
         for i in iters:
-            close = getattr(i, 'close', None)
+            close = getattr(i, "close", None)
             if close:
                 close()
 
@@ -153,22 +155,22 @@ def complex_tree(mirror=False):
     #                            |
     #                          izip
     #                     until_timeout
-    producer1 = Producer('1')
-    g1_timeout = EventCounter('g1')
+    producer1 = Producer("1")
+    g1_timeout = EventCounter("g1")
     g1 = until_timeout(producer1, on_timeout=g1_timeout)
 
-    producer2 = Producer('2')
-    g2_timeout = EventCounter('g2')
+    producer2 = Producer("2")
+    g2_timeout = EventCounter("g2")
     g2 = until_timeout(producer2, on_timeout=g2_timeout)
 
-    j12_timeout = EventCounter('j12')
+    j12_timeout = EventCounter("j12")
     join12 = until_timeout(izip(g1, g2), on_timeout=j12_timeout)
 
-    producer3 = Producer('3')
-    g3_timeout = EventCounter('g3')
+    producer3 = Producer("3")
+    g3_timeout = EventCounter("g3")
     g3 = until_timeout(producer3, on_timeout=g3_timeout)
 
-    join_timeout = EventCounter('join')
+    join_timeout = EventCounter("join")
     if not mirror:
         join = until_timeout(izip(g3, join12), on_timeout=join_timeout)
     else:
@@ -190,7 +192,7 @@ def test_closing_a_lone_branch():
         assert not state.g1_timeout and not state.g2_timeout
 
         # However all producers were closed.
-        for p in extract_attrs(state, 'producer1', 'producer2', 'producer3'):
+        for p in extract_attrs(state, "producer1", "producer2", "producer3"):
             assert p.closed
 
 
@@ -207,11 +209,11 @@ def test_closing_a_lone_branch2():
         assert not state.g1_timeout and not state.g2_timeout
 
         # However all producers were closed.
-        for p in extract_attrs(state, 'producer1', 'producer2', 'producer3'):
+        for p in extract_attrs(state, "producer1", "producer2", "producer3"):
             assert p.closed
 
 
-@pytest.mark.xfail(reason='No way to control the flow')
+@pytest.mark.xfail(reason="No way to control the flow")
 def test_closing_a_lone_branch3():
     with complex_tree() as state:
         next(state.join)
@@ -221,7 +223,7 @@ def test_closing_a_lone_branch3():
             # Let join perform its closing stuff
             next(state.join)
 
-        # This fails because of the way context managers (xoutil.context)
+        # This fails because of the way context managers (xotl.tools.context)
         # interacts with generators.  Notice that the next test is exactly the
         # same but mirrored (the important part is that izip will initialize
         # join12 before initializing g3), so the counter of g3 will become a
@@ -236,7 +238,8 @@ def test_closing_a_lone_branch3():
 
 
 def test_closing_a_lone_branch4():
-    from xoutil.context import context
+    from xotl.tools.context import context
+
     assert not context[_UNTIL_TIMEOUT_CONTEXT]
     with complex_tree(mirror=True) as state:
         assert not state.join_timeout
@@ -252,7 +255,8 @@ def test_closing_a_lone_branch4():
 
 @pytest.mark.xfail()
 def test_closing_a_lone_branch5():
-    from xoutil.context import context
+    from xotl.tools.context import context
+
     assert not context[_UNTIL_TIMEOUT_CONTEXT]
     with complex_tree(mirror=True) as state:
         assert not state.join_timeout

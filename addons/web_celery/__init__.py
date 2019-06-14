@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Adds facilities to request backgrounds jobs and check for their status.
+"""Adds facilities to request backgrounds jobs and check for their status.
 
 Features:
 
@@ -15,17 +15,19 @@ Features:
 
 - Replaces the install button of a module for a background job.
 
-'''
+"""
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
+from __future__ import (
+    division as _py3_division,
+    print_function as _py3_print,
+    absolute_import as _py3_abs_import,
+)
 
 from odoo import models, api, _
 
 
 def QUIETLY_WAIT_FOR_TASK(job, next_action=None):
-    '''The client action that waits quietly for a background job to complete.
+    """The client action that waits quietly for a background job to complete.
 
     In this context *quietly* means just displaying the usual AJAX spinner.
 
@@ -39,20 +41,17 @@ def QUIETLY_WAIT_FOR_TASK(job, next_action=None):
     .. warning:: Reloading after waiting for a background job will make the UI
                  to wait again for a job that's already finished and the UI
                  will stale.
-    '''
+    """
     return dict(
-        type='ir.actions.client',
-        tag='quietly_wait_for_background_job',
+        type="ir.actions.client",
+        tag="quietly_wait_for_background_job",
         pushState=False,
-        params=dict(
-            uuid=job.id,
-            next_action=next_action,
-        )
+        params=dict(uuid=job.id, next_action=next_action),
     )
 
 
 def WAIT_FOR_TASK(job, next_action=None):
-    '''The client action for waiting for a background job to complete.
+    """The client action for waiting for a background job to complete.
 
     :param job:  The AsyncResult that represents the background job.
     :type job:  Any type compatible with celery's AsyncResult.
@@ -65,15 +64,12 @@ def WAIT_FOR_TASK(job, next_action=None):
                  to wait again for a job that's already finished and the UI
                  will stale.
 
-    '''
+    """
     return dict(
-        type='ir.actions.client',
-        tag='wait_for_background_job',
+        type="ir.actions.client",
+        tag="wait_for_background_job",
         pushState=False,
-        params=dict(
-            uuid=job.id,
-            next_action=next_action,
-        )
+        params=dict(uuid=job.id, next_action=next_action),
     )
 
 
@@ -93,7 +89,7 @@ CLOSE_PROGRESS_BAR = CLOSE_FEEDBACK
 # your own methods and call them from the UI.
 #
 class Module(models.Model):
-    _inherit = 'ir.module.module'
+    _inherit = "ir.module.module"
 
     @api.multi
     def button_immediate_install(self):
@@ -101,11 +97,11 @@ class Module(models.Model):
         import odoo
         import odoo.tools.config as config
         from odoo.jobs import CELERY_JOB, report_progress, Deferred
-        from xoutil.context import context
-        if CELERY_JOB in context or not config.get('dev_mode') or not odoo.multi_process:
+        from xotl.tools.context import context
+
+        if CELERY_JOB in context or not config.get("dev_mode") or not odoo.multi_process:
             report_progress(
-                message=_('Installing has begun, wait for a minute '
-                          'or two to finish.'),
+                message=_("Installing has begun, wait for a minute or two to finish."),
                 progress=0,
                 valuemin=0,
                 valuemax=100,
@@ -121,6 +117,4 @@ class Module(models.Model):
             report_progress(progress=100)
             return res
         else:
-            return WAIT_FOR_TASK(
-                Deferred(self.button_immediate_install)
-            )
+            return WAIT_FOR_TASK(Deferred(self.button_immediate_install))
