@@ -12,10 +12,7 @@ from odoo import api, fields, models, SUPERUSER_ID
 from odoo.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
 from odoo.tools import date_utils
 
-try:
-    from kombu.asynchronous.hub import Hub  # kombu 4.2.0+
-except ImportError:
-    from kombu.async.hub import Hub
+from kombu.asynchronous.hub import Hub  # kombu 4.2.0+
 
 
 _logger = logging.getLogger(__name__)
