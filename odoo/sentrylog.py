@@ -131,7 +131,7 @@ def get_client():
     return _sentry_client
 
 
-def patch_logging(override=True, force=False):
+def patch_logging(override=False, force=False):
     """Patch openerp's logging.
 
     :param override: If True suppress all normal logging.  All logs will be
@@ -295,7 +295,7 @@ def patch_logging(override=True, force=False):
 
     loglevel = conf.get("report_level", "ERROR")
     level = getattr(logging, loglevel.upper(), logging.ERROR)
-    override = conf.get("override", override)
+    override = conf.get("override", os.environ.get("odoo_sentry_override_log", override))
 
     def sethandler(logger, override=override, level=level):
         handler = SentryHandler(client=client)
