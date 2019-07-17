@@ -9,10 +9,10 @@
 # Ondřej Janovský <ondrej.janovsky@alarex.cz>, 2016
 # Ladislav Tomm <tomm@helemik.cz>, 2017
 # Jakub Lohnisky <jakub@lepremier.cz>, 2017
-# Martin Trigaux, 2017
 # Jan Horzinka <jan.horzinka@centrum.cz>, 2018
 # Michal Veselý <michal@veselyberanek.net>, 2018
-# trendspotter <j.podhorecky@volny.cz>, 2019
+# Jiří Podhorecký <j.podhorecky@volny.cz>, 2019
+# Martin Trigaux, 2019
 # 
 msgid ""
 msgstr ""
@@ -20,7 +20,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-23 16:30+0000\n"
 "PO-Revision-Date: 2016-09-07 09:14+0000\n"
-"Last-Translator: trendspotter <j.podhorecky@volny.cz>, 2019\n"
+"Last-Translator: Martin Trigaux, 2019\n"
 "Language-Team: Czech (https://www.transifex.com/odoo/teams/41243/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -3048,6 +3048,10 @@ msgid ""
 "========================\n"
 "    "
 msgstr ""
+"\n"
+"Geolokace partnerů\n"
+"========================\n"
+"    "
 
 #. module: base
 #: model:ir.module.module,description:base.module_hr_appraisal
@@ -3350,6 +3354,10 @@ msgid ""
 "Let your customers follow the signature process easily.\n"
 "    "
 msgstr ""
+"\n"
+"Snadno podepište a vyplňte své dokumenty. Přizpůsobte své dokumenty textovým a podpisovým polím a odešlete je svým příjemcům. \n"
+"\n"
+"Zákazníci mohou snadno sledovat proces podpisu."
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_sg
@@ -3636,6 +3644,8 @@ msgid ""
 "time it takes to load a POS session with a lot of products.\n"
 "    "
 msgstr ""
+"\n"
+"Tím se vytvoří produktová cache na POS konfiguraci. Výrazně snižuje dobu potřebnou k načtení relace POS s mnoha produkty."
 
 #. module: base
 #: model:ir.module.module,description:base.module_calendar
@@ -4494,6 +4504,8 @@ msgid ""
 "The check settings are located in the accounting journals configuration page.\n"
 "    "
 msgstr ""
+"\n"
+"Tento modul nabízí základní funkce pro provádění plateb tiskem šeků. Musí být používán v závislosti na modulech, které poskytují šablony šeků specifických pro danou zemi. Nastavení šeků se nachází v konfigurační stránce účetních deníků."
 
 #. module: base
 #: model:ir.module.module,description:base.module_purchase_mrp
@@ -4943,6 +4955,14 @@ msgid ""
 msgstr ""
 
 #. module: base
+#: code:addons/model.py:153
+#, python-format
+msgid ""
+" another model requires the record being deleted. If possible, archive it "
+"instead."
+msgstr ""
+
+#. module: base
 #: model:ir.ui.view,arch_db:base.res_lang_form
 msgid "%A - Full weekday name."
 msgstr "%A - Plný název dne v týdnu."
@@ -4950,17 +4970,17 @@ msgstr "%A - Plný název dne v týdnu."
 #. module: base
 #: model:ir.ui.view,arch_db:base.res_lang_form
 msgid "%B - Full month name.\""
-msgstr ""
+msgstr "%B - Celý název měsíce.\""
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.res_lang_form
 msgid "%H - Hour (24-hour clock) [00,23].\""
-msgstr "%H - Hodina (24-hodinový den) [00,23].\""
+msgstr "%H - Hodina (24-hodinový formát) [00,23].\""
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.res_lang_form
 msgid "%I - Hour (12-hour clock) [01,12].\""
-msgstr ""
+msgstr "%I - Hodina (12-hodinový formát) [01,12].\""
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.res_lang_form
@@ -4990,7 +5010,7 @@ msgstr "%b - zkratka měsíce."
 #. module: base
 #: model:ir.ui.view,arch_db:base.res_lang_form
 msgid "%d - Day of the month [01,31].\""
-msgstr ""
+msgstr "%d - Den v měsíci [01,31].\""
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.res_lang_form
@@ -5098,6 +5118,14 @@ msgstr ""
 "- Výchozí: výchozí hodnota pole modelu"
 
 #. module: base
+#: code:addons/model.py:141
+#, python-format
+msgid ""
+"- Create/update: a mandatory field is not set.\n"
+"- Delete: another model requires the record being deleted. If possible, archive it instead."
+msgstr ""
+
+#. module: base
 #: model:ir.ui.view,arch_db:base.report_irmodeloverview
 msgid "- domain ="
 msgstr "- doména ="
@@ -5150,12 +5178,12 @@ msgstr "-Tento modul nevytváří pohledy."
 #. module: base
 #: model:ir.ui.view,arch_db:base.module_form
 msgid "-This module does not depends on any other module."
-msgstr ""
+msgstr "-Tento modul nezávisí na žádném jiném modulu."
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.res_lang_form
 msgid "1. %b, %B         ==&gt; Dec, December"
-msgstr ""
+msgstr "1. %b, %B         ==&gt; Pro, Prosinec"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_rule_form
@@ -5246,7 +5274,7 @@ msgstr "<code>datetime</code> (Python modul)"
 #: model:ir.ui.view,arch_db:base.view_model_fields_form
 #: model:ir.ui.view,arch_db:base.view_model_form
 msgid "<code>dateutil</code> (Python module)"
-msgstr ""
+msgstr "<code>dateutil</code> (Python modul)"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_model_fields_form
@@ -5263,12 +5291,12 @@ msgstr "<code>time</code> (Python modul)"
 #. module: base
 #: model:ir.ui.view,arch_db:base.report_irmodeloverview
 msgid "<strong>Apps</strong>"
-msgstr ""
+msgstr "<strong>Aplikace</strong>"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.report_irmodeloverview
 msgid "<strong>Attribute</strong>"
-msgstr ""
+msgstr "<strong>Atribut</strong>"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.report_irmodulereference
@@ -5278,7 +5306,7 @@ msgstr "<strong>Závislosti:</strong>"
 #. module: base
 #: model:ir.ui.view,arch_db:base.report_irmodeloverview
 msgid "<strong>Group</strong>"
-msgstr ""
+msgstr "<strong>Skupina</strong>"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.report_irmodeloverview
@@ -5293,7 +5321,7 @@ msgstr "<strong>Zděděno</strong>"
 #. module: base
 #: model:ir.ui.view,arch_db:base.report_irmodeloverview
 msgid "<strong>Label</strong>"
-msgstr ""
+msgstr "<strong>Visačka</strong>"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.report_irmodulereference
@@ -5323,7 +5351,7 @@ msgstr "<strong>Rq</strong>"
 #. module: base
 #: model:ir.ui.view,arch_db:base.report_irmodeloverview
 msgid "<strong>Seq</strong>"
-msgstr ""
+msgstr "<strong>Sekvence</strong>"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_base_module_upgrade
@@ -5335,17 +5363,17 @@ msgstr ""
 #. module: base
 #: model:ir.ui.view,arch_db:base.report_irmodeloverview
 msgid "<strong>Tr</strong>"
-msgstr ""
+msgstr "<strong>Tr</strong>"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.report_irmodeloverview
 msgid "<strong>Type</strong>"
-msgstr ""
+msgstr "<strong>Typ</strong>"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.report_irmodulereference
 msgid "<strong>View :</strong>"
-msgstr ""
+msgstr "<strong>Zobrazení :</strong>"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.report_irmodeloverview
@@ -5355,23 +5383,23 @@ msgstr "<strong>XML ID</strong>"
 #. module: base
 #: model:ir.ui.view,arch_db:base.report_irmodeloverview
 msgid "<u><strong>Fields</strong></u>"
-msgstr ""
+msgstr "<u><strong>Pole</strong></u>"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.report_irmodeloverview
 msgid "<u><strong>Security</strong></u>"
-msgstr ""
+msgstr "<u><strong>Zabezpečení</strong></u>"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.report_irmodeloverview
 msgid "<u><strong>Views</strong></u>"
-msgstr ""
+msgstr "<u><strong>Zobrazení</strong></u>"
 
 #. module: base
 #: code:addons/models.py:3234
 #, python-format
 msgid "A document was modified since you last viewed it (%s:%d)"
-msgstr ""
+msgstr "Dokument byl od posledního prohlížení upraven (%s:%d)"
 
 #. module: base
 #: model:ir.actions.act_window,help:base.action_res_groups
@@ -7531,7 +7559,7 @@ msgstr "Firmy v systému"
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_users_form
 msgid "Companies count"
-msgstr ""
+msgstr "Počet společností"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_attachment_company_id
@@ -7636,6 +7664,8 @@ msgid ""
 "Computed fields are defined with the fields\n"
 "                                    <strong>Dependencies</strong> and <strong>Compute</strong>."
 msgstr ""
+"Vypočítaná pole jsou definována pomocí polí <strong>Závislosti</strong> a "
+"<strong>Výpočet</strong>."
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_act_server_condition
@@ -7741,6 +7771,12 @@ msgstr "Omezení"
 #: model:ir.model.fields,field_description:base.field_ir_model_constraint_type
 msgid "Constraint Type"
 msgstr "Druh omezení"
+
+#. module: base
+#: code:addons/model.py:158
+#, python-format
+msgid "Constraint:"
+msgstr ""
 
 #. module: base
 #: sql_constraint:ir.model.constraint:0
@@ -8658,6 +8694,11 @@ msgid "Dependency"
 msgstr "Závislost"
 
 #. module: base
+#: model:ir.module.module,description:base.module_test_pylint
+msgid "Deprecated empty module in favor of test-lint."
+msgstr ""
+
+#. module: base
 #: model:ir.model.fields,field_description:base.field_ir_attachment_description
 #: model:ir.model.fields,field_description:base.field_ir_mail_server_name
 #: model:ir.model.fields,field_description:base.field_ir_module_category_description
@@ -8742,7 +8783,7 @@ msgstr "Diagram"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_sign
 msgid "Digital Signatures"
-msgstr ""
+msgstr "Digitální podpisy"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_lang_direction
@@ -9623,6 +9664,12 @@ msgid "Field names must be unique per model."
 msgstr "Názvy polí musí být jedinečné pro každý model."
 
 #. module: base
+#: code:addons/model.py:148
+#, python-format
+msgid "Field:"
+msgstr "Pole:"
+
+#. module: base
 #: model:ir.actions.act_window,name:base.action_model_fields
 #: model:ir.model,name:base.model_ir_model_fields
 #: model:ir.model.fields,field_description:base.field_ir_model_field_id
@@ -9688,6 +9735,10 @@ msgid ""
 "Technical Details:\n"
 "%s"
 msgstr ""
+"Soubor nebyl importován kvůli neshodě formátu nebo chybně formátovanému souboru. (Platné formáty jsou .csv, .po, .pot) \n"
+"\n"
+"Technické detaily:\n"
+"%s"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_act_window_filter
@@ -11500,7 +11551,7 @@ msgstr "Irsko"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_lock
 msgid "Irreversible Lock Date"
-msgstr ""
+msgstr "Datum nevratného zámku"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_partner_is_company
@@ -12081,7 +12132,7 @@ msgstr "Správa zájemců"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_hr_holidays_gantt
 msgid "Leaves Gantt"
-msgstr ""
+msgstr "Ganttův graf dovolených"
 
 #. module: base
 #: model:res.country,name:base.lb
@@ -12147,12 +12198,12 @@ msgstr "Omezení"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_logging_line
 msgid "Line"
-msgstr ""
+msgstr "Řádek"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_link_tracker
 msgid "Link Tracker"
-msgstr ""
+msgstr "Tracker odkazu"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_project_forecast_sale
@@ -12227,7 +12278,7 @@ msgstr "Záznam"
 #: model:ir.actions.act_window,name:base.ir_logging_all_act
 #: model:ir.ui.menu,name:base.ir_logging_all_menu
 msgid "Logging"
-msgstr ""
+msgstr "Protokolování"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_users_login
@@ -12476,7 +12527,7 @@ msgstr ""
 #: code:addons/base/ir/ir_model.py:491
 #, python-format
 msgid "Many2one %s on model %s does not exist!"
-msgstr ""
+msgstr "Many2one %s na modelu %s neexistuje!"
 
 #. module: base
 #: model:ir.actions.act_window,name:base.action_model_relation
@@ -12709,7 +12760,7 @@ msgstr "Chybí dokument (y)"
 #: code:addons/models.py:5655
 #, python-format
 msgid "Missing required value for the field '%s' (%s)"
-msgstr ""
+msgstr "Chybí požadovaná hodnota pro pole '%s' (%s)"
 
 #. module: base
 #: code:addons/models.py:5652
@@ -12861,6 +12912,12 @@ msgstr "Model, ke kterému se položka vztahuje"
 msgid ""
 "Model to which this entry applies - helper field for setting a model, will "
 "automatically set the correct model name"
+msgstr ""
+
+#. module: base
+#: code:addons/model.py:147 code:addons/model.py:157
+#, python-format
+msgid "Model:"
 msgstr ""
 
 #. module: base
@@ -13959,7 +14016,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,summary:base.module_payment_paypal
 msgid "Payment Acquirer: Paypal Implementation"
-msgstr ""
+msgstr "Příjemce platby: implementace PayPal"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_payment_payumoney
@@ -13969,12 +14026,12 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,summary:base.module_payment_stripe
 msgid "Payment Acquirer: Stripe Implementation"
-msgstr ""
+msgstr "Příjemce platby: Čtení proužku"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_payment_transfer
 msgid "Payment Acquirer: Transfer Implementation"
-msgstr ""
+msgstr "Příjemce platby: Implementace převodu"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_reports_followup
@@ -14345,13 +14402,13 @@ msgstr "Soukromá adresa"
 #. module: base
 #: model:ir.ui.view,arch_db:base.res_partner_view_form_private
 msgid "Private Address Form"
-msgstr ""
+msgstr "Formulář soukromé adresy"
 
 #. module: base
 #: code:addons/models.py:107
 #, python-format
 msgid "Private methods (such as %s) cannot be called remotely."
-msgstr ""
+msgstr "Soukromé metody (například %s) nelze volat vzdáleně."
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_procurement
@@ -14818,7 +14875,7 @@ msgstr ""
 #: code:addons/base/ir/ir_model.py:307
 #, python-format
 msgid "Related field '%s' does not have type '%s'"
-msgstr ""
+msgstr "Související pole '%s' nemá typ '%s'"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_act_server_wkf_field_id
@@ -15674,7 +15731,7 @@ msgstr "Sdílena skupina"
 #: model:ir.model.fields,field_description:base.field_res_partner_partner_share
 #: model:ir.model.fields,field_description:base.field_res_users_partner_share
 msgid "Share Partner"
-msgstr ""
+msgstr "Sdílet partnera"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_users_share
@@ -15874,7 +15931,7 @@ msgstr "Srovnat"
 #: code:addons/models.py:4134
 #, python-format
 msgid "Sorting field %s not found on model %s"
-msgstr ""
+msgstr "Pole řazení %s nebylo na modelu %s nalezeno "
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_wkf_transition_act_from
@@ -16123,7 +16180,7 @@ msgstr "Ulice 2"
 #: model:ir.module.module,description:base.module_payment_stripe
 #: model:ir.module.module,shortdesc:base.module_payment_stripe
 msgid "Stripe Payment Acquirer"
-msgstr ""
+msgstr "Příjemce platby proužkem"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_web_studio
@@ -16598,7 +16655,7 @@ msgstr ""
 msgid ""
 "The `%s` module appears to be unavailable at the moment, please try again "
 "later."
-msgstr ""
+msgstr "Modul `%s` není momentálně dostupný, zkuste to prosím znovu později."
 
 #. module: base
 #: code:addons/base/module/module.py:511
@@ -16947,6 +17004,14 @@ msgid "The selected modules have been updated / installed !"
 msgstr "Vybrané moduly byly aktualizovány / instalovány !"
 
 #. module: base
+#: code:addons/base/module/module.py:489
+#, python-format
+msgid ""
+"The server is busy right now, module operations are not possible at this "
+"time, please try again later."
+msgstr ""
+
+#. module: base
 #: model:ir.model.fields,help:base.field_res_country_state_code
 msgid "The state code."
 msgstr "Kód státu."
@@ -17288,7 +17353,7 @@ msgstr "Školení, konference, schůzky, výstavy, registrace"
 #: model:ir.module.module,description:base.module_payment_transfer
 #: model:ir.module.module,shortdesc:base.module_payment_transfer
 msgid "Transfer Payment Acquirer"
-msgstr ""
+msgstr "Příjemce převodu platby"
 
 #. module: base
 #: model:ir.ui.view,arch_db:base.view_model_search
@@ -17558,7 +17623,7 @@ msgstr "Menší odlehlé ostrovy USA"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_utm
 msgid "UTM Trackers"
-msgstr ""
+msgstr "UTM Trackery"
 
 #. module: base
 #: model:res.country,name:base.ug
@@ -17651,7 +17716,9 @@ msgid "United States Postal Service (USPS) Shipping"
 msgstr "Poštovní služba Spojených států amerických (USPS)"
 
 #. module: base
+#: code:addons/model.py:148 code:addons/model.py:157 code:addons/model.py:158
 #: selection:ir.module.module.dependency,state:0
+#, python-format
 msgid "Unknown"
 msgstr "Neznámé"
 
@@ -18204,7 +18271,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_stock_landed_costs
 msgid "WMS Landed Costs"
-msgstr ""
+msgstr "Náklady na pořízení WMS"
 
 #. module: base
 #: model:res.country,name:base.wf
@@ -18278,7 +18345,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_web_gantt
 msgid "Web Gantt"
-msgstr ""
+msgstr "Webová strana Ganttova diagramu"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_ui_menu_web_icon
@@ -18354,7 +18421,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_helpdesk_livechat
 msgid "Website IM Livechat Helpdesk"
-msgstr ""
+msgstr "Webová stránka IM Livechat Helpdesk"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_links
@@ -19537,6 +19604,11 @@ msgstr "test-inherits"
 #: model:ir.module.module,shortdesc:base.module_test_limits
 msgid "test-limits"
 msgstr "test-limits"
+
+#. module: base
+#: model:ir.module.module,shortdesc:base.module_test_lint
+msgid "test-lint"
+msgstr ""
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_test_uninstall
