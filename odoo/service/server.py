@@ -834,7 +834,7 @@ class PreforkServer(CommonServer):
                 time.sleep(0.1)
         else:
             _logger.info("Stopping forcefully")
-        for pid in self.workers:
+        for pid in list(self.workers):
             self.worker_kill(pid, signal.SIGTERM)
         if self.socket:
             self.socket.close()
