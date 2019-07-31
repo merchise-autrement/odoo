@@ -865,7 +865,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_recruitment.field_digest_digest__kpi_hr_recruitment_new_colleagues
 #: model_terms:ir.ui.view,arch_db:hr_recruitment.hr_job_survey
 msgid "Employees"
-msgstr ""
+msgstr "និយោជិក"
 
 #. module: hr_recruitment
 #: model:ir.model,name:hr_recruitment.model_calendar_event
@@ -1689,7 +1689,7 @@ msgstr "ការកំណត់"
 #. module: hr_recruitment
 #: model_terms:ir.ui.view,arch_db:hr_recruitment.view_crm_case_jobs_filter
 msgid "Show all records which has next action date is before today"
-msgstr ""
+msgstr "បង្ហាញកំណត់ត្រាទាំងអស់ដែលមានកាលបរិច្ឆេទសកម្មភាពបន្ទាប់នៅមុនថ្ងៃនេះ"
 
 #. module: hr_recruitment
 #: model:ir.model.fields,field_description:hr_recruitment.field_hr_applicant__source_id
