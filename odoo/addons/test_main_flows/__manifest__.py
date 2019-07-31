@@ -12,6 +12,6 @@ It will install some main apps and will try to execute the most important action
     'data': [
         'views/templates.xml',
     ],
-    'installable': True,
+    'installable': False,
     'post_init_hook': '_auto_install_enterprise_dependencies',
 }
