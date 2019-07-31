@@ -14,5 +14,5 @@ Enable UTM trackers in shared links.
     ],
     'demo': [],
     'auto_install': False,
-    'installable': False,
+    'installable': True,
 }
