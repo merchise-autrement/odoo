@@ -16,6 +16,6 @@ membership products (schemes).
     'depends': ['base_setup', 'membership', 'event'],
     'data': ['views/association_views.xml'],
     'demo': [],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
 }

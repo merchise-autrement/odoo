@@ -11,7 +11,7 @@
         'views/barcodes_templates.xml',
         'views/res_company.xml',
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'post_init_hook': '_assign_default_nomeclature_id',
 }
