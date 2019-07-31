@@ -22,5 +22,5 @@ Send KPI Digests periodically
         'views/digest_templates.xml',
         'views/res_config_settings_views.xml',
     ],
-    'installable': False,
+    'installable': True,
 }
