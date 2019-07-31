@@ -44,4 +44,5 @@
         'data/mass_mailing_demo.xml',
     ],
     'application': True,
+    'installable': False,
 }

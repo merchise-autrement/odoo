@@ -36,7 +36,7 @@ The following topics are covered by this module:
     ],
     'demo': ['data/repair_demo.xml'],
     'test': [],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': True,
 }

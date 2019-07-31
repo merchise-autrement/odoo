@@ -74,7 +74,7 @@
     'qweb': [
         'static/src/xml/stock_traceability_report_backend.xml',
     ],
-    'installable': True,
+    'installable': False,
     'application': True,
     'auto_install': False,
     'pre_init_hook': 'pre_init_hook',

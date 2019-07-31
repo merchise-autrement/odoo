@@ -14,6 +14,6 @@ This module allows a customer to give rating.
         'views/rating_template.xml',
         'security/ir.model.access.csv'
      ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
 }
