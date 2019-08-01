@@ -35,6 +35,6 @@ Preferences
         'wizard/stock_rules_report_views.xml',
     ],
     'demo': ['data/sale_order_demo.xml'],
-    'installable': True,
+    'installable': False,
     'auto_install': True,
 }

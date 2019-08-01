@@ -18,6 +18,6 @@ from sales order. It adds sales name and sales Reference on production order.
         'security/ir.model.access.csv',
     ],
     'demo': [],
-    'installable': True,
+    'installable': False,
     'auto_install': True,
 }

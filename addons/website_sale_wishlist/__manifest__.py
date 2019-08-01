@@ -15,5 +15,5 @@ Allow shoppers of your eCommerce store to create personalized collections of pro
         'security/ir.model.access.csv',
         'views/website_sale_wishlist_template.xml',
     ],
-    'installable': True,
+    'installable': False,
 }

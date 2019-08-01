@@ -14,6 +14,6 @@ It is basically used when we want to keep track of production orders generated
 from purchase order.
     """,
     'depends': ['mrp', 'purchase'],
-    'installable': True,
+    'installable': False,
     'auto_install': True,
 }

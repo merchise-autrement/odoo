@@ -10,7 +10,7 @@ Display orders to invoice in website dashboard.
         'sale_management',
         'website_sale',
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': True,
     'data': [
     ],

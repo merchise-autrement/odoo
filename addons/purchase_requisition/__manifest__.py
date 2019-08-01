@@ -22,4 +22,5 @@ are agreements you have with vendors to benefit from a predetermined pricing.
         'report/purchase_requisition_report.xml',
         'report/report_purchaserequisition.xml',
     ],
+    'installable': False,
 }

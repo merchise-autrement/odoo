@@ -15,6 +15,6 @@ test_mail. """,
     ],
     'demo': [
     ],
-    'installable': True,
+    'installable': False,
     'application': False,
 }

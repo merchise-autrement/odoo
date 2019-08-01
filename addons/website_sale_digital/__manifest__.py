@@ -13,7 +13,7 @@ Once the order is paid, the file is made available in the order confirmation pag
         'document',
         'website_sale',
     ],
-    'installable': True,
+    'installable': False,
     'data': [
         'views/website_sale_digital.xml',
         'views/website_sale_digital_view.xml',

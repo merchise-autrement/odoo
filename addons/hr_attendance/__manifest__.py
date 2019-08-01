@@ -30,7 +30,7 @@ actions(Check in/Check out) performed by them.
     'demo': [
         'data/hr_attendance_demo.xml'
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'qweb': [
         "static/src/xml/attendance.xml",
