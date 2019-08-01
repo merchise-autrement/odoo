@@ -22,5 +22,5 @@ sale discount to a customer.
     'qweb': [
         'static/src/xml/discount_templates.xml',
     ],
-    'installable': True,
+    'installable': False,
 }

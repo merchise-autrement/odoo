@@ -13,6 +13,6 @@
         'data/payment_acquirer_data.xml',
     ],
     'images': ['static/description/icon.png'],
-    'installable': True,
+    'installable': False,
     'post_init_hook': 'create_missing_journal_for_acquirers',
 }

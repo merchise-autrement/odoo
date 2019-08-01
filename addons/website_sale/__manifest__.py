@@ -28,7 +28,7 @@
         'data/demo.xml',
     ],
     'qweb': ['static/src/xml/*.xml'],
-    'installable': True,
+    'installable': False,
     'application': True,
     'uninstall_hook': 'uninstall_hook',
 }

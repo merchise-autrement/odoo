@@ -27,6 +27,6 @@ With this module:
     ],
     'demo': [],
     'test': [],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
 }

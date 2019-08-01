@@ -16,6 +16,6 @@ enable payment.
     'data': [
         'views/account_portal_templates.xml',
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
 }
