@@ -541,7 +541,7 @@ msgstr "កំណត់យក"
 #: code:addons/web/static/src/js/views/list/list_controller.js:154
 #, python-format
 msgid "Archive"
-msgstr ""
+msgstr "សម្រេចគោលដៅ"
 
 #. module: web
 #. openerp-web
@@ -623,7 +623,7 @@ msgstr ""
 #: code:addons/web/static/src/xml/web_calendar.xml:56
 #, python-format
 msgid "Avatar"
-msgstr ""
+msgstr "រូបតំណាង"
 
 #. module: web
 #. openerp-web
@@ -774,7 +774,7 @@ msgstr ""
 #: code:addons/web/static/src/js/widgets/colorpicker.js:35
 #, python-format
 msgid "Choose"
-msgstr ""
+msgstr "ជ្រើសរើស"
 
 #. module: web
 #. openerp-web
@@ -1248,7 +1248,7 @@ msgstr "ម៉ឺនុយទម្លាក់ចុះ"
 #: code:addons/web/static/src/js/views/form/form_controller.js:184
 #, python-format
 msgid "Duplicate"
-msgstr ""
+msgstr "ត្រួត"
 
 #. module: web
 #. openerp-web
@@ -1362,7 +1362,7 @@ msgstr ""
 #: code:addons/web/static/src/xml/kanban.xml:60
 #, python-format
 msgid "Examples"
-msgstr ""
+msgstr "ឧទាហរណ៍"
 
 #. module: web
 #. openerp-web
@@ -1383,7 +1383,7 @@ msgstr ""
 #: code:addons/web/static/src/js/views/list/list_controller.js:149
 #, python-format
 msgid "Export"
-msgstr ""
+msgstr "នាំចេញ"
 
 #. module: web
 #. openerp-web
@@ -1449,7 +1449,7 @@ msgstr ""
 #: code:addons/web/static/src/xml/base.xml:1353
 #, python-format
 msgid "Favorites"
-msgstr ""
+msgstr "ចំណូលចិត្ត"
 
 #. module: web
 #. openerp-web
@@ -1602,7 +1602,7 @@ msgstr ""
 #: code:addons/web/static/src/js/views/graph/graph_view.js:23
 #, python-format
 msgid "Graph"
-msgstr ""
+msgstr "ក្រាហ្វ"
 
 #. module: web
 #. openerp-web
@@ -1795,7 +1795,7 @@ msgstr ""
 #: code:addons/web/controllers/main.py:840
 #, python-format
 msgid "Languages"
-msgstr ""
+msgstr "ភាសា"
 
 #. module: web
 #. openerp-web
@@ -1917,14 +1917,14 @@ msgstr ""
 #: code:addons/web/static/src/xml/kanban.xml:42
 #, python-format
 msgid "Load more... ("
-msgstr ""
+msgstr "ផ្ទុកបន្ថែម"
 
 #. module: web
 #. openerp-web
 #: code:addons/web/static/src/js/chrome/loading.js:58
 #, python-format
 msgid "Loading"
-msgstr ""
+msgstr "ដំណើរការ"
 
 #. module: web
 #. openerp-web
@@ -2169,7 +2169,7 @@ msgstr "ថ្មី"
 #: code:addons/web/static/src/xml/base.xml:169
 #, python-format
 msgid "New Password"
-msgstr ""
+msgstr "លេខសំងាត់ថ្មី"
 
 #. module: web
 #. openerp-web
@@ -2580,7 +2580,7 @@ msgstr ""
 #: code:addons/web/static/src/xml/base.xml:1549
 #, python-format
 msgid "Preferences"
-msgstr ""
+msgstr "ចំណូលចិត្ត"
 
 #. module: web
 #: model:ir.actions.report,name:web.action_report_externalpreview

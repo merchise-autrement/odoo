@@ -4895,7 +4895,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:stock.view_move_search
 #: model_terms:ir.ui.view,arch_db:stock.view_picking_internal_search
 msgid "Scheduled Date"
-msgstr "納期"
+msgstr "予定日"
 
 #. module: stock
 #: model:ir.model.fields,help:stock.field_stock_move__date_expected
@@ -6883,6 +6883,14 @@ msgstr "先に梱包に入れる数量を指定してください。"
 #, python-format
 msgid "You need to supply a Lot/Serial number for product %s."
 msgstr "プロダクト %s にロット/シリアル番号を指定してください。"
+
+#. module: stock
+#: code:addons/stock/models/res_config_settings.py:70
+#, python-format
+msgid ""
+"You should not remove the 'lots and serial numbers' option while the following products are still tracked by lot or serial number:\n"
+" %s"
+msgstr ""
 
 #. module: stock
 #: code:addons/stock/models/product.py:394
