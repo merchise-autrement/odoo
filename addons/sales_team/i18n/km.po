@@ -75,7 +75,7 @@ msgstr "ចំនួនឯកសារភ្ជាប់"
 #. module: sales_team
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_form
 msgid "Avatar"
-msgstr ""
+msgstr "រូបតំណាង"
 
 #. module: sales_team
 #: selection:crm.team,dashboard_graph_type:0
@@ -205,7 +205,7 @@ msgstr "អ្នកដើរតាម (ដៃគូរ)"
 #. module: sales_team
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_form
 msgid "Graph"
-msgstr ""
+msgstr "ក្រាហ្វ"
 
 #. module: sales_team
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_salesteams_search
@@ -331,7 +331,7 @@ msgstr "ខែ"
 #. module: sales_team
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_salesteams_search
 msgid "My Favorites"
-msgstr ""
+msgstr "ចំណូលចិត្តរបស់ខ្ថុំ"
 
 #. module: sales_team
 #: code:addons/sales_team/models/crm_team.py:260
@@ -372,7 +372,7 @@ msgstr "Pipeline"
 #. module: sales_team
 #: selection:crm.team,team_type:0
 msgid "Point of Sale"
-msgstr ""
+msgstr "ចំនុច​នៃ​ការ​លក់"
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__reply_to
@@ -387,7 +387,7 @@ msgstr "ការលក់"
 #. module: sales_team
 #: model:ir.model,name:sales_team.model_crm_team
 msgid "Sales Channels"
-msgstr ""
+msgstr "លក់"
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__name
@@ -395,7 +395,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_form
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_tree
 msgid "Sales Team"
-msgstr ""
+msgstr "ក្រុមលក់"
 
 #. module: sales_team
 #: model:ir.model.fields,help:sales_team.field_res_users__sale_team_id
@@ -453,7 +453,7 @@ msgstr ""
 #. module: sales_team
 #: model:ir.actions.act_window,name:sales_team.crm_team_salesteams_act
 msgid "Team Pipelines"
-msgstr ""
+msgstr "ក្រុមបំពង់"
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__team_type
@@ -475,12 +475,12 @@ msgstr ""
 #. module: sales_team
 #: model:ir.model.fields,help:sales_team.field_crm_team__dashboard_graph_model
 msgid "The graph this channel will display in the Dashboard.\n"
-msgstr ""
+msgstr "ក្រាហ្វបណ្តាញនេះនឹងបង្ហាញនៅក្នុងផ្ទាំងព័ត៌មាន។\n"
 
 #. module: sales_team
 #: model:ir.model.fields,help:sales_team.field_crm_team__dashboard_graph_period
 msgid "The time period this channel's dashboard graph will consider."
-msgstr ""
+msgstr "កំឡុងពេលដែលក្រាហ្វិចផ្ទៃតាប្លូរបស់បណ្តាញនេះនឹងពិចារណា។"
 
 #. module: sales_team
 #: model:ir.model.fields,help:sales_team.field_crm_team__dashboard_graph_type
