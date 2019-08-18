@@ -12,6 +12,9 @@ var _t = core._t;
 
 var ChannelCreateDialog = Dialog.extend({
     template: 'website.slide.channel.create',
+    xmlDependencies: Dialog.prototype.xmlDependencies.concat(
+        ['/website_slides/static/src/xml/website_slides_channel.xml']
+    ),
     /**
      * @override
      * @param {Object} parent
@@ -19,7 +22,7 @@ var ChannelCreateDialog = Dialog.extend({
      */
     init: function (parent, options) {
         options = _.defaults(options || {}, {
-            title: _t("New Channel Slide"),
+            title: _t("New Course"),
             size: 'medium',
             buttons: [{
                 text: _t("Create"),
@@ -76,7 +79,13 @@ var ChannelCreateDialog = Dialog.extend({
     },
     _onClickFormSubmit: function (ev) {
         var $form = this.$("#slide_channel_add_form");
-        $form.submit()
+        var $title = this.$("#title");
+        if (!$title[0].value){
+            $title.addClass('border-danger');
+            this.$("#title-required").removeClass('d-none');
+        } else {
+            $form.submit();
+        }
     },
 });
 
@@ -84,9 +93,6 @@ WebsiteNewMenu.include({
     actions: _.extend({}, WebsiteNewMenu.prototype.actions || {}, {
         new_slide_channel: '_createNewSlideChannel',
     }),
-    xmlDependencies: WebsiteNewMenu.prototype.xmlDependencies.concat(
-        ['/website_slides/static/src/xml/website_slides_channel.xml']
-    ),
 
     //--------------------------------------------------------------------------
     // Actions

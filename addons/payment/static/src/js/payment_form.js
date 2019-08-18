@@ -10,6 +10,7 @@ var _t = core._t;
 publicWidget.registry.PaymentForm = publicWidget.Widget.extend({
     selector: '.o_payment_form',
     events: {
+        'submit': 'async onSubmit',
         'click #o_payment_form_pay': 'async payEvent',
         'click #o_payment_form_add_pm': 'addPmEvent',
         'click button[name="delete_pm"]': 'deletePmEvent',
@@ -21,10 +22,12 @@ publicWidget.registry.PaymentForm = publicWidget.Widget.extend({
      * @override
      */
     start: function () {
-        this.options = _.extend(this.$el.data(), this.options);
-        this.updateNewPaymentDisplayStatus();
-        $('[data-toggle="tooltip"]').tooltip();
-        return this._super.apply(this, arguments);
+        var self = this;
+        return this._super.apply(this, arguments).then(function () {
+            self.options = _.extend(self.$el.data(), self.options);
+            self.updateNewPaymentDisplayStatus();
+            $('[data-toggle="tooltip"]').tooltip();
+        });
     },
 
     //--------------------------------------------------------------------------
@@ -64,6 +67,9 @@ publicWidget.registry.PaymentForm = publicWidget.Widget.extend({
             messageResult = messageResult + _.str.escapeHTML(message) + '</div>';
             $acquirerForm.append(messageResult);
         }
+    },
+    hideError: function() {
+        this.$('#payment_error').remove();
     },
     /**
      * @private
@@ -122,6 +128,24 @@ publicWidget.registry.PaymentForm = publicWidget.Widget.extend({
         }
     },
 
+    disableButton: function (button) {
+        $(button).attr('disabled', true);
+        $(button).children('.fa-lock').removeClass('fa-lock');
+        $(button).prepend('<span class="o_loader"><i class="fa fa-refresh fa-spin"></i>&nbsp;</span>');
+    },
+
+    enableButton: function (button) {
+        $(button).attr('disabled', false);
+        $(button).children('.fa').addClass('fa-lock');
+        $(button).find('span.o_loader').remove();
+    },
+    _parseError: function(e) { 
+        if (e.message.data.arguments[1]) {
+            return e.message.data.arguments[0] + e.message.data.arguments[1];
+        }
+        return e.message.data.arguments[0];
+    },
+
     //--------------------------------------------------------------------------
     // Handlers
     //--------------------------------------------------------------------------
@@ -135,7 +159,11 @@ publicWidget.registry.PaymentForm = publicWidget.Widget.extend({
         var form = this.el;
         var checked_radio = this.$('input[type="radio"]:checked');
         var self = this;
-        var button = ev.target;
+        if (ev.type === 'submit') {
+            var button = $(ev.target).find('*[type="submit"]')[0]
+        } else {
+            var button = ev.target;
+        }
 
         // first we check that the user has selected a payment method
         if (checked_radio.length === 1) {
@@ -184,10 +212,7 @@ publicWidget.registry.PaymentForm = publicWidget.Widget.extend({
                     return;
                 }
 
-                $(button).attr('disabled', true);
-                $(button).children('.fa-plus-circle').removeClass('fa-plus-circle');
-                $(button).prepend('<span class="o_loader"><i class="fa fa-refresh fa-spin"></i>&nbsp;</span>');
-
+                this.disableButton(button);
                 // do the call to the route stored in the 'data_set' input of the acquirer form, the data must be called 'create-route'
                 return this._rpc({
                     route: ds.dataset.createRoute,
@@ -219,19 +244,15 @@ publicWidget.registry.PaymentForm = publicWidget.Widget.extend({
                         }
                     }
                     // here we remove the 'processing' icon from the 'add a new payment' button
-                    $(button).attr('disabled', false);
-                    $(button).children('.fa').addClass('fa-plus-circle');
-                    $(button).find('span.o_loader').remove();
+                    self.enableButton(button);
                 }).guardedCatch(function (error) {
                     // if the rpc fails, pretty obvious
-                    $(button).attr('disabled', false);
-                    $(button).children('.fa').addClass('fa-plus-circle');
-                    $(button).find('span.o_loader').remove();
+                    self.enableButton(button);
 
                     self.displayError(
                         _t('Server Error'),
                         _t("We are not able to add your payment method at the moment.") +
-                            error.message.data.message
+                            this._parseError(error)
                     );
                 });
             }
@@ -281,7 +302,7 @@ publicWidget.registry.PaymentForm = publicWidget.Widget.extend({
                         self.displayError(
                             _t('Server Error'),
                             _t("We are not able to redirect you to the payment form. ") +
-                                error.message.data.message
+                                this._parseError(error)
                         );
                     });
                 }
@@ -294,6 +315,7 @@ publicWidget.registry.PaymentForm = publicWidget.Widget.extend({
                 }
             }
             else {  // if the user is using an old payment then we just submit the form
+                this.disableButton(button);
                 form.submit();
                 return new Promise(function () {});
             }
@@ -316,7 +338,11 @@ publicWidget.registry.PaymentForm = publicWidget.Widget.extend({
         ev.preventDefault();
         var checked_radio = this.$('input[type="radio"]:checked');
         var self = this;
-        var button = ev.target;
+        if (ev.type === 'submit') {
+            var button = $(ev.target).find('*[type="submit"]')[0]
+        } else {
+            var button = ev.target;
+        }
 
         // we check if the user has selected a 'add a new payment' option
         if (checked_radio.length === 1 && this.isNewPaymentRadio(checked_radio[0])) {
@@ -408,7 +434,7 @@ publicWidget.registry.PaymentForm = publicWidget.Widget.extend({
                 self.displayError(
                     _t('Server error'),
                     _t("We are not able to add your payment method at the moment.</p>") +
-                        error.message.data.message
+                        this._parseError(error)
                 );
             });
         }
@@ -418,6 +444,25 @@ publicWidget.registry.PaymentForm = publicWidget.Widget.extend({
                 _t('Please select the option to add a new payment method.')
             );
         }
+    },
+    /**
+     * Called when submitting the form (e.g. through the Return key).
+     * We need to check whether we are paying or adding a new pm and dispatch
+     * to the correct method.
+     *
+     * @private
+     * @param {Event} ev
+     */
+    onSubmit: function(ev) {
+        ev.stopPropagation();
+        ev.preventDefault();
+        var button = $(ev.target).find('*[type="submit"]')[0]
+        if (button.id === 'o_payment_form_pay') {
+            return this.payEvent(ev);
+        } else if (button.id === 'o_payment_form_add_pm') {
+            return this.addPmEvent(ev);
+        }
+        return;
     },
     /**
      * Called when clicking on a button to delete a payment method.

@@ -37,8 +37,8 @@
             <field name="model">crm.lead</field>
             <field name="inherit_id" ref="crm.crm_case_tree_view_oppor"/>
             <field name="arch" type="xml">
-                <field name="partner_id" position="after">
-                    <field name="partner_assigned_id"/>
+                <field name="user_id" position="before">
+                    <field name="partner_assigned_id" optional="show"/>
                     <field name="date_assign" invisible="1"/>
                  </field>
             </field>
@@ -55,7 +55,7 @@
                 <filter name="unassigned" position="after">
                     <filter string="My Assigned Partners" name="my_assigned_partners" domain="[('partner_assigned_id.user_id', '=', uid)]"/>
                 </filter>
-                <field name="partner_id" position="after">
+                <field name="city" position="after">
                     <field name="partner_assigned_id"/>
                 </field>
             </field>
@@ -99,7 +99,7 @@
             <field name="inherit_id" ref="crm.crm_case_tree_view_leads"/>
             <field name="arch" type="xml">
                 <field name="partner_id" position="after">
-                    <field name="partner_assigned_id"/>
+                    <field name="partner_assigned_id" optional="show"/>
                 </field>
             </field>
         </record>
@@ -110,26 +110,14 @@
             <field name="inherit_id" ref="crm.view_crm_case_leads_filter"/>
             <field name="arch" type="xml">
                 <filter name="company" position="after">
-                    <filter string="Assigned Partner" name="assigned_partner" domain="[]" context="{'group_by':'partner_assigned_id'}"/>
+                    <filter string="Assigned Partner" name="assigned_partner" domain="[]" context="{'group_by': 'partner_assigned_id'}"/>
                 </filter>
-                <filter name="assigned_to_me" position="after">
+                <filter name="unassigned_leads" position="after">
                     <filter string="My Assigned Partners" name="my_assigned_partners" domain="[('partner_assigned_id.user_id', '=', uid)]"/>
                 </filter>
-                <field name="country_id" position="after">
+                <field name="campaign_id" position="after">
                     <field name="partner_assigned_id"/>
                 </field>
-            </field>
-        </record>
-
-        <record id="action_assign_salesman_according_assigned_partner" model="ir.actions.server">
-            <field name="name">Assign salesman of assigned partner</field>
-            <field name="model_id" ref="model_crm_lead"/>
-            <field name="binding_model_id" ref="model_crm_lead"/>
-            <field name="state">code</field>
-            <field name="code">
-if env.context.get('active_domain'):
-    records = model.search(env.context['active_domain'])
-records.assign_salesman_of_assigned_partner()
             </field>
         </record>
 

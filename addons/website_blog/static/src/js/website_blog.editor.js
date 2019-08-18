@@ -127,7 +127,7 @@ options.registry.many2one.include({
                 var $img = $(this).find('img');
                 var css = window.getComputedStyle($img[0]);
                 $img.css({ width: css.width, height: css.height });
-                $img.attr('src', '/web/image/res.partner/'+self.ID+'/image');
+                $img.attr('src', '/web/image/res.partner/'+self.ID+'/image_1024');
             });
             setTimeout(function () { $nodes.removeClass('o_dirty'); },0);
         }
@@ -179,11 +179,12 @@ options.registry.blog_cover = options.Class.extend({
         }
 
         var editor = new weWidgets.MediaDialog(this, {
+            mediaWidth: 1920,
             onlyImages: true,
             firstFilters: ['background']
         }, $image[0]).open();
-        editor.on('save', this, function (event, img) {
-            var src = $image.attr('src');
+        editor.on('save', this, function (image) {
+            var src = image.src;
             this.$image.css('background-image', src ? ('url(' + src + ')') : '');
             if (!this.$target.hasClass('cover')) {
                 var $opt = this.$el.find('[data-select-class]').first();

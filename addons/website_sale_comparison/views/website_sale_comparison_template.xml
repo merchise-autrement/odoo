@@ -8,10 +8,16 @@
         </xpath>
     </template>
 
-    <template id="add_to_compare" inherit_id="website_sale.products_item" active="True" customize_show="True" name="Comparison List" priority="22">
-        <xpath expr="//div[hasclass('product_price')]" position="inside">
+    <template id="assets_tests" inherit_id="web.assets_tests" name="Website Sale Comparison Assets Tests">
+        <xpath expr="." position="inside">
+            <script type="text/javascript" src="/website_sale_comparison/static/tests/tours/website_sale_comparison.js"></script>
+        </xpath>
+    </template>
+
+    <template id="add_to_compare" inherit_id="website_sale.products_item" customize_show="True" name="Comparison List" priority="22">
+        <xpath expr="//div[hasclass('o_wsale_product_btn')]" position="inside">
             <t t-set="product_variant_id" t-value="product._get_first_possible_variant_id()"/>
-            <button t-if="product_variant_id" type="button" role="button" class="d-none d-md-inline-block btn btn-secondary btn-sm o_add_compare" title="Compare" aria-label="Compare" t-att-data-product-product-id="product_variant_id" data-action="o_comparelist"><span class="fa fa-exchange"></span></button>
+            <button t-if="product_variant_id" type="button" role="button" class="d-none d-md-inline-block btn btn-secondary o_add_compare" title="Compare" aria-label="Compare" t-att-data-product-product-id="product_variant_id" data-action="o_comparelist"><span class="fa fa-exchange"></span></button>
         </xpath>
     </template>
 
@@ -24,7 +30,7 @@
         </xpath>
     </template>
 
-    <template id="product_attributes_body" inherit_id="website_sale.product" customize_show="True" active="True" name="Product attributes table">
+    <template id="product_attributes_body" inherit_id="website_sale.product" customize_show="True" name="Product attributes table">
         <xpath expr="//div[@id='product_attributes_simple']" position="replace"/>
         <xpath expr="//div[@id='product_full_description']" position="after">
             <section class="container" id="product_full_spec">
@@ -40,7 +46,7 @@
                                             <th class="text-left" t-att-colspan="2"><t t-esc="spec"/></th>
                                         </tr>
                                     </t>
-                                    <tr t-foreach="atts[spec]" t-as="att" t-att-class="'collapse in show ' + spec.split()[0]">
+                                    <tr t-foreach="atts[spec]" t-as="att" t-att-class="'collapse show ' + spec.split()[0]">
                                         <td t-esc="att.attribute_id.name"/>
                                         <td>
                                             <t t-set='or_separator'>or</t>
@@ -90,11 +96,11 @@
                                     <a href="#" t-att-data-product_product_id="product.id" class="o_comparelist_remove" t-if="len(products) &gt; 2">
                                         <strong class='float-right'>x</strong>
                                     </a>
-                                    <a t-att-href="'/shop/product/%s' % slug(product.product_tmpl_id)">
-                                        <img t-attf-src="/web/image/product.product/#{product.id}/image_large" class="img img-fluid" style="margin:auto;" alt="Product image"/>
+                                    <a t-att-href="product.website_url">
+                                        <img t-attf-src="/web/image/product.product/#{product.id}/image_256" class="img img-fluid" style="margin:auto;" alt="Product image"/>
                                     </a>
                                     <div class='product_summary'>
-                                        <a class="o_product_comparison_table" t-attf-href="/shop/product/#{ slug(product.product_tmpl_id) }">
+                                        <a class="o_product_comparison_table" t-att-href="product.website_url">
                                             <span t-esc="combination_info['display_name']"></span><br/>
                                         </a>
 
@@ -120,7 +126,7 @@
                                         <th class="text-left" t-att-colspan="len(products) + 1"><i class="fa fa-chevron-circle-down o_product_comparison_collpase" role="img" aria-label="Collapse" title="Collapse"></i><t t-esc="spec"/></th>
                                     </tr>
                                 </t>
-                                <tr t-foreach="specs[spec].keys()" t-as="att" t-att-class="'collapse in show ' + spec.split()[0]">
+                                <tr t-foreach="specs[spec].keys()" t-as="att" t-att-class="'collapse show ' + spec.split()[0]">
                                     <td t-esc="att"/>
                                     <td t-foreach="specs[spec][att]" t-as="val"><t t-esc="val"/></td>
                                 </tr>
@@ -137,11 +143,11 @@
         <t t-set="combination_info" t-value="product._get_combination_info_variant()"/>
         <div class="row no-gutters align-items-center mt-2 o_product_row" t-att-data-category_ids="product.public_categ_ids.ids">
             <div class="col-3">
-                <img class="img img-fluid" t-attf-src="/web/image/product.product/#{product.id}/image_small" style="max-height: 50px;" alt="Product image"/>
+                <img class="img img-fluid" t-att-src="website.image_url(product, 'image_64')" style="max-height: 50px;" alt="Product image"/>
             </div>
             <div class="col-8 pl-2">
                 <h6>
-                    <a t-attf-href="/shop/product/#{product.product_tmpl_id[0].id}"><t t-esc="combination_info['display_name']" /></a><br/>
+                    <a t-att-href="product.website_url"><t t-esc="combination_info['display_name']" /></a><br/>
                     <t t-if="True"><!--compatibility 12.0-->
                         <del t-attf-class="text-danger mr8 {{'' if combination_info['has_discounted_price'] else 'd-none'}}" style="white-space: nowrap;" t-esc="combination_info['list_price']" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}" />
                     </t>

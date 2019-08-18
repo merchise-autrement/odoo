@@ -115,7 +115,7 @@ var FieldAutocomplete = FieldChar.extend(AutocompleteMixin, {
         var self = this;
         this._getCreateData(company).then(function (data) {
             if (data.logo) {
-                var logoField = self.model === 'res.partner' ? 'image' : 'logo';
+                var logoField = self.model === 'res.partner' ? 'image_1920' : 'logo';
                 data.company[logoField] = data.logo;
             }
 
@@ -126,9 +126,6 @@ var FieldAutocomplete = FieldChar.extend(AutocompleteMixin, {
                     delete data.company[field];
                 });
             }
-
-            self._setOne2ManyField('child_ids', data.company.child_ids);
-            delete data.company.child_ids;
 
             self._setOne2ManyField('bank_ids', data.company.bank_ids);
             delete data.company.bank_ids;

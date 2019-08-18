@@ -358,6 +358,8 @@ var SnippetEditor = Widget.extend({
         ev.preventDefault();
         this.trigger_up('cover_will_change');
 
+        this.trigger_up('snippet_will_be_cloned', {$target: this.$target});
+
         var $clone = this.$target.clone(false);
 
         this.trigger_up('request_history_undo_record', {$target: this.$target});
@@ -372,7 +374,7 @@ var SnippetEditor = Widget.extend({
                 }
             },
         });
-        this.trigger_up('snippet_cloned', {$target: $clone});
+        this.trigger_up('snippet_cloned', {$target: $clone, $origin: this.$target});
         $clone.trigger('content_changed');
     },
     /**
@@ -676,6 +678,7 @@ var SnippetsMenu = Widget.extend({
         // on text changes
         this.$document.on('click.snippets_menu', '.o_default_snippet_text', function (ev) {
             $(ev.target).selectContent();
+            $(ev.target).removeClass('o_default_snippet_text');
         });
         this.$document.on('keyup.snippets_menu', function () {
             var range = Wysiwyg.getRange(this);
@@ -744,6 +747,7 @@ var SnippetsMenu = Widget.extend({
             },
         });
         this.cacheSnippetTemplate[this.options.snippets] = this._defLoadSnippets;
+        return this.cacheSnippetTemplate[this.options.snippets];
     },
     /**
      * Sets the instance variables $editor, $body and selectorEditableArea.
@@ -918,7 +922,7 @@ var SnippetsMenu = Widget.extend({
              && (float_next === 'left' || float_next === 'right')) {
                 zone.remove();
             } else if (disp_prev !== null && disp_next !== null
-             && disp_prev !== 'block' && disp_next !== 'block') {
+             && disp_prev.indexOf('inline') >= 0 && disp_next.indexOf('inline') >= 0) {
                 zone.remove();
             }
         });
@@ -1356,6 +1360,7 @@ var SnippetsMenu = Widget.extend({
                         if (!dropped) {
                             dropped = true;
                             $(this).first().after($toInsert).addClass('d-none');
+                            $toInsert.removeClass('oe_snippet_body');
                         }
                     },
                     out: function () {
@@ -1364,6 +1369,7 @@ var SnippetsMenu = Widget.extend({
                             dropped = false;
                             $toInsert.detach();
                             $(this).removeClass('d-none');
+                            $toInsert.addClass('oe_snippet_body');
                         }
                     },
                 });

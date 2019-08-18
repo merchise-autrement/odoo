@@ -6,7 +6,7 @@ import re
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
-STREET_FIELDS = ('street_name', 'street_number', 'street_number2')
+STREET_FIELDS = ['street_name', 'street_number', 'street_number2']
 
 
 class ResCountry(models.Model):
@@ -33,12 +33,15 @@ class Partner(models.Model):
     street_number2 = fields.Char('Door', compute='_split_street', help="Door Number",
                                  inverse='_set_street', store=True)
 
+    def _formatting_address_fields(self):
+        """Returns the list of address fields usable to format addresses."""
+        return super(Partner, self)._formatting_address_fields() + self.get_street_fields()
+
     def get_street_fields(self):
         """Returns the fields that can be used in a street format.
         Overwrite this function if you want to add your own fields."""
         return STREET_FIELDS
 
-    @api.multi
     def _set_street(self):
         """Updates the street field.
         Writes the `street` field on the partners when one of the sub-fields in STREET_FIELDS
@@ -117,7 +120,6 @@ class Partner(models.Model):
         return vals
 
 
-    @api.multi
     @api.depends('street')
     def _split_street(self):
         """Splits street value into sub-fields.

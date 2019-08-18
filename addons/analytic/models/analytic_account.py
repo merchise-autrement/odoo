@@ -40,11 +40,11 @@ class AccountAnalyticGroup(models.Model):
 
     name = fields.Char(required=True)
     description = fields.Text(string='Description')
-    parent_id = fields.Many2one('account.analytic.group', string="Parent", ondelete='cascade')
+    parent_id = fields.Many2one('account.analytic.group', string="Parent", ondelete='cascade', domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
     parent_path = fields.Char(index=True)
     children_ids = fields.One2many('account.analytic.group', 'parent_id', string="Childrens")
     complete_name = fields.Char('Complete Name', compute='_compute_complete_name', store=True)
-    company_id = fields.Many2one('res.company', string='Company')
+    company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
 
     @api.depends('name', 'parent_id.complete_name')
     def _compute_complete_name(self):
@@ -78,7 +78,6 @@ class AccountAnalyticAccount(models.Model):
                 line['credit'] = sum(accounts.mapped('credit'))
         return res
 
-    @api.multi
     def _compute_debit_credit_balance(self):
         Curr = self.env['res.currency']
         analytic_line_obj = self.env['account.analytic.line']
@@ -93,7 +92,7 @@ class AccountAnalyticAccount(models.Model):
         if self._context.get('company_ids'):
             domain.append(('company_id', 'in', self._context['company_ids']))
 
-        user_currency = self.env.user.company_id.currency_id
+        user_currency = self.env.company.currency_id
         credit_groups = analytic_line_obj.read_group(
             domain=domain + [('amount', '>=', 0.0)],
             fields=['account_id', 'currency_id', 'amount'],
@@ -103,7 +102,7 @@ class AccountAnalyticAccount(models.Model):
         data_credit = defaultdict(float)
         for l in credit_groups:
             data_credit[l['account_id'][0]] += Curr.browse(l['currency_id'][0])._convert(
-                l['amount'], user_currency, self.env.user.company_id, fields.Date.today())
+                l['amount'], user_currency, self.env.company, fields.Date.today())
 
         debit_groups = analytic_line_obj.read_group(
             domain=domain + [('amount', '<', 0.0)],
@@ -114,7 +113,7 @@ class AccountAnalyticAccount(models.Model):
         data_debit = defaultdict(float)
         for l in debit_groups:
             data_debit[l['account_id'][0]] += Curr.browse(l['currency_id'][0])._convert(
-                l['amount'], user_currency, self.env.user.company_id, fields.Date.today())
+                l['amount'], user_currency, self.env.company, fields.Date.today())
 
         for account in self:
             account.debit = abs(data_debit.get(account.id, 0.0))
@@ -125,14 +124,14 @@ class AccountAnalyticAccount(models.Model):
     code = fields.Char(string='Reference', index=True, tracking=True)
     active = fields.Boolean('Active', help="If the active field is set to False, it will allow you to hide the account without removing it.", default=True)
 
-    group_id = fields.Many2one('account.analytic.group', string='Group')
+    group_id = fields.Many2one('account.analytic.group', string='Group', domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
 
     line_ids = fields.One2many('account.analytic.line', 'account_id', string="Analytic Lines")
 
-    company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.user.company_id)
+    company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
 
     # use auto_join to speed up name_search call
-    partner_id = fields.Many2one('res.partner', string='Customer', auto_join=True, tracking=True)
+    partner_id = fields.Many2one('res.partner', string='Customer', auto_join=True, tracking=True, domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
 
     balance = fields.Monetary(compute='_compute_debit_credit_balance', string='Balance')
     debit = fields.Monetary(compute='_compute_debit_credit_balance', string='Debit')
@@ -140,7 +139,6 @@ class AccountAnalyticAccount(models.Model):
 
     currency_id = fields.Many2one(related="company_id.currency_id", string="Currency", readonly=True)
 
-    @api.multi
     def name_get(self):
         res = []
         for analytic in self:
@@ -181,16 +179,16 @@ class AccountAnalyticLine(models.Model):
     date = fields.Date('Date', required=True, index=True, default=fields.Date.context_today)
     amount = fields.Monetary('Amount', required=True, default=0.0)
     unit_amount = fields.Float('Quantity', default=0.0)
-    product_uom_id = fields.Many2one('uom.uom', string='Unit of Measure')
-    account_id = fields.Many2one('account.analytic.account', 'Analytic Account', required=True, ondelete='restrict', index=True)
-    partner_id = fields.Many2one('res.partner', string='Partner')
+    product_uom_id = fields.Many2one('uom.uom', string='Unit of Measure', domain="[('category_id', '=', product_uom_category_id)]")
+    product_uom_category_id = fields.Many2one(related='product_uom_id.category_id', readonly=True)
+    account_id = fields.Many2one('account.analytic.account', 'Analytic Account', required=True, ondelete='restrict', index=True, domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
+    partner_id = fields.Many2one('res.partner', string='Partner', domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
     user_id = fields.Many2one('res.users', string='User', default=_default_user)
-    tag_ids = fields.Many2many('account.analytic.tag', 'account_analytic_line_tag_rel', 'line_id', 'tag_id', string='Tags', copy=True)
-    company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True, default=lambda self: self.env.user.company_id)
+    tag_ids = fields.Many2many('account.analytic.tag', 'account_analytic_line_tag_rel', 'line_id', 'tag_id', string='Tags', copy=True, domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
+    company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True, default=lambda self: self.env.company)
     currency_id = fields.Many2one(related="company_id.currency_id", string="Currency", readonly=True, store=True, compute_sudo=True)
     group_id = fields.Many2one('account.analytic.group', related='account_id.group_id', store=True, readonly=True, compute_sudo=True)
 
-    @api.multi
     @api.constrains('company_id', 'account_id')
     def _check_company_id(self):
         for line in self:

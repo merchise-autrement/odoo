@@ -25,7 +25,7 @@ class TestSaleProductAttributeValueSetup(TestProductAttributeValueSetup):
         non-reliant on demo data."""
         name = fields.Date.today()
         currency_id = currency.id
-        company_id = self.env.user.company_id.id
+        company_id = self.env.company.id
 
         CurrencyRate = self.env['res.currency.rate']
 
@@ -71,10 +71,9 @@ class TestSaleProductAttributeValueConfig(TestSaleProductAttributeValueSetup):
         pricelist_item = self.env['product.pricelist.item'].create({
             'min_quantity': 2,
             'compute_price': 'percentage',
-            'percent_price': discount
+            'percent_price': discount,
+            'pricelist_id': pricelist.id,
         })
-
-        pricelist.item_ids += pricelist_item
 
         return (pricelist, pricelist_item, currency_ratio, 1 - discount / 100)
 

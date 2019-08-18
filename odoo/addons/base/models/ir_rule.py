@@ -43,8 +43,16 @@ class IrRule(models.Model):
     @api.model
     def _eval_context(self):
         """Returns a dictionary to use as evaluation context for
-           ir.rule domains."""
-        return {'user': self.env.user, 'time': time}
+           ir.rule domains.
+           Note: company_ids contains the ids of the activated companies
+           by the user with the switch company menu. These companies are
+           filtered and trusted.
+        """
+        return {
+            'user': self.env.user,
+            'time': time,
+            'company_ids': self.env.companies.ids,
+        }
 
     @api.depends('groups')
     def _compute_global(self):
@@ -64,7 +72,7 @@ class IrRule(models.Model):
 
     def _compute_domain_keys(self):
         """ Return the list of context keys to use for caching ``_compute_domain``. """
-        return []
+        return ['allowed_company_ids']
 
     def _get_failing(self, for_records, mode='read'):
         """ Returns the rules for the mode for the current user which fail on
@@ -98,7 +106,7 @@ class IrRule(models.Model):
                 expression.normalize_domain(dom)
             ])) < len(ids)
 
-        return all_rules.filtered(lambda r: r in group_rules or (not r.groups and is_failing(r))).sudo(self.env.user)
+        return all_rules.filtered(lambda r: r in group_rules or (not r.groups and is_failing(r))).with_user(self.env.user)
 
     def _get_rules(self, model_name, mode='read'):
         """ Returns all the rules matching the model for the mode for the
@@ -107,7 +115,7 @@ class IrRule(models.Model):
         if mode not in self._MODES:
             raise ValueError('Invalid mode: %r' % (mode,))
 
-        if self._uid == SUPERUSER_ID:
+        if self.env.su:
             return self.browse(())
 
         query = """ SELECT r.id FROM ir_rule r JOIN ir_model m ON (r.model_id=m.id)
@@ -124,8 +132,8 @@ class IrRule(models.Model):
     @api.model
     @tools.conditional(
         'xml' not in config['dev_mode'],
-        tools.ormcache('self._uid', 'model_name', 'mode',
-                       'tuple(self._context.get(k) for k in self._compute_domain_keys())'),
+        tools.ormcache('self.env.uid', 'self.env.su', 'model_name', 'mode',
+                       'tuple(self._compute_domain_context_values())'),
     )
     def _compute_domain(self, model_name, mode="read"):
         rules = self._get_rules(model_name, mode=mode)
@@ -151,6 +159,16 @@ class IrRule(models.Model):
             return expression.AND(global_domains)
         return expression.AND(global_domains + [expression.OR(group_domains)])
 
+    def _compute_domain_context_values(self):
+        for k in self._compute_domain_keys():
+            v = self._context.get(k)
+            if isinstance(v, list):
+                # currently this could be a frozenset (to avoid depending on
+                # the order of allowed_company_ids) but it seems safer if
+                # possibly slightly more miss-y to use a tuple
+                v = tuple(v)
+            yield v
+
     @api.model
     def clear_cache(self):
         """ Deprecated, use `clear_caches` instead. """
@@ -168,7 +186,6 @@ class IrRule(models.Model):
             return query.where_clause, query.where_clause_params, query.tables
         return [], [], ['"%s"' % self.env[model_name]._table]
 
-    @api.multi
     def unlink(self):
         res = super(IrRule, self).unlink()
         self.clear_caches()
@@ -180,7 +197,6 @@ class IrRule(models.Model):
         self.clear_caches()
         return res
 
-    @api.multi
     def write(self, vals):
         res = super(IrRule, self).write(vals)
         self.clear_caches()
@@ -196,22 +212,26 @@ class IrRule(models.Model):
                 'document_kind': description,
                 'document_model': model,
                 'operation': operation,
-             })
+            })
 
-        # debug mode, provide more info
+        # This extended AccessError is only displayed in debug mode.
+        # Note that by default, public and portal users do not have
+        # the group "base.group_no_one", even if debug mode is enabled,
+        # so it is relatively safe here to include the list of rules and
+        # record names.
         rules = self._get_failing(records, mode=operation).sudo()
         return AccessError(_("""The requested operation ("%(operation)s" on "%(document_kind)s" (%(document_model)s)) was rejected because of the following rules:
 %(rules_list)s
 %(multi_company_warning)s
-(records: %(example_records)s, uid: %(user_id)d)""") % {
+(Records: %(example_records)s, User: %(user_id)s)""") % {
             'operation': operation,
             'document_kind': description,
             'document_model': model,
             'rules_list': '\n'.join('- %s' % rule.name for rule in rules),
             'multi_company_warning': ('\n' + _('Note: this might be a multi-company issue.') + '\n') if any(
-                'company_id' in r.domain_force for r in rules) else '',
-            'example_records': list(records.ids[:6]),
-            'user_id': self.env.user.id,
+                'company_id' in (r.domain_force or []) for r in rules) else '',
+            'example_records': ' - '.join(['%s (id=%s)' % (rec.display_name, rec.id) for rec in records[:6].sudo()]),
+            'user_id': '%s (id=%s)' % (self.env.user.name, self.env.user.id),
         })
 
 #

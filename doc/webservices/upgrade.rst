@@ -450,7 +450,7 @@ should be empty if everything went fine.
         URL_PARAMS="key=${KEY}&request=${REQUEST_ID}"
         curl -sS "${PROCESS_URL}?${URL_PARAMS}"
 
-.. _upgrade-api-status-method:
+.. _upgrade-api-skip-tests:
 
 
 Asking to skip the tests 
@@ -460,7 +460,7 @@ This action asks the Upgrade Platform to skip the tests for your request.
 If you don't want Odoo to test and validate the migration, you can bypass the testing stage and directly get the migrated dump.
 
 The ``skip_test`` method
-----------------------
+------------------------
 
 .. py:function:: https://upgrade.odoo.com/database/v1/skip_test
 

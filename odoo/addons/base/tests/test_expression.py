@@ -574,7 +574,6 @@ class TestExpression(TransactionCase):
         # To test the 64 characters limit for table aliases in PostgreSQL
         self.patch_order('res.users', 'partner_id')
         self.patch_order('res.partner', 'commercial_partner_id,company_id,name')
-        self.patch_order('res.company', 'parent_id')
         self.env['res.users'].search([('name', '=', 'test')])
 
     @mute_logger('odoo.sql_db')
@@ -611,7 +610,7 @@ class TestExpression(TransactionCase):
     def test_lp1071710(self):
         """ Check that we can exclude translated fields (bug lp:1071710) """
         # first install french language
-        self.env['ir.translation'].load_module_terms(['base'], ['fr_FR'])
+        self.env['ir.translation']._load_module_terms(['base'], ['fr_FR'])
         self.env.ref('base.res_partner_2').country_id = self.env.ref('base.be')
         # actual test
         Country = self.env['res.country']
@@ -1016,3 +1015,27 @@ class TestAutoJoin(TransactionCase):
         # Test produced queries
         self.assertEqual(len(self.query_list), 1,
             "_auto_join on: ('child_ids.state_id.country_id.code', 'like', '..') number of queries incorrect")
+
+    def test_nullfields(self):
+        obj1 = self.env['res.bank'].create({'name': 'c0'})
+        obj2 = self.env['res.bank'].create({'name': 'c1', 'city': 'Ljósálfaheimr'})
+        obj3 = self.env['res.bank'].create({'name': 'c2', 'city': 'York'})
+        obj4 = self.env['res.bank'].create({'name': 'c3', 'city': 'Springfield'})
+
+        self.assertEqual(
+            self.env['res.bank'].search([
+                ('id', 'in', (obj1 | obj2 | obj3 | obj4).ids),
+                ('city', '!=', 'York'),
+            ]),
+            (obj1 | obj2 | obj4),
+            "Should have returned all banks whose city is not York"
+        )
+
+        self.assertEqual(
+            self.env['res.bank'].search([
+                ('id', 'in', (obj1 | obj2 | obj3 | obj4).ids),
+                ('city', 'not ilike', 'field'),
+            ]),
+            (obj1 | obj2 | obj3),
+            "Should have returned all banks whose city doesn't contain field"
+        )

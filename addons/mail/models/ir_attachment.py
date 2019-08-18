@@ -7,7 +7,6 @@ from odoo import api, models
 class IrAttachment(models.Model):
     _inherit = 'ir.attachment'
 
-    @api.multi
     def _post_add_create(self):
         """ Overrides behaviour when the attachment is created through the controller
         """
@@ -20,6 +19,8 @@ class IrAttachment(models.Model):
         attached to.
         """
         self.ensure_one()
+        if not self.res_model:
+            return
         related_record = self.env[self.res_model].browse(self.res_id)
         # message_main_attachment_id field can be empty, that's why we compare to False;
         # we are just checking that it exists on the model before writing it

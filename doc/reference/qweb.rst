@@ -99,7 +99,7 @@ Extra conditional branching directives ``t-elif`` and ``t-else`` are also
 available::
 
     <div>
-        <p t-if="user.birthday == today()">Happy bithday!</p>
+        <p t-if="user.birthday == today()">Happy birthday!</p>
         <p t-elif="user.login == 'root'">Welcome master!</p>
         <p t-else="">Welcome!</p>
     </div>
@@ -136,16 +136,16 @@ attribute, and
 is equivalent to the previous example.
 
 ``foreach`` can iterate on an array (the current item will be the current
-value), a mapping (the current item will be the current key) or an integer
-(equivalent to iterating on an array between 0 inclusive and the provided
-integer exclusive).
+value) or a mapping (the current item will be the current key). Iterating on an
+integer (equivalent to iterating on an array between 0 inclusive and the
+provided integer exclusive) is still supported but deprecated.
 
 In addition to the name passed via ``t-as``, ``foreach`` provides a few other
 variables for various data points:
 
 .. warning:: ``$as`` will be replaced by the name passed to ``t-as``
 
-:samp:`{$as}_all`
+:samp:`{$as}_all` (deprecated)
     the object being iterated over
 
     .. note:: This variable is only available on JavaScript QWeb, not Python.
@@ -164,15 +164,14 @@ variables for various data points:
     whether the current item is the last of the iteration (equivalent to
     :samp:`{$as}_index + 1 == {$as}_size`), requires the iteratee's size be
     available
-:samp:`{$as}_parity`
+:samp:`{$as}_parity` (deprecated)
     either ``"even"`` or ``"odd"``, the parity of the current iteration round
-:samp:`{$as}_even`
+:samp:`{$as}_even` (deprecated)
     a boolean flag indicating that the current iteration round is on an even
     index
-:samp:`{$as}_odd`
+:samp:`{$as}_odd` (deprecated)
     a boolean flag indicating that the current iteration round is on an odd
     index
-
 
 These extra variables provided and all new variables created into the
 ``foreach`` are only available in the scope of the``foreach``. If the
@@ -217,7 +216,9 @@ exists in 3 different forms:
     string (e.g. classes)::
 
         <t t-foreach="[1, 2, 3]" t-as="item">
-            <li t-attf-class="row {{ item_parity }}"><t t-esc="item"/></li>
+            <li t-attf-class="row {{ (item_index % 2 === 0) ? 'even' : 'odd' }}">
+                <t t-esc="item"/>
+            </li>
         </t>
 
     will be rendered as::
@@ -490,6 +491,11 @@ on the extended template to select *context nodes* to which the specified
     the node's body replaces the context node's children
 ``replace``
     the node's body is used to replace the context node itself
+``attributes``
+    the nodes's body should be any number of ``attribute`` elements,
+    each with a ``name`` attribute and some textual content, the named
+    attribute of the context node will be set to the specified value
+    (either replaced if it already existed or added if not)
 No operation
     if no ``t-operation`` is specified, the template body is interpreted as
     javascript code and executed with the context node as ``this``

@@ -15,7 +15,7 @@ publicWidget.registry.affixMenu = publicWidget.Widget.extend({
         var def = this._super.apply(this, arguments);
 
         var self = this;
-        this.$headerClone = this.$target.clone().addClass('o_header_affix affix').removeClass('o_affix_enabled');
+        this.$headerClone = this.$target.clone().addClass('o_header_affix affix').removeClass('o_affix_enabled').removeAttr('id');
         this.$headerClone.insertAfter(this.$target);
         this.$headers = this.$target.add(this.$headerClone);
         this.$dropdowns = this.$headers.find('.dropdown');
@@ -45,7 +45,11 @@ publicWidget.registry.affixMenu = publicWidget.Widget.extend({
         $(window).on('resize.affixMenu scroll.affixMenu', _.throttle(this._onWindowUpdate.bind(this), 200));
         setTimeout(this._onWindowUpdate.bind(this), 0); // setTimeout to allow override with advanced stuff... see themes
 
-        return def;
+        return def.then(function () {
+            self.trigger_up('widgets_start_request', {
+                $target: self.$headerClone,
+            });
+        });
     },
     /**
      * @override

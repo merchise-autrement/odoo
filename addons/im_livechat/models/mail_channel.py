@@ -40,15 +40,13 @@ class MailChannel(models.Model):
     _sql_constraints = [('livechat_operator_id', "CHECK((channel_type = 'livechat' and livechat_operator_id is not null) or (channel_type != 'livechat'))",
                          'Livechat Operator ID is required for a channel of type livechat.')]
 
-    @api.multi
     def _compute_is_chat(self):
         super(MailChannel, self)._compute_is_chat()
         for record in self:
             if record.channel_type == 'livechat':
                 record.is_chat = True
 
-    @api.multi
-    def _channel_message_notifications(self, message):
+    def _channel_message_notifications(self, message, message_format=False):
         """ When a anonymous user create a mail.channel, the operator is not notify (to avoid massive polling when
             clicking on livechat button). So when the anonymous person is sending its FIRST message, the channel header
             should be added to the notification, since the user cannot be listining to the channel.
@@ -56,7 +54,7 @@ class MailChannel(models.Model):
         livechat_channels = self.filtered(lambda x: x.channel_type == 'livechat')
         other_channels = self.filtered(lambda x: x.channel_type != 'livechat')
         notifications = super(MailChannel, livechat_channels)._channel_message_notifications(message.with_context(im_livechat_use_username=True)) + \
-                        super(MailChannel, other_channels)._channel_message_notifications(message)
+                        super(MailChannel, other_channels)._channel_message_notifications(message, message_format)
         for channel in self:
             # add uuid for private livechat channels to allow anonymous to listen
             if channel.channel_type == 'livechat' and channel.public == 'private':
@@ -68,13 +66,11 @@ class MailChannel(models.Model):
                 notifications = self._channel_channel_notifications(unpinned_channel_partner.mapped('partner_id').ids) + notifications
         return notifications
 
-    @api.multi
     def channel_fetch_message(self, last_id=False, limit=20):
         """ Override to add the context of the livechat username."""
         channel = self.with_context(im_livechat_use_username=True) if self.channel_type == 'livechat' else self
         return super(MailChannel, channel).channel_fetch_message(last_id=last_id, limit=limit)
 
-    @api.multi
     def channel_info(self, extra_info=False):
         """ Extends the channel header by adding the livechat operator and the 'anonymous' profile
             :rtype : list(dict)
@@ -105,7 +101,15 @@ class MailChannel(models.Model):
         if self.livechat_operator_id in self.channel_partner_ids:
             partners = self.channel_partner_ids - self.livechat_operator_id
             if partners:
-                return ', '.join(partners.mapped('name'))
+                partner_name = False
+                for partner in partners:
+                    if not partner_name:
+                        partner_name = partner.name
+                    else:
+                        partner_name += ', %s' % partner.name
+                    if partner.country_id:
+                        partner_name += ' (%s)' % partner.country_id.name
+                return partner_name
         if self.anonymous_name:
             return self.anonymous_name
         return _("Visitor")
@@ -155,3 +159,20 @@ class MailChannel(models.Model):
 
     def _rating_get_parent_field_name(self):
         return 'livechat_channel_id'
+
+    def _email_livechat_transcript(self, email):
+        company = self.env.user.company_id
+        render_context = {
+            "company": company,
+            "channel": self,
+        }
+        template = self.env.ref('im_livechat.livechat_email_template')
+        mail_body = template.render(render_context, engine='ir.qweb', minimal_qcontext=True)
+        mail_body = self.env['mail.thread']._replace_local_links(mail_body)
+        mail = self.env['mail.mail'].create({
+            'subject': _('Conversation with %s') % self.livechat_operator_id.name,
+            'email_from': self.env.company.email,
+            'email_to': email,
+            'body_html': mail_body,
+        })
+        mail.send()

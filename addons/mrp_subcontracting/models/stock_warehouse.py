@@ -70,7 +70,6 @@ class StockWarehouse(models.Model):
                     'company_id': self.company_id.id,
                     'action': 'pull',
                     'auto': 'manual',
-                    'propagate': True,
                     'route_id': self._find_global_route('stock.route_warehouse0_mto', _('Make To Order')).id,
                     'name': self._format_rulename(self.lot_stock_id, subcontract_location_id, 'MTO'),
                     'location_id': subcontract_location_id.id,
@@ -88,7 +87,6 @@ class StockWarehouse(models.Model):
                     'company_id': self.company_id.id,
                     'action': 'pull',
                     'auto': 'manual',
-                    'propagate': True,
                     'route_id': self._find_global_route('mrp_subcontracting.route_resupply_subcontractor_mto',
                                                         _('Resupply Subcontractor on Order')).id,
                     'name': self._format_rulename(self.lot_stock_id, subcontract_location_id, False),
@@ -111,7 +109,8 @@ class StockWarehouse(models.Model):
                 'code': 'mrp_operation',
                 'use_create_lots': True,
                 'use_existing_lots': True,
-                'sequence': next_sequence + 2
+                'sequence': next_sequence + 2,
+                'sequence_code': 'SBC',
             },
         })
         return data, max_sequence + 4

@@ -21,7 +21,7 @@ class TestHasGroup(TransactionCase):
             'partner_id': self.env['res.partner'].create({
                 'name': "Strawman Test User"
             }).id,
-            'groups_id': [(4, group0.id, 0)]
+            'groups_id': [(6, 0, [group0.id])]
         })
 
         self.grp_internal_xml_id = 'base.group_user'
@@ -30,7 +30,7 @@ class TestHasGroup(TransactionCase):
         self.grp_portal = self.env.ref(self.grp_portal_xml_id)
 
     def test_env_uid(self):
-        Users = self.env['res.users'].sudo(self.test_user)
+        Users = self.env['res.users'].with_user(self.test_user)
         self.assertTrue(
             Users.has_group(self.group0),
             "the test user should belong to group0"

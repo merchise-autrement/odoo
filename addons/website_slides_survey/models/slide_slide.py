@@ -27,7 +27,6 @@ class SlidePartnerRelation(models.Model):
                 vals['completed'] = True
         return super(SlidePartnerRelation, self).create(vals_list)
 
-    @api.multi
     def _write(self, vals):
         if vals.get('survey_quizz_passed'):
             vals['completed'] = True
@@ -39,13 +38,25 @@ class Slide(models.Model):
 
     slide_type = fields.Selection(selection_add=[('certification', 'Certification')])
     survey_id = fields.Many2one('survey.survey', 'Certification')
+    nbr_certification = fields.Integer("Number of Certifications", compute='_compute_slides_statistics', store=True)
 
     _sql_constraints = [
         ('check_survey_id', "CHECK(slide_type != 'certification' OR survey_id IS NOT NULL)", "A slide of type 'certification' requires a certification."),
         ('check_certification_preview', "CHECK(slide_type != 'certification' OR is_preview = False)", "A slide of type certification cannot be previewed."),
     ]
 
-    @api.multi
+    @api.onchange('survey_id')
+    def _on_change_survey_id(self):
+        if self.survey_id:
+            self.slide_type = 'certification'
+
+    @api.model
+    def create(self, values):
+        rec = super(Slide, self).create(values)
+        if rec.survey_id:
+            rec.slide_type = 'certification'
+        return rec
+
     def _generate_certification_url(self):
         """ get a map of certification url for certification slide from `self`. The url will come from the survey user input:
                 1/ existing and not done user_input for member of the course
@@ -60,13 +71,12 @@ class Slide(models.Model):
         for slide in self.filtered(lambda slide: slide.slide_type == 'certification' and slide.survey_id):
             if slide.channel_id.is_member:
                 user_membership_id_sudo = slide.user_membership_id.sudo()
-                quizz_passed = user_membership_id_sudo.survey_quizz_passed
-                if not quizz_passed and user_membership_id_sudo.user_input_ids:
+                if user_membership_id_sudo.user_input_ids:
                     last_user_input = next(user_input for user_input in user_membership_id_sudo.user_input_ids.sorted(
                         lambda user_input: user_input.create_date, reverse=True
                     ))
                     certification_urls[slide.id] = last_user_input._get_survey_url()
-                elif not user_membership_id_sudo.user_input_ids:
+                else:
                     user_input = slide.survey_id.sudo()._create_answer(
                         partner=self.env.user.partner_id,
                         check_attempts=False,

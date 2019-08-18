@@ -89,10 +89,13 @@ var ChatterComposer = BasicComposer.extend({
             var def;
             if (namesToFind.length > 0) {
                 def = self._rpc({
+                    route: '/mail/get_partner_info',
+                    params: {
                         model: self._model,
-                        method: 'message_partner_info_from_emails',
-                        args: [[self.context.default_res_id], namesToFind],
-                    });
+                        res_ids: [self.context.default_res_id],
+                        emails: namesToFind,
+                    },
+                });
             }
 
             // for unknown names + incomplete partners
@@ -143,10 +146,14 @@ var ChatterComposer = BasicComposer.extend({
                     var def;
                     if (newNamesToFind.length > 0) {
                         def = self._rpc({
+                            route: '/mail/get_partner_info',
+                            params: {
                                 model: self._model,
-                                method: 'message_partner_info_from_emails',
-                                args: [[self.context.default_res_id], newNamesToFind, true],
-                            });
+                                res_ids: [self.context.default_res_id],
+                                emails: namesToFind,
+                                link_mail: true,
+                            },
+                        });
                     }
                     Promise.resolve(def).then(function (result) {
                         result = result || [];
@@ -217,6 +224,9 @@ var ChatterComposer = BasicComposer.extend({
                         message.context = _.defaults({}, message.context, {
                             mail_post_autofollow: true,
                         });
+                        if (partnerIDs.length) {
+                            self.trigger_up('reset_suggested_partners');
+                        }
                         resolve(message);
                     });
                 } else {
@@ -290,7 +300,6 @@ var ChatterComposer = BasicComposer.extend({
                 type: 'ir.actions.act_window',
                 res_model: 'mail.compose.message',
                 view_mode: 'form',
-                view_type: 'form',
                 views: [[false, 'form']],
                 target: 'new',
                 context: context,

@@ -33,6 +33,8 @@ This module contains all the common features of Sales Management and eCommerce.
         'views/res_config_settings_views.xml',
         'views/payment_views.xml',
         'views/product_attribute_views.xml',
+        'views/product_views.xml',
+        'views/utm_campaign_views.xml'
     ],
     'demo': [
         'data/sale_demo.xml',
@@ -41,7 +43,6 @@ This module contains all the common features of Sales Management and eCommerce.
     'qweb': [
         "static/src/xml/account_reconciliation.xml",
     ],
-    'uninstall_hook': "uninstall_hook",
     'installable': True,
     'auto_install': False
 }

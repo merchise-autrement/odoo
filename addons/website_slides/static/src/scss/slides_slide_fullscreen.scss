@@ -1,9 +1,7 @@
 
-$o-wslides-tabs-height: 36px;
-
 .o_wslides_fs_main {
     @include o-position-absolute(0,0,0,0);
-    z-index: 2000;
+    z-index: $zindex-dropdown;
     background-image: linear-gradient(120deg, $o-wslides-color-dark2, $o-wslides-color-dark3);
 
     .o_wslides_slide_fs_header {
@@ -96,5 +94,30 @@ $o-wslides-tabs-height: 36px;
                 line-height: 1;
             }
         }
+    }
+
+    .o_wslides_js_lesson_quiz_question {
+        .list-group-item  {
+            font-size: 1rem;
+
+            input:checked + i.fa-circle {
+                color: $primary !important;
+            }
+        }
+
+        &.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        &.completed-disabled{
+            pointer-events: none;
+        }
+    }
+}
+
+.modal-open {
+    > .modal-backdrop {
+        z-index: $zindex-dropdown - 1;
     }
 }

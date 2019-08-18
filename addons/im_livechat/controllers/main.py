@@ -13,7 +13,7 @@ class LivechatController(http.Controller):
     # Note: the `cors` attribute on many routes is meant to allow the livechat
     # to be embedded in an external website.
 
-    @http.route('/im_livechat/external_lib.<any(css,js):ext>', type='http', auth='none')
+    @http.route('/im_livechat/external_lib.<any(css,js):ext>', type='http', auth='public')
     def livechat_lib(self, ext, **kwargs):
         # _get_asset return the bundle html code (script and link list) but we want to use the attachment content
         xmlid = 'im_livechat.external_lib'
@@ -148,3 +148,9 @@ class LivechatController(http.Controller):
         Channel = request.env['mail.channel']
         channel = Channel.sudo().search([('uuid', '=', uuid)], limit=1)
         channel.notify_typing(is_typing=is_typing, is_website_user=True)
+
+    @http.route('/im_livechat/email_livechat_transcript', type='json', auth='public', cors="*")
+    def email_livechat_transcript(self, uuid, email):
+        channel = request.env['mail.channel'].sudo().search([('uuid', '=', uuid)], limit=1)
+        if channel:
+            channel._email_livechat_transcript(email)

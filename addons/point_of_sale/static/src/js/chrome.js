@@ -8,7 +8,8 @@ var models = require('point_of_sale.models');
 var AbstractAction = require('web.AbstractAction');
 var core = require('web.core');
 var ajax = require('web.ajax');
-var CrashManager = require('web.CrashManager');
+var CrashManager = require('web.CrashManager').CrashManager;
+var rpc = require('web.rpc');
 var BarcodeEvents = require('barcodes.BarcodeEvents').BarcodeEvents;
 
 
@@ -366,8 +367,7 @@ var ProxyStatusWidget = StatusWidget.extend({
             }
             if( this.pos.config.iface_print_via_proxy || 
                 this.pos.config.iface_cashdrawer ){
-                var printer = status.drivers.escpos ? status.drivers.escpos.status : false;
-                if( printer != 'connected' && printer != 'connecting'){
+                if(!this.is_printer_connected(status.drivers.printer)){
                     warning = true;
                     msg = msg ? msg + ' & ' : msg;
                     msg += _t('Printer');
@@ -388,6 +388,9 @@ var ProxyStatusWidget = StatusWidget.extend({
             this.set_status(status.status,'');
         }
     },
+    is_printer_connected: function (printer) {
+        return printer && printer.status === 'connected';
+    },
     start: function(){
         var self = this;
         
@@ -406,15 +409,44 @@ var ProxyStatusWidget = StatusWidget.extend({
 
 /* --------- The Sale Details --------- */
 
-// Generates a report to print the sales of the
-// day on a ticket
-
+/** Print an overview of todays sales.
+ *
+ * If the current cashier is a manager all sales of the day will be printed, else only the sales of the current
+ * session will be printed.
+ */
 var SaleDetailsButton = PosBaseWidget.extend({
     template: 'SaleDetailsButton',
     start: function(){
         var self = this;
         this.$el.click(function(){
-            self.pos.proxy.print_sale_details();
+            self.print_sale_details();
+        });
+    },
+
+    /** Print an overview of todays sales.
+     *
+     * By default this will print all sales of the day for current PoS config.
+     */
+    print_sale_details: function () {
+        var self = this;
+        rpc.query({
+            model: 'report.point_of_sale.report_saledetails',
+            method: 'get_sale_details',
+            args: [false, false, false, [this.pos.pos_session.id]],
+        })
+        .then(function(result){
+            var env = {
+                widget: new PosBaseWidget(self),
+                company: self.pos.company,
+                pos: self.pos,
+                products: result.products,
+                payments: result.payments,
+                taxes: result.taxes,
+                total_paid: result.total_paid,
+                date: (new Date()).toLocaleString(),
+            };
+            var report = QWeb.render('SaleDetailsReport', env);
+            self.pos.proxy.printer.print_receipt(report);
         });
     },
 });

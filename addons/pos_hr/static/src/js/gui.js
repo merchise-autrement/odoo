@@ -28,7 +28,7 @@ gui.Gui.include({
         });
 
         var prom = new Promise(function (resolve, reject) {
-            this.show_popup('selection', {
+            self.show_popup('selection', {
                 title: options.title || _t('Select User'),
                 list: list,
                 confirm: resolve,
@@ -56,7 +56,7 @@ gui.Gui.include({
                 self.show_popup('password',{
                     'title': _t('Password ?'),
                     confirm: function (pw) {
-                        if (pw !== password) {
+                        if (Sha1.hash(pw) !== password) {
                             self.show_popup('error', _t('Incorrect Password'));
                             reject();
                         } else {

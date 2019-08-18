@@ -33,7 +33,7 @@ class Digest(models.Model):
                                   default=lambda self: self.env.ref('digest.digest_mail_template'),
                                   required=True)
     currency_id = fields.Many2one(related="company_id.currency_id", string='Currency', readonly=False)
-    company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.user.company_id.id)
+    company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company.id)
     available_fields = fields.Char(compute='_compute_available_fields')
     is_subscribed = fields.Boolean('Is user subscribed', compute='_compute_is_subscribed')
     state = fields.Selection([('activated', 'Activated'), ('deactivated', 'Deactivated')], string='Status', readonly=True, default='activated')
@@ -65,9 +65,10 @@ class Digest(models.Model):
             record.kpi_res_users_connected_value = user_connected
 
     def _compute_kpi_mail_message_total_value(self):
+        discussion_subtype_id = self.env.ref('mail.mt_comment').id
         for record in self:
             start, end, company = record._get_kpi_compute_parameters()
-            total_messages = self.env['mail.message'].search_count([('create_date', '>=',start), ('create_date', '<', end)])
+            total_messages = self.env['mail.message'].search_count([('create_date', '>=', start), ('create_date', '<', end), ('subtype_id', '=', discussion_subtype_id), ('message_type', 'in', ['comment', 'email'])])
             record.kpi_mail_message_total_value = total_messages
 
     @api.onchange('periodicity')
@@ -79,21 +80,17 @@ class Digest(models.Model):
         vals['next_run_date'] = date.today() + relativedelta(days=3)
         return super(Digest, self).create(vals)
 
-    @api.multi
     def action_subscribe(self):
         if self.env.user not in self.user_ids:
             self.sudo().user_ids |= self.env.user
 
-    @api.multi
     def action_unsubcribe(self):
         if self.env.user in self.user_ids:
             self.sudo().user_ids -= self.env.user
 
-    @api.multi
     def action_activate(self):
         self.state = 'activated'
 
-    @api.multi
     def action_deactivate(self):
         self.state = 'deactivated'
 
@@ -108,8 +105,8 @@ class Digest(models.Model):
         self.ensure_one()
         res = {}
         for tf_name, tf in self._compute_timeframes(company).items():
-            digest = self.with_context(start_date=tf[0][0], end_date=tf[0][1], company=company).sudo(user.id)
-            previous_digest = self.with_context(start_date=tf[1][0], end_date=tf[1][1], company=company).sudo(user.id)
+            digest = self.with_context(start_date=tf[0][0], end_date=tf[0][1], company=company).with_user(user)
+            previous_digest = self.with_context(start_date=tf[1][0], end_date=tf[1][1], company=company).with_user(user)
             kpis = {}
             for field_name, field in self._fields.items():
                 if field.type == 'boolean' and field_name.startswith(('kpi_', 'x_kpi_', 'x_studio_kpi_')) and self[field_name]:
@@ -181,19 +178,16 @@ class Digest(models.Model):
         return margin
 
     def _format_currency_amount(self, amount, currency_id):
-        pre = post = u''
-        if currency_id.position == 'before':
-            pre = u'{symbol}\N{NO-BREAK SPACE}'.format(symbol=currency_id.symbol or '')
-        else:
-            post = u'\N{NO-BREAK SPACE}{symbol}'.format(symbol=currency_id.symbol or '')
-        return u'{pre}{0}{post}'.format(amount, pre=pre, post=post)
+        pre = currency_id.position == 'before'
+        symbol = u'{symbol}'.format(symbol=currency_id.symbol or '')
+        return u'{pre}{0}{post}'.format(amount, pre=symbol if pre else '', post=symbol if not pre else '')
 
     def _format_human_readable_amount(self, amount, suffix=''):
         for unit in ['', 'K', 'M', 'G']:
             if abs(amount) < 1000.0:
-                return "%3.1f%s%s" % (amount, unit, suffix)
+                return "%3.2f%s%s" % (amount, unit, suffix)
             amount /= 1000.0
-        return "%.1f%s%s" % (amount, 'T', suffix)
+        return "%.2f%s%s" % (amount, 'T', suffix)
 
     @api.model
     def _cron_send_digest_email(self):

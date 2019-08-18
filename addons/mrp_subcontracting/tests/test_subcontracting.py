@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.tests import Form
-from odoo.tests.common import TransactionCase
+from odoo.tests.common import SavepointCase, TransactionCase
 
 from odoo.tests import tagged
 
@@ -35,6 +35,7 @@ class TestSubcontractingBasic(TransactionCase):
         that_company = self.env['res.partner'].create({
             'is_company': True,
             'name': "That Company",
+            'company_id': self.env.ref('base.main_company').id
         })
         partner_form = Form(that_company)
         with partner_form.child_ids.new() as partner:
@@ -55,6 +56,7 @@ class TestSubcontractingBasic(TransactionCase):
         self.env.user.write({'groups_id': [(3, group_no_one.id)]})
         partner_form = Form(self.env['res.partner'])
         partner_form.name = 'subcontractor partner'
+        partner_form.company_id = self.env.ref('base.main_company')
         self.assertNotEqual(partner_form.property_stock_supplier, self.env.user.company_id.subcontracting_location_id)
         self.assertNotEqual(partner_form.property_stock_customer, self.env.user.company_id.subcontracting_location_id)
         partner_form.type = 'subcontractor'
@@ -75,6 +77,7 @@ class TestSubcontractingBasic(TransactionCase):
         that_company = self.env['res.partner'].create({
             'is_company': True,
             'name': "That Company",
+            'company_id': self.env.ref('base.main_company').id
         })
         partner_form = Form(self.env['res.partner'])
         partner_form.name = 'That Guy'
@@ -114,56 +117,58 @@ class TestSubcontractingBasic(TransactionCase):
         self.assertTrue(company2.subcontracting_location_id)
 
 
-class TestSubcontractingFlows(TransactionCase):
-    def setUp(self):
-        super(TestSubcontractingFlows, self).setUp()
+class TestSubcontractingFlows(SavepointCase):
+    @classmethod
+    def setUpClass(cls):
+        super(TestSubcontractingFlows, cls).setUpClass()
         # 1: Create a subcontracting partner
-        main_partner = self.env['res.partner'].create({'name': 'main_partner'})
-        self.subcontractor_partner1 = self.env['res.partner'].create({
+        main_partner = cls.env['res.partner'].create({'name': 'main_partner'})
+        cls.subcontractor_partner1 = cls.env['res.partner'].create({
             'name': 'subcontractor_partner',
             'type': 'subcontractor',
             'parent_id': main_partner.id,
+            'company_id': cls.env.ref('base.main_company').id
         })
 
         # 2. Create a BOM of subcontracting type
-        self.comp1 = self.env['product.product'].create({
+        cls.comp1 = cls.env['product.product'].create({
             'name': 'Component1',
             'type': 'product',
-            'categ_id': self.env.ref('product.product_category_all').id,
+            'categ_id': cls.env.ref('product.product_category_all').id,
         })
-        self.comp2 = self.env['product.product'].create({
+        cls.comp2 = cls.env['product.product'].create({
             'name': 'Component2',
             'type': 'product',
-            'categ_id': self.env.ref('product.product_category_all').id,
+            'categ_id': cls.env.ref('product.product_category_all').id,
         })
-        self.finished = self.env['product.product'].create({
+        cls.finished = cls.env['product.product'].create({
             'name': 'finished',
             'type': 'product',
-            'categ_id': self.env.ref('product.product_category_all').id,
+            'categ_id': cls.env.ref('product.product_category_all').id,
         })
-        bom_form = Form(self.env['mrp.bom'])
+        bom_form = Form(cls.env['mrp.bom'])
         bom_form.type = 'subcontract'
-        bom_form.product_tmpl_id = self.finished.product_tmpl_id
+        bom_form.product_tmpl_id = cls.finished.product_tmpl_id
         with bom_form.bom_line_ids.new() as bom_line:
-            bom_line.product_id = self.comp1
+            bom_line.product_id = cls.comp1
             bom_line.product_qty = 1
         with bom_form.bom_line_ids.new() as bom_line:
-            bom_line.product_id = self.comp2
+            bom_line.product_id = cls.comp2
             bom_line.product_qty = 1
-        self.bom = bom_form.save()
+        cls.bom = bom_form.save()
 
-        # Create a BoM for self.comp2
-        self.comp2comp = self.env['product.product'].create({
+        # Create a BoM for cls.comp2
+        cls.comp2comp = cls.env['product.product'].create({
             'name': 'component for Component2',
             'type': 'product',
-            'categ_id': self.env.ref('product.product_category_all').id,
+            'categ_id': cls.env.ref('product.product_category_all').id,
         })
-        bom_form = Form(self.env['mrp.bom'])
-        bom_form.product_tmpl_id = self.comp2.product_tmpl_id
+        bom_form = Form(cls.env['mrp.bom'])
+        bom_form.product_tmpl_id = cls.comp2.product_tmpl_id
         with bom_form.bom_line_ids.new() as bom_line:
-            bom_line.product_id = self.comp2comp
+            bom_line.product_id = cls.comp2comp
             bom_line.product_qty = 1
-        self.comp2_bom = bom_form.save()
+        cls.comp2_bom = bom_form.save()
 
     def test_flow_1(self):
         """ Don't tick any route on the components and trigger the creation of the subcontracting
@@ -351,6 +356,7 @@ class TestSubcontractingFlows(TransactionCase):
             'name': 'subcontractor_partner',
             'type': 'subcontractor',
             'parent_id': main_partner_2.id,
+            'company_id': self.env.ref('base.main_company').id
         })
 
         # We create a different BoM for the same product
@@ -412,6 +418,7 @@ class TestSubcontractingTracking(TransactionCase):
             'name': 'Subcontractor 1',
             'type': 'subcontractor',
             'parent_id': main_company_1.id,
+            'company_id': self.env.ref('base.main_company').id
         })
 
         # 2. Create a BOM of subcontracting type
@@ -501,8 +508,8 @@ class TestSubcontractingTracking(TransactionCase):
             'active_id': mo.id,
             'active_ids': [mo.id],
         }))
-        produce_form.final_lot_id = lot_id
-        produce_form.workorder_line_ids._records[0]['lot_id'] = serial_id.id
+        produce_form.finished_lot_id = lot_id
+        produce_form.raw_workorder_line_ids._records[0]['lot_id'] = serial_id.id
         wiz_produce = produce_form.save()
         wiz_produce.do_produce()
 

@@ -135,6 +135,13 @@ QUnit.module('Views', {
         var model = createModel({
             Model: KanbanModel,
             data: this.data,
+            mockRPC: function (route, args) {
+                if (route === '/web/dataset/call_kw/partner/action_archive') {
+                    this.data.partner.records[0].active = false;
+                    return Promise.resolve();
+                }
+                return this._super.apply(this, arguments);
+            },
         });
 
         var params = _.extend(this.params, {
@@ -151,7 +158,7 @@ QUnit.module('Views', {
 
             // archive the column 'xphone'
             var recordIDs = _.pluck(xphoneGroup.data, 'id');
-            await model.toggleActive(recordIDs, false, xphoneGroup.id);
+            await model.actionArchive(recordIDs, xphoneGroup.id);
             state = model.get(resultID);
             xphoneGroup = _.findWhere(state.data, {res_id: 37});
             assert.strictEqual(xphoneGroup.count, 0, 'xphone group has no record anymore');
@@ -301,6 +308,72 @@ QUnit.module('Views', {
             done();
         })
 
+    });
+
+    QUnit.test('call get (raw: true) before loading x2many data', async function (assert) {
+        // Sometimes, get can be called on a datapoint that is currently being
+        // reloaded, and thus in a partially updated state (e.g. in a kanban
+        // view, the user interacts with the searchview, and before the view is
+        // fully reloaded, it clicks on CREATE). Ideally, this shouldn't happen,
+        // but with the sync API of get, we can't change that easily. So at most,
+        // we can ensure that it doesn't crash. Moreover, sensitive functions
+        // requesting the state for more precise information that, e.g., the
+        // count, can do that in the mutex to ensure that the state isn't
+        // currently being reloaded.
+        // In this test, we have a grouped kanban view with a one2many, whose
+        // relational data is loaded in batch, once for all groups. We call get
+        // when the search_read for the first group has returned, but not the
+        // second (and thus, the read of the one2many hasn't started yet).
+        // Note: this test can be removed as soon as search_reads are performed
+        // alongside read_group.
+        var done = assert.async();
+        assert.expect(2);
+
+        this.data.partner.records[1].product_ids = [37, 41];
+        this.params.fieldsInfo = {
+            kanban: {
+                product_ids: {
+                    fieldsInfo: {
+                        default: { display_name: {}, color: {} },
+                    },
+                    relatedFields: this.data.product.fields,
+                    viewType: 'default',
+                },
+            },
+        };
+        this.params.viewType = 'kanban';
+        this.params.groupedBy = ['foo'];
+
+        var block;
+        var def = testUtils.makeTestPromise();
+        var model = await createModel({
+            Model: KanbanModel,
+            data: this.data,
+            mockRPC: function (route) {
+                var result = this._super.apply(this, arguments);
+                if (route === '/web/dataset/search_read' && block) {
+                    block = false;
+                    return Promise.all([def]).then(_.constant(result));
+                }
+                return result;
+            },
+        });
+
+        model.load(this.params).then(function (handle) {
+            block = true;
+            model.reload(handle, {});
+
+            var state = model.get(handle, {raw: true});
+            assert.strictEqual(state.count, 2);
+
+            def.resolve();
+
+            state = model.get(handle, {raw: true});
+            assert.strictEqual(state.count, 2);
+        }).then(function() {
+            model.destroy();
+            done();
+        });
     });
 });
 

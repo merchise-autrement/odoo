@@ -25,6 +25,8 @@ PKGS_TO_INSTALL="
     fswebcam \
     nginx-full \
     dnsmasq \
+    dbus \
+    dbus-x11 \
     cups \
     printer-driver-all \
     cups-ipp-utils \
@@ -114,10 +116,14 @@ PIP_TO_INSTALL="
     evdev \
     gatt \
     v4l2 \
+    polib \
     pycups"
 
 pip3 install ${PIP_TO_INSTALL}
 
+# Dowload MPD server and library for Six terminals
+wget 'https://nightly.odoo.com/master/iotbox/eftdvs' -P /usr/local/bin/
+wget 'https://nightly.odoo.com/master/iotbox/eftapi.so' -P /usr/lib/
 
 groupadd usbusers
 usermod -a -G usbusers pi
@@ -138,6 +144,7 @@ echo "* * * * * rm /var/run/odoo/sessions/*" | crontab -
 update-rc.d -f hostapd remove
 update-rc.d -f nginx remove
 update-rc.d -f dnsmasq remove
+update-rc.d timesyncd defaults
 
 systemctl daemon-reload
 systemctl enable ramdisks.service

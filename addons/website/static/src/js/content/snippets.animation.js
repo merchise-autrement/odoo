@@ -10,6 +10,7 @@ var core = require('web.core');
 var mixins = require('web.mixins');
 var utils = require('web.utils');
 var publicWidget = require('web.public.widget');
+var utils = require('web.utils');
 
 var qweb = core.qweb;
 
@@ -76,7 +77,7 @@ publicWidget.Widget.include({
         this.editableMode = this.options.editableMode || false;
         var extraEvents = this.editableMode ? this.edit_events : this.read_events;
         if (extraEvents) {
-            this.events = _.extend(this.events || {}, extraEvents);
+            this.events = _.extend({}, this.events || {}, extraEvents);
         }
     },
 });
@@ -860,6 +861,10 @@ registry.gallerySlider = publicWidget.Widget.extend({
     destroy: function () {
         this._super.apply(this, arguments);
 
+        if (!this.$indicator) {
+            return;
+        }
+
         this.$prev.prependTo(this.$indicator);
         this.$next.appendTo(this.$indicator);
         this.$carousel.off('.gallery_slider');
@@ -953,6 +958,7 @@ registry.socialShare = publicWidget.Widget.extend({
 
 registry.facebookPage = publicWidget.Widget.extend({
     selector: '.o_facebook_page',
+    disabledInEditableMode: false,
 
     /**
      * @override
@@ -964,7 +970,7 @@ registry.facebookPage = publicWidget.Widget.extend({
         if (!params.href) {
             return def;
         }
-        params.width = utils.confine(this.$el.width(), 180, 500);
+        params.width = utils.confine(Math.floor(this.$el.width()), 180, 500);
 
         var src = $.param.querystring('https://www.facebook.com/plugins/page.php', params);
         this.$iframe = $('<iframe/>', {
@@ -1013,7 +1019,7 @@ registry.anchorSlide = publicWidget.Widget.extend({
             return;
         }
         var hash = this.$target[0].hash;
-        if (!/^#[\w-]+$/.test(hash)) {
+        if (!utils.isValidAnchor(hash)) {
             return;
         }
         var $anchor = $(hash);

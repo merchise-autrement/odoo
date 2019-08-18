@@ -6,7 +6,7 @@ var Dialog = require('web.Dialog');
 var Widget = require('web.Widget');
 var weWidgets = require('wysiwyg.widgets');
 var FontPlugin = require('web_editor.wysiwyg.plugin.font');
-var ColorpickerDialog = require('wysiwyg.widgets.ColorpickerDialog');
+var ColorpickerDialog = require('web.ColorpickerDialog');
 
 var qweb = core.qweb;
 var _t = core._t;
@@ -853,13 +853,14 @@ registry.background = SnippetOption.extend({
         var $editable = this.$target.closest('.o_editable');
         var _editor = new weWidgets.MediaDialog(this, {
             onlyImages: true,
+            mediaWidth: 1920,
             firstFilters: ['background'],
             res_model: $editable.data('oe-model'),
             res_id: $editable.data('oe-id'),
         }, $image[0]).open();
 
-        _editor.on('save', this, function () {
-            this._setCustomBackground($image.attr('src'));
+        _editor.on('save', this, function (image) {
+            this._setCustomBackground(image.src);
             this.$target.trigger('content_changed');
         });
         _editor.on('closed', this, function () {

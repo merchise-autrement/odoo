@@ -9,7 +9,7 @@ import babel
 from lxml import etree
 import math
 
-from odoo.tools import html_escape as escape, posix_to_ldml, safe_eval, float_utils, format_date, pycompat
+from odoo.tools import html_escape as escape, posix_to_ldml, safe_eval, float_utils, format_date, format_duration, pycompat
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -165,7 +165,7 @@ class FloatConverter(models.AbstractModel):
     @api.model
     def value_to_html(self, value, options):
         if 'decimal_precision' in options:
-            precision = self.env['decimal.precision'].search([('name', '=', options['decimal_precision'])]).digits
+            precision = self.env['decimal.precision'].precision_get(options['decimal_precision'])
         else:
             precision = options['precision']
 
@@ -189,7 +189,7 @@ class FloatConverter(models.AbstractModel):
     @api.model
     def record_to_html(self, record, field_name, options):
         if 'precision' not in options and 'decimal_precision' not in options:
-            _, precision = record._fields[field_name].digits or (None, None)
+            _, precision = record._fields[field_name].get_digits(record.env) or (None, None)
             options = dict(options, precision=precision)
         return super(FloatConverter, self).record_to_html(record, field_name, options)
 
@@ -420,7 +420,7 @@ class MonetaryConverter(models.AbstractModel):
             if company_id:
                 company = self.env['res.company'].browse(company_id)
             else:
-                company = self.env.user.company_id
+                company = self.env.company
             value = options['from_currency']._convert(value, display_currency, company, date)
 
         lang = self.user_lang()
@@ -480,9 +480,7 @@ class FloatTimeConverter(models.AbstractModel):
 
     @api.model
     def value_to_html(self, value, options):
-        sign = math.copysign(1.0, value)
-        hours, minutes = divmod(abs(value) * 60, 60)
-        return '%02d:%02d' % (sign * hours, minutes)
+        return format_duration(value)
 
 
 class DurationConverter(models.AbstractModel):
@@ -510,7 +508,7 @@ class DurationConverter(models.AbstractModel):
         options = super(DurationConverter, self).get_available_options()
         unit = [[u[0], _(u[0])] for u in TIMEDELTA_UNITS]
         options.update(
-            digital=dict(type="boolean", string=_('Digital formating')),
+            digital=dict(type="boolean", string=_('Digital formatting')),
             unit=dict(type="selection", params=unit, string=_('Date unit'), description=_('Date unit used for comparison and formatting'), default_value='second', required=True),
             round=dict(type="selection", params=unit, string=_('Rounding unit'), description=_("Date unit used for the rounding. The value must be smaller than 'hour' if you use the digital formating."), default_value='second'),
         )
@@ -633,14 +631,14 @@ class Contact(models.AbstractModel):
             separator=dict(type='string', string=_('Address separator'), description=_('Separator use to split the address from the display_name.'), default_value="\\n"),
             no_marker=dict(type='boolean', string=_('Hide badges'), description=_("Don't display the font awesome marker")),
             no_tag_br=dict(type='boolean', string=_('Use comma'), description=_("Use comma instead of the <br> tag to display the address")),
-            phone_icons=dict(type='boolean', string=_('Displayed phone icons'), description=_("Display the phone icons even if no_marker is True")),
-            country_image=dict(type='boolean', string=_('Displayed contry image'), description=_("Display the country image if the field is present on the record")),
+            phone_icons=dict(type='boolean', string=_('Display phone icons'), description=_("Display the phone icons even if no_marker is True")),
+            country_image=dict(type='boolean', string=_('Display country image'), description=_("Display the country image if the field is present on the record")),
         )
         return options
 
     @api.model
     def value_to_html(self, value, options):
-        if not value.exists():
+        if not value:
             return False
 
         opf = options and options.get('fields') or ["name", "address", "phone", "mobile", "email"]

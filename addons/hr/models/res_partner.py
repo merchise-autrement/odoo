@@ -16,14 +16,12 @@ class Partner(models.Model):
 
         try:
             employee_group = self.env.ref('base.group_user')
-            hr_suggestions = [{'id': user.partner_id.id, 'name': user.name, 'email': user.email}
-                              for user in employee_group.users]
+            hr_suggestions = [{'id': user.partner_id.id, 'name': user.name, 'email': user.email} for user in employee_group.users]
             suggestions.append(hr_suggestions)
             return suggestions
         except AccessError:
             return suggestions
 
-    @api.multi
     def name_get(self):
         """ Override to allow an employee to see its private address in his profile.
             This avoids to relax access rules on `res.parter` and to add an `ir.rule`.

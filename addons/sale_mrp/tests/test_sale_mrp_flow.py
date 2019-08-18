@@ -5,56 +5,57 @@ from datetime import datetime
 
 from odoo.tests import common, Form
 from odoo.exceptions import UserError
-from odoo.tools import mute_logger
+from odoo.tools import mute_logger, float_compare
 
 
-class TestSaleMrpFlow(common.TransactionCase):
+class TestSaleMrpFlow(common.SavepointCase):
 
-    def setUp(self):
-        super(TestSaleMrpFlow, self).setUp()
+    @classmethod
+    def setUpClass(cls):
+        super(TestSaleMrpFlow, cls).setUpClass()
         # Useful models
-        self.StockMove = self.env['stock.move']
-        self.UoM = self.env['uom.uom']
-        self.MrpProduction = self.env['mrp.production']
-        self.Inventory = self.env['stock.inventory']
-        self.InventoryLine = self.env['stock.inventory.line']
-        self.ProductProduce = self.env['mrp.product.produce']
-        self.ProductCategory = self.env['product.category']
+        cls.StockMove = cls.env['stock.move']
+        cls.UoM = cls.env['uom.uom']
+        cls.MrpProduction = cls.env['mrp.production']
+        cls.Inventory = cls.env['stock.inventory']
+        cls.InventoryLine = cls.env['stock.inventory.line']
+        cls.ProductProduce = cls.env['mrp.product.produce']
+        cls.ProductCategory = cls.env['product.category']
 
-        self.categ_unit = self.env.ref('uom.product_uom_categ_unit')
-        self.categ_kgm = self.env.ref('uom.product_uom_categ_kgm')
-        self.stock_location = self.env.ref('stock.stock_location_stock')
-        self.warehouse = self.env.ref('stock.warehouse0')
+        cls.categ_unit = cls.env.ref('uom.product_uom_categ_unit')
+        cls.categ_kgm = cls.env.ref('uom.product_uom_categ_kgm')
+        cls.stock_location = cls.env.ref('stock.stock_location_stock')
+        cls.warehouse = cls.env.ref('stock.warehouse0')
 
-        self.uom_kg = self.env['uom.uom'].search([('category_id', '=', self.categ_kgm.id), ('uom_type', '=', 'reference')], limit=1)
-        self.uom_kg.write({
+        cls.uom_kg = cls.env['uom.uom'].search([('category_id', '=', cls.categ_kgm.id), ('uom_type', '=', 'reference')], limit=1)
+        cls.uom_kg.write({
             'name': 'Test-KG',
             'rounding': 0.000001})
-        self.uom_gm = self.UoM.create({
+        cls.uom_gm = cls.UoM.create({
             'name': 'Test-G',
-            'category_id': self.categ_kgm.id,
+            'category_id': cls.categ_kgm.id,
             'uom_type': 'smaller',
             'factor': 1000.0,
             'rounding': 0.001})
-        self.uom_unit = self.env['uom.uom'].search([('category_id', '=', self.categ_unit.id), ('uom_type', '=', 'reference')], limit=1)
-        self.uom_unit.write({
+        cls.uom_unit = cls.env['uom.uom'].search([('category_id', '=', cls.categ_unit.id), ('uom_type', '=', 'reference')], limit=1)
+        cls.uom_unit.write({
             'name': 'Test-Unit',
             'rounding': 0.01})
-        self.uom_dozen = self.UoM.create({
+        cls.uom_dozen = cls.UoM.create({
             'name': 'Test-DozenA',
-            'category_id': self.categ_unit.id,
+            'category_id': cls.categ_unit.id,
             'factor_inv': 12,
             'uom_type': 'bigger',
             'rounding': 0.001})
 
         # Creating all components
-        self.component_a = self._create_product('Comp A', self.uom_unit)
-        self.component_b = self._create_product('Comp B', self.uom_unit)
-        self.component_c = self._create_product('Comp C', self.uom_unit)
-        self.component_d = self._create_product('Comp D', self.uom_unit)
-        self.component_e = self._create_product('Comp E', self.uom_unit)
-        self.component_f = self._create_product('Comp F', self.uom_unit)
-        self.component_g = self._create_product('Comp G', self.uom_unit)
+        cls.component_a = cls._cls_create_product('Comp A', cls.uom_unit)
+        cls.component_b = cls._cls_create_product('Comp B', cls.uom_unit)
+        cls.component_c = cls._cls_create_product('Comp C', cls.uom_unit)
+        cls.component_d = cls._cls_create_product('Comp D', cls.uom_unit)
+        cls.component_e = cls._cls_create_product('Comp E', cls.uom_unit)
+        cls.component_f = cls._cls_create_product('Comp F', cls.uom_unit)
+        cls.component_g = cls._cls_create_product('Comp G', cls.uom_unit)
 
         # Create a kit 'kit_1' :
         # -----------------------
@@ -63,26 +64,26 @@ class TestSaleMrpFlow(common.TransactionCase):
         #         |- component_b   x1
         #         |- component_c   x3
 
-        self.kit_1 = self._create_product('Kit 1', self.uom_unit)
+        cls.kit_1 = cls._cls_create_product('Kit 1', cls.uom_unit)
 
-        self.bom_kit_1 = self.env['mrp.bom'].create({
-            'product_tmpl_id': self.kit_1.product_tmpl_id.id,
+        cls.bom_kit_1 = cls.env['mrp.bom'].create({
+            'product_tmpl_id': cls.kit_1.product_tmpl_id.id,
             'product_qty': 1.0,
             'type': 'phantom'})
 
-        BomLine = self.env['mrp.bom.line']
+        BomLine = cls.env['mrp.bom.line']
         BomLine.create({
-            'product_id': self.component_a.id,
+            'product_id': cls.component_a.id,
             'product_qty': 2.0,
-            'bom_id': self.bom_kit_1.id})
+            'bom_id': cls.bom_kit_1.id})
         BomLine.create({
-            'product_id': self.component_b.id,
+            'product_id': cls.component_b.id,
             'product_qty': 1.0,
-            'bom_id': self.bom_kit_1.id})
+            'bom_id': cls.bom_kit_1.id})
         BomLine.create({
-            'product_id': self.component_c.id,
+            'product_id': cls.component_c.id,
             'product_qty': 3.0,
-            'bom_id': self.bom_kit_1.id})
+            'bom_id': cls.bom_kit_1.id})
 
         # Create a kit 'kit_parent' :
         # ---------------------------
@@ -98,57 +99,69 @@ class TestSaleMrpFlow(common.TransactionCase):
         #              |- component_e x1
 
         # Creating all kits
-        self.kit_2 = self._create_product('Kit 2', self.uom_unit)
-        self.kit_3 = self._create_product('kit 3', self.uom_unit)
-        self.kit_parent = self._create_product('Kit Parent', self.uom_unit)
+        cls.kit_2 = cls._cls_create_product('Kit 2', cls.uom_unit)
+        cls.kit_3 = cls._cls_create_product('kit 3', cls.uom_unit)
+        cls.kit_parent = cls._cls_create_product('Kit Parent', cls.uom_unit)
 
         # Linking the kits and the components via some 'phantom' BoMs
-        bom_kit_2 = self.env['mrp.bom'].create({
-            'product_tmpl_id': self.kit_2.product_tmpl_id.id,
+        bom_kit_2 = cls.env['mrp.bom'].create({
+            'product_tmpl_id': cls.kit_2.product_tmpl_id.id,
             'product_qty': 1.0,
             'type': 'phantom'})
 
         BomLine.create({
-            'product_id': self.component_d.id,
+            'product_id': cls.component_d.id,
             'product_qty': 1.0,
             'bom_id': bom_kit_2.id})
         BomLine.create({
-            'product_id': self.kit_1.id,
+            'product_id': cls.kit_1.id,
             'product_qty': 2.0,
             'bom_id': bom_kit_2.id})
 
-        bom_kit_parent = self.env['mrp.bom'].create({
-            'product_tmpl_id': self.kit_parent.product_tmpl_id.id,
+        bom_kit_parent = cls.env['mrp.bom'].create({
+            'product_tmpl_id': cls.kit_parent.product_tmpl_id.id,
             'product_qty': 1.0,
             'type': 'phantom'})
 
         BomLine.create({
-            'product_id': self.component_e.id,
+            'product_id': cls.component_e.id,
             'product_qty': 1.0,
             'bom_id': bom_kit_parent.id})
         BomLine.create({
-            'product_id': self.kit_2.id,
+            'product_id': cls.kit_2.id,
             'product_qty': 2.0,
             'bom_id': bom_kit_parent.id})
 
-        bom_kit_3 = self.env['mrp.bom'].create({
-            'product_tmpl_id': self.kit_3.product_tmpl_id.id,
+        bom_kit_3 = cls.env['mrp.bom'].create({
+            'product_tmpl_id': cls.kit_3.product_tmpl_id.id,
             'product_qty': 1.0,
             'type': 'phantom'})
 
         BomLine.create({
-            'product_id': self.component_f.id,
+            'product_id': cls.component_f.id,
             'product_qty': 1.0,
             'bom_id': bom_kit_3.id})
         BomLine.create({
-            'product_id': self.component_g.id,
+            'product_id': cls.component_g.id,
             'product_qty': 2.0,
             'bom_id': bom_kit_3.id})
 
         BomLine.create({
-            'product_id': self.kit_3.id,
+            'product_id': cls.kit_3.id,
             'product_qty': 2.0,
             'bom_id': bom_kit_parent.id})
+
+    @classmethod
+    def _cls_create_product(cls, name, uom_id, routes=()):
+        p = Form(cls.env['product.product'])
+        p.name = name
+        p.type = 'product'
+        p.uom_id = uom_id
+        p.uom_po_id = uom_id
+        p.route_ids.clear()
+        for r in routes:
+            p.route_ids.add(r)
+        return p.save()
 
     def _create_product(self, name, uom_id, routes=()):
         p = Form(self.env['product.product'])
@@ -394,8 +407,7 @@ class TestSaleMrpFlow(common.TransactionCase):
 
         inventory = self.Inventory.create({
             'name': 'Inventory Product KG',
-            'product_id': product_c.id,
-            'filter': 'product'})
+            'product_ids': [(4, product_c.id)]})
 
         inventory.action_start()
         self.assertFalse(inventory.line_ids, "Inventory line should not created.")
@@ -448,8 +460,7 @@ class TestSaleMrpFlow(common.TransactionCase):
         # -------------------------------------------------------
         inventory = self.Inventory.create({
             'name': 'Inventory Product C KG',
-            'product_id': product_c.id,
-            'filter': 'product'})
+            'product_ids': [(4, product_c.id)]})
 
         inventory.action_start()
         self.assertFalse(inventory.line_ids, "Inventory line should not created.")
@@ -550,6 +561,7 @@ class TestSaleMrpFlow(common.TransactionCase):
         # These products are in the Test category
         # The bom consists of 2 component1 and 1 component2
         # The invoice policy of the finished product is based on delivered quantities
+        self.env.company.currency_id = self.env.ref('base.USD')
         self.uom_unit = self.UoM.create({
             'name': 'Test-Unit',
             'category_id': self.categ_unit.id,
@@ -560,7 +572,7 @@ class TestSaleMrpFlow(common.TransactionCase):
         self.company.anglo_saxon_accounting = True
         self.partner = self.env.ref('base.res_partner_1')
         self.category = self.env.ref('product.product_category_1').copy({'name': 'Test category','property_valuation': 'real_time', 'property_cost_method': 'fifo'})
-        account_type = self.env['account.account.type'].create({'name': 'RCV type', 'type': 'receivable'})
+        account_type = self.env['account.account.type'].create({'name': 'RCV type', 'type': 'other'})
         self.account_receiv = self.env['account.account'].create({'name': 'Receivable', 'code': 'RCV00' , 'user_type_id': account_type.id, 'reconcile': True})
         account_expense = self.env['account.account'].create({'name': 'Expense', 'code': 'EXP00' , 'user_type_id': account_type.id, 'reconcile': True})
         account_output = self.env['account.account'].create({'name': 'Output', 'code': 'OUT00' , 'user_type_id': account_type.id, 'reconcile': True})
@@ -621,7 +633,13 @@ class TestSaleMrpFlow(common.TransactionCase):
             'partner_id': self.partner.id,
             'partner_invoice_id': self.partner.id,
             'partner_shipping_id': self.partner.id,
-            'order_line': [(0, 0, {'name': self.finished_product.name, 'product_id': self.finished_product.id, 'product_uom_qty': 3, 'product_uom': self.finished_product.uom_id.id, 'price_unit': self.finished_product.list_price})],
+            'order_line': [(0, 0, {
+                'name': self.finished_product.name,
+                'product_id': self.finished_product.id,
+                'product_uom_qty': 3,
+                'product_uom': self.finished_product.uom_id.id,
+                'price_unit': self.finished_product.list_price
+            })],
             'pricelist_id': self.env.ref('product.list0').id,
             'company_id': self.company.id,
         }
@@ -639,11 +657,14 @@ class TestSaleMrpFlow(common.TransactionCase):
         self.so._create_invoices()
         self.invoice = self.so.invoice_ids
         # Changed the invoiced quantity of the finished product to 2
-        self.invoice.invoice_line_ids.write({'quantity': 2.0})
-        self.invoice.action_invoice_open()
-        aml = self.invoice.move_id.line_ids
-        aml_expense = aml.filtered(lambda l: l.account_id.id == account_expense.id)
-        aml_output = aml.filtered(lambda l: l.account_id.id == account_output.id)
+        move_form = Form(self.invoice)
+        with move_form.invoice_line_ids.edit(0) as line_form:
+            line_form.quantity = 2.0
+        self.invoice = move_form.save()
+        self.invoice.post()
+        aml = self.invoice.line_ids
+        aml_expense = aml.filtered(lambda l: l.is_anglo_saxon_line and l.debit > 0)
+        aml_output = aml.filtered(lambda l: l.is_anglo_saxon_line and l.credit > 0)
         # Check that the cost of Good Sold entries are equal to 2* (2 * 20 + 1 * 10) = 100
         self.assertEqual(aml_expense.debit, 100, "Cost of Good Sold entry missing or mismatching")
         self.assertEqual(aml_output.credit, 100, "Cost of Good Sold entry missing or mismatching")
@@ -1031,9 +1052,8 @@ class TestSaleMrpFlow(common.TransactionCase):
         self.assertEquals(kit_parent_wh_order.virtual_available, 0)
         self.assertEquals(kit_parent_wh1.virtual_available, 1)
 
-        # A warning message should be returned as there arn't enough quantities available for the sale order
-        warning = order_line._onchange_product_id_check_availability()
-        self.assertTrue(warning)
+        # Check there arn't enough quantities available for the sale order
+        self.assertTrue(float_compare(order_line.virtual_available_at_date - order_line.product_uom_qty, 0, precision_rounding=line.product_uom.rounding) == -1)
 
         # We receive enoug of each component in Warehouse 2 to make 3 kit_parent
         qty_to_process = {
@@ -1054,9 +1074,8 @@ class TestSaleMrpFlow(common.TransactionCase):
         self.assertEquals(kit_parent_wh_order.virtual_available, 3)
         self.assertEquals(kit_parent_wh1.virtual_available, 1)
 
-        # A warning message should be returned as there arn't enough quantities available for the sale order
-        warning = order_line._onchange_product_id_check_availability()
-        self.assertTrue(warning)
+        # Check there arn't enough quantities available for the sale order
+        self.assertTrue(float_compare(order_line.virtual_available_at_date - order_line.product_uom_qty, 0, precision_rounding=line.product_uom.rounding) == -1)
 
         # We receive enough of each component in Warehouse 2 to make 7 kit_parent
         qty_to_process = {
@@ -1073,10 +1092,6 @@ class TestSaleMrpFlow(common.TransactionCase):
         # Enough quantities should be available, no warning message should be displayed
         kit_parent_wh_order = self.kit_parent.with_context(warehouse=so.warehouse_id.id)
         self.assertEquals(kit_parent_wh_order.virtual_available, 7)
-
-        # Some cache issue prevents the following to work in a test
-        #warning = order_line._onchange_product_id_check_availability()
-        #self.assertFalse(warning)
 
     def test_06_kit_qty_delivered_mixed_uom(self):
         """
@@ -1273,9 +1288,8 @@ class TestSaleMrpFlow(common.TransactionCase):
         virtual_available_wh_order = kit_uom_in_kit.virtual_available
         self.assertEquals(virtual_available_wh_order, 1)
 
-        # A warning message should be returned as there arn't enough quantities available for the sale order
-        warning = order_line._onchange_product_id_check_availability()
-        self.assertTrue(warning)
+        # Check there arn't enough quantities available for the sale order
+        self.assertTrue(float_compare(order_line.virtual_available_at_date - order_line.product_uom_qty, 0, precision_rounding=line.product_uom.rounding) == -1)
 
         # We receive enough of each component in Warehouse 1 to make 3 kit_uom_in_kit.
         # Moves are created instead of only updating the quant quantities in order to trigger every compute fields.
@@ -1287,9 +1301,8 @@ class TestSaleMrpFlow(common.TransactionCase):
         }
         self._create_move_quantities(qty_to_process, components, warehouse_1)
 
-        # Enough quantities should be available to make 3 kit_uom_in_kit and a warning message should be displayed
-        warning = order_line._onchange_product_id_check_availability()
-        self.assertTrue(warning)
+        # Check there arn't enough quantities available for the sale order
+        self.assertTrue(float_compare(order_line.virtual_available_at_date - order_line.product_uom_qty, 0, precision_rounding=line.product_uom.rounding) == -1)
         kit_uom_in_kit.with_context(warehouse=warehouse_1.id)._compute_quantities()
         virtual_available_wh_order = kit_uom_in_kit.virtual_available
         self.assertEquals(virtual_available_wh_order, 3)
@@ -1300,12 +1313,6 @@ class TestSaleMrpFlow(common.TransactionCase):
         # We check that enough quantities were processed to sell 5 kit_uom_in_kit
         kit_uom_in_kit.with_context(warehouse=warehouse_1.id)._compute_quantities()
         self.assertEquals(kit_uom_in_kit.virtual_available, 5)
-
-        # Some cache issue prevents the following to work in a test
-
-        # No warning should be raised
-        # warning = order_line._onchange_product_id_check_availability()
-        # self.assertFalse(warning)
 
     def test_10_sale_mrp_kits_routes(self):
 
@@ -1446,3 +1453,49 @@ class TestSaleMrpFlow(common.TransactionCase):
         move_component_kg = order.picking_ids[0].move_lines - move_component_unit
         self.assertEquals(move_component_unit.product_uom_qty, 0.5)
         self.assertEquals(move_component_kg.product_uom_qty, 0.583)
+
+    def test_product_type_service_1(self):
+        route_manufacture = self.warehouse.manufacture_pull_id.route_id.id
+        route_mto = self.warehouse.mto_pull_id.route_id.id
+        self.uom_unit = self.env.ref('uom.product_uom_unit')
+
+        # Create finished product
+        finished_product = self.env['product.product'].create({
+            'name': 'Geyser',
+            'type': 'product',
+            'route_ids': [(4, route_mto), (4, route_manufacture)],
+        })
+
+        # Create service type product
+        product_raw = self.env['product.product'].create({
+            'name': 'raw Geyser',
+            'type': 'service',
+        })
+
+        # Create bom for finish product
+        bom = self.env['mrp.bom'].create({
+            'product_id': finished_product.id,
+            'product_tmpl_id': finished_product.product_tmpl_id.id,
+            'product_uom_id': self.env.ref('uom.product_uom_unit').id,
+            'product_qty': 1.0,
+            'type': 'normal',
+            'bom_line_ids': [(5, 0), (0, 0, {'product_id': product_raw.id})]
+        })
+
+        # Create sale order
+        sale_form = Form(self.env['sale.order'])
+        sale_form.partner_id = self.env.ref('base.res_partner_1')
+        with sale_form.order_line.new() as line:
+            line.name = finished_product.name
+            line.product_id = finished_product
+            line.product_uom_qty = 1.0
+            line.product_uom = self.uom_unit
+            line.price_unit = 10.0
+        sale_order = sale_form.save()
+
+        with self.assertRaises(UserError):
+            sale_order.action_confirm()
+
+        mo = self.env['mrp.production'].search([('product_id', '=', finished_product.id)])
+
+        self.assertTrue(mo, 'Manufacturing order created.')

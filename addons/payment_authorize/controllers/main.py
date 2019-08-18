@@ -30,19 +30,6 @@ class AuthorizeController(http.Controller):
             'return_url': urls.url_join(base_url, "/payment/process")
         })
 
-    @http.route(['/payment/authorize/s2s/create_json'], type='json', auth='public')
-    def authorize_s2s_create_json(self, **kwargs):
-        acquirer_id = int(kwargs.get('acquirer_id'))
-        acquirer = request.env['payment.acquirer'].browse(acquirer_id)
-        if not kwargs.get('partner_id'):
-            kwargs = dict(kwargs, partner_id=request.env.user.partner_id.id)
-        try:
-           return acquirer.s2s_process(kwargs).id
-        except (ValidationError, UserError) as e:
-           return {
-               'error': e.name,
-           }
-
     @http.route(['/payment/authorize/s2s/create_json_3ds'], type='json', auth='public', csrf=False)
     def authorize_s2s_create_json_3ds(self, verify_validity=False, **kwargs):
         token = False
@@ -55,14 +42,14 @@ class AuthorizeController(http.Controller):
         except ValidationError as e:
             message = e.args[0]
             if isinstance(message, dict) and 'missing_fields' in message:
-                msg = _("The transaction cannot be processed because some contact details are missing or invalid: ")
-                message = msg + ', '.join(message['missing_fields']) + '. '
                 if request.env.user._is_public():
-                    message += _("Please sign in to complete your profile.")
+                    message = _("Please sign in to complete the payment.")
                     # update message if portal mode = b2b
                     if request.env['ir.config_parameter'].sudo().get_param('auth_signup.allow_uninvited', 'False').lower() == 'false':
-                        message += _("If you don't have any account, please ask your salesperson to update your profile. ")
+                        message += _(" If you don't have any account, ask your salesperson to grant you a portal access. ")
                 else:
+                    msg = _("The transaction cannot be processed because some contact details are missing or invalid: ")
+                    message = msg + ', '.join(message['missing_fields']) + '. '
                     message += _("Please complete your profile. ")
 
             return {

@@ -277,7 +277,7 @@ Odoo supports custom tags acting as syntactic sugar:
 - report: use to declare a :ref:`report action <reference/actions/report>`
 - act_window: use it if the record notation can't do what you want
 
-The 4 first tags are prefered over the *record* notation.
+The 4 first tags are preferred over the *record* notation.
 
 
 XML IDs and naming
@@ -586,28 +586,21 @@ Programming in Odoo
 
 Make your method work in batch
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-When adding a function, make sure it can process multiple records. Typically,
-such methods are decorated with the ``api.multi`` decorator. Then you will have
-to iterate on ``self`` to treat each record.
+When adding a function, make sure it can process multiple records by iterating
+on self to treat each record.
 
 .. code-block:: python
 
-    @api.multi
     def my_method(self)
         for record in self:
             record.do_cool_stuff()
 
-Avoid to use ``api.one``  decorator : this will probably not do what you expected,
-and extending a such method is not as easy than a *api.multi* method, since it
-returns a list of result (ordered by recordset ids).
-
 For performance issue, when developping a 'stat button' (for instance), do not
-perform a ``search`` or a ``search_count`` in a loop in a ``api.multi`` method. It
+perform a ``search`` or a ``search_count`` in a loop. It
 is recommended to use ``read_group`` method, to compute all value in only one request.
 
 .. code-block:: python
 
-    @api.multi
     def _compute_equipment_count(self):
     """ Count the number of equipement per category """
         equipment_data = self.env['hr.equipment'].read_group([('category_id', 'in', self.ids)], ['category_id'], ['category_id'])
@@ -943,8 +936,8 @@ Symbols and Conventions
     - Selection method: the selection method pattern is *_selection_<field_name>*
     - Onchange method : the onchange method pattern is *_onchange_<field_name>*
     - Constraint method : the constraint method pattern is *_check_<constraint_name>*
-    - Action method : an object action method is prefix with *action_*. Its decorator is
-      ``@api.multi``, but since it use only one record, add ``self.ensure_one()``
+    - Action method : an object action method is prefix with *action_*.
+      Since it uses only one record, add ``self.ensure_one()``
       at the beginning of the method.
 
 - In a Model attribute order should be
@@ -979,7 +972,6 @@ Symbols and Conventions
         event_type = fields.Selection(string="Type", selection='_selection_type')
 
         # compute and search fields, in the same order of fields declaration
-        @api.multi
         @api.depends('seats_max', 'registration_ids.state', 'registration_ids.nb_register')
         def _compute_seats(self):
             ...
@@ -1002,7 +994,6 @@ Symbols and Conventions
             ...
 
         # Action methods
-        @api.multi
         def action_validate(self):
             self.ensure_one()
             ...
@@ -1036,9 +1027,11 @@ The convention is to organize the code according to the following structure:
 - *static/src/fonts*
 - *static/src/img*
 - *static/src/js*
+- *static/src/js/tours*: end user tour files (tutorials, not tests)
 - *static/src/scss*: scss files
 - *static/src/xml*: all qweb templates that will be rendered in JS
-- *static/tests*: this is where we put all test related files.
+- *static/tests*: this is where we put all test related files (QUnit).
+- *static/tests/tours*: this is where we put all tour test files (not tutorials).
 
 Javascript coding guidelines
 ----------------------------
@@ -1102,10 +1095,10 @@ description. Try to follow the preferred structure for your commit messages
 
   End the message with references, such as task or bug numbers, PR numbers, and
   OPW tickets, following the suggested format:
-  Related to task #taskId
-  Fixes #12345  (link and close issue on Github)
-  Closes #7865  (link and close PR on Github)
-  OPW-112233
+  task-123 (related to task)
+  Fixes #123  (close related issue on Github)
+  Closes #123  (close related PR on Github)
+  opw-123 (related to ticket)
 
 Tag and module name
 -------------------

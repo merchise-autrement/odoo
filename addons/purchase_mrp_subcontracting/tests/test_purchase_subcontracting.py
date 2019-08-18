@@ -45,6 +45,7 @@ class TestPurchaseSubcontractingFlows(TransactionCase):
             'name': 'subcontractor_partner',
             'type': 'subcontractor',
             'parent_id': company_partner.id,
+            'company_id': self.env.ref('base.main_company').id
         })
 
         self.stock_location = self.env.ref('stock.stock_location_stock')
@@ -107,7 +108,6 @@ class TestPurchaseSubcontractingFlows(TransactionCase):
         move1 = picking1.move_lines[0]
         move1.quantity_done = 1
         picking1.button_validate()
-        self.assertEqual(mo.move_finished_ids.value, 60)
-        # waiting forward port of 67ea26460ff27d6a
-        # self.assertEqual(mo.move_finished_ids.product_id.stock_value, 60)
+        self.assertEqual(mo.move_finished_ids.stock_valuation_layer_ids.value, 60)
+        self.assertEqual(mo.move_finished_ids.product_id.value_svl, 60)
 

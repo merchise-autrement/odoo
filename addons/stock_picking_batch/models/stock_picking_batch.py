@@ -8,22 +8,22 @@ from odoo.exceptions import UserError
 class StockPickingBatch(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _name = "stock.picking.batch"
-    _description = "Batch Picking"
+    _description = "Batch Transfer"
     _order = "name desc"
 
     name = fields.Char(
-        string='Batch Picking Name', default='New',
+        string='Batch Transfer', default='New',
         copy=False, required=True,
-        help='Name of the batch picking')
+        help='Name of the batch transfer')
     user_id = fields.Many2one(
         'res.users', string='Responsible', tracking=True,
-        help='Person responsible for this batch picking')
+        help='Person responsible for this batch transfer')
     picking_ids = fields.One2many(
-        'stock.picking', 'batch_id', string='Pickings',
-        help='List of picking associated to this batch')
+        'stock.picking', 'batch_id', string='Transfers',
+        help='List of transfers associated to this batch')
     state = fields.Selection([
         ('draft', 'Draft'),
-        ('in_progress', 'Running'),
+        ('in_progress', 'In progress'),
         ('done', 'Done'),
         ('cancel', 'Cancelled')], default='draft',
         copy=False, tracking=True, required=True)
@@ -34,34 +34,30 @@ class StockPickingBatch(models.Model):
             vals['name'] = self.env['ir.sequence'].next_by_code('picking.batch') or '/'
         return super(StockPickingBatch, self).create(vals)
 
-    @api.multi
     def confirm_picking(self):
         pickings_todo = self.mapped('picking_ids')
         self.write({'state': 'in_progress'})
         return pickings_todo.action_assign()
 
-    @api.multi
     def cancel_picking(self):
         self.mapped('picking_ids').action_cancel()
         return self.write({'state': 'cancel'})
 
-    @api.multi
     def print_picking(self):
         pickings = self.mapped('picking_ids')
         if not pickings:
             raise UserError(_('Nothing to print.'))
         return self.env.ref('stock_picking_batch.action_report_picking_batch').report_action(self)
 
-    @api.multi
     def done(self):
         pickings = self.mapped('picking_ids').filtered(lambda picking: picking.state not in ('cancel', 'done'))
         if any(picking.state not in ('assigned') for picking in pickings):
-            raise UserError(_('Some pickings are still waiting for goods. Please check or force their availability before setting this batch to done.'))
+            raise UserError(_('Some transfers are still waiting for goods. Please check or force their availability before setting this batch to done.'))
         for picking in pickings:
             picking.message_post(
                 body="<b>%s:</b> %s <a href=#id=%s&view_type=form&model=stock.picking.batch>%s</a>" % (
                     _("Transferred by"),
-                    _("Batch Picking"),
+                    _("Batch Transfer"),
                     picking.batch_id.id,
                     picking.batch_id.name))
 
@@ -91,7 +87,6 @@ class StockPickingBatch(models.Model):
             return {
                 'name': _('Immediate Transfer?'),
                 'type': 'ir.actions.act_window',
-                'view_type': 'form',
                 'view_mode': 'form',
                 'res_model': 'stock.immediate.transfer',
                 'views': [(view.id, 'form')],
@@ -114,6 +109,6 @@ class StockPicking(models.Model):
     _inherit = "stock.picking"
 
     batch_id = fields.Many2one(
-        'stock.picking.batch', string='Batch Picking', oldname="wave_id",
+        'stock.picking.batch', string='Batch Transfer',
         states={'done': [('readonly', True)], 'cancel': [('readonly', True)]},
-        help='Batch associated to this picking', copy=False)
+        help='Batch associated to this transfer', copy=False)

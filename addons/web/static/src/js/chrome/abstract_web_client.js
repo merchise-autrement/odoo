@@ -15,23 +15,25 @@ var ActionManager = require('web.ActionManager');
 var concurrency = require('web.concurrency');
 var core = require('web.core');
 var config = require('web.config');
-var crash_manager = require('web.crash_manager');
+var WarningDialog = require('web.CrashManager').WarningDialog;
 var data_manager = require('web.data_manager');
-var Dialog = require('web.Dialog');
 var dom = require('web.dom');
 var KeyboardNavigationMixin = require('web.KeyboardNavigationMixin');
 var Loading = require('web.Loading');
+var local_storage = require('web.local_storage');
 var RainbowMan = require('web.RainbowMan');
 var ServiceProviderMixin = require('web.ServiceProviderMixin');
 var session = require('web.session');
+var utils = require('web.utils');
 var Widget = require('web.Widget');
 
 var _t = core._t;
-var qweb = core.qweb;
 
 var AbstractWebClient = Widget.extend(ServiceProviderMixin, KeyboardNavigationMixin, {
     dependencies: ['notification'],
-    events: _.extend(KeyboardNavigationMixin.events, {}),
+    events: _.extend({}, KeyboardNavigationMixin.events, {
+        'click .o_search_options .dropdown-menu': '_onClickDropDownMenu',
+    }),
     custom_events: {
         clear_uncommitted_changes: function (e) {
             this.clear_uncommitted_changes().then(e.data.callback);
@@ -97,7 +99,7 @@ var AbstractWebClient = Widget.extend(ServiceProviderMixin, KeyboardNavigationMi
         KeyboardNavigationMixin.init.call(this);
         this.origin = undefined;
         this._current_state = null;
-        this.menu_dm = new concurrency.DropMisordered();
+        this.menu_dp = new concurrency.DropPrevious();
         this.action_mutex = new concurrency.Mutex();
         this.set('title_part', {"zopenerp": "Odoo"});
     },
@@ -111,6 +113,26 @@ var AbstractWebClient = Widget.extend(ServiceProviderMixin, KeyboardNavigationMi
         this.$el.toggleClass('o_touch_device', config.device.touch);
         this.on("change:title_part", this, this._title_changed);
         this._title_changed();
+
+        var state = $.bbq.getState();
+        // If not set on the url, retrieve cids from the local storage
+        // of from the default company on the user
+        var current_company_id = session.user_companies.current_company[0]
+        if (!state.cids) {
+            state.cids = utils.get_cookie('cids') !== null ? utils.get_cookie('cids') : String(current_company_id);
+        }
+        var stateCompanyIDS = _.map(state.cids.split(','), function (cid) { return parseInt(cid) });
+        var userCompanyIDS = _.map(session.user_companies.allowed_companies, function(company) {return company[0]});
+        // Check that the user has access to all the companies
+        if (!_.isEmpty(_.difference(stateCompanyIDS, userCompanyIDS))) {
+            state.cids = String(current_company_id);
+            stateCompanyIDS = [current_company_id]
+        }
+        // Update the user context with this configuration
+        session.user_context.allowed_company_ids = stateCompanyIDS;
+        $.bbq.pushState(state);
+        // Update favicon
+        $("link[type='image/x-icon']").attr('href', '/web/image/res.company/' + String(stateCompanyIDS[0]) + '/favicon/')
 
         return session.is_bound
             .then(function () {
@@ -167,7 +189,7 @@ var AbstractWebClient = Widget.extend(ServiceProviderMixin, KeyboardNavigationMi
                 }
             }, 0);
         });
-        window.addEventListener('blur', function (e) { self._hideAccessKeyOverlay(); });
+        window.addEventListener('blur', function (e) {self._hideAccessKeyOverlay(); });
         core.bus.on('click', this, function (ev) {
             $('.tooltip').remove();
             if (!$(ev.target).is('input[type=file]')) {
@@ -178,46 +200,6 @@ var AbstractWebClient = Widget.extend(ServiceProviderMixin, KeyboardNavigationMi
         });
         core.bus.on('connection_lost', this, this._onConnectionLost);
         core.bus.on('connection_restored', this, this._onConnectionRestored);
-
-        // crash manager integration
-        core.bus.on('rpc_error', crash_manager, crash_manager.rpc_error);
-        window.onerror = function (message, file, line, col, error) {
-            // Scripts injected in DOM (eg: google API's js files) won't return a clean error on window.onerror.
-            // The browser will just give you a 'Script error.' as message and nothing else for security issue.
-            // To enable onerror to work properly with CORS file, you should:
-            //   1. add crossorigin="anonymous" to your <script> tag loading the file
-            //   2. enabling 'Access-Control-Allow-Origin' on the server serving the file.
-            // Since in some case it wont be possible to to this, this handle should have the possibility to be
-            // handled by the script manipulating the injected file. For this, you will use window.onOriginError
-            // If it is not handled, we should display something clearer than the common crash_manager error dialog
-            // since it won't show anything except "Script error."
-            // This link will probably explain it better: https://blog.sentry.io/2016/05/17/what-is-script-error.html
-            if (!file && !line && !col) {
-                // Chrome and Opera set "Script error." on the `message` and hide the `error`
-                // Firefox handles the "Script error." directly. It sets the error thrown by the CORS file into `error`
-                if (window.onOriginError) {
-                    window.onOriginError();
-                    delete window.onOriginError;
-                } else {
-                    crash_manager.show_error({
-                        type: _t("Odoo Client Error"),
-                        message: _t("Unknown CORS error"),
-                        data: {debug: _t("An unknown CORS error occured. The error probably originates from a JavaScript file served from a different origin. (Opening your browser console might give you a hint on the error.)")},
-                    });
-                }
-            } else {
-                // ignore Chrome video internal error: https://crbug.com/809574
-                if (!error && message === 'ResizeObserver loop limit exceeded') {
-                    return;
-                }
-                var traceback = error ? error.stack : '';
-                crash_manager.show_error({
-                    type: _t("Odoo Client Error"),
-                    message: message,
-                    data: {debug: file + ':' + line + "\n" + _t('Traceback:') + "\n" + traceback},
-                });
-            }
-        };
     },
     set_action_manager: function () {
         var self = this;
@@ -334,12 +316,22 @@ var AbstractWebClient = Widget.extend(ServiceProviderMixin, KeyboardNavigationMi
     //--------------------------------------------------------------------------
 
     /**
+     * When clicking inside a dropdown to modify search options
+     * prevents the bootstrap dropdown to close on itself
+     *
+     * @private
+     * @param {Event} ev
+     */
+    _onClickDropDownMenu: function (ev) {
+        ev.stopPropagation();
+    },
+    /**
      * Whenever the connection is lost, we need to notify the user.
      *
      * @private
      */
     _onConnectionLost: function () {
-        this.connectionNotificationID = this.call('notification', 'notify', {
+        this.connectionNotificationID = this.displayNotification({
             title: _t('Connection lost'),
             message: _t('Trying to reconnect...'),
             sticky: true
@@ -353,7 +345,8 @@ var AbstractWebClient = Widget.extend(ServiceProviderMixin, KeyboardNavigationMi
     _onConnectionRestored: function () {
         if (this.connectionNotificationID) {
             this.call('notification', 'close', this.connectionNotificationID);
-            this.call('notification', 'notify', {
+            this.displayNotification({
+                type: 'info',
                 title: _t('Connection restored'),
                 message: _t('You are back online'),
                 sticky: false
@@ -399,13 +392,12 @@ var AbstractWebClient = Widget.extend(ServiceProviderMixin, KeyboardNavigationMi
     _onDisplayWarning: function (e) {
         var data = e.data;
         if (data.type === 'dialog') {
-            new Dialog(this, {
-                size: 'medium',
+            new WarningDialog(this, {
                 title: data.title,
-                $content: qweb.render("CrashManager.warning", data),
-            }).open({shouldFocusButtons: true});
+            }, data).open();
         } else {
-            this.call('notification', 'notify', e.data);
+            data.type = 'warning';
+            this.call('notification', 'notify', data);
         }
     },
     /**
@@ -437,7 +429,7 @@ var AbstractWebClient = Widget.extend(ServiceProviderMixin, KeyboardNavigationMi
      * @param {OdooEvent} e
      */
     _onPushState: function (e) {
-        this.do_push_state(e.data.state);
+        this.do_push_state(_.extend(e.data.state, {'cids': $.bbq.getState().cids}));
     },
     /**
      * This function must be implemented by actual webclient to scroll either to
@@ -480,7 +472,11 @@ var AbstractWebClient = Widget.extend(ServiceProviderMixin, KeyboardNavigationMi
                 new RainbowMan(data).appendTo(this.$el);
             } else {
                 // For instance keep title blank, as we don't have title in data
-                this.notification_manager.notify('', data.message, true);
+                this.call('notification', 'notify', {
+                    title: "",
+                    message: data.message,
+                    sticky: false
+                });
             }
         } else {
             throw new Error('Unknown effect type: ' + type);
