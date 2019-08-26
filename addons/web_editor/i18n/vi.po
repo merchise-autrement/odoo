@@ -9,6 +9,7 @@
 # Duy BQ <duybq86@gmail.com>, 2018
 # Minh Nguyen <ndminh210994@gmail.com>, 2018
 # Nancy Momoland <thanhnguyen.icsc@gmail.com>, 2019
+# Dao Nguyen <trucdao.uel@gmail.com>, 2019
 # Chinh Chinh <trinhttp@trobz.com>, 2019
 # 
 msgid ""
@@ -501,7 +502,7 @@ msgstr ""
 #: code:addons/web_editor/static/src/xml/editor.xml:273
 #, python-format
 msgid "Flat"
-msgstr ""
+msgstr "Giá"
 
 #. module: web_editor
 #. openerp-web
@@ -1054,7 +1055,7 @@ msgstr ""
 #. module: web_editor
 #: model:ir.model,name:web_editor.model_ir_qweb_field_contact
 msgid "Qweb Field Contact"
-msgstr ""
+msgstr "Liên hệ lĩnh vực Qweb"
 
 #. module: web_editor
 #: model:ir.model,name:web_editor.model_ir_qweb_field_date
@@ -1252,7 +1253,7 @@ msgstr ""
 #: code:addons/web_editor/static/src/xml/editor.xml:271
 #, python-format
 msgid "Rounded"
-msgstr ""
+msgstr "Bo tròn"
 
 #. module: web_editor
 #. openerp-web
