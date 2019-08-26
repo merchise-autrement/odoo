@@ -37,6 +37,10 @@ class ExpectedSingletonError(ValueError):
     pass
 
 
+class BusError(Exception):
+    pass
+
+
 # deprecated due to collision with builtins, kept for compatibility
 Warning = UserError
 

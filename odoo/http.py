@@ -144,6 +144,7 @@ NO_POSTMORTEM = (odoo.osv.orm.except_orm,
                  odoo.exceptions.AccessDenied,
                  odoo.exceptions.Warning,
                  odoo.exceptions.RedirectWarning,
+                 odoo.exceptions.BusError,
                  AuthenticationError,
                  SessionExpiredException)
 
