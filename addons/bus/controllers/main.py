@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import exceptions, _
+from odoo.exceptions import BusError
 from odoo.http import Controller, request, route
 from odoo.addons.bus.models.bus import dispatch
 
@@ -17,7 +18,7 @@ class BusController(Controller):
     @route('/longpolling/send', type="json", auth="public")
     def send(self, channel, message):
         if not isinstance(channel, pycompat.string_types):
-            raise Exception("bus.Bus only string channels are allowed.")
+            raise BusError("bus.Bus only string channels are allowed.")
         return request.env['bus.bus'].sendone(channel, message)
 
     # override to add channels
@@ -34,9 +35,9 @@ class BusController(Controller):
         if options is None:
             options = {}
         if not dispatch:
-            raise Exception("bus.Bus unavailable")
+            raise BusError("bus.Bus unavailable")
         if [c for c in channels if not isinstance(c, pycompat.string_types)]:
-            raise Exception("bus.Bus only string channels are allowed.")
+            raise BusError("bus.Bus only string channels are allowed.")
         if request.registry.in_test_mode():
             raise exceptions.UserError(_("bus.Bus not available in test mode"))
         return self._poll(request.db, channels, last, options)
