@@ -13,7 +13,7 @@ RELEASE_LEVELS_DISPLAY = {ALPHA: ALPHA,
 #  (6,1,0,'beta',0) < (6,1,0,'candidate',1) < (6,1,0,'candidate',2)
 #  (6,1,0,'candidate',2) < (6,1,0,'final',0) < (6,1,2,'final',0)
 
-STAMP = "1.5"  # merchise: our current release
+STAMP = ".1.7"  # merchise: our current release
 
 version_info = (12, 0, 0, FINAL, STAMP, '')
 version = '.'.join(str(s) for s in version_info[:2]) + RELEASE_LEVELS_DISPLAY[version_info[3]] + str(version_info[4] or '') + version_info[5]
