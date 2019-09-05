@@ -25,10 +25,16 @@ from __future__ import (
 
 import os
 import raven
+
 from raven.transport.requests import RequestsHTTPTransport
 from raven.transport.threaded_requests import ThreadedRequestsHTTPTransport
 from raven.transport.gevent import GeventedHTTPTransport
 from raven.utils.wsgi import get_headers, get_environ
+
+
+from raven.utils.serializer.manager import manager as _manager, transform
+from raven.utils.serializer import Serializer
+
 
 try:
     import urlparse as _urlparse
@@ -308,3 +314,28 @@ def patch_logging(override=False, force=False):
     for name in (None, "odoo"):
         logger = logging.getLogger(name)
         sethandler(logger)
+
+
+class Record:
+    def __init__(self, model, names):
+        self.model = model
+        self.names = names
+
+    def __repr__(self):
+        return f"<recordset of {self.model!r}: {self.names}>"
+
+
+class OdooModelSerializer(Serializer):
+    from odoo import models
+
+    types = (models.BaseModel,)
+
+    def serialize(self, value, **kwargs):
+        if value:
+            names = value.name_get()
+            return transform(Record(value._name, names))
+        else:
+            return transform(Record(value._name, []))
+
+
+_manager.register(OdooModelSerializer)
