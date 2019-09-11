@@ -141,16 +141,6 @@ var FormViewDialog = ViewDialog.extend({
                     }
                 });
 
-                if (multi_select) {
-                    options.buttons.splice(1, 0, {
-                        text: _t("Save & New"),
-                        classes: "btn-primary",
-                        click: function () {
-                            this._save().then(self.form_view.createRecord.bind(self.form_view, self.parentID));
-                        },
-                    });
-                }
-
                 var multi = options.disable_multiple_selection;
                 if (!multi && this.deletable) {
                     options.buttons.push({
