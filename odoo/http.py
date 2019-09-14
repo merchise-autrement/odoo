@@ -66,6 +66,9 @@ STATIC_CACHE = DAYS(365)
 
 COOKIE_MAX_AGE = DAYS(90)
 
+# Collection used to store a sample of debug RPC calls' info.
+request_log_entries = collections.deque(maxlen=69000)
+
 
 class _AccelMixin(object):
     '''A mixin for classes with an :attr:`~BaseResponse.environ` attribute
@@ -761,6 +764,16 @@ class JsonRequest(WebRequest):
                     end_memory = memory_info(psutil.Process(os.getpid()))
                 logline = '%s: %s %s: time:%.3fs mem: %sk -> %sk (diff: %sk)' % (
                     endpoint, model, method, end_time - start_time, start_memory / 1024, end_memory / 1024, (end_memory - start_memory)/1024)
+                request_log_entries.append(
+                    dict(
+                        endpoint=endpoint,
+                        model=model,
+                        time="%.3f" % (end_time - start_time),
+                        method=method,
+                        start_memory=start_memory / 1024,
+                        end_memory=end_memory / 1024,
+                    )
+                )
                 if rpc_response_flag:
                     rpc_response.debug('%s, %s', logline, pprint.pformat(result))
                 else:
