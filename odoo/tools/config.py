@@ -133,6 +133,9 @@ class configmanager(object):
                          help="Listen port for the longpolling HTTP service", type="int", metavar="PORT")
         group.add_option("--no-http", dest="http_enable", action="store_false", my_default=True,
                          help="Disable the HTTP and Longpolling services entirely")
+        group.add_option("--no-longpolling", dest="longpolling_autospawn",
+                         action="store_false", my_default=True,
+                         help="Disable the Longpolling service without disabling HTTP")
         group.add_option("--proxy-mode", dest="proxy_mode", action="store_true", my_default=False,
                          help="Activate reverse proxy WSGI wrappers (headers rewriting) "
                               "Only enable this when running behind a trusted web proxy!")
@@ -440,7 +443,8 @@ class configmanager(object):
         keys = [
             'language', 'translate_out', 'translate_in', 'overwrite_existing_translations',
             'dev_mode', 'shell_interface', 'smtp_ssl', 'load_language',
-            'stop_after_init', 'logrotate', 'without_demo', 'http_enable', 'syslog',
+            'stop_after_init', 'logrotate', 'without_demo', 'http_enable', 'longpolling_autospawn',
+            'syslog',
             'list_db', 'proxy_mode',
             'test_file', 'test_tags',
             'osv_memory_count_limit', 'osv_memory_age_limit', 'max_cron_threads', 'unaccent',
