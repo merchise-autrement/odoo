@@ -67,7 +67,7 @@ STATIC_CACHE = DAYS(365)
 COOKIE_MAX_AGE = DAYS(90)
 
 # Collection used to store a sample of debug RPC calls' info.
-request_log_entries = collections.deque(maxlen=69000)
+request_log_entries = collections.deque(maxlen=256)
 
 
 class _AccelMixin(object):
