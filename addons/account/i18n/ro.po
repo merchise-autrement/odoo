@@ -2849,7 +2849,7 @@ msgstr ""
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.res_config_settings_view_form
 msgid "Checks"
-msgstr ""
+msgstr "Verificări"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_invoice_send__child_ids
@@ -10565,8 +10565,8 @@ msgid ""
 "These types are defined according to your country. The type contains more "
 "information about the account and its specificities."
 msgstr ""
-"Aceste tipuri sunt definite în functie de tara dumneavoastra. Tipul contine "
-"mai multe informatii despre cont si specificul acestuia."
+"Aceste tipuri sunt definite în funcție de tara dumneavoastră. Tipul conține "
+"mai multe informații despre cont și specificul acestuia."
 
 #. module: account
 #: code:addons/account/models/account_journal_dashboard.py:100
