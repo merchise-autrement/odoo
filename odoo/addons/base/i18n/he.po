@@ -8030,6 +8030,12 @@ msgid "Barcode scan in Mobile"
 msgstr "הסריקה ברקוד סלולרי"
 
 #. module: base
+#: code:addons/base/models/ir_qweb_fields.py:607
+#, python-format
+msgid "Barcode symbology"
+msgstr ""
+
+#. module: base
 #: code:addons/base/models/ir_qweb_fields.py:603
 #, python-format
 msgid "Barcode type"
@@ -13505,22 +13511,22 @@ msgstr "ייבוא \\ ייצוא"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_bank_statement_import_camt
 msgid "Import CAMT Bank Statement"
-msgstr "יבוא הצהרת בנק CAMT"
+msgstr "ייבוא הצהרת בנק CAMT"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_bank_statement_import_csv
 msgid "Import CSV Bank Statement"
-msgstr "יבוא הצהרת בנק  CSV"
+msgstr "ייבוא הצהרת בנק  CSV"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_bank_statement_import_ofx
 msgid "Import OFX Bank Statement"
-msgstr "יבוא הצהרת בנק OFX"
+msgstr "ייבוא הצהרת בנק OFX"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_bank_statement_import_qif
 msgid "Import QIF Bank Statement"
-msgstr "יבוא הצהרת בנק QIF"
+msgstr "ייבוא הצהרת בנק QIF"
 
 #. module: base
 #: code:addons/base/models/res_partner.py:855
@@ -18071,7 +18077,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_res_partner__parent_name
 #: model:ir.model.fields,field_description:base.field_res_users__parent_name
 msgid "Parent name"
-msgstr ""
+msgstr "שם הורה"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_company__partner_id
@@ -18108,7 +18114,7 @@ msgstr "כותרת לשוטף"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_users__active_partner
 msgid "Partner is Active"
-msgstr ""
+msgstr "השותף פעיל"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_website_partner
@@ -24019,7 +24025,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_base_import_language
 msgid "_Import"
-msgstr ""
+msgstr "_ייבוא"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_online_sync
