@@ -900,7 +900,8 @@ class Worker(object):
             return None
 
     def setproctitle(self, title=""):
-        setproctitle('[%s] openerp: %s %s %s' % (
+        name = config.get('custom_process_name', 'openerp')
+        setproctitle(f'[%s] {name}: %s %s %s' % (
             sys.argv[0], self.__class__.__name__, self.pid, title
         ))
 
