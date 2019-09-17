@@ -8,6 +8,7 @@
 # Nancy Momoland <thanhnguyen.icsc@gmail.com>, 2019
 # Duy BQ <duybq86@gmail.com>, 2019
 # Dung Nguyen Thi <dungnt@trobz.com>, 2019
+# Dao Nguyen <trucdao.uel@gmail.com>, 2019
 # Chinh Chinh <trinhttp@trobz.com>, 2019
 # 
 msgid ""
@@ -38,6 +39,16 @@ msgid ""
 "                \n"
 "            "
 msgstr ""
+"\n"
+"                \n"
+"                    <p>Xin chào</p>\n"
+"                    <p>Không còn tín dụng trong tài khoản của bạn để thực hiện IAP Lead Generation.<br/>\n"
+"                    Bạn có thể thay đổi tài khoản IAP Lead Generation trong cấu hình của ứng dụng CRM.<br/>\n"
+"\n"
+"                    <p>Trân trọng,</p>\n"
+"                    <p>Odoo S.A.</p>\n"
+"                \n"
+"            "
 
 #. module: crm_reveal
 #: model_terms:ir.ui.view,arch_db:crm_reveal.lead_message_template
@@ -47,37 +58,37 @@ msgstr ""
 #. module: crm_reveal
 #: model:crm.reveal.industry,name:crm_reveal.crm_reveal_industry_1
 msgid "3D Printing"
-msgstr ""
+msgstr "In 3D"
 
 #. module: crm_reveal
 #: model_terms:ir.ui.view,arch_db:crm_reveal.lead_message_template
 msgid "<b>Contacts</b>"
-msgstr ""
+msgstr "<b>Liên hệ</b>"
 
 #. module: crm_reveal
 #: model_terms:ir.ui.view,arch_db:crm_reveal.lead_message_template
 msgid "<b>Phone :</b>"
-msgstr ""
+msgstr "<b>Điện thoại</b>"
 
 #. module: crm_reveal
 #: model_terms:ir.ui.view,arch_db:crm_reveal.lead_message_template
 msgid "<b>Timezone : </b>"
-msgstr ""
+msgstr "<b>Múi giờ:</b>"
 
 #. module: crm_reveal
 #: model_terms:ir.ui.view,arch_db:crm_reveal.crm_reveal_rule_form
 msgid "<span class=\"o_stat_text\"> Leads </span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\"> Đầu mối </span>"
 
 #. module: crm_reveal
 #: model_terms:ir.ui.view,arch_db:crm_reveal.crm_reveal_rule_form
 msgid "<span class=\"o_stat_text\"> Opportunities </span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\"> Cơ hội </span>"
 
 #. module: crm_reveal
 #: model_terms:ir.ui.view,arch_db:crm_reveal.crm_reveal_rule_form
 msgid "<span> people </span>"
-msgstr ""
+msgstr "<span> con người </span>"
 
 #. module: crm_reveal
 #: model:crm.reveal.industry,name:crm_reveal.crm_reveal_industry_2
@@ -592,7 +603,7 @@ msgstr ""
 #. module: crm_reveal
 #: model:crm.reveal.industry,name:crm_reveal.crm_reveal_industry_48
 msgid "Finance"
-msgstr ""
+msgstr "Tài chính"
 
 #. module: crm_reveal
 #: model:crm.reveal.industry,name:crm_reveal.crm_reveal_industry_49

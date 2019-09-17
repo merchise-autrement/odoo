@@ -28,20 +28,20 @@ msgstr ""
 #: code:addons/website/static/src/js/editor/snippets.options.js:1068
 #, python-format
 msgid " Add Images"
-msgstr ""
+msgstr "បន្ថែមរូបភាព"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_page_ir_ui_view
 #: model_terms:website.page,arch_db:website.bs_debug_page
 msgid "\" alert with a"
-msgstr ""
+msgstr "\"ជូនដំណឹងជាមួយ"
 
 #. module: website
 #: code:addons/website/models/website.py:322
 #: code:addons/website/models/website.py:388
 #, python-format
 msgid "%s (id:%s)"
-msgstr ""
+msgstr "%s (id:%s)"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.show_website_info
@@ -52,12 +52,12 @@ msgstr "&amp;times;"
 #: model_terms:ir.ui.view,arch_db:website.sitemap_index_xml
 #: model_terms:ir.ui.view,arch_db:website.sitemap_xml
 msgid "&lt;?xml version=\"1.0\" encoding=\"UTF-8\"?&gt;"
-msgstr ""
+msgstr "&lt;?xml version=\"1.0\" encoding=\"UTF-8\"?&gt;"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.default_xml
 msgid "&lt;?xml version=\"1.0\" encoding=\"utf-8\"?&gt;"
-msgstr ""
+msgstr "&lt;?xml version=\"1.0\" encoding=\"utf-8\"?&gt;"
 
 #. module: website
 #. openerp-web
@@ -119,17 +119,17 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.default_csv
 msgid "1,2,3"
-msgstr ""
+msgstr "1,2,3"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "1/5"
-msgstr ""
+msgstr "1/5"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "100%"
-msgstr ""
+msgstr "100%"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
@@ -139,7 +139,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "12"
-msgstr ""
+msgstr "12"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
@@ -155,7 +155,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "2/5"
-msgstr ""
+msgstr "2/5"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_comparisons
@@ -165,7 +165,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "25%"
-msgstr ""
+msgstr "25%"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
@@ -175,7 +175,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "3/5"
-msgstr ""
+msgstr "3/5"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
@@ -185,7 +185,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "4/5"
-msgstr ""
+msgstr "4/5"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.403
@@ -200,12 +200,12 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "5/5"
-msgstr ""
+msgstr "5/5"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "50%"
-msgstr ""
+msgstr "50%"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
@@ -215,7 +215,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "75%"
-msgstr ""
+msgstr "75%"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_call_to_action
@@ -642,6 +642,8 @@ msgid ""
 "<span class=\"fa fa-lg fa-globe\" title=\"Values set here are website-"
 "specific.\" groups=\"website.group_multi_website\"/>"
 msgstr ""
+"<span class=\"fa fa-lg fa-globe\" title=\"Values set here are website-"
+"specific.\" groups=\"website.group_multi_website\"/>"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.company_description
@@ -804,7 +806,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
 msgid "API Key"
-msgstr ""
+msgstr "សោរAPI"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.aboutus
@@ -961,7 +963,7 @@ msgstr "Arch Blob"
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_page__arch_fs
 msgid "Arch Filename"
-msgstr ""
+msgstr "ឈ្មោះឯកសារ Arch ។"
 
 #. module: website
 #: model:ir.model.fields,help:website.field_res_config_settings__specific_user_account
@@ -999,7 +1001,7 @@ msgstr "មាននៅលើគេហទំព័រ"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.500
 msgid "Back"
-msgstr ""
+msgstr "ថយក្រោយ"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.theme_customize
@@ -1142,7 +1144,7 @@ msgstr ""
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_page__field_parent
 msgid "Child Field"
-msgstr ""
+msgstr "វាលកុមារ។"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_menu__child_id
@@ -1221,7 +1223,7 @@ msgstr "អត្តលេខរបស់អតិថិជន"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
 msgid "Client Secret"
-msgstr ""
+msgstr "អាថ៌កំបាំងអតិថិជន"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.one_page_line
@@ -1323,7 +1325,7 @@ msgstr ""
 #: model:website.menu,name:website.menu_contactus
 #: model_terms:website.page,arch_db:website.contactus_page
 msgid "Contact us"
-msgstr ""
+msgstr "ទាក់ទង​មក​ពួក​យើង "
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.contactus
@@ -1440,7 +1442,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.menu,name:website.menu_dashboard
 msgid "Dashboard"
-msgstr ""
+msgstr "ប៉ាណ្ណូបរិធានស្ទង់"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
@@ -1457,7 +1459,7 @@ msgstr "ទិន្ន័យ"
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "Default"
-msgstr ""
+msgstr "លំនាំដើម។"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
@@ -1558,7 +1560,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_page_ir_ui_view
 #: model_terms:website.page,arch_db:website.bs_debug_page
 msgid "Disabled"
-msgstr ""
+msgstr "នៃកាយវិកល"
 
 #. module: website
 #. openerp-web
@@ -1576,7 +1578,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.external_snippets
 msgid "Discussion Group"
-msgstr ""
+msgstr "ក្រុមពិភាក្សា"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website__display_name
@@ -1833,7 +1835,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
 msgid "Facebook"
-msgstr ""
+msgstr "ហ្វេសប៊ុក"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_res_config_settings__social_facebook
@@ -1936,7 +1938,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
 msgid "Follow your website traffic in Odoo."
-msgstr ""
+msgstr "តាមដានចរាចរណ៍គេហទំព័ររបស់អ្នកនៅអូដូ"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.theme_customize
@@ -1952,7 +1954,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_page_ir_ui_view
 #: model_terms:website.page,arch_db:website.bs_debug_page
 msgid "Form"
-msgstr ""
+msgstr "សំណុំបែបបទ"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_company_team
@@ -2092,7 +2094,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
 msgid "Google Plus"
-msgstr ""
+msgstr "Google Plus"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_res_config_settings__social_googleplus
@@ -2114,7 +2116,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "Grid"
-msgstr ""
+msgstr "ក្រឡាចត្រង្គ"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.menu_search
@@ -2260,7 +2262,7 @@ msgstr ""
 #: code:addons/website/static/src/xml/website.backend.xml:63
 #, python-format
 msgid "How to get my Client ID"
-msgstr ""
+msgstr "តើធ្វើដូចម្តេចដើម្បីទទួលបានលេខសម្គាល់អតិថិជនរបស់ខ្ញុំ"
 
 #. module: website
 #. openerp-web
@@ -2365,7 +2367,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
 msgid "Instagram"
-msgstr ""
+msgstr "អ៊ីនស្តាក្រាម"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_res_config_settings__social_instagram
@@ -2383,7 +2385,7 @@ msgstr ""
 #. module: website
 #: model:ir.model,name:website.model_base_language_install
 msgid "Install Language"
-msgstr ""
+msgstr "ការបង្កើតភាសា"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
@@ -2557,7 +2559,7 @@ msgstr "ផ្លាស់ប្តូរចុងក្រោយ"
 #: code:addons/website/static/src/xml/website.backend.xml:71
 #, python-format
 msgid "Last Week"
-msgstr ""
+msgstr "សប្ដាហ៍​មុន "
 
 #. module: website
 #. openerp-web
@@ -2637,7 +2639,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
 msgid "LinkedIn"
-msgstr ""
+msgstr "លីងអ៊ិន"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_res_config_settings__social_linkedin
@@ -2726,7 +2728,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website.user_navbar
 #, python-format
 msgid "Menu"
-msgstr ""
+msgstr "មឺនុយ"
 
 #. module: website
 #. openerp-web
@@ -2787,7 +2789,7 @@ msgstr ""
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_page__model_ids
 msgid "Models"
-msgstr ""
+msgstr "ម៉ូត"
 
 #. module: website
 #. openerp-web
@@ -2886,7 +2888,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.user_navbar
 msgid "New Channel"
-msgstr ""
+msgstr "ប៉ុស្តិ៍ថ្មី"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.user_navbar
@@ -2934,7 +2936,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.external_snippets
 msgid "Newsletter"
-msgstr ""
+msgstr "ព្រឹត្តិប័ត្រ "
 
 #. module: website
 #. openerp-web
@@ -3119,7 +3121,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website.aboutus
 #: model_terms:website.page,arch_db:website.aboutus_page
 msgid "Our Team"
-msgstr ""
+msgstr "ក្រុម​របស់​យើង"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.aboutus
@@ -3150,7 +3152,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:website.field_website_page__page_ids
 #, python-format
 msgid "Page"
-msgstr ""
+msgstr "ទំព័រ"
 
 #. module: website
 #: code:addons/website/models/website.py:305
@@ -3347,12 +3349,12 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.http_error_debug
 msgid "QWeb"
-msgstr ""
+msgstr "QWeb"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_rating
 msgid "Quality"
-msgstr ""
+msgstr "គុណភាព "
 
 #. module: website
 #: model:ir.model,name:website.model_ir_qweb
@@ -3405,7 +3407,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_references
 msgid "References"
-msgstr ""
+msgstr "ឯកសារយោង"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_res_partner__website_id
@@ -3457,7 +3459,7 @@ msgstr ""
 #: model:ir.model.fields,help:website.field_website_page__website_id
 #: model:ir.model.fields,help:website.field_website_published_multi_mixin__website_id
 msgid "Restrict publishing to this website."
-msgstr ""
+msgstr "រឹតត្បិតការបោះពុម្ពផ្សាយគេហទំព័រនេះ។"
 
 #. module: website
 #: model:res.groups,name:website.group_website_publisher
@@ -3495,7 +3497,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:website.field_website_seo_metadata__is_seo_optimized
 #: model_terms:ir.ui.view,arch_db:website.one_page_line
 msgid "SEO optimized"
-msgstr ""
+msgstr "SEO បានធ្វើឱ្យប្រសើរ"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_features_grid
@@ -3667,7 +3669,7 @@ msgstr "ស្លាយ"
 #: code:addons/website/static/src/xml/website.gallery.xml:17
 #, python-format
 msgid "Slide image"
-msgstr ""
+msgstr "ស្លាយរូបភាព"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
@@ -3728,7 +3730,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "Square"
-msgstr ""
+msgstr "ការ៉េ"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_comparisons
@@ -3823,7 +3825,7 @@ msgstr ""
 #: code:addons/website/models/website.py:383
 #, python-format
 msgid "Templates"
-msgstr ""
+msgstr "គម្រូ"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_faq_collapse
@@ -4122,7 +4124,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
 msgid "Twitter"
-msgstr ""
+msgstr "ធ្វីតទឺ"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_res_config_settings__social_twitter
@@ -4522,28 +4524,28 @@ msgstr ""
 #: model:ir.model.fields,field_description:website.field_website_page__website_meta_description
 #: model:ir.model.fields,field_description:website.field_website_seo_metadata__website_meta_description
 msgid "Website meta description"
-msgstr ""
+msgstr "ការពិពណ៌នាមេតាគេហទំព័រ។"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_ir_ui_view__website_meta_keywords
 #: model:ir.model.fields,field_description:website.field_website_page__website_meta_keywords
 #: model:ir.model.fields,field_description:website.field_website_seo_metadata__website_meta_keywords
 msgid "Website meta keywords"
-msgstr ""
+msgstr "ពាក្យគន្លឹះnនៃគេហទំព័រមេតា។"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_ir_ui_view__website_meta_title
 #: model:ir.model.fields,field_description:website.field_website_page__website_meta_title
 #: model:ir.model.fields,field_description:website.field_website_seo_metadata__website_meta_title
 msgid "Website meta title"
-msgstr ""
+msgstr "ចំណងជើងមេតាគេហទំព័រ។"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_ir_ui_view__website_meta_og_img
 #: model:ir.model.fields,field_description:website.field_website_page__website_meta_og_img
 #: model:ir.model.fields,field_description:website.field_website_seo_metadata__website_meta_og_img
 msgid "Website opengraph image"
-msgstr ""
+msgstr "គេហទំព័រ opengraph រូបភាព។"
 
 #. module: website
 #: model:ir.actions.server,name:website.ir_actions_server_website_dashboard
@@ -4733,7 +4735,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.menu,name:website.menu_website_dashboard
 msgid "eCommerce Dashboard"
-msgstr ""
+msgstr "ផ្ទាំងព័ត៌មានអេឡិចត្រូនិច"
 
 #. module: website
 #. openerp-web

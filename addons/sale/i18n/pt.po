@@ -941,7 +941,7 @@ msgstr "Criar Faturas"
 #. module: sale
 #: model_terms:ir.actions.act_window,help:sale.product_template_action
 msgid "Create a new product"
-msgstr "Criar novo Produto"
+msgstr "Criar novo artigo"
 
 #. module: sale
 #: model_terms:ir.actions.act_window,help:sale.act_res_partner_2_sale_order
@@ -2256,7 +2256,7 @@ msgstr "Número de ordem"
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__order_id
 #: model:ir.model.fields,field_description:sale.field_sale_report__name
 msgid "Order Reference"
-msgstr "Ordem de Referência"
+msgstr "Referência da Encomenda"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__state
@@ -2848,7 +2848,7 @@ msgstr "Referência"
 #. module: sale
 #: model:ir.model.fields,help:sale.field_sale_order__origin
 msgid "Reference of the document that generated this sales order request."
-msgstr "Da referência do documento que gerou a ordem do pedido de vendas."
+msgstr "Referência do documento que gerou este pedido de ordem de vendas."
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
