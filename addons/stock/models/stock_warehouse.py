@@ -491,8 +491,7 @@ class Warehouse(models.Model):
         """
         for warehouse in self:
             company_id = vals.get('company_id', warehouse.company_id.id)
-            vals.update(company_id=company_id)
-            sub_locations = warehouse._get_locations_values(vals)
+            sub_locations = warehouse._get_locations_values(dict(vals, company_id=company_id))
             missing_location = {}
             for location, location_values in sub_locations.items():
                 if not warehouse[location] and location not in vals:
@@ -657,7 +656,10 @@ class Warehouse(models.Model):
         if not change_to_multiple:
             # If single delivery we should create the necessary MTO rules for the resupply
             routings = [self.Routing(self.lot_stock_id, location, self.out_type_id, 'pull') for location in rules.mapped('location_id')]
-            mto_rule_vals = self._get_rule_values(routings)
+            mto_vals = self._get_global_route_rules_values().get('mto_pull_id')
+            values = mto_vals['create_values']
+            mto_rule_vals = self._get_rule_values(routings, values, name_suffix='MTO')
+
             for mto_rule_val in mto_rule_vals:
                 Rule.create(mto_rule_val)
         else:
