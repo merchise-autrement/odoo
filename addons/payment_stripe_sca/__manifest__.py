@@ -29,6 +29,7 @@
     'version': '1.0',
     'description': """Stripe Payment Acquirer - Strong Customer Authentication Update""",
     'depends': ['payment_stripe'],
+    'installable': False,
     'auto_install': True,
     'data': [
         'views/assets.xml',
