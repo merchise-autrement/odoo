@@ -748,7 +748,7 @@ ActionManager.include({
             }
             args.push(context.eval());
             def = this._rpc({
-                route: '/web/dataset/call_button',
+                route: '/web/dataset/call_button?__model__='+env.model+'&__method__='+actionData.name,
                 params: {
                     args: args,
                     method: actionData.name,
@@ -846,7 +846,7 @@ ActionManager.include({
     },
     /**
      * Called mainly from the control panel when the focus should be given to a controller
-     * 
+     *
      * @param {OdooEvent} event
      * @private
      */
