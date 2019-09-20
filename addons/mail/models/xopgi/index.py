@@ -102,8 +102,9 @@ class MailThreadIndex(AbstractModel):
 
     @api.multi
     def _get_message_index(self):
+        indexes = self._message_index()
         for record in self:
-            index = record._message_index().get(record.id, None)
+            index = indexes.get(record.id, None)
             if index:
                 record.thread_index = index
 
@@ -185,6 +186,7 @@ class MailThreadIndex(AbstractModel):
                             module=MODULE_NAME,
                         )
                     )
+                    thread.modified(["thread_index"])
 
     @api.multi
     def unlink(self):
