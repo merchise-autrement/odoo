@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import logging
 import time
 from datetime import date
 from collections import OrderedDict
@@ -11,6 +12,9 @@ from odoo.tools import float_is_zero, float_compare
 from odoo.tools.safe_eval import safe_eval
 from odoo.addons import decimal_precision as dp
 from lxml import etree
+
+
+_logger = logging.getLogger(__name__)
 
 #----------------------------------------------------------
 # Entries
@@ -386,7 +390,7 @@ class AccountMove(models.Model):
         # are already done. Then, this query MUST NOT depend of computed stored fields (e.g. balance).
         # It happens as the ORM makes the create with the 'no_recompute' statement.
         self._cr.execute('''
-            SELECT line.move_id
+            SELECT line.move_id, ROUND(SUM(debit - credit), currency.decimal_places)
             FROM account_move_line line
             JOIN account_move move ON move.id = line.move_id
             JOIN account_journal journal ON journal.id = move.journal_id
@@ -397,8 +401,12 @@ class AccountMove(models.Model):
             HAVING ROUND(SUM(debit - credit), currency.decimal_places) != 0.0;
         ''', [tuple(self.ids)])
 
-        if self._cr.fetchone():
-            raise UserError(_("Cannot create unbalanced journal entry."))
+        res = self._cr.fetchone()
+        if res:
+            raise UserError(
+                _("Cannot create unbalanced journal entry.") +
+                "\n\n{}{}".format(_('Difference debit - credit: '), res[1])
+            )
         return True
 
     @api.multi
@@ -471,7 +479,8 @@ class AccountMove(models.Model):
             ('reverse_entry_id', '=', False)])
         for move in records:
             date = None
-            if move.reverse_date and (not self.env.user.company_id.period_lock_date or move.reverse_date > self.env.user.company_id.period_lock_date):
+            company = move.company_id or self.env.user.company_id
+            if move.reverse_date and (not company.period_lock_date or move.reverse_date > company.period_lock_date):
                 date = move.reverse_date
             move.reverse_moves(date=date, auto=True)
 
