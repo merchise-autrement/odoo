@@ -772,6 +772,7 @@ class JsonRequest(WebRequest):
                         method=method,
                         start_memory=start_memory / 1024,
                         end_memory=end_memory / 1024,
+                        timestamp=int(end_time * 1000),
                     )
                 )
                 if rpc_response_flag:
