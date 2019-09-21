@@ -22,8 +22,9 @@ class Metrics(http.Controller):
             while http.request_log_entries:
                 data = http.request_log_entries.pop()
                 time = data.pop("time", 0)
+                timestamp = data.pop("timestamp", 0)
                 if data:
                     items = ",".join(f'{k!s}="{v}"' for k, v in data.items())
-                    yield f"mercurio_rpc_request{{{items}}} {time}\n"
+                    yield f"mercurio_rpc_request{{{items}}} {time} {timestamp}\n"
 
         return Response(generate_response())
