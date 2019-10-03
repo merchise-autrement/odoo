@@ -10,9 +10,7 @@ RELEASE_LEVELS_DISPLAY = {ALPHA: ALPHA, BETA: BETA, RELEASE_CANDIDATE: "rc", FIN
 #  (6,1,0,'beta',0) < (6,1,0,'candidate',1) < (6,1,0,'candidate',2)
 #  (6,1,0,'candidate',2) < (6,1,0,'final',0) < (6,1,2,'final',0)
 
-STAMP = ".1.9.0"  # merchise: our current release
-
-version_info = (12, 0, 0, FINAL, STAMP, "")
+version_info = (12, 191, 0, FINAL, "merchise", "")
 version = (
     ".".join(str(s) for s in version_info[:2])
     + RELEASE_LEVELS_DISPLAY[version_info[3]]
