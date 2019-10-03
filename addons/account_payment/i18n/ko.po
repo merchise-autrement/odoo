@@ -38,6 +38,8 @@ msgid ""
 "<i class=\"fa fa-arrow-circle-right\"/><span class=\"d-none d-md-inline\"> "
 "Pay Now</span>"
 msgstr ""
+"<i class=\"fa fa-arrow-circle-right\"/><span class=\"d-none d-md-inline\"> "
+"지불하기</span>"
 
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_page_inherit_payment
@@ -59,7 +61,7 @@ msgstr ""
 msgid ""
 "<i class=\"fa fa-info\"/> You have credits card registered, you can log-in "
 "to be able to use them."
-msgstr ""
+msgstr "<i class=\"fa fa-info\"/> 신용 카드가 등록되었습니다. 로그인하여 사용할 수 있습니다."
 
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_my_invoices_payment
@@ -102,7 +104,7 @@ msgstr ""
 msgid ""
 "Done, your online payment has been successfully processed. Thank you for "
 "your order."
-msgstr ""
+msgstr "완료. 귀하의 온라인 결제가 성공적으로 처리되었습니다. 주문해 주셔서 감사합니다."
 
 #. module: account_payment
 #: code:addons/account_payment/controllers/payment.py:47
@@ -127,7 +129,7 @@ msgstr "지금 지불합니다"
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_my_invoices_payment
 msgid "Pay now"
-msgstr ""
+msgstr "지불하기"
 
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment

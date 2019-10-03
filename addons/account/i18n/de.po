@@ -34,6 +34,7 @@
 # Manuel Stahl <manuel.stahl@awesome-technologies.de>, 2019
 # Felix Schubert <felix.schubert@go-erp.com>, 2019
 # Matt <matt.fasola@braintec-group.com>, 2019
+# Olivier Jossen <olivier.jossen@braintec-group.com>, 2019
 # 
 msgid ""
 msgstr ""
@@ -41,7 +42,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-08 13:35+0000\n"
 "PO-Revision-Date: 2018-08-24 09:14+0000\n"
-"Last-Translator: Matt <matt.fasola@braintec-group.com>, 2019\n"
+"Last-Translator: Olivier Jossen <olivier.jossen@braintec-group.com>, 2019\n"
 "Language-Team: German (https://www.transifex.com/odoo/teams/41243/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -877,17 +878,10 @@ msgstr ""
 #, python-format
 msgid ""
 "A user cannot have both Tax B2B and Tax B2C.\n"
-"Problematic user(s): %s\n"
 "You should go in General Settings, and choose to display Product Prices\n"
 "either in 'Tax-Included' or in 'Tax-Excluded' mode\n"
 "(or switch twice the mode if you are already in the desired one)."
 msgstr ""
-"Ein Benutzer kann nicht gleichzeitig Steuer B2B und Steuer B2C haben.\n"
-"Problematische(r) Benutzer: %s\n"
-"Sie sollten in die Allgemeinen Einstellungen gehen und sich die Produktpreise\n"
-"entweder im Modus \"Steuer-inkludiert\" oder im Modus \"Steuer-exkludiert\".\n"
-"anzeigen lassen\n"
-"(oder wechseln Sie zweimal den Modus, wenn Sie sich bereits im Gewünschten befinden)."
 
 #. module: account
 #: model:res.groups,name:account.group_warning_account
@@ -4238,6 +4232,12 @@ msgid ""
 "Difference between the computed ending balance and the specified ending "
 "balance."
 msgstr "Abweichung des berechneten zum angegebenen Endsaldo."
+
+#. module: account
+#: code:addons/account/models/account_move.py:408
+#, python-format
+msgid "Difference debit - credit: "
+msgstr ""
 
 #. module: account
 #: model:ir.model,name:account.model_digest_digest
@@ -8221,7 +8221,7 @@ msgstr "Portalzugriffs-URL"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_move_form
 msgid "Post"
-msgstr "Beitrag"
+msgstr "Buchen"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view

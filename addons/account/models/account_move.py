@@ -1117,10 +1117,11 @@ class AccountMoveLine(models.Model):
         taxes = self.env['account.tax'].browse(tax_ids)
         currency = self.env['res.currency'].browse(vals.get('currency_id'))
         partner = self.env['res.partner'].browse(vals.get('partner_id'))
+        product = self.env['product.product'].browse(vals.get('product_id'))
         ctx = dict(self._context)
         ctx['round'] = ctx.get('round', True)
         res = taxes.with_context(ctx).compute_all(amount,
-            currency, 1, vals.get('product_id'), partner)
+            currency, 1, product, partner)
         # Adjust line amount if any tax is price_include
         if abs(res['total_excluded']) < abs(amount):
             if vals['debit'] != 0.0: vals['debit'] = res['total_excluded']
@@ -1169,9 +1170,10 @@ class AccountMoveLine(models.Model):
                 debit-credit == 0 while creating the move lines composing the move.
         """
         for vals in vals_list:
+            account = self.env['account.account'].browse(vals['account_id'])
+            vals.setdefault('company_currency_id', account.company_id.currency_id.id) # important to bypass the ORM limitation where monetary fields are not rounded; more info in the commit message
             amount = vals.get('debit', 0.0) - vals.get('credit', 0.0)
             move = self.env['account.move'].browse(vals['move_id'])
-            account = self.env['account.account'].browse(vals['account_id'])
             if account.deprecated:
                 raise UserError(_('The account %s (%s) is deprecated.') %(account.name, account.code))
             journal = vals.get('journal_id') and self.env['account.journal'].browse(vals['journal_id']) or move.journal_id
