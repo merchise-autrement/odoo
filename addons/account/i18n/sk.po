@@ -853,7 +853,6 @@ msgstr ""
 #, python-format
 msgid ""
 "A user cannot have both Tax B2B and Tax B2C.\n"
-"Problematic user(s): %s\n"
 "You should go in General Settings, and choose to display Product Prices\n"
 "either in 'Tax-Included' or in 'Tax-Excluded' mode\n"
 "(or switch twice the mode if you are already in the desired one)."
@@ -4178,6 +4177,12 @@ msgid ""
 msgstr ""
 "Rozdiel medzi vypočítaným konečným zostatkom a špecifikovaným konečným "
 "zostatkom."
+
+#. module: account
+#: code:addons/account/models/account_move.py:408
+#, python-format
+msgid "Difference debit - credit: "
+msgstr ""
 
 #. module: account
 #: model:ir.model,name:account.model_digest_digest
@@ -10294,7 +10299,7 @@ msgstr "Mena ktorá slúži pre zadanie výpisu"
 #: code:addons/account/models/account_invoice.py:1981
 #, python-format
 msgid "The day of the month used for this term must be stricly positive."
-msgstr ""
+msgstr "Deň v mesiaci použitý pre túto platobnú podmienku musí byť kladný."
 
 #. module: account
 #: code:addons/account/models/account_bank_statement.py:193
@@ -10420,7 +10425,7 @@ msgstr "Ďalšie poradové číslo bude použité pre nasledujúcu faktúru."
 #: code:addons/account/models/account_invoice.py:1983
 #, python-format
 msgid "The number of days used for a payment term cannot be negative."
-msgstr ""
+msgstr "Počet dní splatnosti nemôže byť záporný"
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_bank_statement_line__currency_id
@@ -10581,6 +10586,8 @@ msgid ""
 "The selected unit of measure has to be in the same category as the product "
 "unit of measure."
 msgstr ""
+"Zvolená merná jednotka musí byť v rovnakej kategórii ako merná jednotka "
+"produktu"
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_tax__sequence
@@ -11302,7 +11309,7 @@ msgstr "Suma bez dane vo fin. mene spoločnosti"
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_invoice__amount_untaxed_invoice_signed
 msgid "Untaxed Amount in Invoice Currency"
-msgstr ""
+msgstr "Suma bez dane v mene použitej na faktúre"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_invoice_report__price_total
