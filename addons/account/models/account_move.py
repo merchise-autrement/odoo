@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import logging
 import time
 from datetime import date
 from collections import OrderedDict
@@ -11,6 +12,9 @@ from odoo.tools import float_is_zero, float_compare
 from odoo.tools.safe_eval import safe_eval
 from odoo.addons import decimal_precision as dp
 from lxml import etree
+
+
+_logger = logging.getLogger(__name__)
 
 #----------------------------------------------------------
 # Entries
@@ -386,7 +390,7 @@ class AccountMove(models.Model):
         # are already done. Then, this query MUST NOT depend of computed stored fields (e.g. balance).
         # It happens as the ORM makes the create with the 'no_recompute' statement.
         self._cr.execute('''
-            SELECT line.move_id
+            SELECT line.move_id, ROUND(SUM(debit - credit), currency.decimal_places)
             FROM account_move_line line
             JOIN account_move move ON move.id = line.move_id
             JOIN account_journal journal ON journal.id = move.journal_id
@@ -397,8 +401,12 @@ class AccountMove(models.Model):
             HAVING ROUND(SUM(debit - credit), currency.decimal_places) != 0.0;
         ''', [tuple(self.ids)])
 
-        if self._cr.fetchone():
-            raise UserError(_("Cannot create unbalanced journal entry."))
+        res = self._cr.fetchone()
+        if res:
+            raise UserError(
+                _("Cannot create unbalanced journal entry.") +
+                "\n\n{}{}".format(_('Difference debit - credit: '), res[1])
+            )
         return True
 
     @api.multi
@@ -471,7 +479,8 @@ class AccountMove(models.Model):
             ('reverse_entry_id', '=', False)])
         for move in records:
             date = None
-            if move.reverse_date and (not self.env.user.company_id.period_lock_date or move.reverse_date > self.env.user.company_id.period_lock_date):
+            company = move.company_id or self.env.user.company_id
+            if move.reverse_date and (not company.period_lock_date or move.reverse_date > company.period_lock_date):
                 date = move.reverse_date
             move.reverse_moves(date=date, auto=True)
 
@@ -1108,10 +1117,11 @@ class AccountMoveLine(models.Model):
         taxes = self.env['account.tax'].browse(tax_ids)
         currency = self.env['res.currency'].browse(vals.get('currency_id'))
         partner = self.env['res.partner'].browse(vals.get('partner_id'))
+        product = self.env['product.product'].browse(vals.get('product_id'))
         ctx = dict(self._context)
         ctx['round'] = ctx.get('round', True)
         res = taxes.with_context(ctx).compute_all(amount,
-            currency, 1, vals.get('product_id'), partner)
+            currency, 1, product, partner)
         # Adjust line amount if any tax is price_include
         if abs(res['total_excluded']) < abs(amount):
             if vals['debit'] != 0.0: vals['debit'] = res['total_excluded']
@@ -1160,9 +1170,10 @@ class AccountMoveLine(models.Model):
                 debit-credit == 0 while creating the move lines composing the move.
         """
         for vals in vals_list:
+            account = self.env['account.account'].browse(vals['account_id'])
+            vals.setdefault('company_currency_id', account.company_id.currency_id.id) # important to bypass the ORM limitation where monetary fields are not rounded; more info in the commit message
             amount = vals.get('debit', 0.0) - vals.get('credit', 0.0)
             move = self.env['account.move'].browse(vals['move_id'])
-            account = self.env['account.account'].browse(vals['account_id'])
             if account.deprecated:
                 raise UserError(_('The account %s (%s) is deprecated.') %(account.name, account.code))
             journal = vals.get('journal_id') and self.env['account.journal'].browse(vals['journal_id']) or move.journal_id
