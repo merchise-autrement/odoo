@@ -57,12 +57,13 @@ from odoo.http import serialize_exception as _serialize_exception
 from psycopg2 import OperationalError, errorcodes
 
 
-# The queues are named using the version info.  This is to avoid clashes with
-# other systems using Celery and the same broker.  I've seen sentry tasks
-# being routed to one of workers.
+# The queues are named using the version info major number, ie:
+# odoo-12.default, odoo-12.cdr, etc.  This is to avoid clashes with other
+# systems using Celery and the same broker.  I've seen sentry tasks being
+# routed to one of workers.
 
 # TODO: Write an auto-migration of task routed to older queue names.
-ROUTE_NS = "odoo-{}".format(".".join(str(x) for x in version_info[:2]))
+ROUTE_NS = f"odoo-{version_info[0]}"
 
 
 def queue(name):
