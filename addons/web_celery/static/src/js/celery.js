@@ -157,9 +157,12 @@ odoo.define('web_celery', function(require){
         do_close_with_action: function(action){
             var self = this;
             _.defer(function(){
+                var parent = self.getParent();
+                var controller = parent.controllerStack.pop();
                 self.trigger_up('history_back');
                 self.do_action(action);
                 self.destroy();
+                parent._removeControllers([controller]);
             });
         },
 
