@@ -4487,7 +4487,7 @@ msgstr ""
 #: code:addons/mail/static/src/xml/discuss.xml:186
 #, python-format
 msgid "Reject"
-msgstr ""
+msgstr "ការបដិសេដ"
 
 #. module: mail
 #. openerp-web
@@ -4995,7 +4995,7 @@ msgstr ""
 #: code:addons/mail/static/src/xml/thread.xml:47
 #, python-format
 msgid "Split"
-msgstr ""
+msgstr "បែងចែក"
 
 #. module: mail
 #. openerp-web

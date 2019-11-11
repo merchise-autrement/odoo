@@ -1462,7 +1462,7 @@ msgstr "សារ"
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_mail_block_comparison_table
 msgid "More"
-msgstr ""
+msgstr "បន្ថែមទៀត"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_mail_block_event
@@ -2071,7 +2071,7 @@ msgstr ""
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
 msgid "Test"
-msgstr ""
+msgstr "ការសាកល្បង"
 
 #. module: mass_mailing
 #: code:addons/mass_mailing/models/mass_mailing.py:657
