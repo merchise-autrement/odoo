@@ -574,6 +574,7 @@ class ConnectionPool(object):
                 self._connections.append((cnx, False))
                 _logger.info('%r: Free leaked connection to %r', self, cnx.dsn)
 
+        self._debug("Looking for a connection to %s", connection_info)
         for i, (cnx, used) in enumerate(self._connections):
             if not used and cnx._original_dsn == connection_info:
                 try:
