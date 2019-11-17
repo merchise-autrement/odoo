@@ -8,8 +8,8 @@
 # Martin Trigaux, 2019
 # matjaz k <matjaz@mentis.si>, 2019
 # Boris Kodelja <boris@hbs.si>, 2019
-# Tadej Lupšina <tadej@hbs.si>, 2019
 # Grega Vavtar <grega@hbs.si>, 2019
+# Tadej Lupšina <tadej@hbs.si>, 2019
 # Matjaz Mozetic <m.mozetic@matmoz.si>, 2019
 # Jasmina Macur <jasmina@hbs.si>, 2019
 # 
@@ -1664,7 +1664,7 @@ msgstr "Odgovoren"
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.res_config_settings_view_form
 msgid "Scan badges to confirm attendances"
-msgstr "Skenirajte črtno kodo, da potrdite udeležbo"
+msgstr "Skenirajte značke, da potrdite udeležbo"
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.res_config_settings_view_form
@@ -1896,7 +1896,7 @@ msgstr "Prihajajoči dogodki od danes dalje"
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.view_event_search
 msgid "Upcoming/Running"
-msgstr ""
+msgstr "Napovedano/V teku"
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_type__use_hashtag
@@ -1922,7 +1922,7 @@ msgstr "Vidljivost"
 #: code:addons/event/models/event_mail.py:130
 #, python-format
 msgid "WARNING: Event Scheduler Error for event: %s"
-msgstr "OPOZORILO: Napaka načrtovalca dogodkov za dogodek:%s"
+msgstr "OPOZORILO: Napaka razporejevalnika dogodkov za dogodek:%s"
 
 #. module: event
 #: model_terms:event.event,description:event.event_2
@@ -2006,4 +2006,4 @@ msgstr ""
 #: code:addons/event/models/event.py:524
 #, python-format
 msgid "tomorrow"
-msgstr ""
+msgstr "jutri"
