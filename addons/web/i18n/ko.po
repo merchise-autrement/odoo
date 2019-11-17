@@ -7,11 +7,11 @@
 # 경민기 <moonend@gmail.com>, 2018
 # 방상우 <mrroom@gmail.com>, 2018
 # Link Up링크업 <linkup.way@gmail.com>, 2018
-# Linkup <link-up@naver.com>, 2018
 # Seongseok Shin <shinss61@hotmail.com>, 2018
 # Mark Lee <odoos@soti.33mail.com>, 2018
 # nle_odoo, 2018
 # Martin Trigaux, 2019
+# Linkup <link-up@naver.com>, 2019
 # JH CHOI <hwangtog@gmail.com>, 2019
 # 
 msgid ""
@@ -1820,7 +1820,7 @@ msgstr ""
 #: code:addons/web/static/src/js/views/search/time_range_menu_options.js:10
 #, python-format
 msgid "Last 365 Days"
-msgstr ""
+msgstr "최근 365일"
 
 #. module: web
 #. openerp-web
@@ -2773,7 +2773,7 @@ msgstr "보고서"
 #. module: web
 #: model:ir.model,name:web.model_report_layout
 msgid "Report Layout"
-msgstr ""
+msgstr "보고서 양식"
 
 #. module: web
 #. openerp-web

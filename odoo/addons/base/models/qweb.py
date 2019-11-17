@@ -3,6 +3,7 @@ import ast
 import logging
 import os.path
 import re
+import sys
 import traceback
 
 from collections import OrderedDict, Sized, Mapping
@@ -47,6 +48,10 @@ arg = getattr(ast, 'arg', lambda arg, annotation: ast.Name(id=arg, ctx=ast.Param
 # and kw_defaults for keyword-only arguments and their default values (if any)
 # so add a shim for *that* based on the signature of Python 3 I guess?
 arguments = ast.arguments
+if sys.version_info >= (3, 8):
+    def arguments(**kwargs):
+        kwargs.setdefault('posonlyargs', [])
+        return ast.arguments(**kwargs)
 if pycompat.PY2:
     arguments = lambda args, vararg, kwonlyargs, kw_defaults, kwarg, defaults: ast.arguments(args=args, vararg=vararg, kwarg=kwarg, defaults=defaults)
 ####################################

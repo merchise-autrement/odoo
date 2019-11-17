@@ -8,12 +8,12 @@
 # Christian <chris@effeci.info>, 2018
 # Pietro Della Notte <pdellanotte@gmail.com>, 2018
 # Francesco Garganese <francesco.garganese@aeromnia.aero>, 2018
-# Martin Trigaux, 2018
 # Luigi Di Naro <gigidn@gmail.com>, 2018
 # Paolo Valier, 2018
 # David Minneci <david@numeko.it>, 2018
 # Léonie Bouchat <lbo@odoo.com>, 2019
 # SebastianoPistore <SebastianoPistore.info@protonmail.ch>, 2019
+# Martin Trigaux, 2019
 # Sergio Zanchetta <primes2h@gmail.com>, 2019
 # 
 msgid ""
@@ -465,7 +465,7 @@ msgstr "Azione"
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__message_needaction
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge__message_needaction
 msgid "Action Needed"
-msgstr "Azione Necessaria"
+msgstr "Azione richiesta"
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__active
@@ -1115,7 +1115,7 @@ msgstr "Assegna questo Badge"
 #. module: gamification
 #: model_terms:ir.ui.view,arch_db:gamification.badge_user_kanban_view
 msgid "Granted by"
-msgstr ""
+msgstr "Assegnato da"
 
 #. module: gamification
 #: model_terms:ir.ui.view,arch_db:gamification.badge_form_view
@@ -1239,7 +1239,7 @@ msgstr "In corso"
 #. module: gamification
 #: selection:gamification.challenge,visibility_mode:0
 msgid "Individual Goals"
-msgstr "Obiettivi Individuali"
+msgstr "Obiettivi personali"
 
 #. module: gamification
 #: model:gamification.challenge.line,name:gamification.line_base_admin3
@@ -1371,7 +1371,7 @@ msgstr "Monetario"
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_goal_definition__monetary
 msgid "Monetary Value"
-msgstr ""
+msgstr "Valore monetario"
 
 #. module: gamification
 #: selection:gamification.challenge,period:0
