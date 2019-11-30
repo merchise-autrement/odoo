@@ -138,8 +138,23 @@ class Field(MetaField('DummyField', (object,), {})):
             ``one2many`` and computed fields, including property fields and
             related fields)
 
-        :param string oldname: the previous name of this field, so that ORM can rename
+        :param str oldname: the previous name of this field, so that ORM can rename
             it automatically at migration
+
+        :param str group_operator: aggregate function used by :meth:`~odoo.models.Model.read_group`
+            when grouping on this field.
+
+            Supported aggregate functions are:
+
+                * ``array_agg`` : values, including nulls, concatenated into an array
+                * ``count`` : number of rows
+                * ``count_distinct`` : number of distinct rows
+                * ``bool_and`` : true if all values are true, otherwise false
+                * ``bool_or`` : true if at least one value is true, otherwise false
+                * ``max`` : maximum value of all values
+                * ``min`` : minimum value of all values
+                * ``avg`` : the average (arithmetic mean) of all values
+                * ``sum`` : sum of all values
 
         .. _field-computed:
 
@@ -1355,6 +1370,7 @@ class _String(Field):
     """ Abstract class for string fields. """
     _slots = {
         'translate': False,             # whether the field is translated
+        'prefetch': None,
     }
 
     def __init__(self, string=Default, **kwargs):
@@ -1362,6 +1378,12 @@ class _String(Field):
         if 'translate' in kwargs and not callable(kwargs['translate']):
             kwargs['translate'] = bool(kwargs['translate'])
         super(_String, self).__init__(string=string, **kwargs)
+
+    def _setup_attrs(self, model, name):
+        super()._setup_attrs(model, name)
+        if self.prefetch is None:
+            # do not prefetch complex translated fields by default
+            self.prefetch = not callable(self.translate)
 
     _related_translate = property(attrgetter('translate'))
 
@@ -1497,11 +1519,13 @@ class Html(_String):
         'strip_classes': False,         # whether to strip classes attributes
     }
 
-    def _setup_attrs(self, model, name):
-        super(Html, self)._setup_attrs(model, name)
+    def _get_attrs(self, model, name):
+        # called by _setup_attrs(), working together with _String._setup_attrs()
+        attrs = super()._get_attrs(model, name)
         # Translated sanitized html fields must use html_translate or a callable.
-        if self.translate is True and self.sanitize:
-            self.translate = html_translate
+        if attrs.get('translate') is True and attrs.get('sanitize', True):
+            attrs['translate'] = html_translate
+        return attrs
 
     _related_sanitize = property(attrgetter('sanitize'))
     _related_sanitize_tags = property(attrgetter('sanitize_tags'))
