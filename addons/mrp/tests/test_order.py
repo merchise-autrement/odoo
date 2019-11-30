@@ -460,6 +460,43 @@ class TestMrpOrder(TestMrpCommon):
         custom_laptop_produce.do_produce()
         mo_custom_laptop.post_inventory()
 
+    def test_update_quantity_3(self):
+        """ Build 1 final products then update the Manufacturing
+        order quantity. Check the remaining quantity to produce
+        take care of the first quantity produced."""
+        self.stock_location = self.env.ref('stock.stock_location_stock')
+        mo, bom, p_final, p1, p2 = self.generate_mo(qty_final=2)
+        self.assertEqual(len(mo), 1, 'MO should have been created')
+
+        self.env['stock.quant']._update_available_quantity(p1, self.stock_location, 20)
+        self.env['stock.quant']._update_available_quantity(p2, self.stock_location, 5)
+        mo.action_assign()
+
+        produce_form = Form(self.env['mrp.product.produce'].with_context({
+            'active_id': mo.id,
+            'active_ids': [mo.id],
+        }))
+        produce_form.product_qty = 1
+        produce_wizard = produce_form.save()
+        produce_wizard.do_produce()
+
+        update_quantity_wizard = self.env['change.production.qty'].create({
+            'mo_id': mo.id,
+            'product_qty': 3,
+        })
+        update_quantity_wizard.change_prod_qty()
+
+        produce_form = Form(self.env['mrp.product.produce'].with_context({
+            'active_id': mo.id,
+            'active_ids': [mo.id],
+        }))
+        produce_wizard = produce_form.save()
+        produce_wizard.do_produce()
+        mo.button_mark_done()
+
+        self.assertEqual(sum(mo.move_raw_ids.filtered(lambda m: m.product_id == p1).mapped('quantity_done')), 12)
+        self.assertEqual(sum(mo.move_finished_ids.mapped('quantity_done')), 3)
+
     def test_rounding(self):
         """ In previous versions we had rounding and efficiency fields.  We check if we can still do the same, but with only the rounding on the UoM"""
         self.product_6.uom_id.rounding = 1.0
@@ -709,8 +746,7 @@ class TestMrpOrder(TestMrpCommon):
         """ Plan 5 finished products, reserve and produce 3. Post the current production.
         Simulate an unlock and edit and, on the opened moves, set the consumed quantity
         to 3. Now, try to update the quantity to produce to 3. It should fail since there
-        are consumed quantities. Unlock and edit, remove the consumed quantities and
-        update the quantity to produce to 3."""
+        are consumed quantities"""
         self.stock_location = self.env.ref('stock.stock_location_stock')
         mo, bom, p_final, p1, p2 = self.generate_mo()
         self.assertEqual(len(mo), 1, 'MO should have been created')
@@ -741,7 +777,34 @@ class TestMrpOrder(TestMrpCommon):
         with self.assertRaises(UserError):
             update_quantity_wizard.change_prod_qty()
 
-        mo.move_raw_ids.filtered(lambda m: m.state != 'done')[0].quantity_done = 0
+    def test_product_produce_6bis(self):
+        """ Plan 5 finished products, reserve and produce 3. Post the current production.
+        update the quantity to produce to 3. It should unlink the extra reserved moves"""
+        self.stock_location = self.env.ref('stock.stock_location_stock')
+        mo, bom, p_final, p1, p2 = self.generate_mo()
+        self.assertEqual(len(mo), 1, 'MO should have been created')
+
+        self.env['stock.quant']._update_available_quantity(p1, self.stock_location, 20)
+
+        self.env['stock.quant']._update_available_quantity(p2, self.stock_location, 5)
+        mo.action_assign()
+
+        produce_wizard = self.env['mrp.product.produce'].with_context({
+            'active_id': mo.id,
+            'active_ids': [mo.id],
+        }).create({
+            'product_qty': 3.0,
+        })
+        produce_wizard._onchange_product_qty()
+        produce_wizard.do_produce()
+
+        mo.post_inventory()
+        self.assertEqual(len(mo.move_raw_ids), 4)
+
+        update_quantity_wizard = self.env['change.production.qty'].create({
+            'mo_id': mo.id,
+            'product_qty': 3,
+        })
         update_quantity_wizard.change_prod_qty()
 
         self.assertEqual(len(mo.move_raw_ids), 2)
