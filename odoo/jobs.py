@@ -6,20 +6,12 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-
 """Odoo Celery Application.
 
 Integrates Odoo and Celery, so that jobs can be started from the Odoo HTTP
 workers and tasks can use the Odoo ORM.
 
 """
-
-from __future__ import (
-    division as _py3_division,
-    print_function as _py3_print,
-    absolute_import as _py3_abs_import,
-)
-
 import os
 import contextlib
 import threading
@@ -113,15 +105,26 @@ class DeferredType(object):
 
         :keyword queue: The name of the queue.
 
+        :keyword allow_tests: If True we will actually issue Celery jobs while
+                 running the test suite.  Only do this if you can provide
+                 fully integrated test environment and your tests monitor the
+                 bus.  If False (the default), calling a Deferred during
+                 tests, runs the method directly without issuing a Celery job.
+
         """
         self.__return_signature = options.pop("return_signature", False)
         self.__disallow_nested = not options.pop("allow_nested", False)
+        self.__disallow_tests = not options.pop("allow_tests", False)
         options.setdefault("queue", DEFAULT_QUEUE_NAME)
         self.__options = options
 
     @property
     def disallow_nested(self):
         return self.__disallow_nested
+
+    @property
+    def disallow_tests(self):
+        return self.__disallow_tests
 
     @property
     def return_signature(self):
@@ -134,8 +137,7 @@ class DeferredType(object):
     def __call__(self, *args, **kwargs):
         """Request to run a method in a celery worker.
 
-        The job will be routed to the '{queue}' priority queue.  The signature
-        is like::
+        The signature is like::
 
            Deferred(self.search, [], limit=1)
 
@@ -153,9 +155,12 @@ class DeferredType(object):
         .. seealso: `DefaultDeferredType`:func:
 
         """
-        signature = _extract_signature(args, kwargs)
+        signature, env = _extract_signature(args, kwargs)
         if self.disallow_nested and CELERY_JOB in ExecutionContext:
             logger.warn("Nested background call detected for model", extra=dict(args_=signature))
+            return task(*signature)
+        elif self.disallow_tests and _running_tests(env):
+            logger.debug("Running the deferred job inline in tests", extra=dict(args_=signature))
             return task(*signature)
         else:
             signature = task.signature(signature, immutable=True, **self.options)
@@ -686,13 +691,11 @@ PG_CONCURRENCY_ERRORS_TO_RETRY = (
 
 
 def _extract_signature(args, kwargs):
-    """Detect the proper signature.
+    """Extract the task' signature and environment.
 
     """
     from xotl.tools.symbols import Unset
     from odoo.models import BaseModel
-    from odoo.sql_db import Cursor
-    from odoo.tools import frozendict
 
     method = args[0]
     self = getattr(method, "__self__", Unset)
@@ -704,22 +707,8 @@ def _extract_signature(args, kwargs):
         methodname = method.__name__
         ids = self.ids
         args = args[1:]
-    else:
-        model, db, uid, methodname = args[:4]
-        args = args[4:]
-        ids = None
-    if isinstance(model, BaseModel):
-        model = model._name
-    elif isinstance(model, type(BaseModel)):
-        model = getattr(model, "_name", None) or model._inherit
-    if isinstance(db, Cursor):
-        dbname = db.dbname
-    else:
-        dbname = db
-    odoo_context = kwargs.get("context", None)
-    if isinstance(odoo_context, frozendict):
-        kwargs["context"] = dict(odoo_context)
-    return model, ids, methodname, dbname, uid, args, kwargs
+        return (model, ids, methodname, db, uid, args, kwargs), env
+    raise TypeError("Invalid signature for Deferred; args: %r; kwargs: %r" % (args, kwargs))
 
 
 Unset = object()
@@ -1033,3 +1022,7 @@ if not getattr(BaseTask, "Request", None):
         )
 
     request.create_request_cls = create_request_cls
+
+
+def _running_tests(env):
+    return getattr(threading.currentThread(), "testing", False) or env.registry.in_test_mode()
