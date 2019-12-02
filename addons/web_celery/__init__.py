@@ -6,7 +6,6 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-
 """Adds facilities to request backgrounds jobs and check for their status.
 
 Features:
@@ -16,14 +15,7 @@ Features:
 - Replaces the install button of a module for a background job.
 
 """
-
-from __future__ import (
-    division as _py3_division,
-    print_function as _py3_print,
-    absolute_import as _py3_abs_import,
-)
-
-from odoo import models, api, _
+from odoo import _, api, models
 
 
 def QUIETLY_WAIT_FOR_TASK(job, next_action=None):
@@ -42,12 +34,15 @@ def QUIETLY_WAIT_FOR_TASK(job, next_action=None):
                  to wait again for a job that's already finished and the UI
                  will stale.
     """
-    return dict(
-        type="ir.actions.client",
-        tag="quietly_wait_for_background_job",
-        pushState=False,
-        params=dict(uuid=job.id, next_action=next_action),
-    )
+    if job is not None:
+        return dict(
+            type="ir.actions.client",
+            tag="quietly_wait_for_background_job",
+            pushState=False,
+            params=dict(uuid=job.id, next_action=next_action),
+        )
+    else:
+        return CLOSE_FEEDBACK
 
 
 def WAIT_FOR_TASK(job, next_action=None):
@@ -65,12 +60,15 @@ def WAIT_FOR_TASK(job, next_action=None):
                  will stale.
 
     """
-    return dict(
-        type="ir.actions.client",
-        tag="wait_for_background_job",
-        pushState=False,
-        params=dict(uuid=job.id, next_action=next_action),
-    )
+    if job is not None:
+        return dict(
+            type="ir.actions.client",
+            tag="wait_for_background_job",
+            pushState=False,
+            params=dict(uuid=job.id, next_action=next_action),
+        )
+    else:
+        return CLOSE_FEEDBACK
 
 
 # The client action for closing the feedback mechanism we're using to show the
