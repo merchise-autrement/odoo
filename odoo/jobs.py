@@ -701,13 +701,13 @@ def _extract_signature(args, kwargs):
     self = getattr(method, "__self__", Unset)
     env = getattr(self, "env", Unset)
     if isinstance(self, BaseModel) and isinstance(env, Environment):
-        db, uid, context = env.args
+        cr, uid, context = env.args
         kwargs["context"] = dict(context)
         model = self
         methodname = method.__name__
         ids = self.ids
         args = args[1:]
-        return (model, ids, methodname, db, uid, args, kwargs), env
+        return (model._name, ids, methodname, cr.dbname, uid, args, kwargs), env
     raise TypeError("Invalid signature for Deferred; args: %r; kwargs: %r" % (args, kwargs))
 
 
