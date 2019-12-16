@@ -382,7 +382,7 @@ msgstr ""
 #: model:ir.model,name:hr_recruitment.model_hr_applicant
 #: model:ir.model.fields,field_description:hr_recruitment.field_calendar_event__applicant_id
 msgid "Applicant"
-msgstr ""
+msgstr "מועמד"
 
 #. module: hr_recruitment
 #: model:ir.model,name:hr_recruitment.model_hr_recruitment_degree
@@ -1835,6 +1835,8 @@ msgid ""
 "outbound emails for this record before being sent. Separate multiple email "
 "addresses with a comma"
 msgstr ""
+"כתובות דוא\"ל אלה יתווספו לשדה עותק של כל הדוא\"ל הנכנס והיוצא עבור הרשומה "
+"הזו לפני שנשלחו. הפרד מספר כתובות דוא\"ל באמצעות פסיק"
 
 #. module: hr_recruitment
 #: model:ir.model.fields,help:hr_recruitment.field_hr_applicant__email_from

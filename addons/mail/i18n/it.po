@@ -333,8 +333,8 @@ msgid ""
 "<span class=\"fa fa-info-circle\"/> Caution: It won't be possible to send "
 "this mail again to the recipients you did not select."
 msgstr ""
-"Attenzione: non sarà più possibile inviare questa e-mail ai destinatari non "
-"selezionati."
+"<span class=\"fa fa-info-circle\"/> Attenzione: impossibile inviare "
+"nuovamente questa e-mail ai destinatari non selezionati."
 
 #. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.res_config_settings_view_form
@@ -1363,7 +1363,7 @@ msgstr "Modalità composizione"
 #. module: mail
 #: model:ir.model,name:mail.model_res_config_settings
 msgid "Config Settings"
-msgstr "Impostazioni configurazione"
+msgstr "Impostazioni di configurazione"
 
 #. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.res_config_settings_view_form
@@ -2362,7 +2362,7 @@ msgstr "Compositore a pieno schermo"
 #: code:addons/mail/static/src/xml/systray.xml:98
 #, python-format
 msgid "Future"
-msgstr "in futuro"
+msgstr "Future"
 
 #. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.mail_activity_view_search
@@ -3281,7 +3281,7 @@ msgstr "Lista nera e-mail massive"
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_channel__image_medium
 msgid "Medium-sized photo"
-msgstr "Foto media dimensione"
+msgstr "Foto di media dimensione"
 
 #. module: mail
 #: model:ir.model.fields,help:mail.field_mail_channel__image_medium
@@ -3800,7 +3800,7 @@ msgstr "Riepilogo prossima attività"
 #: model:ir.model.fields,field_description:mail.field_res_partner__activity_type_id
 #: model:ir.model.fields,field_description:mail.field_res_users__activity_type_id
 msgid "Next Activity Type"
-msgstr "Tipo prossima attività"
+msgstr "Tipologia prossima attività"
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_activity__has_recommended_activities
@@ -5123,7 +5123,7 @@ msgstr ""
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_channel__image_small
 msgid "Small-sized photo"
-msgstr "Foto piccola dimensione"
+msgstr "Foto di piccola dimensione"
 
 #. module: mail
 #: model:ir.model.fields,help:mail.field_mail_channel__image_small
@@ -5983,7 +5983,7 @@ msgstr "Se il messaggio è una nota interna (solo modalità commento)"
 #. module: mail
 #: model:ir.model.fields,help:mail.field_ir_model__is_mail_thread
 msgid "Whether this model supports messages and notifications."
-msgstr "Se è selezionato, questo modello supporta i messaggi e le notifiche."
+msgstr "Indica se il modello supporta i messaggi e le notifiche."
 
 #. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.mail_channel_view_form
