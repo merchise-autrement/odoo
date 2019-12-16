@@ -9,10 +9,10 @@
 # Vitor Fernandes <vmlf01@gmail.com>, 2018
 # Diogo Fonseca <dsf@thinkopensolutions.pt>, 2018
 # Martin Trigaux, 2019
-# Nuno Silva <nuno.silva@arxi.pt>, 2019
 # Pedro Filipe <pedro2.10@hotmail.com>, 2019
 # Manuela Silva <manuelarodsilva@gmail.com>, 2019
 # Reinaldo Ramos <reinaldo.ramos@arxi.pt>, 2019
+# Nuno Silva <nuno.silva@arxi.pt>, 2019
 # 
 msgid ""
 msgstr ""
@@ -20,7 +20,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-13 07:03+0000\n"
 "PO-Revision-Date: 2018-08-24 09:33+0000\n"
-"Last-Translator: Reinaldo Ramos <reinaldo.ramos@arxi.pt>, 2019\n"
+"Last-Translator: Nuno Silva <nuno.silva@arxi.pt>, 2019\n"
 "Language-Team: Portuguese (https://www.transifex.com/odoo/teams/41243/pt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1238,7 +1238,7 @@ msgstr "Domínio:"
 #: code:addons/web/static/src/js/core/misc.js:16
 #, python-format
 msgid "Don't leave yet,<br />it's still loading..."
-msgstr "Não sai ainda<br />porque este ainda está a carregar..."
+msgstr "Não vá embora,<br />a aplicação ainda está a carregar..."
 
 #. module: web
 #. openerp-web
@@ -3232,6 +3232,8 @@ msgid ""
 "The record has been modified, your changes will be discarded. Do you want to"
 " proceed?"
 msgstr ""
+"Este registo foi modificado, as suas alterações serão perdidas. Tem a "
+"certeza que deseja continuar?"
 
 #. module: web
 #. openerp-web
@@ -3278,7 +3280,7 @@ msgstr "Este Mês"
 #: code:addons/web/static/src/js/views/search/time_range_menu_options.js:14
 #, python-format
 msgid "This Quarter"
-msgstr ""
+msgstr "Este Trimestre"
 
 #. module: web
 #. openerp-web

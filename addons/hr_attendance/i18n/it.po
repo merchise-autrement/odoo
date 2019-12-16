@@ -275,7 +275,7 @@ msgstr "Logo azienda"
 #. module: hr_attendance
 #: model:ir.model,name:hr_attendance.model_res_config_settings
 msgid "Config Settings"
-msgstr "Impostazioni configurazione"
+msgstr "Impostazioni di configurazione"
 
 #. module: hr_attendance
 #: model:ir.ui.menu,name:hr_attendance.menu_hr_attendance_settings
@@ -348,7 +348,7 @@ msgstr "Presenze Dipendenti"
 #. module: hr_attendance
 #: model_terms:ir.ui.view,arch_db:hr_attendance.view_employee_kanban_inherit_hr_attendance
 msgid "Employee's Name"
-msgstr "Nome del Dipendente"
+msgstr "Nome del dipendente"
 
 #. module: hr_attendance
 #: model:ir.actions.act_window,name:hr_attendance.hr_employee_attendance_action_kanban

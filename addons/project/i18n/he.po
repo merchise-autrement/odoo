@@ -2533,7 +2533,7 @@ msgstr ""
 #. module: project
 #: sql_constraint:project.tags:0
 msgid "Tag name already exists!"
-msgstr ""
+msgstr "שם התווית כבר קיים!"
 
 #. module: project
 #: model:ir.actions.act_window,name:project.project_tags_action
@@ -2725,6 +2725,9 @@ msgid ""
 "the sender (From) address, or will use the Administrator account if no "
 "system user is found for that address."
 msgstr ""
+"הבעלים של רשומות שנוצרו עם קבלת דוא\"ל בכינוי זה. אם שדה זה לא מוגדר, המערכת"
+" תנסה למצוא את הבעלים הנכון על סמך כתובת השולח (מאת), או שתשתמש בחשבון מנהל "
+"המערכת אם לא נמצא משתמש מערכת עבור אותה כתובת."
 
 #. module: project
 #: code:addons/project/models/project.py:253
