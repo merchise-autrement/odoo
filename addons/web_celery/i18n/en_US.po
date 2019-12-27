@@ -16,41 +16,35 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: web_celery
-#. openerp-web
-#: code:addons/web_celery/static/src/js/celery.js:118
-#, python-format
-msgid "Ask for help"
-msgstr ""
-
-#. module: web_celery
-#: code:addons/web_celery/__init__.py:81
+#: code:addons/web_celery/__init__.py:34
 #, python-format
 msgid "Installing has begun, wait for a minute or two to finish."
 msgstr ""
 
 #. module: web_celery
-#: model:ir.model,name:web_celery.model_ir_module_module
-msgid "Module"
+#. openerp-web
+#: code:addons/web_celery/static/src/js/service.js:21
+#, python-format
+msgid "Background operation failed!"
+msgstr ""
+
+#. module: web_celery
+#. openerp-web
+#: code:addons/web_celery/static/src/js/service.js:22
+#, python-format
+msgid "Missing error details."
 msgstr ""
 
 #. module: web_celery
 #. openerp-web
 #: code:addons/web_celery/static/src/js/celery.js:23
 #, python-format
-msgid "Working"
-msgstr ""
-
-#. module: web_celery
-#. openerp-web
-#: code:addons/web_celery/static/src/js/celery.js:119
-#, python-format
-msgid "You're stuck waiting for a job that is taking forever.  Grab the next IT guy and ask help."
+msgid "Ask for help"
 msgstr ""
 
 #. module: web_celery
 #. openerp-web
 #: code:addons/web_celery/static/src/js/celery.js:24
 #, python-format
-msgid "Your request is being processed (or about to be processed.)  Please wait."
+msgid "You're stuck waiting for a job that is taking forever. Grab the next IT guy and ask help."
 msgstr ""
-
