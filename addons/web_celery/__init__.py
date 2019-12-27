@@ -15,7 +15,14 @@ Features:
 - Replaces the install button of a module for a background job.
 
 """
+import time
+
+import odoo
 from odoo import _, api, models
+from odoo.jobs import Deferred, CELERY_JOB, report_progress
+from odoo.tools import config
+
+from xotl.tools.context import context
 
 
 def QUIETLY_WAIT_FOR_TASK(job, next_action=None):
@@ -36,9 +43,8 @@ def QUIETLY_WAIT_FOR_TASK(job, next_action=None):
     """
     if job is not None:
         return dict(
-            type="ir.actions.client",
-            tag="quietly_wait_for_background_job",
-            pushState=False,
+            type="web.celery.background_job",
+            tag="block_no_progress",
             params=dict(uuid=job.id, next_action=next_action),
         )
     else:
@@ -62,9 +68,8 @@ def WAIT_FOR_TASK(job, next_action=None):
     """
     if job is not None:
         return dict(
-            type="ir.actions.client",
-            tag="wait_for_background_job",
-            pushState=False,
+            type="web.celery.background_job",
+            tag="block_with_progress",
             params=dict(uuid=job.id, next_action=next_action),
         )
     else:
@@ -91,19 +96,8 @@ class Module(models.Model):
 
     @api.multi
     def button_immediate_install(self):
-        import time
-        import odoo
-        import odoo.tools.config as config
-        from odoo.jobs import CELERY_JOB, report_progress, Deferred
-        from xotl.tools.context import context
-
         if CELERY_JOB in context or not config.get("dev_mode") or not odoo.multi_process:
-            report_progress(
-                message=_("Installing has begun, wait for a minute or two to finish."),
-                progress=0,
-                valuemin=0,
-                valuemax=100,
-            )
+            report_progress(message=INSTALL_HAS_BEGUN, progress=0, valuemin=0, valuemax=100)
             for progress in range(1, 25, 4):
                 report_progress(progress=progress)
                 time.sleep(0.86)
@@ -115,3 +109,6 @@ class Module(models.Model):
             return res
         else:
             return WAIT_FOR_TASK(Deferred(self.button_immediate_install))
+
+
+INSTALL_HAS_BEGUN = _("Installation has begun, wait for a minute or two to finish.")

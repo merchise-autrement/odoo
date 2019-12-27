@@ -8,14 +8,14 @@
 #
 
 dict(
-    name='Celery Integration',
-    author='Merchise Autrement [~º/~]',
-    category='Hidden',
-    description='Web API for Celery Integration',
-    summary='Web API for Celery Integration',
-    depends=['web', 'bus'],
-    data=['views/assets.xml', ],
-    qweb=['static/src/xml/*.xml', ],
+    name="Celery Integration",
+    author="Merchise Autrement [~º/~]",
+    category="Hidden",
+    description="Web API for Celery Integration",
+    summary="Web API for Celery Integration",
+    depends=["web", "bus"],
+    data=["views/assets.xml"],
+    qweb=["static/src/xml/*.xml"],
     auto_install=True,
     installable=True,
     application=False,
