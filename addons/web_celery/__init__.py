@@ -108,7 +108,6 @@ class Module(models.Model):
                 report_progress(progress=progress)
                 time.sleep(0.86)
             res = super(Module, self).button_immediate_install()
-            self.env.cr.commit()
             for progress in range(progress, 101, 4):
                 report_progress(progress=progress)
                 time.sleep(0.26)

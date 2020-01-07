@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 del logging
 
 from xotl.tools.context import context as ExecutionContext
+from xotl.tools.objects import temp_attributes
 
 from kombu import Exchange, Queue
 
@@ -800,37 +801,31 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs, job_uuid=Unset
 
 
 @contextlib.contextmanager
-def MaybeRecords(dbname, uid, model, ids=None, cr=None, context=None):
+def MaybeRecords(dbname, uid, model, ids=None, context=None):
     __traceback_hide__ = True  # noqa: hide from Celery Tracebacks
-    with OdooEnvironment(dbname, uid, cr=cr, context=context) as env:
+    with OdooEnvironment(dbname, uid, context=context) as env:
         records = env[model].browse(ids)
         yield records
 
 
 @contextlib.contextmanager
-def OdooEnvironment(dbname, uid, cr=None, context=None):
-    from xotl.tools.objects import temp_attributes
-
+def OdooEnvironment(dbname, uid, context=None):
     __traceback_hide__ = True  # noqa: hide from Celery Tracebacks
     with Environment.manage():
         registry = Registry(dbname).check_signaling()
-        # Several pieces of OpenERP code expect this attributes to be set in
-        # the current thread.
-        thread = threading.currentThread()
-        with temp_attributes(thread, dict(uid=uid, dbname=dbname)):
-            if cr is None:
-                cr = registry.cursor()
-                closing = lambda c: c  # noqa
-            else:
-                closing = noop
-            with closing(cr) as cr2:
-                env = Environment(cr2, uid, context or {})
+        try:
+            # Several pieces of OpenERP code expect this attributes to be set in
+            # the current thread.
+            thread = threading.currentThread()
+            with temp_attributes(thread, dict(uid=uid, dbname=dbname)), registry.cursor() as cr:
+                env = Environment(cr, uid, context or {})
                 yield env
-
-
-@contextlib.contextmanager
-def noop(c):
-    yield c
+        except:  # noqa
+            registry.reset_changes()
+            raise
+        else:
+            registry = Registry(dbname)  # the registry might have been replaced
+            registry.signal_changes()
 
 
 def _require_ids(method):
