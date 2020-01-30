@@ -16,6 +16,8 @@ import os
 import contextlib
 import threading
 
+from typing import Iterable, TypeVar
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -172,9 +174,12 @@ class DeferredType(object):
 
 
 Deferred = DeferredType()
+T = TypeVar("T")
 
 
-def iter_and_report(iterator, valuemax=None, report_rate=1, messagetmpl="Progress: {progress}"):
+def iter_and_report(
+    iterator: Iterable[T], valuemax=None, report_rate=1, messagetmpl="Progress: {progress}"
+) -> Iterable[T]:
     """Iterate over 'iterator' while reporting progress.
 
     In the context of a background (celery) job you may wish to iterate over a
@@ -222,7 +227,34 @@ def iter_and_report(iterator, valuemax=None, report_rate=1, messagetmpl="Progres
         report_progress(progress=valuemax)  # 100%
 
 
-def until_timeout(iterator, on_timeout=None):
+def iter_at_savepoint(self, items: Iterable[T]) -> Iterable[T]:
+    """Iterate over `items` yielding elements at a SAVEPOINT boundary.
+
+    Enclose each iteration within a SAVEPOINT so that callers may choose to
+    stop at each *complete* step.
+
+    This is specially important if you're going to consume this generator with
+    `until_timeout` or any other `until` variant.
+
+    `self` must an object with an attribute `env` of type Environment.
+
+    """
+    processing = True
+    while processing:
+        with self.env.cr.savepoint():
+            # Notice that we yield outside.  This is so the SAVEPOINT does
+            # not leak to the outside of this method.  The caller may be
+            # responsible to either commit or rollback but only on
+            # discrete points we need to satisfy.
+            try:
+                item = next(items)
+            except StopIteration:
+                processing = False
+            if processing:
+                yield item
+
+
+def until_timeout(iterator: Iterable[T], on_timeout=None) -> Iterable[T]:
     """Iterate and yield from `iterator` while the job has time to work.
 
     Celery can be configured to raise a SoftTimeLimitExceeded exception when a
