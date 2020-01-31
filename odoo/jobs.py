@@ -178,7 +178,7 @@ T = TypeVar("T")
 
 
 def iter_and_report(
-    iterator: Iterable[T], valuemax=None, report_rate=1, messagetmpl="Progress: {progress}"
+    iterator: Iterable[T], start=0, valuemax=None, report_rate=1, messagetmpl="Progress: {progress}"
 ) -> Iterable[T]:
     """Iterate over 'iterator' while reporting progress.
 
@@ -212,7 +212,7 @@ def iter_and_report(
         raise TypeError("valuemax and step most be integers")
     if not isinstance(messagetmpl, str):
         raise TypeError("messagetmpl must a string")
-    for progress, x in enumerate(iterator):
+    for progress, x in enumerate(iterator, start):
         if valuemax and progress % report_rate == 0:
             report_progress(
                 message=messagetmpl.format(progress=progress, valuemax=valuemax),
