@@ -208,8 +208,8 @@ def iter_and_report(
     message template.
 
     """
-    if not all(isinstance(x, int) for x in (valuemax, report_rate)):
-        raise TypeError("valuemax and step most be integers")
+    if not all(isinstance(x, int) for x in (valuemax, report_rate, start)):
+        raise TypeError("valuemax, start and step must be integers")
     if not isinstance(messagetmpl, str):
         raise TypeError("messagetmpl must a string")
     for progress, x in enumerate(iterator, start):
@@ -218,7 +218,7 @@ def iter_and_report(
                 message=messagetmpl.format(progress=progress, valuemax=valuemax),
                 progress=progress,
                 valuemax=valuemax,
-                valuemin=0,
+                valuemin=start,
             )
         msg = yield x
         if msg and isinstance(msg, str):
