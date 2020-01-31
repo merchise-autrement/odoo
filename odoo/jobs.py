@@ -223,8 +223,8 @@ def iter_and_report(
         msg = yield x
         if msg and isinstance(msg, str):
             messagetmpl = msg
-    if valuemax:
-        report_progress(progress=valuemax)  # 100%
+    if valuemax and valuemax % report_rate != 0:
+        report_progress(progress=progress)
 
 
 def iter_at_savepoint(self, items: Iterable[T]) -> Iterable[T]:
