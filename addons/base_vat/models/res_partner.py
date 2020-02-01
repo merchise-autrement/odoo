@@ -21,7 +21,7 @@ try:
 except ImportError:
     stdnum = None
 
-from odoo import api, models, _
+from odoo import api, models, tools, _
 from odoo.tools.misc import ustr
 from odoo.exceptions import ValidationError
 
@@ -60,7 +60,7 @@ _ref_vat = {
     'mx': 'ABC123456T1B',
     'nl': 'NL123456782B90',
     'no': 'NO123456785',
-    'pe': 'PER10254824220 or PED10254824220',
+    'pe': '10XXXXXXXXY or 20XXXXXXXXY or 15XXXXXXXXY or 16XXXXXXXXY or 17XXXXXXXXY',
     'pl': 'PL1234567883',
     'pt': 'PT123456789',
     'ro': 'RO1234567897',
@@ -99,11 +99,18 @@ class ResPartner(models.Model):
         return check_func(vat_number)
 
     @api.model
+    @tools.ormcache('vat')
+    def _check_vies(self, vat):
+        # Store the VIES result in the cache. In case an exception is raised during the request
+        # (e.g. service unavailable), the fallback on simple_vat_check is not kept in cache.
+        return vatnumber.check_vies(vat)
+
+    @api.model
     def vies_vat_check(self, country_code, vat_number):
         try:
             # Validate against  VAT Information Exchange System (VIES)
             # see also http://ec.europa.eu/taxation_customs/vies/
-            return vatnumber.check_vies(country_code.upper() + vat_number)
+            return self._check_vies(country_code.upper() + vat_number)
         except Exception:
             # see http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl
             # Fault code may contain INVALID_INPUT, SERVICE_UNAVAILABLE, MS_UNAVAILABLE,
@@ -293,38 +300,14 @@ class ResPartner(models.Model):
 
     # Peruvian VAT validation, contributed by Vauxoo
     def check_vat_pe(self, vat):
-
-        vat_type, vat = vat and len(vat) >= 2 and (vat[0], vat[1:]) or (False, False)
-
-        if vat_type and vat_type.upper() == 'D':
-            # DNI
-            return True
-        elif vat_type and vat_type.upper() == 'R':
-            # verify RUC
-            factor = '5432765432'
-            sum = 0
-            dig_check = False
-            if len(vat) != 11:
-                return False
-            try:
-                int(vat)
-            except ValueError:
-                return False
-
-            for f in range(0, 10):
-                sum += int(factor[f]) * int(vat[f])
-
-            subtraction = 11 - (sum % 11)
-            if subtraction == 10:
-                dig_check = 0
-            elif subtraction == 11:
-                dig_check = 1
-            else:
-                dig_check = subtraction
-
-            return int(vat[10]) == dig_check
-        else:
+        if len(vat) != 11 or not vat.isdigit():
             return False
+        dig_check = 11 - (sum([int('5432765432'[f]) * int(vat[f]) for f in range(0, 10)]) % 11)
+        if dig_check == 10:
+            dig_check = 0
+        elif dig_check == 11:
+            dig_check = 1
+        return int(vat[10]) == dig_check
 
     # VAT validation in Turkey, contributed by # Levent Karakas @ Eska Yazilim A.S.
     def check_vat_tr(self, vat):
