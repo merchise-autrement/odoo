@@ -163,7 +163,7 @@ class DeferredType(object):
             logger.warn("Nested background call detected for model", extra=dict(args_=signature))
             return task(*signature)
         elif self.disallow_tests and _running_tests(env):
-            logger.debug("Running the deferred job inline in tests", extra=dict(args_=signature))
+            logger.info("Running the deferred job inline in tests", extra=dict(args_=signature))
             return task(*signature)
         else:
             signature = task.signature(signature, immutable=True, **self.options)
