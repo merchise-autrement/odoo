@@ -917,7 +917,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                     info = rec_data['info']
                     messages.append(dict(info, type='error', **PGERROR_TO_OE[e.pgcode](self, fg, info, e)))
                 except Exception as e:
-                    _logger.exception("Error while loading record")
+                    _logger.debug("Error while loading record", exc_info=True)
                     # Failed for some reason, perhaps due to invalid data supplied,
                     # rollback savepoint and keep going
                     cr.execute('ROLLBACK TO SAVEPOINT model_load_save')
@@ -1681,7 +1681,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             name
             for name, field in self._fields.items()
             if name not in values
-            if self._log_access and name not in MAGIC_COLUMNS
+            if not (self._log_access and name in MAGIC_COLUMNS)
             if not (field.inherited and field.related_field.model_name in avoid_models)
         }
 
@@ -2667,7 +2667,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             # set up field triggers (on database-persisted models only)
             for field in cls._fields.values():
                 # dependencies of custom fields may not exist; ignore that case
-                exceptions = (Exception,) if field.manual else ()
+                exceptions = (Exception,) if field.base_field.manual else ()
                 with tools.ignore(*exceptions):
                     field.setup_triggers(self)
 
@@ -4880,6 +4880,9 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             recs = self
             for name in func.split('.'):
                 recs = recs._mapped_func(operator.itemgetter(name))
+                if isinstance(recs, BaseModel):
+                    # allow feedback to self's prefetch object
+                    recs = recs.with_prefetch(self._prefetch)
             return recs
         else:
             return self._mapped_func(func)
