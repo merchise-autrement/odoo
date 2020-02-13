@@ -58,9 +58,10 @@ class AccountMove(models.Model):
             total_reconciled = 0.0
             for line in move.line_ids:
                 if line.account_id.user_type_id.type in ('receivable', 'payable'):
-                    amount = abs(line.debit - line.credit)
+                    amount = abs(line.balance)
                     total_amount += amount
             precision_currency = move.currency_id or move.company_id.currency_id
+
             if float_is_zero(total_amount, precision_rounding=precision_currency.rounding):
                 move.matched_percentage = 1.0
             else:
@@ -68,7 +69,7 @@ class AccountMove(models.Model):
                     if line.account_id.user_type_id.type in ('receivable', 'payable'):
                         for partial_line in (line.matched_debit_ids + line.matched_credit_ids):
                             total_reconciled += partial_line.amount
-                move.matched_percentage = total_reconciled / total_amount
+                move.matched_percentage = precision_currency.round(total_reconciled) / precision_currency.round(total_amount)
 
     @api.one
     @api.depends('company_id')
