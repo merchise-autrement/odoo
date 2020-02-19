@@ -31,6 +31,7 @@ from kombu import Exchange, Queue
 from celery import Celery as _CeleryApp
 from celery import Task as BaseTask
 
+
 from celery.exceptions import (
     MaxRetriesExceededError,
     SoftTimeLimitExceeded,
@@ -615,6 +616,10 @@ class Configuration(object):
     if _worker_max_memory_per_child:
         worker_max_memory_per_child = _worker_max_memory_per_child
     del _worker_max_memory_per_child
+
+    # If enabled, a task-sent event will be sent for every task so tasks can be tracked before
+    # they’re consumed by a worker.
+    task_send_sent_event = True
 
     task_create_missing_queues = config.get("celery.create_missing_queues", True)
 
