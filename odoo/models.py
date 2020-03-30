@@ -899,8 +899,9 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             except Exception:
                 cr.execute('ROLLBACK TO SAVEPOINT model_load_save')
 
+            errors = 0
             # try again, this time record by record
-            for rec_data in data_list:
+            for i, rec_data in enumerate(data_list, 1):
                 try:
                     cr.execute('SAVEPOINT model_load_save')
                     rec = self._load_records([rec_data], mode == 'update')
@@ -916,6 +917,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                     cr.execute('ROLLBACK TO SAVEPOINT model_load_save')
                     info = rec_data['info']
                     messages.append(dict(info, type='error', **PGERROR_TO_OE[e.pgcode](self, fg, info, e)))
+                    errors += 1
                 except Exception as e:
                     _logger.debug("Error while loading record", exc_info=True)
                     # Failed for some reason, perhaps due to invalid data supplied,
@@ -925,6 +927,13 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                     message = (_(u'Unknown error during import:') + u' %s: %s' % (type(e), e))
                     moreinfo = _('Resolve other errors first')
                     messages.append(dict(info, type='error', message=message, moreinfo=moreinfo))
+                    errors += 1
+                if errors >= 10 and (errors >= i / 10):
+                    messages.append({
+                        'type': 'warning',
+                        'message': _(u"Found more than 10 errors and more than one error per 10 records, interrupted to avoid showing too many errors.")
+                    })
+                    break
 
         # make 'flush' available to the methods below, in the case where XMLID
         # resolution fails, for instance
@@ -2970,11 +2979,11 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             if forbidden:
                 _logger.info(
                     _('The requested operation cannot be completed due to record rules: Document type: %s, Operation: %s, Records: %s, User: %s') % \
-                    (self._name, 'read', ','.join([str(r.id) for r in self][:6]), self._uid))
+                    (self._name, 'read', ','.join([str(r.id) for r in forbidden]), self._uid))
                 # store an access error exception in existing records
                 exc = AccessError(
                     _('The requested operation cannot be completed due to security restrictions. Please contact your system administrator.\n\n(Document type: %s, Operation: %s)') % (self._description, 'read')
-                    + ' - ({} {}, {} {})'.format(_('Records:'), self.ids[:6], _('User:'), self._uid)
+                    + ' - ({} {}, {} {})'.format(_('Records:'), forbidden.ids[:6], _('User:'), self._uid)
                 )
                 self.env.cache.set_failed(forbidden, self._fields.values(), exc)
 

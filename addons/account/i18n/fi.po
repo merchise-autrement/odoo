@@ -556,6 +556,11 @@ msgid "<span>Quantity</span>"
 msgstr "<span>Määrä</span>"
 
 #. module: account
+#: model_terms:ir.ui.view,arch_db:account.report_payment_receipt_document
+msgid "<span>Reference</span>"
+msgstr ""
+
+#. module: account
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
 msgid "<span>Reporting</span>"
 msgstr "<span>Raportointi</span>"
@@ -9970,11 +9975,9 @@ msgstr ""
 #: model:ir.model.fields,help:account.field_account_payment__multi
 #: model:ir.model.fields,help:account.field_account_register_payments__multi
 msgid ""
-"Technical field indicating if the user selected invoices from multiple "
-"partners or from different types."
+"Technical field indicating if the registering payment will generate multiple"
+" payments or not."
 msgstr ""
-"Tekninen kenttä, jossa ilmoitetaan, onko käyttäjä valinnut laskut useilta "
-"kumppaneilta tai eri tyypeistä."
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_invoice_refund__refund_only
