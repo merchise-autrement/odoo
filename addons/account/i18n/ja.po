@@ -458,12 +458,12 @@ msgstr "<span>請求先</span>"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.report_payment_receipt_document
 msgid "<span>Amount Paid</span>"
-msgstr ""
+msgstr "<span>消込額</span>"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.report_payment_receipt_document
 msgid "<span>Balance</span>"
-msgstr ""
+msgstr "<span>残高</span>"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.report_invoice_document
@@ -483,12 +483,12 @@ msgstr "<span>仕入先請求インポート</span>"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.report_payment_receipt_document
 msgid "<span>Invoice Date</span>"
-msgstr ""
+msgstr "<span>請求日</span>"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.report_payment_receipt_document
 msgid "<span>Invoice Number</span>"
-msgstr ""
+msgstr "<span>請求書番号</span>"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
@@ -518,7 +518,7 @@ msgstr "<span>処理</span>"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.report_payment_receipt_document
 msgid "<span>Original Amount</span>"
-msgstr ""
+msgstr "<span>消込前残高</span>"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.report_invoice_document
@@ -528,7 +528,7 @@ msgstr "<span>数量</span>"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.report_payment_receipt_document
 msgid "<span>Reference</span>"
-msgstr ""
+msgstr "<span>参照</span>"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
@@ -577,7 +577,7 @@ msgstr ""
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.portal_invoice_page
 msgid "<strong class=\"text-muted\">Your Contact</strong>"
-msgstr ""
+msgstr "<strong class=\"text-muted\">担当者</strong>"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.report_invoice_document_with_payments
@@ -4651,12 +4651,12 @@ msgstr "フォロワー (取引先)"
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_journal__inbound_payment_method_ids
 msgid "For Incoming Payments"
-msgstr ""
+msgstr "入金用設定"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_journal__outbound_payment_method_ids
 msgid "For Outgoing Payments"
-msgstr ""
+msgstr "支払用設定"
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_payment_term_line__value_amount
@@ -7815,7 +7815,7 @@ msgstr "全仕訳を記帳"
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_journal__post_at_bank_rec
 msgid "Post At Bank Reconciliation"
-msgstr ""
+msgstr "銀行照合時に記帳"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_payment_from_invoices
@@ -11677,7 +11677,7 @@ msgstr ""
 #: code:addons/account/models/account_invoice.py:1683
 #, python-format
 msgid "You must first select a partner."
-msgstr ""
+msgstr "取引先を選択してください。"
 
 #. module: account
 #. openerp-web
