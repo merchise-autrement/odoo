@@ -10,7 +10,7 @@ odoo.define('web_celery.CeleryService', function (require) {
         Bus = require("web.Bus"),
         AbstractService = require('web.AbstractService'),
         widgets = require('web_celery.widgets'),
-		concurrency = require("web.concurrency"),
+        concurrency = require("web.concurrency"),
         FullScreenProgressBar = widgets.FullScreenProgressBar;
 
     function getProgressChannel(job_uuid) {
@@ -46,13 +46,13 @@ odoo.define('web_celery.CeleryService', function (require) {
             return $.when();
         },
 
-		attachJobNotification: function(obj, job_uuid, fn) {
-			this.bus.on(getProgressChannel(job_uuid), obj, fn);
-		},
+        attachJobNotification: function(obj, job_uuid, fn) {
+            this.bus.on(getProgressChannel(job_uuid), obj, fn);
+        },
 
-		detachJobNotification: function(obj, job_uuid, fn) {
-			this.bus.off(getProgressChannel(job_uuid), obj, fn);
-		},
+        detachJobNotification: function(obj, job_uuid, fn) {
+            this.bus.off(getProgressChannel(job_uuid), obj, fn);
+        },
 
         _addBackgroundJob: function(job_uuid, next_action) {
             var result = $.Deferred();
@@ -82,26 +82,26 @@ odoo.define('web_celery.CeleryService', function (require) {
                     core.bus.trigger("rpc_error", error);
                 }
             });
-			// TODO: When we add the systray menu, this next_action must be
-			// gone and replaced by an entirely different UI concept: many
-			// parallel jobs can be running and any one of them (or several)
-			// can finish at any time, we should not use the next_action (or
-			// perform any action at all).  For the time being we do the same
-			// we have done so far: reload if next_action is undefined or
-			// perform the given next_action.
-			var self = this;
-			result.then(function(success_message) {
-				if (success_message.next_action) {
-					self.do_action(success_message.next_action);
-				} else {
-					var controller = self.getParent().action_manager.getCurrentController();
-					if (controller && controller.widget && typeof(controller.widget.reload) == "function") {
-						controller.widget.reload();
-					} else {
-						self.do_action('reload');
-					}
-				}
-			});
+            // TODO: When we add the systray menu, this next_action must be
+            // gone and replaced by an entirely different UI concept: many
+            // parallel jobs can be running and any one of them (or several)
+            // can finish at any time, we should not use the next_action (or
+            // perform any action at all).  For the time being we do the same
+            // we have done so far: reload if next_action is undefined or
+            // perform the given next_action.
+            var self = this;
+            result.then(function(success_message) {
+                if (success_message.next_action) {
+                    self.do_action(success_message.next_action);
+                } else {
+                    var controller = self.getParent().action_manager.getCurrentController();
+                    if (controller && controller.widget && typeof(controller.widget.reload) == "function") {
+                        controller.widget.reload();
+                    } else {
+                        self.do_action('reload');
+                    }
+                }
+            });
             return result.promise();
         },
 
@@ -132,9 +132,9 @@ odoo.define('web_celery.CeleryService', function (require) {
                     });
                     delete this.jobs[channel];
                 } else {
-					// This is normal progress message.
-					this.bus.trigger(channel, message);
-				}
+                    // This is normal progress message.
+                    this.bus.trigger(channel, message);
+                }
             }
         },
 

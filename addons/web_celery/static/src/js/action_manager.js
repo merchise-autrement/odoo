@@ -13,10 +13,10 @@ odoo.define('web_celery.ActionManager', function (require) {
      *   The client action that waits quietly for a background job to
      *   complete.  In this context *quietly* means just displaying the usual
      *   AJAX spinner.
-	 *
-	 * `wait_for_background_job_in_systray`
-	 *
-	 *   The client action that
+     *
+     * `wait_for_background_job_in_systray`
+     *
+     *   The client action that
      *
      */
     var ActionManager = require('web.ActionManager');
@@ -24,7 +24,7 @@ odoo.define('web_celery.ActionManager', function (require) {
 
         _handleAction: function (action, options) {
             if (action.type == 'web.celery.background_job') {
-				return this.call('web_celery', 'appendBackgroundJob', action, options);
+		        return this.call('web_celery', 'appendBackgroundJob', action, options);
             }
             return this._super.apply(this, arguments);
         },
