@@ -1159,7 +1159,7 @@ def formatLang(env, value, digits=None, grouping=True, monetary=False, dp=False,
             digits = currency_obj.decimal_places
         elif (hasattr(value, '_field') and getattr(value._field, 'digits', None)):
                 digits = value._field.digits[1]
-                if not digits and digits is not 0:
+                if not digits and digits != 0:
                     digits = DEFAULT_DIGITS
 
     if isinstance(value, pycompat.string_types) and not value:
