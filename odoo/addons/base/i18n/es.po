@@ -45,7 +45,7 @@
 # Massiel Acuna <mac@odoo.com>, 2018
 # Fernando Herrera <baloosoftware@gmail.com>, 2018
 # Rodrigo Aragon <conectacoatepec@gmail.com>, 2018
-# Gabriel Umana <gabriel.umana@delfixcr.com>, 2019
+# gabriumaa <gabriel.umana@delfixcr.com>, 2019
 # Carolina Gonzalez <cgo@odoo.com>, 2019
 # Vivian Montana <vmo@odoo.com>, 2019
 # pepito alialabs <pepitoalialabs@gmail.com>, 2019
@@ -66,7 +66,9 @@
 # Oscar Soto <oscar.soto.ochoa@gmail.com>, 2020
 # Marco Alejandro Martinez <martinezsuarezmarcoalejandro@gmail.com>, 2020
 # Pedro M. Baeza <pedro.baeza@gmail.com>, 2020
+# Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2020
 # gpi odoo <gpi@odoo.com>, 2020
+# Osiris Román <osiris.roman@yachaytech.edu.ec>, 2020
 # Elena Aguirre Claeyssens <eac@odoo.com>, 2020
 # 
 msgid ""
@@ -1935,6 +1937,9 @@ msgid ""
 "Advanced features for the PoS like better views \n"
 "for IoT Box config.   \n"
 msgstr ""
+"\n"
+"Características avanzadas para el PdV como mejores vistas \n"
+"para la configuración de la IoT Box.   \n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_website_calendar
@@ -5219,7 +5224,7 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"Vende entradas para eventos a través de la aplicación de comercio electrónico."
+"Venda entradas para eventos a través de la aplicación de comercio electrónico."
 
 #. module: base
 #: model:ir.module.module,description:base.module_digest
@@ -6522,6 +6527,16 @@ msgid ""
 "trigger an automatic reminder email.\n"
 "    "
 msgstr ""
+"\n"
+"Este módulo permite implementar reglas de acción para cualquier objeto.\n"
+"============================================================\n"
+"\n"
+"Utilice acciones automatizadas para activar automáticamente acciones para varias pantallas.\n"
+"\n"
+"**Ejemplo:** Una oportunidad de venta creada por un usuario específico puede ser asignada a un \n"
+"equipo de ventas específico, o una oportunidad que aún esté en estado pendiente después de 14 días puede\n"
+"generar automáticamente un correo electrónico de recordatorio automático. \n"
+"    "
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_us_check_printing
@@ -6561,6 +6576,17 @@ msgid ""
 "- Check on bottom: ADP standard\n"
 "    "
 msgstr ""
+"\n"
+"Este módulo permite imprimir sus pagos en papel de cheque preimpreso.\n"
+"Puede configurar el formato (diseño, información de pagos, etc.) en la configuración de la compañía y\n"
+"comprueba la numeración (si utiliza cheques sin numeración) con la configuración del diario.\n"
+"\n"
+"Formatos soportados\n"
+"----------------------------\n"
+"- Comprobar en la parte superior : Quicken / QuickBooks standard\n"
+"- Comprobar en la parte media: Peachtree standard\n"
+"- Comprobar en la parte inferior: ADP standard\n"
+"    "
 
 #. module: base
 #: model:ir.module.module,description:base.module_website_crm_partner_assign
@@ -7935,9 +7961,9 @@ msgid ""
 "                                <span colspan=\"2\">Week of the Year: %(woy)s</span>\n"
 "                                <span colspan=\"2\">Day of the Week (0:Monday): %(weekday)s</span>"
 msgstr ""
-"Día del Año: %(doy)s</span>\n"
-"                                <span colspan=\"2\">Semana del Año: %(woy)s</span>\n"
-"                                <span colspan=\"2\">Día de la Semana (0:Lunes: %(weekday)s</span>"
+"<span colspan=\"2\">Día del año: %(doy)s</span>\n"
+"                                <span colspan=\"2\">Semana del año: %(woy)s</span>\n"
+"                                <span colspan=\"2\">Día de la semana (0: Lunes): %(weekday)s</span>"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.sequence_view
@@ -8502,6 +8528,8 @@ msgstr "Un módulo para generar excepciones."
 #: model:ir.module.module,description:base.module_test_lint
 msgid "A module to test Odoo code with various linters."
 msgstr ""
+"Un módulo para comprobar el código Odoo con varias comprobaciones de "
+"sintaxis (linters)."
 
 #. module: base
 #: model:ir.module.module,description:base.module_test_impex
@@ -10061,7 +10089,7 @@ msgstr "Propiedades base"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_ui_view__arch_base
 msgid "Base View Architecture"
-msgstr ""
+msgstr "Arquitectura de la vista base"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_base_import
@@ -13890,6 +13918,7 @@ msgstr "Herramientas extra"
 #: model:ir.module.module,summary:base.module_account_invoice_extract
 msgid "Extract data from invoice scans to fill them automatically"
 msgstr ""
+"Extraiga datos de los escaneos de facturas para rellenarlas automáticamente"
 
 #. module: base
 #: model:res.partner.industry,name:base.res_partner_industry_U
@@ -13923,7 +13952,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_demo_failure_wizard__failures_count
 msgid "Failures Count"
-msgstr ""
+msgstr "Nº de fallos"
 
 #. module: base
 #: model:res.country,name:base.fk
@@ -14781,12 +14810,12 @@ msgstr "Alemania SKR04 - Contabilidad"
 #. module: base
 #: model:ir.module.module,summary:base.module_website_sale_dashboard
 msgid "Get a new dashboard view in the Website App"
-msgstr ""
+msgstr "Obtenga una nueva vista de tablero en la aplicación Sitio web"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_website_enterprise
 msgid "Get the enterprise look and feel"
-msgstr ""
+msgstr "Obtenga el aspecto y experiencia Enterprise"
 
 #. module: base
 #: model:res.country,name:base.gh
@@ -18478,7 +18507,7 @@ msgstr "Nueva Zelanda - Contabilidad"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_mass_mailing
 msgid "Newsletter Subscribe Button"
-msgstr ""
+msgstr "Botón de suscripción al boletín de noticias"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_cron__nextcall
@@ -19644,7 +19673,7 @@ msgid ""
 "\n"
 "The real time collaborative writings on notes makes it the perfect tool to collaborate on meeting minutes. Attendees will be able to contribute to the minutes, attach important documents or discuss on the related thread.\n"
 "\n"
-msgstr "<a href=\"https://www.odoo.com/page/notes\"/>"
+msgstr ""
 
 #. module: base
 #: model:ir.module.module,description:base.module_point_of_sale
@@ -21199,7 +21228,7 @@ msgstr "Reimpresion del ticket del punto de venta"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_pos_enterprise
 msgid "Point of Sale enterprise"
-msgstr ""
+msgstr "Punto de Venta Enterprise"
 
 #. module: base
 #: model:res.country,name:base.pl
@@ -21313,7 +21342,7 @@ msgstr "Imprima la cantidad en palabras en los cheques emitidos para gastos"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_report_paperformat__print_page_height
 msgid "Print page height (mm)"
-msgstr ""
+msgstr "Altura de la página de impresión (mm)"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_report_paperformat__print_page_width
@@ -21413,7 +21442,7 @@ msgstr "Proyecto"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_project_enterprise
 msgid "Project Enterprise"
-msgstr ""
+msgstr "Proyecto Enterprise"
 
 #. module: base
 #: model:ir.module.module,description:base.module_project
@@ -21568,7 +21597,7 @@ msgstr " "
 #. module: base
 #: model:ir.module.module,summary:base.module_website_event
 msgid "Publish events, sell tickets"
-msgstr "Publique eventos, venda tiquetes"
+msgstr "Publique eventos, venda entradas"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_website_slides
@@ -21583,7 +21612,7 @@ msgstr "Publique las preferencias de su cliente"
 #. module: base
 #: model:ir.module.module,summary:base.module_website_membership
 msgid "Publish your members directory"
-msgstr ""
+msgstr "Publique su directorio de miembros"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_website_crm_partner_assign
@@ -21720,7 +21749,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_sale_quotation_builder
 msgid "Quotation Builder"
-msgstr ""
+msgstr "Generador de cotizaciones"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_sale_expense
@@ -22775,7 +22804,7 @@ msgstr "Vende productos digitales en tu tienda de comercio electrónico"
 #. module: base
 #: model:ir.module.module,summary:base.module_website_event_sale
 msgid "Sell event tickets online"
-msgstr "Venda entradas a eventos online"
+msgstr "Venda en línea entradas para eventos"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_website_sale
@@ -24728,6 +24757,14 @@ msgstr "El usuario interno a cargo de este contacto."
 #: model:ir.model.fields,help:base.field_ir_model__inherited_model_ids
 msgid "The list of models that extends the current model."
 msgstr "La lista de modelos que extienden el modelo actual."
+
+#. module: base
+#: code:addons/base/models/ir_model.py:522
+#, python-format
+msgid ""
+"The m2o field %s is required but declares its ondelete policy as being 'set "
+"null'. Only 'restrict' and 'cascade' make sense."
+msgstr ""
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_filters__action_id
@@ -27475,7 +27512,7 @@ msgstr "Selección"
 #. module: base
 #: selection:ir.model.fields,ttype:0
 msgid "serialized"
-msgstr ""
+msgstr "serializado"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_snailmail_account
