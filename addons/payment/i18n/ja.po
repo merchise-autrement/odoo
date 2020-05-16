@@ -777,7 +777,7 @@ msgstr "国外固定手数料"
 #. module: payment
 #: model:ir.model.fields,field_description:payment.field_payment_acquirer__inbound_payment_method_ids
 msgid "For Incoming Payments"
-msgstr ""
+msgstr "入金用設定"
 
 #. module: payment
 #: selection:payment.transaction,type:0
@@ -1440,7 +1440,7 @@ msgstr "次の銀行口座にご送金ください"
 #: model_terms:payment.acquirer,post_msg:payment.payment_acquirer_custom
 #: model_terms:payment.acquirer,post_msg:payment.payment_acquirer_transfer
 msgid "Please use the order name as communication reference."
-msgstr "オーダ名をご連絡の際の参照としてご使用ください。"
+msgstr "オーダ番号をご連絡の際の参照としてご使用ください。"
 
 #. module: payment
 #. openerp-web
@@ -1805,7 +1805,7 @@ msgstr ""
 #. module: payment
 #: model:ir.model.fields,field_description:payment.field_payment_acquirer__qr_code
 msgid "Use SEPA QR Code"
-msgstr ""
+msgstr "SEPA QRコード使用"
 
 #. module: payment
 #: model:ir.model.fields,field_description:payment.field_payment_transaction__date
@@ -1897,21 +1897,21 @@ msgstr ""
 #: code:addons/payment/static/src/js/payment_form.js:176
 #, python-format
 msgid "We are not able to redirect you to the payment form."
-msgstr ""
+msgstr "支払フォームにリダイレクトすることができません。"
 
 #. module: payment
 #. openerp-web
 #: code:addons/payment/static/src/js/payment_form.js:182
 #, python-format
 msgid "We are not able to redirect you to the payment form. "
-msgstr ""
+msgstr "支払フォームにリダイレクトすることができません。"
 
 #. module: payment
 #. openerp-web
 #: code:addons/payment/static/src/js/payment_processing.js:117
 #, python-format
 msgid "We are processing your payments, please wait ..."
-msgstr ""
+msgstr "お支払を処理しています。少々お待ちください..."
 
 #. module: payment
 #. openerp-web
