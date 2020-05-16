@@ -6388,13 +6388,15 @@ msgid ""
 "<span class=\"o_form_label\">The selected language has been successfully installed.\n"
 "You must change the preferences of the user to view the changes.</span>"
 msgstr ""
+"<span class=\"o_form_label\">השפה שנבחרה הותקנה בהצלחה.\n"
+"עליך לשנות את העדפות המשתמש כדי להציג את השינויים.</span>"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_base_module_upgrade_install
 msgid ""
 "<span class=\"o_form_label\">The selected modules have been updated / "
 "installed !</span>"
-msgstr ""
+msgstr "<span class=\"o_form_label\">המודולים שנבחרו עודכנו / הותקנו !</span>"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_base_module_upgrade_install
@@ -6881,7 +6883,7 @@ msgstr ""
 #. module: base
 #: model:res.partner.industry,full_name:base.res_partner_industry_A
 msgid "A AGRICULTURE, FORESTRY AND FISHING"
-msgstr ""
+msgstr "חקלאות, ייעור ודייג"
 
 #. module: base
 #: code:addons/models.py:2986
@@ -8004,7 +8006,7 @@ msgstr "לפחות שפה אחת חייבת להיות פעילה."
 #. module: base
 #: model_terms:ir.actions.act_window,help:base.action_attachment
 msgid "Attach a new document"
-msgstr ""
+msgstr "הוסף מסמך חדש"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_attachment_search
@@ -8615,7 +8617,7 @@ msgstr "בוליביה - דוחות כספיים"
 #. module: base
 #: model:res.country,name:base.bq
 msgid "Bonaire, Sint Eustatius and Saba"
-msgstr ""
+msgstr "סנט אוסטטיוס "
 
 #. module: base
 #: selection:ir.property,type:0
@@ -8748,7 +8750,7 @@ msgstr "כברירת מחדל, הווידג'ט משתמש במידע מהשדו�
 #. module: base
 #: model:res.partner.industry,full_name:base.res_partner_industry_C
 msgid "C MANUFACTURING"
-msgstr ""
+msgstr "ייצור"
 
 #. module: base
 #: selection:report.paperformat,format:0
@@ -12869,7 +12871,7 @@ msgstr "תפקוד"
 #. module: base
 #: model:res.partner.industry,full_name:base.res_partner_industry_G
 msgid "G WHOLESALE AND RETAIL TRADE;REPAIR OF MOTOR VEHICLES AND MOTORCYCLES"
-msgstr ""
+msgstr "G סחר סיטונאי וקמעוני, תיקון כלי רכב ואופנועים"
 
 #. module: base
 #: selection:ir.module.module,license:0
@@ -13743,7 +13745,7 @@ msgstr "הונגריה"
 #. module: base
 #: model:res.partner.industry,full_name:base.res_partner_industry_I
 msgid "I ACCOMMODATION AND FOOD SERVICE ACTIVITIES"
-msgstr ""
+msgstr "I פעילויות אירוח ושירותי מזון"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_base_iban
@@ -13895,7 +13897,7 @@ msgstr ""
 #. module: base
 #: model:res.partner.industry,name:base.res_partner_industry_J
 msgid "IT/Communication"
-msgstr ""
+msgstr "מערכות מידע/תקשורת"
 
 #. module: base
 #: model:res.country,name:base.is
@@ -14814,7 +14816,7 @@ msgstr "הרגע נעשה"
 #. module: base
 #: model:res.partner.industry,full_name:base.res_partner_industry_K
 msgid "K FINANCIAL AND INSURANCE ACTIVITIES"
-msgstr ""
+msgstr "K פעילויות פיננסיות וביטוח"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_digest
@@ -14889,7 +14891,7 @@ msgstr "קירגיזסטן"
 #. module: base
 #: model:res.partner.industry,full_name:base.res_partner_industry_L
 msgid "L REAL ESTATE ACTIVITIES"
-msgstr ""
+msgstr "L פעילויות נדל\"ן"
 
 #. module: base
 #: selection:ir.module.module,license:0
@@ -15582,7 +15584,7 @@ msgstr "לוקסמבורג - דוחות כספיים"
 #. module: base
 #: model:res.partner.industry,full_name:base.res_partner_industry_M
 msgid "M PROFESSIONAL, SCIENTIFIC AND TECHNICAL ACTIVITIES"
-msgstr ""
+msgstr "M פעילויות מקצועיות, מדעיות וטכנולוגיות"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_mrp_byproduct
@@ -16540,7 +16542,7 @@ msgstr "מיאנמר"
 #. module: base
 #: model:res.partner.industry,full_name:base.res_partner_industry_N
 msgid "N ADMINISTRATIVE AND SUPPORT SERVICE ACTIVITIES"
-msgstr ""
+msgstr "פעילויות מנהלתיות ותמיכה"
 
 #. module: base
 #: model:res.country,vat_label:base.gt
@@ -16904,7 +16906,7 @@ msgstr "מספר מודולים עודכנו."
 #. module: base
 #: model:res.partner.industry,full_name:base.res_partner_industry_O
 msgid "O PUBLIC ADMINISTRATION AND DEFENCE;COMPULSORY SOCIAL SECURITY"
-msgstr ""
+msgstr "מנהל ציבורי, הגנה וביטחון"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_auth_oauth
@@ -19518,7 +19520,7 @@ msgstr "ביטוי Python"
 #. module: base
 #: model:res.partner.industry,full_name:base.res_partner_industry_Q
 msgid "Q HUMAN HEALTH AND SOCIAL WORK ACTIVITIES"
-msgstr ""
+msgstr "Q בריאות ופעילויות עבודה סוציאלית"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_view_search
@@ -19597,7 +19599,7 @@ msgstr "הצעת מחיר, הזמנות מכירות, משלוח & חשבוני�
 #. module: base
 #: model:ir.model,name:base.model_ir_qweb
 msgid "Qweb"
-msgstr ""
+msgstr "Qweb"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_qweb_field
@@ -19700,7 +19702,7 @@ msgstr ""
 #. module: base
 #: model:res.partner.industry,full_name:base.res_partner_industry_R
 msgid "R ARTS, ENTERTAINMENT AND RECREATION"
-msgstr ""
+msgstr "R אומנויות, בידור ופנאי"
 
 #. module: base
 #: model:res.country,vat_label:base.mx
@@ -20029,7 +20031,7 @@ msgstr "נדרש"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_attachment__res_model_name
 msgid "Res Model Name"
-msgstr ""
+msgstr "שם מודל Res"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_crm_partner_assign
@@ -20191,12 +20193,12 @@ msgstr "רואנדה"
 #. module: base
 #: model:res.country,name:base.re
 msgid "Réunion"
-msgstr ""
+msgstr "ראוניון"
 
 #. module: base
 #: model:res.partner.industry,full_name:base.res_partner_industry_S
 msgid "S OTHER SERVICE ACTIVITIES"
-msgstr ""
+msgstr "S פעילויות שירות אחרות"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_sepa
@@ -20393,7 +20395,7 @@ msgstr "סן מרינו"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_partner_bank__sanitized_acc_number
 msgid "Sanitized Account Number"
-msgstr ""
+msgstr "מספר חשבון באותיות גדולות וללא רווחים"
 
 #. module: base
 #: selection:res.lang,week_start:0
@@ -20718,7 +20720,7 @@ msgstr "רצף"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_sequence__code
 msgid "Sequence Code"
-msgstr ""
+msgstr "קוד רצף"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_sequence_date_range
@@ -21518,6 +21520,8 @@ msgid ""
 "T ACTIVITIES OF HOUSEHOLDS AS EMPLOYERS;UNDIFFERENTIATED GOODS- AND "
 "SERVICES-PRODUCING ACTIVITIES OF HOUSEHOLDS FOR OWN USE"
 msgstr ""
+"פעילויות של משקי בית כמעסיקים, ייצור שירותים של פעילויות משקי בית לשימוש "
+"עצמי"
 
 #. module: base
 #: selection:base.language.export,format:0
@@ -22535,6 +22539,14 @@ msgid "The list of models that extends the current model."
 msgstr "רשימת הדגמים שמרחיבה את המודל הנוכחי."
 
 #. module: base
+#: code:addons/base/models/ir_model.py:522
+#, python-format
+msgid ""
+"The m2o field %s is required but declares its ondelete policy as being 'set "
+"null'. Only 'restrict' and 'cascade' make sense."
+msgstr ""
+
+#. module: base
 #: model:ir.model.fields,help:base.field_ir_filters__action_id
 msgid ""
 "The menu action this filter applies to. When left empty the filter applies "
@@ -22690,6 +22702,9 @@ msgid ""
 "\n"
 "(Document type: %s, Operation: %s)"
 msgstr ""
+"לא ניתן להשלים את הפעולה המבוקשת עקב מגבלות אבטחה. אנא צור קשר עם מנהל המערכת שלך.\n"
+"\n"
+"(סוג מסמך: %s, פעולה: %s)"
 
 #. module: base
 #: sql_constraint:res.currency:0
@@ -23032,7 +23047,7 @@ msgstr "הזחות אזור זמן"
 #. module: base
 #: model:res.country,name:base.tl
 msgid "Timor-Leste"
-msgstr ""
+msgstr "מזרח טימור"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_partner__title
@@ -23419,7 +23434,7 @@ msgstr "סוג:"
 #. module: base
 #: model:res.partner.industry,full_name:base.res_partner_industry_U
 msgid "U ACTIVITIES OF EXTRA TERRITORIAL ORGANISATIONS AND BODIES"
-msgstr ""
+msgstr "U פעילויות של גופים וארגונים מחוץ לתחום השיפוטי של המדינה"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_ae
