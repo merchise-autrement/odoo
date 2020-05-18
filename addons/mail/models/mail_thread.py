@@ -21,8 +21,8 @@ except ImportError:
 from collections import namedtuple
 from email.message import Message
 from lxml import etree
-from werkzeug import url_encode
 from werkzeug import urls
+from werkzeug.urls import url_encode
 
 from odoo import _, api, exceptions, fields, models, tools
 from odoo.tools import pycompat, ustr, formataddr
