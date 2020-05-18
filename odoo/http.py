@@ -25,19 +25,23 @@ from os.path import join as opj
 from zlib import adler32
 
 import babel.core
-from datetime import datetime, date
-import passlib.utils
 import psycopg2
 import json
-import werkzeug.contrib.sessions
 import werkzeug.datastructures
 import werkzeug.exceptions
 import werkzeug.local
 import werkzeug.routing
 import werkzeug.wrappers
 import werkzeug.wsgi
+
 from werkzeug import urls
 from werkzeug.wsgi import wrap_file
+from werkzeug.middleware.shared_data import SharedDataMiddleware
+
+try:
+    import werkzeug.contrib.sessions as werkzeug_sessions
+except ImportError:
+    import secure_cookie.session as werkzeug_sessions
 
 try:
     import psutil
@@ -212,7 +216,7 @@ def local_redirect(path, query=None, keep_hash=False, forward_debug=True, code=3
         else:
             query['debug'] = None
     if query:
-        url += '?' + werkzeug.url_encode(query)
+        url += '?' + werkzeug.urls.url_encode(query)
     if keep_hash:
         return redirect_with_hash(url, code)
     else:
@@ -1067,7 +1071,7 @@ def routing_map(modules, nodb_only, converters=None):
 # ---------------------------------------------------------
 # HTTP Sessions
 # ---------------------------------------------------------
-class OpenERPSession(werkzeug.contrib.sessions.Session):
+class OpenERPSession(werkzeug_sessions.Session):
     def __init__(self, *args, **kwargs):
         self.inited = False
         self.modified = False
@@ -1391,7 +1395,7 @@ class DisableCacheMiddleware(object):
 
 
 def SessionStore(path):
-    # type: (str) -> werkzeug.contrib.sessions.SessionStore
+    # type: (str) -> werkzeug_sessions.SessionStore
     '''Creates a session store.
 
     The `path` argument may start with 'redis://', in which case return a
@@ -1401,7 +1405,7 @@ def SessionStore(path):
     if path.startswith('redis://'):
         raise NotImplemented
     else:
-        return werkzeug.contrib.sessions.FilesystemSessionStore(
+        return werkzeug_sessions.FilesystemSessionStore(
             path,
             session_class=OpenERPSession,
             renew_missing=True,
@@ -1459,7 +1463,7 @@ class Root(object):
             _logger.info("HTTP Configuring static files")
 
         app = IgnoreWeaknessEtagsMiddleware(
-            werkzeug.wsgi.SharedDataMiddleware(
+            SharedDataMiddleware(
                 self.dispatch,
                 statics,
                 cache_timeout=STATIC_CACHE
