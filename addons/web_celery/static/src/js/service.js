@@ -67,6 +67,10 @@ odoo.define('web_celery.CeleryService', function (require) {
             });
             var channel = getProgressChannel(job_uuid);
             this.call('bus_service', 'addChannel', channel);
+            var self = this;
+            result.always(function () {
+                self.call("bus_service", "deleteChannel", channel);
+            });
             // Register the current job so that the _onNotification knows
             // which deferred to signal.
             this.jobs[channel] = {finished: result, next_action: next_action};
