@@ -353,6 +353,7 @@ class IrHttp(models.AbstractModel):
             elif request.uid is None and request.is_frontend:
                 cls._auth_method_public()
         except Exception as e:
+            _logger.exception("Unhandled exception authenticating request")
             return cls._handle_exception(e)
 
         # For website routes (only), add website params on `request`
@@ -433,6 +434,7 @@ class IrHttp(models.AbstractModel):
         except odoo.exceptions.MissingError:
             return cls._handle_exception(werkzeug.exceptions.NotFound())
         except Exception as e:
+            _logger.exception("Unhandled exception processing args")
             return cls._handle_exception(e)
 
         if getattr(request, 'is_frontend_multilang', False) and request.httprequest.method in ('GET', 'HEAD'):
