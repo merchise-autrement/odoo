@@ -204,7 +204,6 @@ class IrHttp(models.AbstractModel):
             if isinstance(result, Exception):
                 raise result
         except Exception as e:
-            _logger.exception("Unhandled exception in HTTP dispatch")
             return cls._handle_exception(e)
 
         return result
