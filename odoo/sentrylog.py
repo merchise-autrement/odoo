@@ -279,6 +279,13 @@ def patch_logging(override=False, force=False):
 
             ignored = (UserError,)
             try:
+                from odoo.addons.base.models.qweb import QWebException
+
+                ignored += (QWebException,)
+            except ImportError:
+                pass
+
+            try:
                 from odoo.exceptions import RedirectWarning
 
                 ignored += (RedirectWarning,)
