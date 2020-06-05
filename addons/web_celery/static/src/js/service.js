@@ -93,7 +93,6 @@ odoo.define('web_celery.CeleryService', function (require) {
             // perform any action at all).  For the time being we do the same
             // we have done so far: reload if next_action is undefined or
             // perform the given next_action.
-            var self = this;
             result.then(function(success_message) {
                 if (success_message.next_action) {
                     self.do_action(success_message.next_action);
