@@ -1,4 +1,4 @@
-odoo.define('web_celery.ActionManager', function (require) {
+odoo.define("web_celery.ActionManager", function (require) {
     "use strict";
 
     /**
@@ -19,17 +19,20 @@ odoo.define('web_celery.ActionManager', function (require) {
      *   The client action that
      *
      */
-    var ActionManager = require('web.ActionManager');
+    var ActionManager = require("web.ActionManager");
     ActionManager.include({
-
         _handleAction: function (action, options) {
-            if (action.type == 'web.celery.background_job') {
-		        return this.call('web_celery', 'appendBackgroundJob', action, options);
+            if (action.type == "web.celery.background_job") {
+                return this.call(
+                    "web_celery",
+                    "appendBackgroundJob",
+                    action,
+                    options
+                );
             }
             return this._super.apply(this, arguments);
         },
     });
-
 });
 
 // Local Variables:
