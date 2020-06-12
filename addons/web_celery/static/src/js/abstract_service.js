@@ -54,14 +54,12 @@ odoo.define("web_celery.CeleryAbstractService", function (require) {
                             ? message.result
                             : job.next_action,
                     });
-                    delete this.jobs[channel];
                 } else if (message.status === "failure") {
                     finished.reject({
                         status: "failure",
                         traceback: message.traceback,
                         message: message.message,
                     });
-                    delete this.jobs[channel];
                 } else {
                     // This is normal progress message.
                     this.bus.trigger(channel, message);
@@ -109,6 +107,7 @@ odoo.define("web_celery.CeleryAbstractService", function (require) {
             var self = this;
             result.always(function () {
                 self.call("bus_service", "deleteChannel", channel);
+                delete self.jobs[channel];
             });
             // Register the current job so that the _onNotification knows
             // which deferred to signal.
