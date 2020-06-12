@@ -20,7 +20,6 @@ odoo.define("web_celery.CeleryAbstractService", function (require) {
         init: function () {
             this._super.apply(this, arguments);
             this.jobs = {};
-            this.counter = 0;
             this.bus = new Bus();
         },
 
