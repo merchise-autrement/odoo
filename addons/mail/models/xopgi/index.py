@@ -188,16 +188,6 @@ class MailThreadIndex(AbstractModel):
                     )
                     thread.modified(["thread_index"])
 
-    @api.multi
-    def unlink(self):
-        imd = self.env["ir.model.data"]
-        refs = imd.sudo().search(
-            [("module", "=", MODULE_NAME), ("model", "=", self._name), ("res_id", "in", self.ids)]
-        )
-        if refs:
-            imd.unlink()
-        return super(MailThreadIndex, self).unlink()
-
 
 class MailMessage(Model):
     """Adds a thread_index to messages.
