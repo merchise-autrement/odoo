@@ -12,6 +12,9 @@
 # Pavol Krnáč <pavol.krnac@ekoenergo.sk>, 2019
 # Jan Prokop, 2020
 # Stefan Stieranka <stieranka@itec.sk>, 2020
+# Adam Levrinc <adam.levrinc@26house.com>, 2020
+# Damian brencic <brencicdamian12313@gmail.com>, 2020
+# Alexandra Brencicova <alexandra.brencicova@gmail.com>, 2020
 # 
 msgid ""
 msgstr ""
@@ -19,7 +22,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-10 14:44+0000\n"
 "PO-Revision-Date: 2018-08-24 09:14+0000\n"
-"Last-Translator: Stefan Stieranka <stieranka@itec.sk>, 2020\n"
+"Last-Translator: Alexandra Brencicova <alexandra.brencicova@gmail.com>, 2020\n"
 "Language-Team: Slovak (https://www.transifex.com/odoo/teams/41243/sk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -40,6 +43,15 @@ msgid ""
 "\n"
 "    "
 msgstr ""
+"\n"
+"\n"
+"    科目类型\\会计科目表模板\\增值税\\辅助核算类别\\管理会计凭证簿\\财务会计凭证簿\n"
+"\n"
+"    添加中文省份数据\n"
+"\n"
+"    增加小企业会计科目表\n"
+"\n"
+"    "
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_be_invoice_bba
@@ -8157,7 +8169,7 @@ msgstr "Sprievodca automatickým zlúčením"
 #. module: base
 #: model:ir.model,name:base.model_ir_autovacuum
 msgid "Automatic Vacuum"
-msgstr ""
+msgstr "Automatické Vákuum"
 
 #. module: base
 #: code:addons/base/models/ir_module.py:725
@@ -8422,7 +8434,7 @@ msgstr "Základné vlastnosti"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_ui_view__arch_base
 msgid "Base View Architecture"
-msgstr ""
+msgstr "Architektúra základného pohľadu"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_base_import
@@ -11477,7 +11489,7 @@ msgstr "CHYBA: vadný súbor PDF"
 #: code:addons/base/models/ir_attachment.py:589
 #, python-format
 msgid "ERROR: Invalid list of pages to split. Example: 1,5-9,10"
-msgstr ""
+msgstr "ERROR: Invalidný list strán na rozdelenie. Napríklad: 1,5-9,10"
 
 #. module: base
 #: code:addons/base/models/ir_attachment.py:584
@@ -12708,7 +12720,7 @@ msgstr "Formulár"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_form_editor
 msgid "Form Builder"
-msgstr ""
+msgstr "Tvorca formulárov"
 
 #. module: base
 #: selection:ir.actions.act_url,binding_type:0
@@ -13161,7 +13173,7 @@ msgstr "Google Drive™ integrácia"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_google_map
 msgid "Google Maps"
-msgstr ""
+msgstr "Google Mapy"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_google_spreadsheet
@@ -20026,7 +20038,7 @@ msgstr "Povinný"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_attachment__res_model_name
 msgid "Res Model Name"
-msgstr ""
+msgstr "Názov Modelu Res"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_crm_partner_assign
