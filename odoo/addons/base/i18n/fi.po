@@ -27,8 +27,8 @@
 # Retropikzel, 2019
 # Tuomo Aura <tuomo.aura@web-veistamo.fi>, 2019
 # Martin Trigaux, 2019
-# Veikko Väätäjä <veikko.vaataja@gmail.com>, 2020
 # Juha Torkkeli <juha.torkkeli@labaduu.com>, 2020
+# Veikko Väätäjä <veikko.vaataja@gmail.com>, 2020
 # Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2020
 # 
 msgid ""
@@ -6913,7 +6913,7 @@ msgstr "Toiminnon käyttö"
 #. module: base
 #: model:ir.model,name:base.model_ir_actions_act_window
 msgid "Action Window"
-msgstr ""
+msgstr "Toimintoikkuna"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_actions_act_window_close
@@ -23138,7 +23138,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_uom
 msgid "Units of measure"
-msgstr ""
+msgstr "Mittayksiköt"
 
 #. module: base
 #: code:addons/model.py:143 code:addons/model.py:152 code:addons/model.py:153
