@@ -588,7 +588,10 @@ class RepairLine(models.Model):
             else:
                 self.name = self.product_id.display_name
             if self.product_id.description_sale:
-                self.name += '\n' + self.product_id.description_sale
+                if partner:
+                    self.name += '\n' + self.product_id.with_context(lang=partner.lang).description_sale
+                else:
+                    self.name += '\n' + self.product_id.description_sale
             self.product_uom = self.product_id.uom_id.id
         if self.type != 'remove':
             if partner and self.product_id:
@@ -665,10 +668,16 @@ class RepairFee(models.Model):
                 fp = self.env['account.fiscal.position'].browse(fp_id)
             self.tax_id = fp.map_tax(self.product_id.taxes_id, self.product_id, partner).ids
         if self.product_id:
-            self.name = self.product_id.display_name
+            if partner:
+                self.name = self.product_id.with_context(lang=partner.lang).display_name
+            else:
+                self.name = self.product_id.display_name
             self.product_uom = self.product_id.uom_id.id
             if self.product_id.description_sale:
-                self.name += '\n' + self.product_id.description_sale
+                if partner:
+                    self.name += '\n' + self.product_id.with_context(lang=partner.lang).description_sale
+                else:
+                    self.name += '\n' + self.product_id.description_sale
 
         warning = False
         if not pricelist:
