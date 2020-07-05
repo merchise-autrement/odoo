@@ -249,6 +249,7 @@ msgstr ""
 #, python-format
 msgid "A payment acquirer is required to create a transaction."
 msgstr ""
+"Kötelező megadni egy fizetési szolgáltatót a tranzakció létrehozásához."
 
 #. module: payment
 #: code:addons/payment/models/account_payment.py:55
@@ -502,7 +503,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:payment.account_invoice_view_form_inherit_payment
 #: model_terms:ir.ui.view,arch_db:payment.transaction_form
 msgid "Capture Transaction"
-msgstr ""
+msgstr "Tranzakció rögzítése"
 
 #. module: payment
 #: model:ir.model.fields,help:payment.field_payment_acquirer__capture_manually
@@ -887,13 +888,13 @@ msgstr "Belső szerverhiba"
 #: code:addons/payment/models/account_invoice.py:55
 #, python-format
 msgid "Invalid token found! Token acquirer %s != %s"
-msgstr ""
+msgstr "Érvénytelen token! Token szolgáltató %s != %s"
 
 #. module: payment
 #: code:addons/payment/models/account_invoice.py:58
 #, python-format
 msgid "Invalid token found! Token partner %s != %s"
-msgstr ""
+msgstr "Érvénytelen token! Token partner %s != %s"
 
 #. module: payment
 #: model:ir.model,name:payment.model_account_invoice
