@@ -64,9 +64,7 @@ rpc_response = logging.getLogger(__name__ + '.rpc.response')
 HOUR = 60 * 60
 DAY = 24 * HOUR
 DAYS = lambda d: d * DAY  # noqa: E731
-# 365 days: we put a modification-based tag in the URLs so the cache
-# may be really long lived.
-STATIC_CACHE = DAYS(365)
+STATIC_CACHE = DAYS(7)
 
 COOKIE_MAX_AGE = DAYS(90)
 
@@ -1349,28 +1347,6 @@ class Response(werkzeug.wrappers.Response):
             self.response.append(self.render())
             self.template = None
 
-
-class IgnoreWeaknessEtagsMiddleware(object):
-    '''Middleware that remove weakness mark in etags.
-
-    Useful when serving proxied via Nginx with gzip active for
-    large response.  Nginx automatically weakens etags in gzipped
-    responses.  So the etag that browsers actually get is 'w/"my-etag"'.
-    Afterwards, when the browser requests the same resource with
-    weak etag in If-None-Match, we wouldn't get a match.
-
-    '''
-    def __init__(self, app):
-        self.app = app
-
-    def __call__(self, environ, start_response):
-        # TODO: several etags
-        etags = environ.get('HTTP_IF_NONE_MATCH')
-        if etags and etags.lower().startswith('w/'):
-            environ['HTTP_IF_NONE_MATCH'] = etags[2:]
-        return self.app(environ, start_response)
-
-
 class DisableCacheMiddleware(object):
     def __init__(self, app):
         self.app = app
@@ -1461,14 +1437,7 @@ class Root(object):
 
         if statics:
             _logger.info("HTTP Configuring static files")
-
-        app = IgnoreWeaknessEtagsMiddleware(
-            SharedDataMiddleware(
-                self.dispatch,
-                statics,
-                cache_timeout=STATIC_CACHE
-            )
-        )
+        app = SharedDataMiddleware(self.dispatch, statics, cache_timeout=STATIC_CACHE)
         self.dispatch = DisableCacheMiddleware(app)
 
     def setup_session(self, httprequest):
