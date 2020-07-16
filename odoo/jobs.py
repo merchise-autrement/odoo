@@ -16,7 +16,8 @@ import os
 import contextlib
 import threading
 
-from typing import Iterable, TypeVar
+from dataclasses import dataclass
+from typing import Any, Dict, Iterable, NamedTuple, Optional, Sequence, Tuple, TypeVar
 
 import logging
 
@@ -42,6 +43,7 @@ from celery.exceptions import (
 
 from functools import total_ordering
 
+from odoo import SUPERUSER_ID
 import odoo.tools.config as config
 from odoo.tools.func import lazy_property
 
@@ -176,6 +178,47 @@ class DeferredType(object):
 
 Deferred = DeferredType()
 T = TypeVar("T")
+
+
+def terminate_task(task_id, *args, **kwargs):
+    """Terminates a task which may be in the queue or running.
+
+    Since `task_id` could be publicly sent by HTTP, you must be sure to call
+    this method passing the original arguments used to the issue the task
+    (just be sure not share those args).
+
+    For example, if you created a job with:
+
+       >>> result = Deferred(recordset.some_method, arg1, arg2)
+
+    You SHOULD call `~terminate_task`:func: like this:
+
+       >>> terminate_task(result.id, recordset.some_method, arg1, arg2)
+
+    If the arguments provided don't match the
+
+    If possible, we send a report to notify the cancellation of the task.
+
+    """
+    task_record = TaskRecord.find(task_id)
+    if task_record.matches_signature(args, kwargs):
+        task_record.cancel()
+    else:
+        logger.warning(
+            "Ignoring request to cancel job %s, because the provided arguments don't match", task_id
+        )
+
+
+def terminate_task_with_env(task_id, env):
+    """Terminate a tasks if it matches the user in the environment.
+
+    This is weaker than requiring a whole match of the arguments provided to
+    create the background job but at least requires the user to be the same.
+
+    """
+    task_record = TaskRecord.find(task_id)
+    if task_record.matches_env(env):
+        task_record.cancel()
 
 
 def iter_and_report(
@@ -735,25 +778,154 @@ PG_CONCURRENCY_ERRORS_TO_RETRY = (
 )
 
 
+class TaskSignature(NamedTuple):
+    """The signature of the task."""
+
+    modelname: str
+    ids: Sequence[int]
+    methodname: str
+    dbname: str
+    uid: int
+    args: Tuple[Any, ...]
+    kwargs: Dict[str, Any]
+
+    @classmethod
+    def from_deferred_signature(cls, args, kwargs):
+        from xotl.tools.symbols import Unset
+        from odoo.models import BaseModel
+
+        method = args[0]
+        self = getattr(method, "__self__", Unset)
+        env = getattr(self, "env", Unset)
+        if isinstance(self, BaseModel) and isinstance(env, Environment):
+            cr, uid, context = env.args
+            kwargs["context"] = dict(context)
+            model = self
+            methodname = method.__name__
+            ids = self.ids
+            args = args[1:]
+            return cls(model._name, ids, methodname, cr.dbname, uid, args, kwargs)
+        raise TypeError("Invalid signature for Deferred; args: %r; kwargs: %r" % (args, kwargs))
+
+    def matches_completely(self, args, kwargs):
+        """True if this signature is a match of the arguments to Deferred.
+
+        If the arguments are resolved to the SUPERUSER and all other arguments
+        match, we still return True.
+
+        """
+        signature = self.from_deferred_signature(args, kwargs)
+        return signature == self or signature == self.sudo()
+
+    def matches_env(self, env: Environment):
+        """True if this signature is for the same DB and user.
+
+        If the signature matches the env's DB and the env's user is the
+        SUPERUSER, return True.
+
+        """
+        return self.dbname == env.cr.dbname and (env.uid == SUPERUSER_ID or env.uid == self.uid)
+
+    def sudo(self):
+        "The same task signature for the SUPERUSER."
+        return type(self)(
+            self.modelname,
+            self.ids,
+            self.methodname,
+            self.dbname,
+            SUPERUSER_ID,
+            self.args,
+            self.kwargs,
+        )
+
+
+TASK_SIGNATURE_SIZE = len(TaskSignature.__annotations__)
+
+
+@dataclass
+class TaskRecord:
+    """The request record.
+
+    Provides a simple interface to govern the task.
+
+    :id: The task UID.
+
+    :args: A tuple with the arguments to the task.  In our case this will be
+          ``(modelname, [id, ...], methodname, dbname, uid, method_args,
+          method_kwargs_and_context)``.
+
+    """
+
+    id: str
+    args: Optional[TaskSignature]
+    found: bool
+
+    @classmethod
+    def find(cls, task_id) -> "TaskRecord":
+        """Find the record from celery application control API.
+
+        If the task is not found we simply return record without args.
+
+        """
+
+        def _find():
+            matches = app.control.inspect().query_task(task_id) or {}
+            for worker, data in matches.items():
+                _status, record = data.get(task_id, (None, None))
+                if record is not None:
+                    yield record
+
+        data = next(_find(), None)
+        if data:
+            args = data.get("args", ())
+            if len(args) == TASK_SIGNATURE_SIZE:
+                return cls(task_id, TaskSignature(*args), True)
+            else:
+                return cls(task_id, None, True)
+        else:
+            return cls(task_id, None, False)
+
+    def matches_signature(self, args, kwargs):
+        """Return True if the task matches the signature to Deferred.
+
+        If the task record was not *found* by `find`:meth:, return True.
+
+        """
+        return not self.found or not self.args or self.args.matches_completely(args, kwargs)
+
+    def matches_env(self, env: Environment):
+        """Return true if the task matches the DB and user of the environment.
+
+        If the task record was not *found* by `find`:meth:, return True.
+
+        """
+        return not self.found or not self.args or self.args.matches_env(env)
+
+    def cancel(self):
+        """Broadcast a cancel request for the task.
+
+        Optimistically report the cancellation of the task by the bus.
+
+        """
+        app.control.terminate(self.id)
+        self.report_cancelled()
+
+    def report_cancelled(self):
+        """Report the cancellation of the task by the bus"""
+        if self.args is not None:
+            _report_cancelled.delay(self, self.args.dbname, self.args.uid, self.id)
+
+
 def _extract_signature(args, kwargs):
     """Extract the task' signature and environment.
 
     """
     from xotl.tools.symbols import Unset
-    from odoo.models import BaseModel
 
     method = args[0]
     self = getattr(method, "__self__", Unset)
     env = getattr(self, "env", Unset)
-    if isinstance(self, BaseModel) and isinstance(env, Environment):
-        cr, uid, context = env.args
-        kwargs["context"] = dict(context)
-        model = self
-        methodname = method.__name__
-        ids = self.ids
-        args = args[1:]
-        return (model._name, ids, methodname, cr.dbname, uid, args, kwargs), env
-    raise TypeError("Invalid signature for Deferred; args: %r; kwargs: %r" % (args, kwargs))
+    return TaskSignature.from_deferred_signature(args, kwargs), env
 
 
 Unset = object()
@@ -891,6 +1063,19 @@ def _report_success(self, dbname, uid, job_uuid, result=None):
         logger.exception("Exception while reporting success")
         try:
             raise self.retry(args=(dbname, uid, job_uuid), kwargs=dict(result=result))
+        except MaxRetriesExceededError:
+            logger.exception("Max retries exceeded with reporting success")
+
+
+@app.task(bind=True, max_retries=5, default_retry_delay=0.1, queue=queue("notifications"))
+def _report_cancelled(self, dbname, uid, job_uuid):
+    try:
+        with OdooEnvironment(dbname, uid) as env:
+            _send(get_progress_channel(job_uuid), dict(status="cancelled", result=None), env=env)
+    except Exception:
+        logger.exception("Exception while reporting success")
+        try:
+            raise self.retry(args=(dbname, uid, job_uuid), kwargs={})
         except MaxRetriesExceededError:
             logger.exception("Max retries exceeded with reporting success")
 

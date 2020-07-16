@@ -24,7 +24,7 @@ odoo.define("web_celery.widgets", function (require) {
      * Invalid values are ignored.
      */
     var AbstractProgressBar = Widget.extend({
-        init: function (parent) {
+        init: function () {
             this._super.apply(this, arguments);
             this.title = _t("Working");
             this.message = _t(
@@ -33,6 +33,16 @@ odoo.define("web_celery.widgets", function (require) {
             );
         },
 
+        /**
+         * Update the internal state of the progress bar.  Triggers the event
+         * 'progress_update' so that the UI could reflect the changes.
+         *
+         * @param {int|float} progress The progress value which should be
+         *                             between `valuemin` and `valuemax`
+         * @param {int|float} valuemin The minimal value of the progress
+         * @param {int|float} valuemax The maximal value of the progress
+         * @param {String} message A message to show the user.
+         */
         update: function (progress, valuemin, valuemax, message) {
             if (isOk(progress) && (!this.progress || this.progress < progress))
                 this.progress = progress;
@@ -69,11 +79,25 @@ odoo.define("web_celery.widgets", function (require) {
      *
      */
     var CeleryProgressBar = AbstractProgressBar.extend({
-        init: function (parent, job_uuid) {
+        init: function (_parent, job_uuid, cancellable) {
             this._super.apply(this, arguments);
             this.job_uuid = job_uuid;
+            this.cancellable = cancellable;
         },
 
+        /**
+         * Cancel the background job.
+         *
+         */
+        cancel: function () {
+            this.call("web_celery", "cancelBackgroundJob", this.job_uuid);
+        },
+
+        /**
+         * Attach the widget to the web_celery service so that it can track the
+         * progress and status of the background job.
+         *
+         */
         start: function () {
             // Only subscribe to events when the widget is visible.
             this.call(
@@ -97,6 +121,17 @@ odoo.define("web_celery.widgets", function (require) {
             this._super.apply(this, arguments);
         },
 
+        /**
+         * Handle the status/progress notification from the background job.
+         *
+         * The `message.status` can be 'pending', 'success', 'failure', or
+         * 'cancelled'.
+         *
+         * If it's 'pending', the `message` payload is the progress data.  See
+         * the `update` method.
+         *
+         * @param {Object} message The message comming from the background job
+         */
         on_job_notification: function (message) {
             var status = message.status;
             if (!status || status == "pending") {
@@ -110,10 +145,31 @@ odoo.define("web_celery.widgets", function (require) {
         },
     });
 
+    /**
+     * A basic progress bar widget.
+     *
+     * The default template shows the widget's title, message and progress in
+     * ARIA progressbar:
+     *
+     *     Title
+     *     | . . . . 20%  . . . . .'           |
+     *     message
+     *                                [ Cancel ]
+     *
+     * The cancel button is only shown if the background jobs is cancellable.
+     *
+     * We don't define an interface for sub-classes.  If you need to create a
+     * different progress bar, sub-class from {@link CeleryProgressBar} and
+     * connect to the event 'progress_update'.
+     *
+     */
     var BasicProgressBar = CeleryProgressBar.extend({
         xmlDependencies: ["/web_celery/static/src/xml/templates.xml"],
         template: "CeleryBasicProgressBar",
 
+        events: {
+            "click button[aria-label='Cancel']": "cancel",
+        },
         custom_events: { progress_update: "on_progress_update" },
 
         on_progress_update: function () {
@@ -149,6 +205,9 @@ odoo.define("web_celery.widgets", function (require) {
         },
     });
 
+    /**
+     * A progress bar which takes control of the entire document.
+     */
     var FullScreenProgressBar = BasicProgressBar.extend({
         xmlDependencies: ["/web_celery/static/src/xml/templates.xml"],
         template: "FullScreenProgressBar",

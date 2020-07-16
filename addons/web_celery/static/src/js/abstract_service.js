@@ -10,10 +10,21 @@ odoo.define("web_celery.CeleryAbstractService", function (require) {
         AbstractService = require("web.AbstractService"),
         concurrency = require("web.concurrency");
 
+    var CSRF_TOKEN = require("web.core").csrf_token;
+    var session = require("web.session");
+
     function getProgressChannel(job_uuid) {
         return "celeryapp:" + job_uuid + ":progress";
     }
 
+    /**
+     * Basic implementation of the celery service.
+     *
+     * This services coordinates the background jobs with the UI and the rest of
+     * the system.  The abstract service merely connects with the server to get
+     * updates from the background jobs currently running and dispatch
+     * notifications.
+     */
     var CeleryAbstractService = AbstractService.extend({
         dependencies: ["bus_service"],
 
@@ -23,6 +34,10 @@ odoo.define("web_celery.CeleryAbstractService", function (require) {
             this.bus = new Bus();
         },
 
+        /**
+         * Connects to the bus service so that we can receive notifications from
+         * the server.
+         */
         start: function () {
             var res = this._super.apply(this, arguments);
             this.call(
@@ -60,6 +75,13 @@ odoo.define("web_celery.CeleryAbstractService", function (require) {
                         traceback: message.traceback,
                         message: message.message,
                     });
+                } else if (message.status === "cancelled") {
+                    // We're resolving the deferred without a next_action.
+                    // The next_action is only sensible when the job actually
+                    // finishes.
+                    finished.resolve({
+                        status: "cancelled",
+                    });
                 } else {
                     // This is normal progress message.
                     this.bus.trigger(channel, message);
@@ -67,11 +89,67 @@ odoo.define("web_celery.CeleryAbstractService", function (require) {
             }
         },
 
+        /**
+         * Issue a request to cancel a background job.
+         *
+         * If the background job is not cancellable, nothing happens.  If the
+         * request to the server doesn't fail we assume the job will be
+         * cancelled and resolve the job's status (which may affect the UI).
+         * Further notifications from the server regarding a job which we
+         * cancelled are ignored.
+         *
+         * @param {UID} job_uuid The background job UID.
+         */
+        cancelBackgroundJob: function (job_uuid) {
+            var channel = getProgressChannel(job_uuid);
+            if (this.jobs.hasOwnProperty(channel)) {
+                var job = this.jobs[channel];
+                if (job.cancellable) {
+                    session
+                        .rpc("/web_celery/!cancel/" + job_uuid, {
+                            csrf_token: CSRF_TOKEN,
+                        })
+                        .then(function () {
+                            // The most likely scenario is that we get the Terminated
+                            // error from the server before getting the cancelled
+                            // notification, so let's signal the cancellation
+                            // ourselves.
+                            job.finished.resolve({ status: "cancelled" });
+                        });
+                }
+            }
+        },
+
+        /**
+         * Track a new background job.
+         *
+         * You should call this when the server responds it has issued a new
+         * background job and you want to track its status/progress.
+         *
+         * @param {Object} action The background job action-like record.
+         *
+         * @param {UID} action.uuid  The background job identifier.  This is
+         *        used to keep track and know about the status of the background
+         *        job.
+         *
+         * @param {Object|null} action.next_action  An object describing the
+         *        next action to execute once the background jobs finish
+         *        sucessfully. This is ignored if the 'sucess' status
+         *        notification contains a next action.
+         *
+         * @param {boolean} action.cancellable  Whether this background job can
+         *        be cancelled.
+         *
+         * @param {str|null} action.tag  If the action has a tag run the
+         *        service's code that to process the tag.  See {@link WebCeleryService}.
+         *
+         */
         appendBackgroundJob: function (action) {
             if (action.params.uuid) {
                 var finished = this._addBackgroundJob(
                     action.params.uuid,
-                    action.params.next_action
+                    action.params.next_action,
+                    action.params.cancellable
                 );
                 var tag = action.tag,
                     method = "do_tag_" + tag;
@@ -91,7 +169,7 @@ odoo.define("web_celery.CeleryAbstractService", function (require) {
             this.bus.off(getProgressChannel(job_uuid), obj, fn);
         },
 
-        _addBackgroundJob: function (job_uuid, next_action) {
+        _addBackgroundJob: function (job_uuid, next_action, cancellable) {
             var result = $.Deferred();
             var timer = concurrency.delay(JOB_TIME_LIMIT);
             $.whichever(result, timer).then(function (which) {
@@ -114,6 +192,7 @@ odoo.define("web_celery.CeleryAbstractService", function (require) {
             this.jobs[channel] = {
                 finished: result,
                 next_action: next_action,
+                cancellable: cancellable,
             };
             return result.promise();
         },
