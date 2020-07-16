@@ -6,6 +6,22 @@ odoo.define("web_celery.CeleryService", function (require) {
         widgets = require("web_celery.widgets"),
         FullScreenProgressBar = widgets.FullScreenProgressBar;
 
+    /**
+     * A service for the background celery jobs in the Web Client.
+     *
+     * @extends CeleryAbstractService
+     *
+     * This service connects the server's background jobs responses of
+     * WAIT_FOR_TASK and QUIETLY_WAIT_FOR_TASK with WebClient's UI.
+     *
+     * WAIT_FOR_TASK creates a full-screen progress bar that shows the progress
+     * of the background job.  This type of response can be cancelled.
+     *
+     * QUIETLY_WAIT_FOR_TASK locks the screen with the default RPC spinner,
+     * instead of waiting for an AJAX response we're waiting for the background
+     * job.
+     *
+     */
     var WebCeleryService = CeleryAbstractService.extend({
         appendBackgroundJob: function () {
             this._super.apply(this, arguments);
@@ -70,7 +86,11 @@ odoo.define("web_celery.CeleryService", function (require) {
         },
 
         do_tag_block_with_progress: function (params, finished) {
-            var loading = new FullScreenProgressBar(this, params.uuid);
+            var loading = new FullScreenProgressBar(
+                this,
+                params.uuid,
+                params.cancellable
+            );
             loading.appendTo(this.getParent().$el);
             finished.always(function () {
                 loading.destroy();

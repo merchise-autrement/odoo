@@ -2,7 +2,7 @@
 <templates id="templates" xml:space="preserve">
 
   <t t-name="_ProgressBar">
-    <div class="progress-frame">
+    <div class="progress">
       <t t-if="percent and progress and valuemin and valuemax">
         <div class="progress-bar progress-bar-info progress-bar-striped"
              role="progressbar"
@@ -46,6 +46,9 @@
       <p class='message'>
         <t t-esc='widget.message'/>
       </p>
+      <t t-if="widget.cancellable">
+        <button aria-label="Cancel" class="btn btn-danger pull-right">Cancel</button>
+      </t>
     </div>
   </t>
 
