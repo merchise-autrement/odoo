@@ -96,15 +96,17 @@ odoo.define("web_celery.CeleryAbstractService", function (require) {
          * request to the server doesn't fail we assume the job will be
          * cancelled and resolve the job's status (which may affect the UI).
          * Further notifications from the server regarding a job which we
-         * cancelled are ignored.
+         * cancelled are ignored (unless forced is true).
          *
          * @param {UID} job_uuid The background job UID.
+         * @param {boolean} forced  Force the cancellation of the background job.
+         *
          */
-        cancelBackgroundJob: function (job_uuid) {
+        cancelBackgroundJob: function (job_uuid, forced) {
             var channel = getProgressChannel(job_uuid);
             if (this.jobs.hasOwnProperty(channel)) {
                 var job = this.jobs[channel];
-                if (job.cancellable) {
+                if (job.cancellable || forced) {
                     session
                         .rpc("/web_celery/!cancel/" + job_uuid, {
                             csrf_token: CSRF_TOKEN,
@@ -161,12 +163,41 @@ odoo.define("web_celery.CeleryAbstractService", function (require) {
             }
         },
 
+        /**
+         * Register a callback to get notifications from the background job.
+         *
+         * @param {Object} obj The object that is `this` when running the function `fn`.
+         * @param {UID} job_uuid The job UID
+         * @param {Function} fn The callback function
+         */
         attachJobNotification: function (obj, job_uuid, fn) {
             this.bus.on(getProgressChannel(job_uuid), obj, fn);
         },
 
+        /**
+         * Unregister a notification callback for the background job.
+         *
+         * @param {Object} obj The active object registered to get notifications.
+         * @param {UID} job_uuid The job UID
+         * @param {Function} fn The callback function
+         */
         detachJobNotification: function (obj, job_uuid, fn) {
             this.bus.off(getProgressChannel(job_uuid), obj, fn);
+        },
+
+        /**
+         * Send a cancel request to all background jobs.
+         *
+         */
+        cancelPendingJobs: function () {
+            console.info("Cancelling pending jobs", this.jobs);
+            _.each(
+                this.jobs,
+                function (job) {
+                    this.cancelBackgroundJob(job.uuid, true);
+                },
+                this
+            );
         },
 
         _addBackgroundJob: function (job_uuid, next_action, cancellable) {
@@ -190,6 +221,7 @@ odoo.define("web_celery.CeleryAbstractService", function (require) {
             // Register the current job so that the _onNotification knows
             // which deferred to signal.
             this.jobs[channel] = {
+                uuid: job_uuid,
                 finished: result,
                 next_action: next_action,
                 cancellable: cancellable,
