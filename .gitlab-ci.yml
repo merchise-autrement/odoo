@@ -21,14 +21,7 @@ stages:
       STDOUT=/tmp/odoo.log
       ADDONS=$(find -L addons/ odoo/addons/ -type f -name '__manifest__.py' | while read f; do dirname $f; done | while read d; do basename $d; done | sort -u | egrep -v '^(hw_|l10n_|theme_|auth_ldap$|document_ftp$|base_gengo$|website_gengo$|website_instantclick$|pad$|pad_project$|project_gantt$|note_pad$|pos_cache$|pos_blackbox_be$|test_performance$|google_calendar$)' | xargs | tr " " ",")
       ./odoo-bin -d odoodb --db_host=postgres --db_user=odoodb -i base,$ADDONS --stop-after-init --test-enable --log-level=test --workers=0 --max-cron-threads=0 2>&1 | tee $STDOUT
-      egrep "(At least one test failed when loading the modules.|(ERROR|CRITICAL) odoodb)" $STDOUT
-      code=$?
-      if (($code == 0 || $code == 2)); then
-        CODE=1
-      else
-        CODE=0
-      fi
-      exit $CODE
+      ! egrep "(At least one test failed when loading the modules.|(ERROR|CRITICAL) odoodb)" $STDOUT
 
 
 run all tests in MRs:
