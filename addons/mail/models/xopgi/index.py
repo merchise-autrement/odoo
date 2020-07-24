@@ -31,7 +31,7 @@ from odoo import fields, api
 # DONE LIGHTLY.
 
 
-# TODO: Move this to xoutil ?
+# TODO: Move this to xotl.tools ?
 def generate_reference(search, maxtries=4, start=1, lower=True):
     '''Generates an unused reference.
 
@@ -57,7 +57,7 @@ def generate_reference(search, maxtries=4, start=1, lower=True):
         _TABLE += "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
     def encoder(*uuids):
-        from xoutil.bases import int2str
+        from xotl.tools.bases import int2str
         return ''.join(
             int2str(sum(uuid.fields), _TABLE)
             for uuid in uuids

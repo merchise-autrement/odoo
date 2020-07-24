@@ -20,8 +20,8 @@ from __future__ import (division as _py3_division,
 
 import pytest
 import contextlib
-from xoutil.objects import extract_attrs
-from xoutil.future.collections import opendict
+from xotl.tools.objects import extract_attrs
+from xotl.tools.future.collections import opendict
 
 try:
     from odoo.jobs import (
@@ -221,7 +221,7 @@ def test_closing_a_lone_branch3():
             # Let join perform its closing stuff
             next(state.join)
 
-        # This fails because of the way context managers (xoutil.context)
+        # This fails because of the way context managers (xotl.tools.context)
         # interacts with generators.  Notice that the next test is exactly the
         # same but mirrored (the important part is that izip will initialize
         # join12 before initializing g3), so the counter of g3 will become a
@@ -236,7 +236,7 @@ def test_closing_a_lone_branch3():
 
 
 def test_closing_a_lone_branch4():
-    from xoutil.context import context
+    from xotl.tools.context import context
     assert not context[_UNTIL_TIMEOUT_CONTEXT]
     with complex_tree(mirror=True) as state:
         assert not state.join_timeout
@@ -252,7 +252,7 @@ def test_closing_a_lone_branch4():
 
 @pytest.mark.xfail()
 def test_closing_a_lone_branch5():
-    from xoutil.context import context
+    from xotl.tools.context import context
     assert not context[_UNTIL_TIMEOUT_CONTEXT]
     with complex_tree(mirror=True) as state:
         assert not state.join_timeout

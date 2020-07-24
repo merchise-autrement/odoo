@@ -36,10 +36,10 @@ except ImportError:
 # This module is about logging-only, not wrapping the WSGI application in a
 # middleware, etc.
 
-from xoutil.objects import setdefaultattr
+from xotl.tools.objects import setdefaultattr
 
-from xoutil.symbols import Unset
-from xoutil.symbols import boolean as Logical
+from xotl.tools.symbols import Unset
+from xotl.tools.symbols import boolean as Logical
 
 Bail = Logical('Bail', False)
 del Logical
@@ -238,7 +238,7 @@ def patch_logging(override=False, force=False):
                 tags['db'] = db
 
         def _handle_fingerprint(self, record):
-            from xoutil.names import nameof
+            from xotl.tools.names import nameof
             exc_info = record.exc_info
             if exc_info:
                 _type, value, _tb = exc_info
