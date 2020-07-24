@@ -18,6 +18,6 @@ Configure your own methods with a pricing grid or integrate with carriers for a 
         'data/website_sale_delivery_demo.xml'
     ],
     'qweb': [],
-    'installable': True,
+    'installable': False,
     'auto_install': True,
 }

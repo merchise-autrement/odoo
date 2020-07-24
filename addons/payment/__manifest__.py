@@ -24,7 +24,8 @@
         'security/ir.model.access.csv',
         'security/payment_security.xml',
     ],
-    'installable': True,
+    # None of the payments available apply to us right now.
+    'installable': False,
     'auto_install': True,
     'uninstall_hook': 'uninstall_hook',
 }

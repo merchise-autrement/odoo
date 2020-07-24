@@ -38,7 +38,7 @@ class TestWebsiteResetViews(odoo.tests.HttpCase):
         self.View = self.env['ir.ui.view']
         self.test_view = self.Website.viewref('test_website.test_view')
 
-    @mute_logger('odoo.addons.website.models.ir_http')
+    @mute_logger('odoo.addons.website.models.ir_http', 'odoo.addons.base.models.qweb')
     def test_01_reset_specific_page_view(self):
         self.test_page_view = self.Website.viewref('test_website.test_page_view')
         total_views = self.View.search_count([('type', '=', 'qweb')])
@@ -47,7 +47,7 @@ class TestWebsiteResetViews(odoo.tests.HttpCase):
         self.assertEqual(total_views + 1, self.View.search_count([('type', '=', 'qweb')]), "Missing COW view")
         self.fix_it('/test_page_view')
 
-    @mute_logger('odoo.addons.website.models.ir_http')
+    @mute_logger('odoo.addons.website.models.ir_http', 'odoo.addons.base.models.qweb')
     def test_02_reset_specific_view_controller(self):
         total_views = self.View.search_count([('type', '=', 'qweb')])
         # Trigger COW then break the QWEB XML on it
@@ -56,7 +56,7 @@ class TestWebsiteResetViews(odoo.tests.HttpCase):
         self.assertEqual(total_views + 1, self.View.search_count([('type', '=', 'qweb')]), "Missing COW view")
         self.fix_it('/test_view')
 
-    @mute_logger('odoo.addons.website.models.ir_http')
+    @mute_logger('odoo.addons.website.models.ir_http', 'odoo.addons.base.models.qweb')
     def test_03_reset_specific_view_controller_t_called(self):
         self.test_view_to_be_t_called = self.Website.viewref('test_website.test_view_to_be_t_called')
 
@@ -67,7 +67,7 @@ class TestWebsiteResetViews(odoo.tests.HttpCase):
         self.assertEqual(total_views + 1, self.View.search_count([('type', '=', 'qweb')]), "Missing COW view")
         self.fix_it('/test_view')
 
-    @mute_logger('odoo.addons.website.models.ir_http')
+    @mute_logger('odoo.addons.website.models.ir_http', 'odoo.addons.base.models.qweb')
     def test_04_reset_specific_view_controller_inherit(self):
         self.test_view_child_broken = self.Website.viewref('test_website.test_view_child_broken')
 
@@ -87,7 +87,7 @@ class TestWebsiteResetViews(odoo.tests.HttpCase):
     #     self.fix_it('/test_view')
 
     # also mute ir.ui.view as `get_view_id()` will raise "Could not find view object with xml_id 'not.exist'""
-    @mute_logger('odoo.addons.website.models.ir_http', 'odoo.addons.website.models.ir_ui_view')
+    @mute_logger('odoo.addons.website.models.ir_http', 'odoo.addons.website.models.ir_ui_view', 'odoo.addons.base.models.qweb')
     def test_06_reset_specific_view_controller_inexisting_template(self):
         total_views = self.View.search_count([('type', '=', 'qweb')])
         # Trigger COW then break the QWEB XML on it
@@ -95,7 +95,7 @@ class TestWebsiteResetViews(odoo.tests.HttpCase):
         self.assertEqual(total_views + 1, self.View.search_count([('type', '=', 'qweb')]), "Missing COW view (2)")
         self.fix_it('/test_view')
 
-    @mute_logger('odoo.addons.website.models.ir_http')
+    @mute_logger('odoo.addons.website.models.ir_http', 'odoo.addons.base.models.qweb')
     def test_07_reset_page_view_complete_flow(self):
         self.do_test('test_reset_page_view_complete_flow_part1')
         self.fix_it('/test_page_view')

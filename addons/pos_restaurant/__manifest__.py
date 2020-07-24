@@ -35,6 +35,6 @@ This module adds several restaurant features to the Point of Sale:
     'demo': [
         'data/pos_restaurant_demo.xml',
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
 }

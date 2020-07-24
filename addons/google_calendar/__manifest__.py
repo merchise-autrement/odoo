@@ -17,6 +17,6 @@
         'views/google_calendar_templates.xml',
     ],
     'demo': [],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
 }

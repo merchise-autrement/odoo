@@ -1969,15 +1969,28 @@ class M2MProxy(X2MProxy, collections.Sequence):
 def record_to_values(fields, record):
     r = {}
     for f, descr in fields.items():
-        v = record[f]
+        try:
+            v = record[f]
+        except KeyError:
+            # merchise: Try to fallback to read for virtual fields.  This
+            # won't use the cache, but that's OK if `f` is a virtual field, it
+            # won't be in the cache and the record's read would probably do
+            # the right thing.
+            _values = record.read([])
+            v = _values[0][f]
+            # In the case of relations, read returns just the ids, so let's
+            # get the records.
+            if descr['type'] in ('many2one', 'many2many', 'one2many'):
+                model = descr['relation']
+                v = record.env[model].browse(v)
         if descr['type'] == 'many2one':
             assert v._name == descr['relation']
             v = v.id
         elif descr['type'] == 'many2many':
             assert v._name == descr['relation']
-            v = [(6, 0, v.ids)]
+            v = [(6, 0, v.ids)]  # CREATE_RELATED
         elif descr['type'] == 'one2many':
-            v = [(1, r.id, None) for r in v]
+            v = [(1, r.id, None) for r in v]  # UPDATE_RELATED
         elif descr['type'] == 'datetime' and isinstance(v, datetime):
             v = odoo.fields.Datetime.to_string(v)
         elif descr['type'] == 'date' and isinstance(v, date):
@@ -2073,7 +2086,7 @@ class TagsSelector(object):
 
         test_module = getattr(test, 'test_module', None)
         test_class = getattr(test, 'test_class', None)
-        test_tags = test.test_tags | {test_module}  # module as test_tags deprecated, keep for retrocompatibility, 
+        test_tags = test.test_tags | {test_module}  # module as test_tags deprecated, keep for retrocompatibility,
         test_method = getattr(test, '_testMethodName', None)
 
         def _is_matching(test_filter):

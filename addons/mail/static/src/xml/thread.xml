@@ -244,6 +244,7 @@
     <t t-name="mail.widget.Thread.Messages">
         <t t-set="current_day" t-value="0"/>
         <t t-foreach="messages" t-as="message">
+          <t t-if="message &amp;&amp; message.getDocumentName &amp;&amp; typeof(message.getDocumentName) == 'function' &amp;&amp; message.getDocumentName() !== false">
             <div t-if="current_day !== message.getDateDay()" class="o_thread_date_separator">
                 <span class="o_thread_date">
                     <t t-esc="message.getDateDay()"/>
@@ -252,6 +253,7 @@
             </div>
 
             <t t-call="mail.widget.Thread.Message"/>
+          </t>
         </t>
     </t>
 

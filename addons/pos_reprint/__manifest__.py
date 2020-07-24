@@ -20,5 +20,5 @@ Allow cashier to reprint receipts
     'qweb': [
         'static/src/xml/reprint.xml',
     ],
-    'installable': True,
+    'installable': False,
 }

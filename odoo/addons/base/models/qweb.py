@@ -318,9 +318,10 @@ class QWeb(object):
             _options['ast_calls'] = []
             def_name = self._create_def(_options, body, prefix='template_%s' % name.replace('.', '_'))
             _options['ast_calls'] += ast_calls
-        except QWebException as e:
-            raise e
+        except QWebException:
+            raise
         except Exception as e:
+            _logger.exception("Unhandled exception while generating QWeb AST")
             path = _options['last_path_node']
             element, document = self.get_template(template, options)
             node = element.getroottree().xpath(path) if ':' not in path else None
@@ -339,9 +340,10 @@ class QWeb(object):
             ns = {}
             unsafe_eval(compile(astmod, '<template>', 'exec'), ns)
             compiled = ns[def_name]
-        except QWebException as e:
-            raise e
+        except QWebException:
+            raise
         except Exception as e:
+            _logger.exception("Unhandled exception while compiling QWeb template")
             path = _options['last_path_node']
             element, document = self.get_template(template, options)
             node = element.getroottree().xpath(path)
@@ -355,9 +357,10 @@ class QWeb(object):
             new.update(values)
             try:
                 return compiled(self, append, new, options, log)
-            except (QWebException, TransactionRollbackError) as e:
-                raise e
+            except (QWebException, TransactionRollbackError):
+                raise
             except Exception as e:
+                _logger.exception("Unhandled exception while rendering QWeb template")
                 path = log['last_path_node']
                 element, document = self.get_template(template, options)
                 node = element.getroottree().xpath(path) if ':' not in path else None
@@ -381,9 +384,10 @@ class QWeb(object):
         else:
             try:
                 document = options.get('load', self.load)(template, options)
-            except QWebException as e:
-                raise e
-            except Exception as e:
+            except QWebException:
+                raise
+            except Exception:
+                _logger.exception("Could not load QWeb template")
                 raise QWebException("load could not load template", name=template)
 
         if document is not None:

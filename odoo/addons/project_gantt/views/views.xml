@@ -1,16 +1,16 @@
 <odoo>
-  <record id="project.view_task_gantt" model="ir.ui.view">
+  <record id="project_gantt.view_task_gantt" model="ir.ui.view">
     <field name="name">project.task.gantt</field>
     <field name="model">project.task</field>
     <field name="arch" type="xml">
-      <gantt date_start="date_start" date_stop="date_end"
+      <gantt date_start="date_start" date_stop="date_deadline"
              progress="progress" string="Tasks"
              default_group_by="project_id">
       </gantt>
     </field>
   </record>
 
-  <record id="project.view_project_project_gantt" model="ir.ui.view">
+  <record id="project_gantt.view_project_project_gantt" model="ir.ui.view">
     <field name="name">project.project.gantt</field>
     <field name="model">project.project</field>
     <field name="arch" type="xml">
