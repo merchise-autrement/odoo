@@ -123,7 +123,9 @@ class MailThreadIndex(AbstractModel):
         """
         assert self._name != "mail.thread"
         params = dict(
-            target=target_thread.id, module=MODULE_NAME, previous=tuple(previous_threads.ids)
+            target=target_thread.id,
+            module=MODULE_NAME,
+            previous=tuple(previous_threads.ids),
         )
         sets = "res_id=%(target)s"
         if samedomain:

@@ -16,13 +16,6 @@ To configure, simply set the global `conf`:obj: dictionary and call
 `patch_logging`:func:.
 
 """
-
-from __future__ import (
-    division as _py3_division,
-    print_function as _py3_print,
-    absolute_import as _py3_abs_import,
-)
-
 import os
 import raven
 

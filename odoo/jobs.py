@@ -372,7 +372,7 @@ def until_timeout(iterator: Iterable[T], on_timeout=None) -> Iterable[T]:
 _UNTIL_TIMEOUT_CONTEXT = object()
 
 
-# TODO (med, manu):  Should we have this in xoutil?
+# TODO (med, manu):  Should we have this in xotl.tools?
 @total_ordering
 class EventCounter(object):
     """A simple counter of an event.
@@ -475,16 +475,11 @@ class EventCounter(object):
     __ror__ = __or__
 
     def __repr__(self):
-        from xotl.tools.string import safe_str
-
-        if self.name:
-            name = safe_str(self.name)
-        else:
-            name = super(EventCounter, self).__repr__()[1:-1]
+        name = self.name or super(EventCounter, self).__repr__()[1:-1]
         if self:
-            return "<**%s**>" % name
+            return f'<**{name}**>'
         else:
-            return "<%s>" % name
+            return f'<{name}>'
 
 
 class _WrappedCounter(EventCounter):
