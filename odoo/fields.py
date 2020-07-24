@@ -746,8 +746,8 @@ class Field(MetaField('DummyField', (object,), {})):
         for model, field, path in self.resolve_deps(model):
             if self.store and not field.store:
                 _logger.debug(
-                    "Field %s depends on non-stored field %s, this operation is sub-optimal"
-                    % (self, field)
+                    "Field %s (%s) depends on non-stored field %s, this operation is sub-optimal",
+                    self, model, field
                 )
             if field is not self:
                 path_str = None if path is None else ('.'.join(path) or 'id')
@@ -2006,9 +2006,6 @@ class Selection(Field):
         raise ValueError("Wrong value for %s: %r" % (self, value))
 
     def convert_to_export(self, value, record):
-        if not isinstance(self.selection, list):
-            # FIXME: this reproduces an existing buggy behavior!
-            return value if value else ''
         for item in self._description_selection(record.env):
             if item[0] == value:
                 return item[1]
@@ -2887,9 +2884,9 @@ class Id(Field):
         # the code below is written to make record.id as quick as possible
         ids = record._ids
         size = len(ids)
-        if size is 0:
+        if size == 0:
             return False
-        elif size is 1:
+        elif size == 1:
             return ids[0]
         raise ValueError("Expected singleton: %s" % record)
 

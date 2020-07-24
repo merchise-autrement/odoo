@@ -12,7 +12,7 @@ from lxml.builder import E
 from odoo.modules import get_module_resource
 from odoo.tests.common import TransactionCase
 from odoo.addons.base.models.qweb import QWebException
-from odoo.tools import misc, ustr
+from odoo.tools import misc, ustr, mute_logger
 
 
 class TestQWebTField(TransactionCase):
@@ -52,12 +52,14 @@ class TestQWebTField(TransactionCase):
             )),
         )
 
+    @mute_logger("odoo.addons.base.models.qweb")
     def test_reject_crummy_tags(self):
         field = etree.Element('td', {'t-field': u'company.name'})
 
         with self.assertRaisesRegexp(QWebException, r'^RTE widgets do not work correctly'):
             self.engine.render(field, {'company': None})
 
+    @mute_logger("odoo.addons.base.models.qweb")
     def test_reject_t_tag(self):
         field = etree.Element('t', {'t-field': u'company.name'})
 
@@ -477,6 +479,7 @@ class TestQWebNS(TransactionCase):
             expected_result
         )
 
+    @mute_logger("odoo.addons.base.models.qweb")
     def test_render_dynamic_xml_with_code_error(self):
         """ Test that, when rendering a template containing a namespaced node
             that evaluates code with errors, the proper exception is raised

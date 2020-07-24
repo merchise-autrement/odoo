@@ -12,7 +12,7 @@
         'views/payment_paypal_templates.xml',
         'data/payment_acquirer_data.xml',
     ],
-    'installable': True,
+    'installable': False,
     'post_init_hook': 'create_missing_journal_for_acquirers',
     'uninstall_hook': 'uninstall_hook',
 }

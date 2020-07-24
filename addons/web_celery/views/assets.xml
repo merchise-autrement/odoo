@@ -5,8 +5,12 @@
               name="web_celery_assets"
               inherit_id="web.assets_backend">
       <xpath expr="." position="inside">
-        <link rel="stylesheet" href="/web_celery/static/src/css/web_celery.css"/>
-        <script src="/web_celery/static/src/js/celery.js"></script>
+        <link rel="stylesheet" type="text/scss"
+              href="/web_celery/static/src/scss/web_celery.scss"/>
+        <script src="/web_celery/static/src/js/widgets.js"></script>
+        <script src="/web_celery/static/src/js/abstract_service.js"></script>
+        <script src="/web_celery/static/src/js/service.js"></script>
+        <script src="/web_celery/static/src/js/action_manager.js"></script>
       </xpath>
     </template>
   </data>

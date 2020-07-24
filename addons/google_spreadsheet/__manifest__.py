@@ -18,6 +18,6 @@ The module adds the possibility to display data from Odoo in Google Spreadsheets
     ],
     'qweb': ['static/src/xml/*.xml'],
     'demo': [],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
 }

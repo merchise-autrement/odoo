@@ -24,39 +24,38 @@
     </div>
   </t>
 
-  <t t-name="BackgroundJobProgress">
-    <!-- Needs javascript to complete the aria-* attributes since they must not
-         be enforced in some cases (e.g no progress value is known.) -->
-    <div class="modal background-job-dialog"
-         tabindex="-1"
-         data-backdrop="static">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h3 class="modal-title"><t t-raw="widget.title"/></h3>
-          </div> <!-- header -->
-          <div class="modal-body">
-            <t t-call="_ProgressBar">
-              <t t-if='widget.progress'>
-                <t t-set='progress' t-value='widget.progress'/>
-              </t>
-              <t t-if='widget.valuemin'>
-                <t t-set='valuemin' t-value='widget.valuemin'/>
-              </t>
-              <t t-if='widget.valuemax'>
-                <t t-set='valuemax' t-value='widget.valuemax'/>
-              </t>
-              <t t-if='widget.percent'>
-                <t t-set='percent' t-value='widget.percent'/>
-              </t>
-            </t>
-            <p class='message'>
-              <t t-esc='widget.message'/>
-            </p>
-          </div> <!-- body -->
-        </div> <!-- content -->
-      </div> <!-- modal-dialog -->
-    </div> <!-- modal -->
+  <t t-name="CeleryBasicProgressBar">
+    <div class="progress-bar-container">
+      <t t-if="widget.title">
+        <h3 class="modal-title"><t t-raw="widget.title"/></h3>
+      </t>
+      <t t-call="_ProgressBar">
+        <t t-if='widget.progress'>
+          <t t-set='progress' t-value='widget.progress'/>
+        </t>
+        <t t-if='widget.valuemin'>
+          <t t-set='valuemin' t-value='widget.valuemin'/>
+        </t>
+        <t t-if='widget.valuemax'>
+          <t t-set='valuemax' t-value='widget.valuemax'/>
+        </t>
+        <t t-if='widget.percent'>
+          <t t-set='percent' t-value='widget.percent'/>
+        </t>
+      </t>
+      <p class='message'>
+        <t t-esc='widget.message'/>
+      </p>
+      <t t-if="widget.cancellable">
+        <button aria-label="Cancel" class="btn btn-danger pull-right">Cancel</button>
+      </t>
+    </div>
+  </t>
+
+  <t t-name="FullScreenProgressBar">
+    <div class="full-screen-container">
+      <t t-call="CeleryBasicProgressBar"/>
+    </div>
   </t>
 
 </templates>

@@ -37,6 +37,6 @@ following:
     'qweb': [
         'static/src/xml/pos_mercury.xml',
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
 }

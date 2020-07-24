@@ -5,7 +5,7 @@
     'name': 'Google Drive™ integration',
     'version': '0.2',
     'category': 'Extra Tools',
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'data': [
         'security/ir.model.access.csv',

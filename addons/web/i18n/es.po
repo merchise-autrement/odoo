@@ -1010,7 +1010,7 @@ msgstr "Crear"
 #: code:addons/web/static/src/js/views/form/form_controller.js:616
 #, python-format
 msgid "Create "
-msgstr "Crear"
+msgstr "Crear "
 
 #. module: web
 #. openerp-web

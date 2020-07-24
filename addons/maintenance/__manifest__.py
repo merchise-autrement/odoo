@@ -21,6 +21,6 @@
         'data/maintenance_cron.xml',
     ],
     'demo': ['data/maintenance_demo.xml'],
-    'installable': True,
+    'installable': False,
     'application': True,
 }

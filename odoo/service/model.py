@@ -16,7 +16,7 @@ from odoo.tools.translate import _
 from . import security
 from ..tools import traverse_containers, lazy
 
-from xoutil.future.codecs import safe_encode
+from xotl.tools.future.codecs import safe_encode
 
 
 _logger = logging.getLogger(__name__)

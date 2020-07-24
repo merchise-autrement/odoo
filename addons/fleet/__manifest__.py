@@ -43,6 +43,6 @@ Main Features
 
     'demo': ['data/fleet_demo.xml'],
 
-    'installable': True,
+    'installable': False,
     'application': True,
 }

@@ -12,7 +12,7 @@
         'views/payment_transfer_templates.xml',
         'data/payment_acquirer_data.xml',
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': True,
     'post_init_hook': 'create_missing_journal_for_acquirers',
     'uninstall_hook': 'uninstall_hook',

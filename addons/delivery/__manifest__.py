@@ -30,5 +30,5 @@ invoices from picking, the system is able to add and compute the shipping line.
         'views/assets.xml',
     ],
     'demo': ['data/delivery_demo.xml'],
-    'installable': True,
+    'installable': False,
 }

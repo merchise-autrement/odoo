@@ -86,7 +86,12 @@ class PortalAccount(CustomerPortal):
             return self._show_report(model=invoice_sudo, report_type=report_type, report_ref='account.account_invoices', download=download)
 
         values = self._invoice_get_page_view_values(invoice_sudo, access_token, **kw)
-        PaymentProcessing.remove_payment_transaction(invoice_sudo.transaction_ids)
+        try:
+            PaymentProcessing.remove_payment_transaction(invoice_sudo.transaction_ids)
+        except AttributeError:
+            # 'account' does not depend on 'payment', yet the field
+            # 'transaction_ids' of invoices is defined in 'payment'.
+            pass
         return request.render("account.portal_invoice_page", values)
 
     # ------------------------------------------------------------

@@ -31,6 +31,6 @@ this event.
         'wizard/event_edit_registration.xml',
     ],
     'demo': ['data/event_demo.xml'],
-    'installable': True,
+    'installable': False,
     'auto_install': True
 }

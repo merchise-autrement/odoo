@@ -822,7 +822,7 @@ var Model = Class.extend({
     },
     call_button: function (method, args) {
         pyUtils.ensure_evaluated(args, {});
-        return session.rpc('/web/dataset/call_button', {
+        return session.rpc('/web/dataset/call_button?__model__='+this.name+'&__method__='+method, {
             model: this.name,
             method: method,
             // Should not be necessary anymore. Integrate remote in this?

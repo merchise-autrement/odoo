@@ -262,7 +262,6 @@ class Http(models.AbstractModel):
             with registry(request.env.cr.dbname).cursor() as cr:
                 env = api.Environment(cr, request.uid, request.env.context)
                 if code == 500:
-                    logger.error("500 Internal Server Error:\n\n%s", values['traceback'])
                     View = env["ir.ui.view"]
                     values['views'] = View
                     if 'qweb_exception' in values:

@@ -209,7 +209,7 @@ class MergePartnerAutomatic(models.TransientModel):
                 # unknown model or field => skip
                 continue
 
-            if field.compute is not None:
+            if field.compute is not None or not isinstance(Model, models.Model):
                 continue
 
             for partner in src_partners:

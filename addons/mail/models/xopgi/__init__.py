@@ -11,13 +11,12 @@ THREAD_ROOT = -1
 
 # Changes the name of the message when the record name changes.
 class MailThreadName(AbstractModel):
-    _name = 'mail.thread'
-    _inherit = _name
+    _inherit = "mail.thread"
 
     @api.multi
     def write(self, vals):
         res = super(MailThreadName, self).write(vals)
-        name_field = self._rec_name or 'name'
+        name_field = self._rec_name or "name"
         if name_field in vals:
             for thread in self:
                 name = getattr(thread, name_field)

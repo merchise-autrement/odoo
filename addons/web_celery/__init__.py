@@ -6,8 +6,7 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-
-'''Adds facilities to request backgrounds jobs and check for their status.
+"""Adds facilities to request backgrounds jobs and check for their status.
 
 Features:
 
@@ -15,17 +14,19 @@ Features:
 
 - Replaces the install button of a module for a background job.
 
-'''
+"""
+import time
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
+import odoo
+from odoo import _, api, models, http
+from odoo.jobs import Deferred, CELERY_JOB, report_progress, terminate_task_with_env
+from odoo.tools import config
 
-from odoo import models, api, _
+from xotl.tools.context import context
 
 
 def QUIETLY_WAIT_FOR_TASK(job, next_action=None):
-    '''The client action that waits quietly for a background job to complete.
+    """The client action that waits quietly for a background job to complete.
 
     In this context *quietly* means just displaying the usual AJAX spinner.
 
@@ -39,20 +40,19 @@ def QUIETLY_WAIT_FOR_TASK(job, next_action=None):
     .. warning:: Reloading after waiting for a background job will make the UI
                  to wait again for a job that's already finished and the UI
                  will stale.
-    '''
-    return dict(
-        type='ir.actions.client',
-        tag='quietly_wait_for_background_job',
-        pushState=False,
-        params=dict(
-            uuid=job.id,
-            next_action=next_action,
+    """
+    if job is not None:
+        return dict(
+            type="web.celery.background_job",
+            tag="block_no_progress",
+            params=dict(uuid=job.id, next_action=next_action),
         )
-    )
+    else:
+        return CLOSE_FEEDBACK
 
 
-def WAIT_FOR_TASK(job, next_action=None):
-    '''The client action for waiting for a background job to complete.
+def WAIT_FOR_TASK(job, next_action=None, cancellable=False):
+    """The client action for waiting for a background job to complete.
 
     :param job:  The AsyncResult that represents the background job.
     :type job:  Any type compatible with celery's AsyncResult.
@@ -61,20 +61,21 @@ def WAIT_FOR_TASK(job, next_action=None):
                         perform.  If None the background job is expected to
                         have returned a dictionary with the action to perform.
 
+    :param cancellable: If True the user could cancel the background job.
+
     .. warning:: Reloading after waiting for a background job will make the UI
                  to wait again for a job that's already finished and the UI
                  will stale.
 
-    '''
-    return dict(
-        type='ir.actions.client',
-        tag='wait_for_background_job',
-        pushState=False,
-        params=dict(
-            uuid=job.id,
-            next_action=next_action,
+    """
+    if job is not None:
+        return dict(
+            type="web.celery.background_job",
+            tag="block_with_progress",
+            params=dict(uuid=job.id, next_action=next_action, cancellable=cancellable),
         )
-    )
+    else:
+        return CLOSE_FEEDBACK
 
 
 # The client action for closing the feedback mechanism we're using to show the
@@ -93,19 +94,13 @@ CLOSE_PROGRESS_BAR = CLOSE_FEEDBACK
 # your own methods and call them from the UI.
 #
 class Module(models.Model):
-    _inherit = 'ir.module.module'
+    _inherit = "ir.module.module"
 
     @api.multi
     def button_immediate_install(self):
-        import time
-        import odoo
-        import odoo.tools.config as config
-        from odoo.jobs import CELERY_JOB, report_progress, Deferred
-        from xoutil.context import context
-        if CELERY_JOB in context or not config.get('dev_mode') or not odoo.multi_process:
+        if CELERY_JOB in context or not config.get("dev_mode") or not odoo.multi_process:
             report_progress(
-                message=_('Installing has begun, wait for a minute '
-                          'or two to finish.'),
+                message=_("Installation has begun, wait for a minute or two to finish."),
                 progress=0,
                 valuemin=0,
                 valuemax=100,
@@ -114,13 +109,17 @@ class Module(models.Model):
                 report_progress(progress=progress)
                 time.sleep(0.86)
             res = super(Module, self).button_immediate_install()
-            self.env.cr.commit()
             for progress in range(progress, 101, 4):
                 report_progress(progress=progress)
                 time.sleep(0.26)
             report_progress(progress=100)
             return res
         else:
-            return WAIT_FOR_TASK(
-                Deferred(self.button_immediate_install)
-            )
+            return WAIT_FOR_TASK(Deferred(self.button_immediate_install))
+
+
+class CeleryController(http.Controller):
+    @http.route("/web_celery/!cancel/<uuid:identifier>", auth="user", type="json", methods=["POST"])
+    def cancel_job_uid(self, identifier=None, **post):
+        if identifier:
+            terminate_task_with_env(identifier, http.request.env)
