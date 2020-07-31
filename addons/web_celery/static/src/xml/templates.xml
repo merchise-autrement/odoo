@@ -47,7 +47,10 @@
         <t t-esc='widget.message'/>
       </p>
       <t t-if="widget.cancellable">
-        <button aria-label="Cancel" class="btn btn-danger pull-right">Cancel</button>
+        <button name="cancel"
+                type="button"
+                aria-label="Cancel"
+                class="btn btn-danger pull-right">Cancel</button>
       </t>
     </div>
   </t>
