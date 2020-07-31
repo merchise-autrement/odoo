@@ -17,6 +17,7 @@ import contextlib
 import threading
 
 from dataclasses import dataclass
+from time import monotonic
 from typing import Any, Dict, Iterable, NamedTuple, Optional, Sequence, Tuple, TypeVar
 
 import logging
@@ -235,9 +236,9 @@ def iter_and_report(
     Report progress is disabled if `valuemax` is not a positive integral
     value.
 
-    `report_rate` regulates the rate at which reports are issued: Reports are
-    issued only when then progress is an integral multiple of `rate` (or when
-    it's zero).
+    `report_rate` regulates the rate at which reports are issued: It can be
+    the result of calling `ReportRate`, or it can be an integer (with is
+    equivalent to ``ReportRate(n)``).
 
     When the `iterator` is fully consumed, despite the value of `report_rate`,
     we issue a final report making progress=valuemax (i.e. 100%).
@@ -252,12 +253,16 @@ def iter_and_report(
     message template.
 
     """
-    if not all(isinstance(x, int) for x in (valuemax, report_rate, start)):
-        raise TypeError("valuemax, start and step must be integers")
+    if not all(isinstance(x, int) for x in (valuemax, start)):
+        raise TypeError("valuemax, and start must be integers")
     if not isinstance(messagetmpl, str):
         raise TypeError("messagetmpl must a string")
+    if not isinstance(report_rate, (int, ReportRate)):
+        raise TypeError("report_rate must be an integer or a ReportRate")
+    if not isinstance(report_rate, ReportRate):
+        report_rate = ReportRate(report_rate)
     for progress, x in enumerate(iterator, start):
-        if valuemax and progress % report_rate == 0:
+        if valuemax and report_rate.tick():
             report_progress(
                 message=messagetmpl.format(progress=progress, valuemax=valuemax),
                 progress=progress,
@@ -267,8 +272,76 @@ def iter_and_report(
         msg = yield x
         if msg and isinstance(msg, str):
             messagetmpl = msg
-    if valuemax and valuemax % report_rate != 0:
+    if valuemax and valuemax % report_rate.minrate != 0:
         report_progress(progress=progress)
+
+
+@dataclass(init=False)
+class ReportRate:
+    """A fixed or variable reporting rate.
+
+    You should call `tick` each time an item is produced.  It returns True if
+    you should issue a report, and False otherwise.
+
+    The following table summarizes when a report is should be emitted::
+
+                              ticks < min |  min <= ticks < max  |  max <= ticks
+       elapsed < minwait          No      |          No          |      No
+       min <= elapsed < max       No      |          No          |      Yes
+       max <= elapsed             No      |          Yes         |      Yes
+
+    `ticks` is the amount of ticks since the last report, and `elapsed` is the
+    time (in seconds) past since.
+
+    """
+
+    __slots__ = (
+        "minrate",
+        "maxrate",
+        "minwait",
+        "maxwait",
+        "_ticks",
+        "_last_report",
+        "_last_report_time",
+    )
+    minrate: int
+    maxrate: Optional[int]
+    minwait: float
+    maxwait: float
+
+    def __init__(
+        self, minrate: int, maxrate: int = None, minwait: float = 0, maxwait: float = 0
+    ) -> None:
+        self.minrate = minrate
+        self.maxrate = maxrate
+        self.minwait = minwait
+        self.maxwait = maxwait
+        self._ticks = 0
+        self._last_report = None
+        self._last_report_time = None
+
+    def tick(self) -> bool:
+        """Tick the internal counter.  Return True is a report should be issued."""
+        self._ticks += 1
+        now = monotonic()
+        if self._last_report is None:
+            result = self._ticks >= self.minrate
+        else:
+            assert self._last_report_time is not None
+            ticks_since_report = self._ticks - self._last_report
+            elapsed = now - self._last_report_time
+            # NB: If both minwait = maxwait = 0, this reduces to the ticks >
+            # minrate.
+            if self.minwait <= elapsed < self.maxwait:
+                result = self.maxrate is None or ticks_since_report >= self.maxrate
+            elif self.maxwait <= elapsed:
+                result = ticks_since_report >= self.minrate
+            else:
+                result = False
+        if result:
+            self._last_report = self._ticks
+            self._last_report_time = now
+        return result
 
 
 def iter_at_savepoint(self, items: Iterable[T]) -> Iterable[T]:
@@ -477,9 +550,9 @@ class EventCounter(object):
     def __repr__(self):
         name = self.name or super(EventCounter, self).__repr__()[1:-1]
         if self:
-            return f'<**{name}**>'
+            return f"<**{name}**>"
         else:
-            return f'<{name}>'
+            return f"<{name}>"
 
 
 class _WrappedCounter(EventCounter):
@@ -1245,3 +1318,8 @@ if not getattr(BaseTask, "Request", None):
 
 def _running_tests(env):
     return getattr(threading.currentThread(), "testing", False) or env.registry.in_test_mode()
+
+
+# Local Variables:
+# fill-column: 78
+# End:
