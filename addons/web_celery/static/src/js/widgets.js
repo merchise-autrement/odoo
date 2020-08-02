@@ -168,7 +168,7 @@ odoo.define("web_celery.widgets", function (require) {
         template: "CeleryBasicProgressBar",
 
         events: {
-            "click button[aria-label='Cancel']": "cancel",
+            "click button[name='cancel']": "cancel",
         },
         custom_events: { progress_update: "on_progress_update" },
 
