@@ -32,8 +32,4 @@ run all tests in MRs:
     ODOO_VERSION: "12"
     GIT_DEPTH: "2"
   only:
-    refs:
-      - merge_request
-    changes:
-      - setup.py
-      - ./**/*.py
+    - merge_request
