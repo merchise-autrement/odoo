@@ -12,13 +12,16 @@ Integrates Odoo and Celery, so that jobs can be started from the Odoo HTTP
 workers and tasks can use the Odoo ORM.
 
 """
+from __future__ import annotations
+
 import os
 import contextlib
 import threading
 
 from dataclasses import dataclass
+from itertools import cycle
 from time import monotonic
-from typing import Any, Dict, Iterable, NamedTuple, Optional, Sequence, Tuple, TypeVar
+from typing import Any, Dict, Iterable, NamedTuple, Optional, Sequence, Tuple, TypeVar, Union
 
 import logging
 
@@ -27,6 +30,7 @@ del logging
 
 from xotl.tools.context import context as ExecutionContext
 from xotl.tools.objects import temp_attributes
+from xotl.tools.symbols import Unset
 
 from kombu import Exchange, Queue
 
@@ -223,7 +227,12 @@ def terminate_task_with_env(task_id, env):
 
 
 def iter_and_report(
-    iterator: Iterable[T], start=0, valuemax=None, report_rate=1, messagetmpl="Progress: {progress}"
+    iterator: Iterable[T],
+    start=0,
+    valuemax=None,
+    report_rate=1,
+    messagetmpl="Progress: {progress}",
+    stage: str = "",
 ) -> Iterable[T]:
     """Iterate over 'iterator' while reporting progress.
 
@@ -240,12 +249,12 @@ def iter_and_report(
     the result of calling `ReportRate`, or it can be an integer (with is
     equivalent to ``ReportRate(n)``).
 
-    When the `iterator` is fully consumed, despite the value of `report_rate`,
-    we issue a final report making progress=valuemax (i.e. 100%).
-
     The `messagetmpl` is a string template to format the message to be
     reported.  The allowed keywords in the template are 'progress' and
     'valuemax' (the provided argument).
+
+    The `stage` is the name of the `ProgressStage`:class: to which this
+    iterable belongs.
 
     .. rubric:: Co-routine behavior
 
@@ -264,16 +273,19 @@ def iter_and_report(
     for progress, x in enumerate(iterator, start):
         if valuemax and report_rate.tick():
             report_progress(
-                message=messagetmpl.format(progress=progress, valuemax=valuemax),
+                message=messagetmpl.format(
+                    progress=progress, valuemax=valuemax, progress_percent=progress / valuemax * 100
+                ),
                 progress=progress,
                 valuemax=valuemax,
                 valuemin=start,
+                stage=stage,
             )
         msg = yield x
         if msg and isinstance(msg, str):
             messagetmpl = msg
     if valuemax and valuemax % report_rate.minrate != 0:
-        report_progress(progress=progress)
+        report_progress(progress=progress, stage=stage)
 
 
 @dataclass(init=False)
@@ -342,6 +354,122 @@ class ReportRate:
             self._last_report = self._ticks
             self._last_report_time = now
         return result
+
+
+class ProgressStage(NamedTuple):
+    """Describe a discrete stage within a single background job.
+
+    The stages allows you to report progress in smaller fractions of the
+    overall job.
+
+    The `size_fraction` is a cue to the UI how big this stage should be in
+    relation to its siblings.  The UI might actually put either a lower or
+    upper (or both) limits because of restrictions (the actual size of device,
+    for instance) or other reasons.
+
+    The expected behavior is that the UI divides the total available width of
+    the progress bar into chunks so that each stage takes a fraction of the
+    total width.  For example, if the available width is 500 px and you have 3
+    stages with fractions of 2.1, 3 and 4.9, those 500 px are divided by the
+    total of fractions (10) to compute the size of each fraction (50 px); then
+    the first stage is assigned 2.1 fractions (105 px), the second stage gets
+    3 fractions (150 px) and the last stage gets the remaining 245 px.
+
+    .. note:: Any resemblance to `CSS Grids`__ is *not* purely coincidental.
+
+    __ https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout
+
+    Example::
+
+        .---------.------------------.-------------.
+        |   1fr   |        2fr       |    1.5fr    |
+        `---------'------------------'-------------'
+
+    The standard widgets in the addon 'web_celery' generate the
+    `grid-template-columns` from these values.
+
+    The `css_class` allows to customize the style of each stage so that the
+    user can distinguish them visually.  If `css_class` is None we assign one
+    automatically, starting with 'web-celery-progress-stage-0',
+    'web-celery-progress-stage-4', and the we cycle those classes.
+
+    """
+
+    name: str
+    size_fraction: Union[int, float] = 1
+    css_class: Optional[str] = None
+    display_name: Optional[str] = None
+
+    @classmethod
+    def from_stage_value(cls, value: IntoProgressStage):
+        "Create a stage from the type of values of the parameter `stages`."
+        if isinstance(value, ProgressStage):
+            return value
+        elif isinstance(value, str):
+            return cls(value)
+        else:
+            return cls(*value)
+
+    @classmethod
+    def fill_css_class(cls, stages: Iterable[IntoProgressStage]) -> Iterable[ProgressStage]:
+        """Yield the stages with css_class of the given stages.
+
+        Any stage for which `css_class` is None is assigned an automatic value
+        of 'web-celery-progress-stage-0', 'web-celery-progress-stage-1', and
+        up to 'web-celery-progress-stage-4'.
+
+        Notice that we only increase the counter each time we assign a class.
+
+        Example:
+
+          >>> list(
+          ...     ProgressStage.fill_css_class(
+          ...         ['prepare', ('execute', 10, 'executing'), ('combine', 2), ('deliver', 1, 'delivering', _('Deliver'))]
+          ...     )
+          ... )
+            [
+              ProgressStage(name='prepare', size_fraction=1, css_class='web-celery-progress-stage-0'),
+              ProgressStage(name='execute', size_fraction=10, css_class='executing'),
+              ProgressStage(name='combine', size_fraction=2, css_class='web-celery-progress-stage-1'),
+              ProgressStage(name='deliver', size_fraction=1, css_class='delivering', display_name='Deliver'),
+            ]
+
+        """
+        of_css_classes = cycle(f"web-celery-progress-stage-{i}" for i in range(5))
+        for stage in stages:
+            stage = cls.from_stage_value(stage)
+            if stage.css_class is None:
+                yield stage.replace(css_class=next(of_css_classes))
+            else:
+                yield stage.replace()
+
+    def replace(
+        self,
+        name: str = Unset,
+        size_fraction: Union[int, float] = Unset,
+        css_class: str = Unset,
+        display_name: str = Unset,
+    ):
+        "Return a copy of `self` with some of its attributes replaced."
+        args = (
+            name if name is not Unset else self.name,
+            size_fraction if size_fraction is not Unset else self.size_fraction,
+            css_class if css_class is not Unset else self.css_class,
+            display_name if display_name is not Unset else self.display_name,
+        )
+        return type(self)(*args)
+
+
+# Types we can convert to 'ProgressStage' using `ProgressStage.from_stage_value`.
+IntoProgressStage = Union[
+    str,  # Ex: 'prepare'
+    Tuple[str, Union[int, float]],  # Ex: ('combine', 2)
+    Tuple[str, Union[int, float], Optional[str]],  # Ex: ('execute', 10, 'executing')
+    Tuple[
+        str, Union[int, float], Optional[str], Optional[str]
+    ],  # Ex: ('deliver', 1, 'delivering', _('Deliver'))
+    ProgressStage,
+]
 
 
 def iter_at_savepoint(self, items: Iterable[T]) -> Iterable[T]:
@@ -630,7 +758,9 @@ class EventCounterChain(object):
         return "(%s)" % " | ".join(repr(e) for e in self.events)
 
 
-def report_progress(message=None, progress=None, valuemin=None, valuemax=None, status=None):
+def report_progress(
+    message=None, progress=None, valuemin=None, valuemax=None, status=None, stage: str = ""
+):
     """Send a progress notification to whomever is polling the current job.
 
     :param message: The message to send to those waiting for the message.
@@ -646,13 +776,15 @@ def report_progress(message=None, progress=None, valuemin=None, valuemax=None, s
     :param valuemax: The maximum value `progress` can take.
 
     The `valuemin` and `valuemax` arguments must be reported together.  And
-    once settle they cannot be changed.
+    once settle they cannot be changed per `stage`.
 
     :param status: The reported status. This should be one of the strings
        'success', 'failure' or 'pending'.
 
        .. warning:: This argument should not be used but for internal (job
                     framework module) purposes.
+
+    :param stage: A string with the name of the stage this report belongs to.
 
     """
     _context = ExecutionContext[CELERY_JOB]
@@ -670,6 +802,7 @@ def report_progress(message=None, progress=None, valuemin=None, valuemax=None, s
                 progress=progress,
                 valuemin=valuemin,
                 valuemax=valuemax,
+                stage=stage,
             ),
         )
 
@@ -859,7 +992,6 @@ class TaskSignature(NamedTuple):
 
     @classmethod
     def from_deferred_signature(cls, args, kwargs):
-        from xotl.tools.symbols import Unset
         from odoo.models import BaseModel
 
         method = args[0]
@@ -988,15 +1120,10 @@ def _extract_signature(args, kwargs):
     """Extract the task' signature and environment.
 
     """
-    from xotl.tools.symbols import Unset
-
     method = args[0]
     self = getattr(method, "__self__", Unset)
     env = getattr(self, "env", Unset)
     return TaskSignature.from_deferred_signature(args, kwargs), env
-
-
-Unset = object()
 
 
 class Task(BaseTask):
