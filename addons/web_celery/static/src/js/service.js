@@ -4,7 +4,7 @@ odoo.define("web_celery.CeleryService", function (require) {
     var CeleryAbstractService = require("web_celery.CeleryAbstractService");
     var core = require("web.core"),
         widgets = require("web_celery.widgets"),
-        FullScreenProgressBar = widgets.FullScreenProgressBar;
+        FullScreenCeleryProgressBar = widgets.FullScreenCeleryProgressBar;
 
     /**
      * A service for the background celery jobs in the Web Client.
@@ -86,10 +86,11 @@ odoo.define("web_celery.CeleryService", function (require) {
         },
 
         do_tag_block_with_progress: function (params, finished) {
-            var loading = new FullScreenProgressBar(
+            var loading = new FullScreenCeleryProgressBar(
                 this,
                 params.uuid,
-                params.cancellable
+                params.cancellable,
+                params.stages
             );
             loading.appendTo(this.getParent().$el);
             finished.always(function () {

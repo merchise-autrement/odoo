@@ -1,0 +1,11 @@
+@mixin web-celery-progress-stage-fn($index, $bgcolor, $progresscolor) {
+    .web-celery-progress-stage-#{$index} {
+        .progress {
+            background-color: $bgcolor;
+
+            .progress-bar {
+                background-color: $progresscolor;
+            }
+        }
+    }
+}
