@@ -229,7 +229,7 @@ def terminate_task_with_env(task_id, env):
 
 def iter_and_report(
     iterator: Iterable[T],
-    start=0,
+    start=1,
     valuemax=None,
     report_rate=1,
     messagetmpl="Progress: {progress}",
@@ -271,8 +271,10 @@ def iter_and_report(
         raise TypeError("report_rate must be an integer or a ReportRate")
     if not isinstance(report_rate, ReportRate):
         report_rate = ReportRate(report_rate)
+    last_reported_progress = 0
     for progress, x in enumerate(iterator, start):
         if valuemax and report_rate.tick():
+            last_reported_progress = progress
             report_progress(
                 message=messagetmpl.format(
                     progress=progress, valuemax=valuemax, progress_percent=progress / valuemax * 100
@@ -285,8 +287,17 @@ def iter_and_report(
         msg = yield x
         if msg and isinstance(msg, str):
             messagetmpl = msg
-    if valuemax and valuemax % report_rate.minrate != 0:
-        report_progress(progress=progress, stage=stage)
+    if valuemax and last_reported_progress != progress:
+        print("sending", stage, progress)
+        report_progress(
+            message=messagetmpl.format(
+                progress=progress, valuemax=valuemax, progress_percent=progress / valuemax * 100
+            ),
+            progress=progress,
+            valuemax=valuemax,
+            valuemin=start,
+            stage=stage,
+        )
 
 
 @dataclass(init=False)
