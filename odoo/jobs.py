@@ -32,6 +32,7 @@ from xotl.tools.context import context as ExecutionContext
 from xotl.tools.objects import temp_attributes
 from xotl.tools.symbols import Unset
 
+import kombu.exceptions
 from kombu import Exchange, Queue
 
 from celery import Celery as _CeleryApp
@@ -1294,8 +1295,14 @@ def _report_failure(self, dbname, uid, job_uuid, tb=None, message=""):
 
 def _report_current_failure(dbname, uid, job_uuid, error, subtask=True):
     data = _serialize_exception(error)
+    # arguments are most likely where an EncodeError can happen, and
+    # we don't really need them in the report.
+    data["arguments"] = tuple()
     if subtask:
-        _report_failure.delay(dbname, uid, job_uuid, message=data)
+        try:
+            _report_failure.delay(dbname, uid, job_uuid, message=data)
+        except kombu.exceptions.EncodeError:
+            _report_failure.delay(dbname, uid, job_uuid)
     else:
         _report_failure(dbname, uid, job_uuid, message=data)
     logger.exception("Unhandled exception in task")
