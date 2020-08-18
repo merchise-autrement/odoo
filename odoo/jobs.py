@@ -288,7 +288,6 @@ def iter_and_report(
         if msg and isinstance(msg, str):
             messagetmpl = msg
     if valuemax and last_reported_progress != progress:
-        print("sending", stage, progress)
         report_progress(
             message=messagetmpl.format(
                 progress=progress, valuemax=valuemax, progress_percent=progress / valuemax * 100
