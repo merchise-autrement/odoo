@@ -53,6 +53,15 @@ odoo.define("web_celery.widgets", function (require) {
             }
             this.trigger("progress_update", this);
         },
+
+        forceCompletion: function () {
+            if (isOk(this.valuemax)) {
+                this.update(this.valuemax);
+            } else {
+                this.progress = null;
+                this.update(1, 0, 1);
+            }
+        },
     });
 
     /**
@@ -61,10 +70,6 @@ odoo.define("web_celery.widgets", function (require) {
      * The default template shows a progress in ARIA progressbar:
      *
      *     | . . . . 20%  . . . . .'           |
-     *
-     * We don't define an interface for sub-classes.  If you need to create a
-     * different progress bar, sub-class from {@link CeleryProgressBar} and
-     * connect to the event 'progress_update'.
      *
      */
     var BasicProgressBar = AbstractProgressBar.extend({
@@ -111,17 +116,38 @@ odoo.define("web_celery.widgets", function (require) {
     });
 
     /**
-     * Mixin for widgets that owns several {@link BasicProgressBar}.
+     * Mixin to create a coordinated (staged) set of progress bars, adding a
+     * title, message, and Celery service-related capabilities.  Every {@link
+     * BasicProgressBar} progress is updated individually.
      */
-    var StagedProgressBarMixin = {
-        init: function (stages) {
+    var CeleryProgressBarMixin = {
+        events: {
+            "click button[name='cancel']": "cancel",
+        },
+        celery_service: "web_celery",
+
+        init: function (job_uuid, cancellable, stages) {
             this.stages = stages
                 ? stages
                 : [["", 1, "web-celery-progress-stage-0"]];
             this._progress_bars = {};
+            this._pending_stages_index = _.map(
+                this.stages,
+                (stage) => stage[0]
+            );
+            this.job_uuid = job_uuid;
+            this.cancellable = cancellable;
+            this.title = _t("Working");
+            this.message = _t(
+                "Your request is being processed (or about to be processed.)  Please wait."
+            );
         },
 
-        start: function () {
+        getProgressBarByStage: function (stage_name) {
+            return this._progress_bars[stage_name ? stage_name : ""];
+        },
+
+        renderStages: function () {
             var self = this;
             var staged_progress_bars = this.$el.find(
                 "div.staged-progress-bars"
@@ -154,32 +180,6 @@ odoo.define("web_celery.widgets", function (require) {
             );
         },
 
-        getProgressBarByStage: function (stage_name) {
-            return this._progress_bars[stage_name ? stage_name : ""];
-        },
-    };
-
-    /**
-     * Mixin that extends {@link StagedProgressBarMixin} adding title, message and
-     * Celery service-related capabilities.
-     * Every {@link BasicProgressBar} progress is updated individually.
-     */
-    var CeleryProgressBarMixin = _.extend({}, StagedProgressBarMixin, {
-        events: {
-            "click button[name='cancel']": "cancel",
-        },
-        celery_service: "web_celery",
-
-        init: function (job_uuid, cancellable, stages) {
-            StagedProgressBarMixin.init.call(this, stages);
-            this.job_uuid = job_uuid;
-            this.cancellable = cancellable;
-            this.title = _t("Working");
-            this.message = _t(
-                "Your request is being processed (or about to be processed.)  Please wait."
-            );
-        },
-
         /**
          * Cancel the background job.
          */
@@ -196,7 +196,7 @@ odoo.define("web_celery.widgets", function (require) {
          * track the progress and status of the background job.
          */
         start: function () {
-            StagedProgressBarMixin.start.call(this);
+            this.renderStages();
             // Only subscribe to events when the widget is visible.
             this.call(
                 this.celery_service,
@@ -231,6 +231,7 @@ odoo.define("web_celery.widgets", function (require) {
         on_job_notification: function (message) {
             var status = message.status;
             if (!status || status == "pending") {
+                this._updatePengingStages(message.stage);
                 var progress_bar = this.getProgressBarByStage(message.stage);
                 if (progress_bar) {
                     progress_bar.update(
@@ -242,6 +243,10 @@ odoo.define("web_celery.widgets", function (require) {
                         this.$el
                             .find(".stage-" + message.stage)
                             .addClass("stage-done");
+                        progress_bar.forceCompletion();
+                        // message.stage is the first in the array because of
+                        // what we do in _updatePendingStages
+                        this._pending_stages_index.shift();
                     }
                 }
                 if (message.message) {
@@ -253,7 +258,25 @@ odoo.define("web_celery.widgets", function (require) {
         showMessage: function (message) {
             this.$el.find("p.message").text(message);
         },
-    });
+
+        _updatePengingStages: function (stage) {
+            var idx = this._pending_stages_index.indexOf(stage);
+            if (idx !== -1) {
+                var previous = this._pending_stages_index.slice(0, idx);
+                for (const stage of previous) {
+                    this.forceStagedBarCompletion(stage);
+                }
+                this._pending_stages_index.splice(0, idx);
+            }
+        },
+
+        forceStagedBarCompletion: function (stage) {
+            var progress_bar = this.getProgressBarByStage(stage);
+            if (progress_bar) {
+                progress_bar.forceCompletion();
+            }
+        },
+    };
 
     var FullScreenCeleryProgressBar = FullScreenProgressBar.extend(
         CeleryProgressBarMixin,
