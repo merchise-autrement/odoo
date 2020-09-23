@@ -9,6 +9,7 @@
 # gebri <gebri@inmail.sk>, 2018
 # Jan Prokop, 2019
 # Matus Krnac <matus.krnac@gmail.com>, 2019
+# karolína schusterová <karolina.schusterova@vdp.sk>, 2020
 # Rastislav Brencic <rastislav.brencic@azet.sk>, 2020
 # 
 msgid ""
@@ -55,6 +56,9 @@ msgid ""
 " selected employee(s) based on the dates and credit note specified on "
 "Payslips Run.</span>"
 msgstr ""
+"<span colspan=\"4\" nolabel=\"1\">Tento sprievodca vygeneruje výplatné pásky"
+" pre všetkých vybraných zamestnancov na základe dátumov a dobropisu "
+"uvedených v časti výplaty.</span>"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.report_payslip
@@ -686,7 +690,7 @@ msgstr "Napríklad, zadajte 50.0 na aplikovanie percent  50%"
 #: code:addons/hr_payroll/report/report_contribution_register.py:35
 #, python-format
 msgid "Form content is missing, this report cannot be printed."
-msgstr ""
+msgstr "Chýba obsah formulára, túto správu nie je možné vytlačiť."
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_res_config_settings__module_l10n_fr_hr_payroll
@@ -1607,6 +1611,12 @@ msgstr "Chybná rozsahová podmienka definovaná pre platové pravidlo %s (%s)."
 #: code:addons/hr_payroll/models/hr_salary_rule.py:36
 #, python-format
 msgid "You cannot create a recursive salary structure."
+msgstr ""
+
+#. module: hr_payroll
+#: code:addons/hr_payroll/models/hr_payslip.py:608
+#, python-format
+msgid "You cannot delete a payslip batch which is not draft!"
 msgstr ""
 
 #. module: hr_payroll
