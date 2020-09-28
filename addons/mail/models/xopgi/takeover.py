@@ -12,14 +12,9 @@
 #
 # Created on 2015-05-25
 
-'''Implements the transfer of messages from one thread to another.
+"""Implements the transfer of messages from one thread to another.
 
-'''
-
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
-
+"""
 from odoo import api
 from odoo.models import AbstractModel
 
@@ -29,38 +24,40 @@ class mail_thread(AbstractModel):
 
     @api.model
     def _merge_history(self, target_thread, previous_threads):
-        'Transfer messages from previous_threads to target_thread.'
-        Messages = self.env['mail.message']
-        messages = Messages.browse(list({
-            message.id
-            for thread in previous_threads
-            for message in thread.message_ids
-        }))
+        "Transfer messages from previous_threads to target_thread."
+        Messages = self.env["mail.message"]
+        messages = Messages.browse(
+            list({message.id for thread in previous_threads for message in thread.message_ids})
+        )
         if any(messages):
-            messages.write({'res_id': target_thread.id})
+            messages.write({"res_id": target_thread.id})
         return True
 
     @api.model
     def _merge_attachments(self, target_thread, previous_thread):
-        'Transfer the attachments from previous_threads to target_thread.'
+        "Transfer the attachments from previous_threads to target_thread."
+
         def _get_attachments(thread_id):
             attachments = attach_obj.search(
-                [('res_model', '=', self._name), ('res_id', '=', thread_id.id)],
+                [("res_model", "=", self._name), ("res_id", "=", thread_id.id)],
             )
             return attachments
-        attach_obj = self.env['ir.attachment']
-        attachments = list({
-            attachment
-            for thread_id in previous_thread
-            for attachment in _get_attachments(thread_id)
-        })
+
+        attach_obj = self.env["ir.attachment"]
+        attachments = list(
+            {
+                attachment
+                for thread_id in previous_thread
+                for attachment in _get_attachments(thread_id)
+            }
+        )
         if any(attachments):
-            attach_obj.write({'res_id': target_thread.id})
+            attach_obj.write({"res_id": target_thread.id})
         return True
 
     @api.model
     def takeover_messages(self, target_thread, previous_threads):
-        '''Take over messages belonging to previous threads into another.
+        """Take over messages belonging to previous threads into another.
 
         This should be used only to merge objects and:
 
@@ -71,7 +68,7 @@ class mail_thread(AbstractModel):
         - Update the mail reference index so that references pointing to the
           original objects are properly redirected to the target.
 
-        '''
+        """
         self._merge_history(target_thread, previous_threads)
         self._merge_attachments(target_thread, previous_threads)
         self._merge_index(target_thread, previous_threads)
