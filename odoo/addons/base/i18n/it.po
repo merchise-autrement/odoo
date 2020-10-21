@@ -7428,7 +7428,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.res_lang_form
 msgid "%A - Full weekday name."
-msgstr "%A - Nome completo del giorno della settimana."
+msgstr "%A - Nome completo giorno della settimana."
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.res_lang_form
@@ -7463,7 +7463,7 @@ msgstr "%Y - Anno con secolo.\""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.res_lang_form
 msgid "%a - Abbreviated weekday name."
-msgstr "%a - Nome abbreviato del giorno della settimana."
+msgstr "%a - Nome abbreviato giorno della settimana."
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.res_lang_form
@@ -9290,8 +9290,8 @@ msgid ""
 "All the emails and documents sent to this contact will be translated in this"
 " language."
 msgstr ""
-"Tutte le e-mail e i documenti inviati a questo contatto vengono tradotti in "
-"questa lingua."
+"Tutte le e-mail e i documenti inviati a questo contatto verranno tradotti in"
+" questa lingua."
 
 #. module: base
 #: model:ir.module.module,summary:base.module_hr_holidays
@@ -10534,7 +10534,7 @@ msgstr "Annulla avanzamento"
 #: code:addons/models.py:2118
 #, python-format
 msgid "Cannot aggregate field %r."
-msgstr ""
+msgstr "Impossibile aggregare il campo %r."
 
 #. module: base
 #: code:addons/base/models/ir_translation.py:256
@@ -25705,14 +25705,6 @@ msgid "This module will trigger the uninstallation of below modules."
 msgstr "Questo modulo causerà la disinstallazione dei seguenti moduli:"
 
 #. module: base
-#: code:addons/base/ir/ir_sequence.py:56
-#, python-format
-msgid ""
-"This transaction wasn't executed because another transaction is already "
-"using the same no-gap sequence. Please try again later."
-msgstr ""
-
-#. module: base
 #: model:ir.model.fields,field_description:base.field_res_lang__thousands_sep
 msgid "Thousands Separator"
 msgstr "Separatore migliaia"
@@ -25730,12 +25722,12 @@ msgstr "Giovedì"
 #. module: base
 #: model:ir.module.module,summary:base.module_website_helpdesk_livechat
 msgid "Ticketing, Support, Livechat"
-msgstr "Creazione di biglietti, assistenza, chat dal vivo"
+msgstr "Segnalazioni, assistenza, chat dal vivo"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_website_helpdesk_slides
 msgid "Ticketing, Support, Slides"
-msgstr "Creazione di Biglietti, Assistenza, Diapositive"
+msgstr "Segnalazioni, assistenza, presentazioni"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_lang__time_format
