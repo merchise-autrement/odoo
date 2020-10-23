@@ -29,11 +29,11 @@
   </t>
   <t t-name="StagedProgressBar">
     <!-- The actual stages are injected in JS using ProgressBar -->
-    <div class="staged-progress-bars">
+    <div class="web-celery staged-progress-bars">
     </div>
   </t>
   <t t-name="CeleryProgressBar">
-    <div class="progress-bar-container">
+    <div class="web-celery progress-bar-container">
       <t t-if="widget.title">
         <h3 class="modal-title">
           <t t-raw="widget.title"/>
@@ -54,7 +54,7 @@
     </div>
   </t>
   <t t-name="FullScreenProgressBar">
-    <div class="full-screen-container">
+    <div class="web-celery full-screen-container">
       <t t-call="CeleryProgressBar"/>
     </div>
   </t>
