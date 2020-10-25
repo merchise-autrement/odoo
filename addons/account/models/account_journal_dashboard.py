@@ -6,7 +6,8 @@ from babel.dates import format_datetime, format_date
 from odoo import models, api, _, fields
 from odoo.osv import expression
 from odoo.release import version
-from odoo.tools import DEFAULT_SERVER_DATE_FORMAT as DF, safe_eval
+from odoo.tools import DEFAULT_SERVER_DATE_FORMAT as DF
+from odoo.tools.safe_eval import safe_eval
 from odoo.tools.misc import formatLang
 
 class account_journal(models.Model):

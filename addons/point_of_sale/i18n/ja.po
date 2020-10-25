@@ -13,6 +13,7 @@
 # Norimichi Sugimoto <norimichi.sugimoto@tls-ltd.co.jp>, 2018
 # Martin Trigaux, 2019
 # Tim Siu Lai <tl@roomsfor.hk>, 2020
+# Tsuda Ryoko <ryoko04nov@gmail.com>, 2020
 # Yoshi Tashiro <tashiro@roomsfor.hk>, 2020
 # 
 msgid ""
@@ -429,7 +430,7 @@ msgid ""
 "All available pricelists must be in the same currency as the company or as "
 "the Sales Journal set on this point of sale if you use the Accounting "
 "application."
-msgstr ""
+msgstr "会計アプリを利用する場合、全ての有効な価格表は会社、もしくは、このPOSの売上仕訳帳と同じ通貨でなければなりません。"
 
 #. module: point_of_sale
 #: code:addons/point_of_sale/models/pos_config.py:250
@@ -1198,7 +1199,7 @@ msgstr ""
 #. module: point_of_sale
 #: model_terms:ir.ui.view,arch_db:point_of_sale.res_config_settings_view_form
 msgid "Default sales tax for products"
-msgstr ""
+msgstr "プロダクトのデフォルト販売税"
 
 #. module: point_of_sale
 #: model_terms:ir.actions.act_window,help:point_of_sale.product_pos_category_action
@@ -1619,7 +1620,7 @@ msgstr "一般情報"
 #. module: point_of_sale
 #: model_terms:ir.ui.view,arch_db:point_of_sale.pos_config_view_form
 msgid "Generation of your order references"
-msgstr ""
+msgstr "オーダー参照の生成"
 
 #. module: point_of_sale
 #: model_terms:ir.ui.view,arch_db:point_of_sale.pos_config_view_form

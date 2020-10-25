@@ -20,6 +20,7 @@
 # Martin Trigaux, 2019
 # Tim Siu Lai <tl@roomsfor.hk>, 2019
 # Hau Dao <hau@quartile.co>, 2020
+# Tsuda Ryoko <ryoko04nov@gmail.com>, 2020
 # Yoshi Tashiro <tashiro@roomsfor.hk>, 2020
 # 
 msgid ""
@@ -418,7 +419,7 @@ msgstr ""
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
 msgid "<span name=\"button_import_placeholder\"/> Statements"
-msgstr ""
+msgstr "<span name=\"button_import_placeholder\"/> 取引明細書"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
@@ -1290,7 +1291,7 @@ msgstr "メモ追加"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.res_config_settings_view_form
 msgid "Add a payment QR code to your invoices"
-msgstr ""
+msgstr "請求書に支払用のQRコードを追加"
 
 #. module: account
 #: selection:account.cash.rounding,strategy:0
@@ -2208,7 +2209,7 @@ msgstr "銀行取引明細書"
 #: code:addons/account/models/account_journal_dashboard.py:36
 #, python-format
 msgid "Bank: Balance"
-msgstr ""
+msgstr "銀行：残高"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_invoice_tax__base
@@ -2594,7 +2595,7 @@ msgstr ""
 #: code:addons/account/models/account_journal_dashboard.py:34
 #, python-format
 msgid "Cash: Balance"
-msgstr ""
+msgstr "現金：残高"
 
 #. module: account
 #: model:ir.model,name:account.model_account_cashbox_line
@@ -5762,7 +5763,7 @@ msgid ""
 "It is not allowed to delete a payment that already created a journal entry "
 "since it would create a gap in the numbering. You should create the journal "
 "entry again and cancel it thanks to a regular revert."
-msgstr ""
+msgstr "仕訳が作成された支払は削除できません(番号の隙間を防ぐため)。必要に応じて仕訳を再作成の上逆仕訳を作成することで取り消してください。"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
@@ -6921,14 +6922,14 @@ msgstr "ノート"
 msgid ""
 "Note that the easiest way to create a credit note is to do it directly\n"
 "                from the customer invoice."
-msgstr ""
+msgstr "クレジットノートを作成する一番簡単な方法は、顧客請求書から直接作成することです。"
 
 #. module: account
 #: model_terms:ir.actions.act_window,help:account.action_invoice_in_refund
 msgid ""
 "Note that the easiest way to create a vendor credit note it to do it "
 "directly from the vendor bill."
-msgstr ""
+msgstr "仕入先クレジットノートを作成する一番簡単な方法は、仕入先請求書から直接作成することです。"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__note
@@ -8283,7 +8284,7 @@ msgstr "支払登録"
 #. module: account
 #: model_terms:ir.actions.act_window,help:account.action_bank_statement_tree
 msgid "Register a bank statement"
-msgstr ""
+msgstr "銀行取引明細書の登録"
 
 #. module: account
 #: model_terms:ir.actions.act_window,help:account.action_account_payments
@@ -11212,7 +11213,7 @@ msgstr "照会"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_partner_property_form
 msgid "View accounts detail"
-msgstr "口座詳細を照会"
+msgstr "口座詳細を見る"
 
 #. module: account
 #: selection:res.partner,invoice_warn:0
