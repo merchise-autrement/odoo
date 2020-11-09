@@ -132,6 +132,23 @@ class DeferredType(object):
         options.setdefault("queue", DEFAULT_QUEUE_NAME)
         self.__options = options
 
+    def replace(
+        self,
+        /,
+        return_signature: bool = None,
+        allow_nested: bool = None,
+        allow_tests: bool = None,
+        queue: str = None,
+    ) -> DeferredType:
+        "Return a copy of a deferred type with some of its parameters changed."
+
+        return DeferredType(
+            return_signature=coalesce(return_signature, self.__return_signature),
+            allow_nested=coalesce(allow_nested, not self.__disallow_nested),
+            allow_tests=coalesce(allow_tests, not self.__disallow_tests),
+            queue=coalesce(queue, self.__options["queue"]),
+        )
+
     @property
     def disallow_nested(self):
         return self.__disallow_nested
@@ -609,7 +626,7 @@ _UNTIL_TIMEOUT_CONTEXT = object()
 
 # TODO (med, manu):  Should we have this in xotl.tools?
 @total_ordering
-class EventCounter(object):
+class EventCounter:
     """A simple counter of an event.
 
     Instances are callables that you can call to count the times an event
@@ -765,7 +782,7 @@ class _WrappedCounter(EventCounter):
         return "_WrappedCounter(%r, name=%r)" % (self._target, self.name)
 
 
-class EventCounterChain(object):
+class EventCounterChain:
     __slots__ = ("events",)
 
     def __init__(self, e1, e2):
@@ -1479,6 +1496,10 @@ if not getattr(BaseTask, "Request", None):
         )
 
     request.create_request_cls = create_request_cls
+
+
+def coalesce(a: Optional[T], b: T) -> T:
+    return a if a is not None else b
 
 
 def _running_tests(env):
