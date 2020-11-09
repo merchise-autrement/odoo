@@ -272,6 +272,7 @@ def iter_and_report(
     if not isinstance(report_rate, ReportRate):
         report_rate = ReportRate(report_rate)
     last_reported_progress = 0
+    progress = valuemax  # ensure a value of 100% if the iterator is empty.
     for progress, x in enumerate(iterator, start):
         if valuemax and report_rate.tick():
             last_reported_progress = progress
@@ -1128,9 +1129,7 @@ class TaskRecord:
 
 
 def _extract_signature(args, kwargs):
-    """Extract the task' signature and environment.
-
-    """
+    """Extract the task' signature and environment."""
     method = args[0]
     self = getattr(method, "__self__", Unset)
     env = getattr(self, "env", Unset)
