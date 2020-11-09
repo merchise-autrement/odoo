@@ -125,10 +125,18 @@ class DeferredType(object):
                  bus.  If False (the default), calling a Deferred during
                  tests, runs the method directly without issuing a Celery job.
 
+        :keyword require_ready_registry: If True the job won't be issue if the
+                 Odoo registry is not ready.  In this case, calls to Deferred
+                 return None.
+
+                 The default is False, meaning that the job will be issued
+                 regardless of the status of the registry.
+
         """
         self.__return_signature = options.pop("return_signature", False)
         self.__disallow_nested = not options.pop("allow_nested", False)
         self.__disallow_tests = not options.pop("allow_tests", False)
+        self.__require_ready_registry = options.pop("require_ready_registry", False)
         options.setdefault("queue", DEFAULT_QUEUE_NAME)
         self.__options = options
 
@@ -138,6 +146,7 @@ class DeferredType(object):
         return_signature: bool = None,
         allow_nested: bool = None,
         allow_tests: bool = None,
+        require_ready_registry: bool = None,
         queue: str = None,
     ) -> DeferredType:
         "Return a copy of a deferred type with some of its parameters changed."
@@ -146,8 +155,13 @@ class DeferredType(object):
             return_signature=coalesce(return_signature, self.__return_signature),
             allow_nested=coalesce(allow_nested, not self.__disallow_nested),
             allow_tests=coalesce(allow_tests, not self.__disallow_tests),
+            require_ready_registry=coalesce(require_ready_registry, self.require_ready_registry),
             queue=coalesce(queue, self.__options["queue"]),
         )
+
+    @property
+    def require_ready_registry(self):
+        return self.__require_ready_registry
 
     @property
     def disallow_nested(self):
@@ -175,7 +189,10 @@ class DeferredType(object):
         The first argument must be a *bound method of a record set*.  The rest
         of the arguments must match the signature of such method.
 
-        :returns: An AsyncResult that represents the job.
+        :returns: An AsyncResult that represents the job or None.
+
+                  We return None if the deferred requires the registry to be
+                  ready, but it isn't.
 
         .. warning:: Nested calls don't issue sub-tasks.
 
@@ -187,6 +204,8 @@ class DeferredType(object):
 
         """
         signature, env = _extract_signature(args, kwargs)
+        if self.require_ready_registry and not env.registry.ready:
+            return
         if self.disallow_nested and CELERY_JOB in ExecutionContext:
             logger.warn("Nested background call detected for model", extra=dict(args_=signature))
             return task(*signature)
@@ -1167,7 +1186,7 @@ class TaskRecord:
             _report_cancelled.delay(self, self.args.dbname, self.args.uid, self.id)
 
 
-def _extract_signature(args, kwargs):
+def _extract_signature(args, kwargs) -> Tuple[TaskSignature, Environment]:
     """Extract the task' signature and environment."""
     method = args[0]
     self = getattr(method, "__self__", Unset)
