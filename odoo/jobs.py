@@ -14,52 +14,54 @@ workers and tasks can use the Odoo ORM.
 """
 from __future__ import annotations
 
-import os
 import contextlib
+import logging
+import os
 import threading
-
 from dataclasses import dataclass
 from itertools import cycle
 from time import monotonic
-from typing import Any, Dict, Iterable, NamedTuple, Optional, Sequence, Tuple, TypeVar, Union
-
-import logging
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    NamedTuple,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeVar,
+    Union,
+)
 
 logger = logging.getLogger(__name__)
 del logging
 
+from functools import total_ordering
+
+import kombu.exceptions
+from celery import Celery as _CeleryApp
+from celery import Task as BaseTask
+from celery.exceptions import (
+    MaxRetriesExceededError,
+    SoftTimeLimitExceeded,
+    Terminated,
+    TimeLimitExceeded,
+    WorkerLostError,
+)
+from kombu import Exchange, Queue
+from psycopg2 import OperationalError, errorcodes
 from xotl.tools.context import context as ExecutionContext
 from xotl.tools.objects import temp_attributes
 from xotl.tools.symbols import Unset
 
-import kombu.exceptions
-from kombu import Exchange, Queue
-
-from celery import Celery as _CeleryApp
-from celery import Task as BaseTask
-
-
-from celery.exceptions import (
-    MaxRetriesExceededError,
-    SoftTimeLimitExceeded,
-    TimeLimitExceeded,
-    WorkerLostError,
-    Terminated,
-)
-
-from functools import total_ordering
-
-from odoo import SUPERUSER_ID
 import odoo.tools.config as config
-from odoo.tools.func import lazy_property
-
-from odoo.release import version_info
+from odoo import SUPERUSER_ID
 from odoo.api import Environment
-from odoo.modules.registry import Registry
 from odoo.http import serialize_exception as _serialize_exception
-
-from psycopg2 import OperationalError, errorcodes
-
+from odoo.modules.registry import Registry
+from odoo.release import version_info
+from odoo.tools.func import lazy_property
 
 # The queues are named using the version info major number, ie:
 # odoo-12.default, odoo-12.cdr, etc.  This is to avoid clashes with other
@@ -181,6 +183,26 @@ class DeferredType(object):
             else:
                 return signature.delay()
 
+    def delay(self, env: Environment, fn, *args, **kwargs) -> None:
+        """Execute ``fn(*args, **kwargs)`` when the cursor is commited.
+
+        While running tests, the job is run directly without waiting the
+        cursor to commit (in many tests the cursor gets a rollback).  This
+        don't event take in to account the value of `allow_tests` in the
+        initializer.
+
+        You cannot expect to get the AsyncResult when this method is called.
+
+        """
+        if not _running_tests(env):
+
+            def inner():
+                self(fn, *args, **kwargs)
+
+            env.cr.after("commit", inner)
+        else:
+            fn(*args, **kwargs)
+
 
 Deferred = DeferredType()
 T = TypeVar("T")
@@ -229,10 +251,10 @@ def terminate_task_with_env(task_id, env):
 
 def iter_and_report(
     iterator: Iterable[T],
-    start=1,
-    valuemax=None,
-    report_rate=1,
-    messagetmpl="Progress: {progress}",
+    start: Optional[int] = 1,
+    valuemax: int = None,
+    report_rate: Union[ReportRate, int] = 1,
+    messagetmpl: str = "Progress: {progress}",
     stage: str = "",
 ) -> Iterable[T]:
     """Iterate over 'iterator' while reporting progress.
@@ -511,7 +533,7 @@ def iter_at_savepoint(self, items: Iterable[T]) -> Iterable[T]:
                 yield item
 
 
-def until_timeout(iterator: Iterable[T], on_timeout=None) -> Iterable[T]:
+def until_timeout(iterator: Iterable[T], on_timeout: Callable[[], None] = None) -> Iterable[T]:
     """Iterate and yield from `iterator` while the job has time to work.
 
     Celery can be configured to raise a SoftTimeLimitExceeded exception when a
