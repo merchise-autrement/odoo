@@ -59,7 +59,7 @@ setup(
         'xlwt',
 
         # Merchise
-        'celery>=4,<5',
+        'celery>=4.2,<5',
         'flower',
         'redis',
         'xotl.tools>=2.1.9,<2.2',

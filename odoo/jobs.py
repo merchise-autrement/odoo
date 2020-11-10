@@ -1472,51 +1472,6 @@ def _report_failure_for_request(self, exc, delay=None):
         pass
 
 
-if not getattr(BaseTask, "Request", None):
-    # So this is a celery that has not accepted our patch
-    # (https://github.com/celery/celery/pull/3977).  Let's proceed to
-    # monkey-patch the Request.
-    from celery.worker import request
-
-    _super_create_request_cls = request.create_request_cls
-
-    def create_request_cls(
-        base,
-        task,
-        pool,
-        hostname,
-        eventer,
-        ref=request.ref,
-        revoked_tasks=request.revoked_tasks,
-        task_ready=request.task_ready,
-        trace=request.trace_task_ret,
-    ):
-
-        if base is BaseRequest:
-            Base = Request
-        else:
-
-            class Base(base, Request):
-                pass
-
-        class PatchedRequest(Base):
-            pass
-
-        return _super_create_request_cls(
-            PatchedRequest,
-            task,
-            pool,
-            hostname,
-            eventer,
-            ref=ref,
-            revoked_tasks=revoked_tasks,
-            task_ready=task_ready,
-            trace=trace,
-        )
-
-    request.create_request_cls = create_request_cls
-
-
 def coalesce(a: Optional[T], b: T) -> T:
     return a if a is not None else b
 
