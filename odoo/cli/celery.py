@@ -67,7 +67,7 @@ class Celery(Command):
     type=click.Choice(["info", "debug", "error", "warn"]),
 )
 @click.option(
-    "--basic-auth",
+    "--basic_auth",
     type=str,
     multiple=True,
 )
