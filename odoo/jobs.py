@@ -937,13 +937,17 @@ class Configuration(object):
 
     task_create_missing_queues = config.get("celery.create_missing_queues", True)
 
-    task_time_limit = config.get(
-        "celery.task_time_limit", os.environ.get("odoo_celery_task_time_limit", 600)  # 10 minutes
+    task_time_limit = int(
+        config.get(
+            "celery.task_time_limit",
+            os.environ.get("odoo_celery_task_time_limit", 600),  # 10 minutes
+        )
     )
     _softtime = config.get(
         "celery.task_soft_time_limit",
         os.environ.get(
-            "odoo_celery_task_soft_time_limit", 595  # 9min 55 seconds (5 seconds to finish)
+            "odoo_celery_task_soft_time_limit",
+            595,  # 9min 55 seconds (5 seconds to finish)
         ),
     )
     if _softtime is not None:
