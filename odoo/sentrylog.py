@@ -96,11 +96,6 @@ def get_client():
     overrides = config.misc.get("sentry", {})
     conf.update(overrides)
     if not _sentry_client and conf.get("dsn", Bail):
-        releasetag = conf.pop("release-tag", "")
-        if not conf.get("release"):
-            from .release import version
-
-            conf["release"] = "%s/%s" % (version, releasetag)
         transport = conf.get("transport", None)
         if transport == "sync":
             transport = RequestsHTTPTransport
