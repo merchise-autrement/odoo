@@ -9,7 +9,9 @@
 # Michal Veselý <michal@veselyberanek.net>, 2019
 # Martin Trigaux, 2019
 # Rastislav Brencic <rastislav.brencic@azet.sk>, 2020
-# Jiří Podhorecký, 2020
+# trendspotter, 2020
+# Damian Brencic <brencicdamian12313@gmail.com>, 2020
+# karolína schusterová <karolina.schusterova@vdp.sk>, 2020
 # 
 msgid ""
 msgstr ""
@@ -17,7 +19,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-10 14:44+0000\n"
 "PO-Revision-Date: 2018-08-24 09:14+0000\n"
-"Last-Translator: Jiří Podhorecký, 2020\n"
+"Last-Translator: karolína schusterová <karolina.schusterova@vdp.sk>, 2020\n"
 "Language-Team: Czech (https://www.transifex.com/odoo/teams/41243/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -561,6 +563,11 @@ msgid ""
 "        Contains Balance Sheet, Profit/Loss reports\n"
 "    "
 msgstr ""
+"\n"
+"        Účetní zprávy pro Litvu\n"
+"\n"
+"       Obsahuje výkazy rozvahy a zisku / ztráty\n"
+"    "
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_nl_reports
@@ -789,6 +796,10 @@ msgid ""
 "        UNSPSC code for their products and uoms.  \n"
 "    "
 msgstr ""
+"\n"
+"       Země jako Kolumbie, Peru a Mexiko musí být schopny využívat \n"
+"        UNSPSC kód pro jejich produkty a domény.  \n"
+"    "
 
 #. module: base
 #: model:ir.module.module,summary:base.module_l10n_mx_reports
@@ -1615,6 +1626,10 @@ msgid ""
 "=================================\n"
 "    "
 msgstr ""
+"\n"
+"Účetní zprávy pro Dánsko\n"
+"=================================\n"
+"    "
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_et_reports
@@ -7659,21 +7674,23 @@ msgid ""
 "<i class=\"fa fa-building\" role=\"img\" aria-label=\"Enterprise\" "
 "title=\"Enterprise\"/>"
 msgstr ""
+"<i class=\"fa fa-building\" role=\"img\" aria-label=\"Enterprise\" "
+"title=\"Enterprise\"/>"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_res_users_kanban
 msgid "<i class=\"fa fa-circle\" role=\"img\" aria-label=\"Invalid\" title=\"Invalid\"/>"
-msgstr ""
+msgstr "<i class=\"fa fa-circle\" role=\"img\" aria-label=\"Invalid\" title=\"Invalid\"/>"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_res_users_kanban
 msgid "<i class=\"fa fa-circle\" role=\"img\" aria-label=\"Ok\" title=\"Ok\"/>"
-msgstr ""
+msgstr "<i class=\"fa fa-circle\" role=\"img\" aria-label=\"Ok\" title=\"Ok\"/>"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_res_users_kanban
 msgid "<i class=\"fa fa-envelope\" role=\"img\" aria-label=\"Login\"/>"
-msgstr ""
+msgstr "<i class=\"fa fa-envelope\" role=\"img\" aria-label=\"Login\"/>"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_rule_form
@@ -7681,11 +7698,13 @@ msgid ""
 "<i class=\"fa fa-info fa-3x text-info float-left\" role=\"img\" aria-"
 "label=\"Info\" title=\"Info\"/>"
 msgstr ""
+"<i class=\"fa fa-info fa-3x text-info float-left\" role=\"img\" aria-"
+"label=\"Info\" title=\"Info\"/>"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.onboarding_container
 msgid "<i class=\"fa fa-times\" title=\"Close the onboarding panel\"/>"
-msgstr ""
+msgstr "<i class=\"fa fa-times\" title=\"Close the onboarding panel\"/>"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.onboarding_container
@@ -7744,6 +7763,8 @@ msgid ""
 "<span class=\"searchIcon\"><i class=\"fa fa-search\" role=\"img\" aria-"
 "label=\"Search\" title=\"Search\"/></span>"
 msgstr ""
+"<span class=\"searchIcon\"><i class=\"fa fa-search\" role=\"img\" aria-"
+"label=\"Search\" title=\"Search\"/></span>"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.demo_force_install_form
@@ -8552,7 +8573,7 @@ msgstr "Jméno Majitele Účtu"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_invoice_extract
 msgid "Account Invoice Extract"
-msgstr ""
+msgstr "Výpis faktury z účtu"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_company__account_no
@@ -8730,12 +8751,12 @@ msgstr "Použití akce"
 #. module: base
 #: model:ir.model,name:base.model_ir_actions_act_window
 msgid "Action Window"
-msgstr ""
+msgstr "Okno akce"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_actions_act_window_close
 msgid "Action Window Close"
-msgstr ""
+msgstr "Zavřít okno akce"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_actions_act_window_view
@@ -9244,7 +9265,7 @@ msgstr "Analytické účetnictví"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_analytic_enterprise
 msgid "Analytic Accounting Enterprise"
-msgstr ""
+msgstr "Analytické účetní podnikání "
 
 #. module: base
 #: model:ir.module.module,summary:base.module_mrp_account
@@ -9389,12 +9410,12 @@ msgstr "Aplikace:"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_ui_view__arch_db
 msgid "Arch Blob"
-msgstr ""
+msgstr "Arch Blob"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_ui_view__arch_fs
 msgid "Arch Filename"
-msgstr ""
+msgstr "Arch Filename"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_view_form
@@ -10753,7 +10774,7 @@ msgstr "Kohorta"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_web_cohort
 msgid "Cohort View"
-msgstr ""
+msgstr "Pohled na kohortu"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_pad
@@ -10788,7 +10809,7 @@ msgstr "Kolumbijská účetnictví a daňová předkonfigurace"
 #. module: base
 #: model:ir.module.module,summary:base.module_l10n_co_edi
 msgid "Colombian Localization for EDI documents"
-msgstr ""
+msgstr "Kolumbijská lokalizace pro dokumenty EDI"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_l10n_co_edi_ubl_2_1
@@ -11142,7 +11163,7 @@ msgstr "Konstrukce"
 #. module: base
 #: model:res.partner.category,name:base.res_partner_category_8
 msgid "Consulting Services"
-msgstr ""
+msgstr "Poradenské služby"
 
 #. module: base
 #: model:ir.model,name:base.model_res_partner
@@ -13419,7 +13440,7 @@ msgstr "Překlady exportu"
 #. module: base
 #: model:ir.module.module,summary:base.module_l10n_au_aba
 msgid "Export payments as ABA Credit Transfer files"
-msgstr ""
+msgstr "Exportujte platby jako soubory kreditního převodu ABA"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_account_sepa
@@ -13885,7 +13906,7 @@ msgstr "Pole"
 #. module: base
 #: model:ir.model,name:base.model_ir_fields_converter
 msgid "Fields Converter"
-msgstr ""
+msgstr "Převaděč polí"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_model_form
@@ -14831,7 +14852,7 @@ msgstr "HR Gamifikace"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_hr_org_chart
 msgid "HR Org Chart"
-msgstr ""
+msgstr "HR Org Chart"
 
 #. module: base
 #: model:res.country,vat_label:base.ca
@@ -14897,7 +14918,7 @@ msgstr "Má všechny požadované argumenty"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_report_paperformat__header_spacing
 msgid "Header spacing"
-msgstr ""
+msgstr "Rozteč záhlaví"
 
 #. module: base
 #: model:res.partner.industry,name:base.res_partner_industry_Q
@@ -15759,7 +15780,7 @@ msgstr "Indonesie"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_id
 msgid "Indonesian - Accounting"
-msgstr ""
+msgstr "Indonéština - účetnictví"
 
 #. module: base
 #: model:ir.actions.act_window,name:base.res_partner_industry_action
@@ -15895,6 +15916,8 @@ msgid ""
 "Insufficient fields to generate a Calendar View for %s, missing a date_stop "
 "or a date_delay"
 msgstr ""
+"Nedostatečná pole pro vygenerování zobrazení kalendáře %s, chybí date_stop "
+"nebo date_delay"
 
 #. module: base
 #: selection:ir.property,type:0
@@ -15924,7 +15947,7 @@ msgstr "Interakce mezi pravidly"
 #. module: base
 #: model:ir.module.module,summary:base.module_inter_company_rules
 msgid "Intercompany SO/PO/INV rules"
-msgstr ""
+msgstr "Mezipodniková pravidla SO / PO / INV"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_groups_search
@@ -16009,7 +16032,7 @@ msgstr "Neplatný parametr 'skupina podle'"
 #: code:addons/models.py:2120
 #, python-format
 msgid "Invalid aggregation function %r."
-msgstr ""
+msgstr "Neplatná agregační funkce% r."
 
 #. module: base
 #: code:addons/base/models/ir_fields.py:330
@@ -16051,20 +16074,20 @@ msgstr ""
 #. module: base
 #: sql_constraint:ir.ui.view:0
 msgid "Invalid key: QWeb view should have a key"
-msgstr ""
+msgstr "Neplatný klíč: Pohled QWeb by měl mít klíč"
 
 #. module: base
 #: code:addons/base/models/ir_actions.py:140
 #: code:addons/base/models/ir_actions.py:142
 #, python-format
 msgid "Invalid model name %r in action definition."
-msgstr ""
+msgstr "Neplatný název modelu% r v definici akce."
 
 #. module: base
 #: code:addons/base/models/ir_ui_view.py:691
 #, python-format
 msgid "Invalid position attribute: '%s'"
-msgstr ""
+msgstr "Neplatný atribut pozice: '%s'"
 
 #. module: base
 #: code:addons/base/models/ir_sequence.py:221
@@ -16311,7 +16334,7 @@ msgstr "K FINANČNÍ A POJIŠŤOVACÍ ČINNOSTI"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_digest
 msgid "KPI Digests"
-msgstr ""
+msgstr "Výkazy KPI"
 
 #. module: base
 #: selection:ir.actions.act_window.view,view_mode:0
@@ -16392,7 +16415,7 @@ msgstr "LGPL verze 3"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_lt_reports
 msgid "LT - Accounting Reports"
-msgstr ""
+msgstr "LT - Účetní zprávy"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_stock_landed_costs
@@ -16960,7 +16983,7 @@ msgstr "Litva"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_lt
 msgid "Lithuania - Accounting"
-msgstr ""
+msgstr "Litva - Účetnictví"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_im_livechat
@@ -16970,7 +16993,7 @@ msgstr "Živý chat"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_currency_rate_live
 msgid "Live Currency Exchange Rate"
-msgstr ""
+msgstr "Kurz živé měny"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_im_support
@@ -17130,7 +17153,7 @@ msgstr "Mail Server"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_test_mail
 msgid "Mail Tests"
-msgstr ""
+msgstr "Poštovní testy"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_test_mail
@@ -17317,6 +17340,7 @@ msgstr ""
 msgid ""
 "Manage engineering change orders on products, bills of material and routings"
 msgstr ""
+"Spravujte objednávky technických změn na produktech, kusovnících a směrování"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_account_accountant
@@ -17326,7 +17350,7 @@ msgstr "Správa finančního a analytického účetnictví"
 #. module: base
 #: model:ir.module.module,summary:base.module_website_sale_stock
 msgid "Manage product inventory & availability"
-msgstr ""
+msgstr "Spravujte inventář a dostupnost produk"
 
 #. module: base
 #: model_terms:ir.actions.act_window,help:base.res_partner_industry_action
@@ -17477,12 +17501,12 @@ msgstr "Hromadné zasílání e-mailů na potenciály / příležitosti"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_mass_mailing_sale
 msgid "Mass mailing on sale orders"
-msgstr ""
+msgstr "Hromadné zasielanie objednávok na predaj"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_mass_mailing_event_track
 msgid "Mass mailing on track speakers"
-msgstr ""
+msgstr "Hromadné zasielanie pošty na reproduktory stopy"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_mrp_mps
@@ -17594,12 +17618,12 @@ msgstr "Sloučit kontakty"
 #. module: base
 #: model:ir.model,name:base.model_base_partner_merge_line
 msgid "Merge Partner Line"
-msgstr ""
+msgstr "Zlúčiť riadok partnera"
 
 #. module: base
 #: model:ir.model,name:base.model_base_partner_merge_automatic_wizard
 msgid "Merge Partner Wizard"
-msgstr ""
+msgstr "Sprievodca zlúčením partnerov"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.base_partner_merge_automatic_wizard_form
@@ -17779,7 +17803,7 @@ msgstr "Model '%s' obsahuje data modulu a nemůže být odebrán."
 #. module: base
 #: model:ir.model,name:base.model_ir_model_access
 msgid "Model Access"
-msgstr ""
+msgstr "Prístup k modelu"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_model_constraint
@@ -17811,7 +17835,7 @@ msgstr "Popis modelu"
 #. module: base
 #: selection:ir.translation,type:0
 msgid "Model Field"
-msgstr ""
+msgstr "Modelové pole"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_actions_report__model
@@ -17905,7 +17929,7 @@ msgstr "Název modulu"
 #. module: base
 #: model:ir.model,name:base.model_report_base_report_irmodulereference
 msgid "Module Reference Report (base)"
-msgstr ""
+msgstr "Referenčná správa o module (základná)"
 
 #. module: base
 #: model:ir.model,name:base.model_base_module_uninstall
@@ -18310,7 +18334,7 @@ msgstr "Neaktualizovatelné"
 #: code:addons/base/models/ir_model.py:471
 #, python-format
 msgid "Non-relational field %r in dependency %r"
-msgstr ""
+msgstr "Nerelačné pole% r v závislosti% r"
 
 #. module: base
 #: code:addons/base/models/ir_model.py:428
@@ -22299,7 +22323,7 @@ msgstr "Svatý Vincent a Grenadiny"
 #. module: base
 #: model:ir.module.module,summary:base.module_hr_contract_salary
 msgid "Salary Package Configurator"
-msgstr ""
+msgstr "Konfigurátor balíkov platov"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_voucher
