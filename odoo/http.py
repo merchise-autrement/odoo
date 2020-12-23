@@ -25,19 +25,23 @@ from os.path import join as opj
 from zlib import adler32
 
 import babel.core
-from datetime import datetime, date
-import passlib.utils
 import psycopg2
 import json
-import werkzeug.contrib.sessions
 import werkzeug.datastructures
 import werkzeug.exceptions
 import werkzeug.local
 import werkzeug.routing
 import werkzeug.wrappers
 import werkzeug.wsgi
+
 from werkzeug import urls
 from werkzeug.wsgi import wrap_file
+from werkzeug.middleware.shared_data import SharedDataMiddleware
+
+try:
+    import werkzeug.contrib.sessions as werkzeug_sessions
+except ImportError:
+    import secure_cookie.session as werkzeug_sessions
 
 try:
     import psutil
@@ -53,17 +57,63 @@ from .tools.func import lazy_property
 from .tools import ustr, consteq, frozendict, pycompat, unique, date_utils
 from .tools.mimetypes import guess_mimetype
 
-from .modules.module import module_manifest
+from .modules.module import module_manifest, load_information_from_description_file
 
 _logger = logging.getLogger(__name__)
 rpc_request = logging.getLogger(__name__ + '.rpc.request')
 rpc_response = logging.getLogger(__name__ + '.rpc.response')
 
+HOUR = 60 * 60
+DAY = 24 * HOUR
+DAYS = lambda d: d * DAY  # noqa: E731
+
 # One week cache for static content (static files in apps, library files, ...)
 # Safe resources may use what google page speed recommends (1 year)
 # (attachments with unique hash in the URL, ...)
-STATIC_CACHE = 3600 * 24 * 7
-STATIC_CACHE_LONG = 3600 * 24 * 365
+STATIC_CACHE = DAYS(7)
+STATIC_CACHE_LONG = DAYS(365)
+
+COOKIE_MAX_AGE = DAYS(90)
+
+# Collection used to store a sample of debug RPC calls' info.
+request_log_entries = collections.deque(maxlen=256)
+
+
+class _AccelMixin(object):
+    '''A mixin for classes with an :attr:`~BaseResponse.environ` attribute
+    that tests for SPDY/HTTP2 proxies/accelerators.
+
+    '''
+    spdy_version = werkzeug.utils.environ_property(
+        'HTTP_X_SPDY_VERSION', '',
+        doc='''The provided negotiated version of SPDY.
+
+        Proxies or accelerators should be configured to provide
+        this header when using SPDY.
+
+        ''')
+
+    http2_proto = werkzeug.utils.environ_property(
+        'HTTP_X_HTTP2_PROTO', '',
+        doc='''The provided negotiated protocol for HTTP/2 connections.
+
+        Proxies or accelerator should be configured to provide this header
+        when using HTTP/2.
+
+        ''')
+
+    @werkzeug.utils.cached_property
+    def is_spdy(self):
+        return bool(self.spdy_version)
+
+    @werkzeug.utils.cached_property
+    def is_http2(self):
+        return bool(self.http2_proto)
+
+
+class WerkzeugOdooRequest(werkzeug.wrappers.Request, _AccelMixin):
+    pass
+
 
 # To remove when corrected in Babel
 babel.core.LOCALE_ALIASES['nb'] = 'nb_NO'
@@ -101,6 +151,13 @@ def replace_request_password(args):
         args[2] = '*'
     return tuple(args)
 
+class AuthenticationError(Exception):
+    pass
+
+
+class SessionExpiredException(Exception):
+    pass
+
 
 # don't trigger debugger for those exceptions, they carry user-facing warnings
 # and indications, they're not necessarily indicative of anything being
@@ -108,7 +165,10 @@ def replace_request_password(args):
 NO_POSTMORTEM = (odoo.exceptions.except_orm,
                  odoo.exceptions.AccessDenied,
                  odoo.exceptions.Warning,
-                 odoo.exceptions.RedirectWarning)
+                 odoo.exceptions.RedirectWarning,
+                 odoo.exceptions.BusError,
+                 AuthenticationError,
+                 SessionExpiredException)
 
 
 def dispatch_rpc(service_name, method, params):
@@ -675,6 +735,17 @@ class JsonRequest(WebRequest):
                     end_memory = memory_info(psutil.Process(os.getpid()))
                 logline = '%s: %s %s: time:%.3fs mem: %sk -> %sk (diff: %sk)' % (
                     endpoint, model, method, end_time - start_time, start_memory / 1024, end_memory / 1024, (end_memory - start_memory)/1024)
+                request_log_entries.append(
+                    dict(
+                        endpoint=endpoint,
+                        model=model,
+                        time="%.3f" % (end_time - start_time),
+                        method=method,
+                        start_memory=start_memory / 1024,
+                        end_memory=end_memory / 1024,
+                        timestamp=int(end_time * 1000),
+                    )
+                )
                 if rpc_response_flag:
                     rpc_response.debug('%s, %s', logline, pprint.pformat(result))
                 else:
@@ -957,16 +1028,11 @@ def _generate_routing_rules(modules, nodb_only, converters=None):
                             yield (url, endpoint, routing)
 
 
-#----------------------------------------------------------
+
+# ---------------------------------------------------------
 # HTTP Sessions
-#----------------------------------------------------------
-class AuthenticationError(Exception):
-    pass
-
-class SessionExpiredException(Exception):
-    pass
-
-class OpenERPSession(werkzeug.contrib.sessions.Session):
+# ---------------------------------------------------------
+class OpenERPSession(werkzeug_sessions.Session):
     def __init__(self, *args, **kwargs):
         self.inited = False
         self.modified = False
@@ -1115,6 +1181,10 @@ class OpenERPSession(werkzeug.contrib.sessions.Session):
         return saved_actions.get("actions", {}).get(key)
 
     def save_request_data(self):
+        # TODO: Analyze this with our SessionStore below.  Why do we even need
+        # to make request `files` part of the session.  I assume this is
+        # because several parallel AJAX calls from the same client may try to
+        # access such data... Hum!
         import uuid
         req = request.httprequest
         files = werkzeug.datastructures.MultiDict()
@@ -1155,16 +1225,21 @@ class OpenERPSession(werkzeug.contrib.sessions.Session):
 
 
 def session_gc(session_store):
+    # This method is called for every HTTP request (called by setup_session,
+    # which is called by dispatch); so we likely do clean ups about for
+    # 0.001% of calls.
     if random.random() < 0.001:
-        # we keep session one week
-        last_week = time.time() - 60*60*24*7
-        for fname in os.listdir(session_store.path):
-            path = os.path.join(session_store.path, fname)
-            try:
-                if os.path.getmtime(path) < last_week:
-                    os.unlink(path)
-            except OSError:
-                pass
+        # we keep session 14 hours (8hours + 6 hours - France Cuba)
+        last_period = time.time() - 14*3600
+        path = getattr(session_store, 'path', None)
+        if path and os.path.isdir(path):
+            for fname in os.listdir(session_store.path):
+                path = os.path.join(session_store.path, fname)
+                try:
+                    if os.path.getmtime(path) < last_period:
+                        os.unlink(path)
+                except OSError:
+                    pass
 
 #----------------------------------------------------------
 # WSGI Layer
@@ -1256,6 +1331,25 @@ class DisableCacheMiddleware(object):
                 start_response(status, headers)
         return self.app(environ, start_wrapped)
 
+
+def SessionStore(path):
+    # type: (str) -> werkzeug_sessions.SessionStore
+    '''Creates a session store.
+
+    The `path` argument may start with 'redis://', in which case return a
+    RedisSessionStore; otherwise try to return a FilesystemSessionStore.
+
+    '''
+    if path.startswith('redis://'):
+        raise NotImplemented
+    else:
+        return werkzeug_sessions.FilesystemSessionStore(
+            path,
+            session_class=OpenERPSession,
+            renew_missing=True,
+        )
+
+
 class Root(object):
     """Root WSGI application for the OpenERP Web Client.
     """
@@ -1267,8 +1361,8 @@ class Root(object):
         # Setup http sessions
         path = odoo.tools.config.session_dir
         _logger.debug('HTTP sessions stored in: %s', path)
-        return werkzeug.contrib.sessions.FilesystemSessionStore(
-            path, session_class=OpenERPSession, renew_missing=True)
+        # merchise: SessionStore to when it's time move to Redis.
+        return SessionStore(path)
 
     @lazy_property
     def nodb_routing_map(self):
@@ -1298,9 +1392,7 @@ class Root(object):
                     manifest_path = module_manifest(mod_path)
                     path_static = opj(addons_path, module, 'static')
                     if manifest_path and os.path.isdir(path_static):
-                        with open(manifest_path, 'rb') as fd:
-                            manifest_data = fd.read()
-                        manifest = ast.literal_eval(pycompat.to_text(manifest_data))
+                        manifest = load_information_from_description_file(module)
                         if not manifest.get('installable', True):
                             continue
                         manifest['addons_path'] = addons_path
@@ -1310,7 +1402,7 @@ class Root(object):
 
         if statics:
             _logger.info("HTTP Configuring static files")
-        app = werkzeug.wsgi.SharedDataMiddleware(self.dispatch, statics, cache_timeout=STATIC_CACHE)
+        app = SharedDataMiddleware(self.dispatch, statics, cache_timeout=STATIC_CACHE)
         self.dispatch = DisableCacheMiddleware(app)
 
     def setup_session(self, httprequest):
@@ -1397,17 +1489,40 @@ class Root(object):
         #   (the one using the cookie). That is a special feature of the Session Javascript class.
         # - It could allow session fixation attacks.
         if not explicit_session and hasattr(response, 'set_cookie'):
+            get_conf = odoo.tools.config.get
             response.set_cookie(
-                'session_id', httprequest.session.sid, max_age=90 * 24 * 60 * 60, httponly=True)
-
+                'session_id',
+                httprequest.session.sid,
+                max_age=get_conf('session_cookie_age', COOKIE_MAX_AGE),
+                domain=self._get_matching_domain(httprequest, get_conf('session_cookie_domain', '')),
+                secure=get_conf('session_cookie_secure', False),
+                httponly=True,
+            )
         return response
+
+    @staticmethod
+    def _get_matching_domain(request, allowed_domains):
+        from xotl.tools.string import cut_prefix
+        if isinstance(allowed_domains, str):
+            allowed_domains = allowed_domains.split(' ')
+        host = request.host
+        if not host:
+            return None
+        if ':' in host:
+            host = host.rsplit(':', 1)[0]
+        return next(
+            (domain for domain in allowed_domains
+             if domain.startswith('.') and host.endswith(domain)
+                or cut_prefix(domain, '.') == host),
+            None
+        )
 
     def dispatch(self, environ, start_response):
         """
         Performs the actual WSGI dispatching for the application.
         """
         try:
-            httprequest = werkzeug.wrappers.Request(environ)
+            httprequest = WerkzeugOdooRequest(environ)
             httprequest.app = self
             httprequest.parameter_storage_class = werkzeug.datastructures.ImmutableOrderedMultiDict
 

@@ -96,7 +96,7 @@
                     <filter string="Account with Entries" name="used" domain="[('used', '=', True)]"/>
                     <separator/>
                     <field name="user_type_id"/>
-                    <group expand="0" string="Group By">
+                    <group expand="0" string="Group By" name="group_by">
                         <filter string="Account Type" name="accounttype" domain="" context="{'group_by':'user_type_id'}"/>
                     </group>
                     <searchpanel class="account_root">
@@ -647,7 +647,7 @@ action = model.setting_init_bank_account_action()
                     <filter string="Draft" name="draft" domain="[('state','=','open')]"/>
                     <filter string="Confirmed" name="confirmed" domain="[('state','=','confirm')]"/>
                     <field name="journal_id" domain="[('type', '=', 'bank')]" />
-                    <group expand="0" string="Group By">
+                    <group expand="0" string="Group By" name="group_by">
                         <filter string="Journal" name="journal" context="{'group_by': 'journal_id'}"/>
                         <filter string="Status" name="status" context="{'group_by': 'state'}"/>
                         <filter string="Date" name="date" context="{'group_by': 'date'}"/>
@@ -1221,7 +1221,7 @@ action = model.setting_init_bank_account_action()
                     <separator/>
                     <filter name="active" string="Active" domain="[('active','=',True)]" help="Show active taxes"/>
                     <filter name="inactive" string="Inactive" domain="[('active','=',False)]" help="Show inactive taxes"/>
-                    <group string="Group By">
+                    <group string="Group By" name="group_by">
                         <filter string="Company" name="company" domain="[]" context="{'group_by':'company_id'}" groups="base.group_multi_company"/>
                         <filter string="Tax Application" name="taxapp" domain="[]" context="{'group_by':'type_tax_use'}"/>
                     </group>
@@ -1538,7 +1538,7 @@ action = model.setting_init_bank_account_action()
                 <search string="Search Account Templates">
                     <field name="name" filter_domain="['|', ('name','ilike',self), ('code','ilike',self)]" string="Account Template"/>
                     <field name="user_type_id"/>
-                    <group expand="0" string="Group By">
+                    <group expand="0" string="Group By" name="group_by">
                         <filter string="Account Type" name="accounttype" domain="[]" context="{'group_by':'user_type_id'}"/>
                    </group>
                 </search>
@@ -1591,7 +1591,7 @@ action = model.setting_init_bank_account_action()
                     <field name="bank_account_code_prefix"/>
                     <field name="cash_account_code_prefix"/>
                     <field name="transfer_account_code_prefix"/>
-                    <group expand="0" string="Group By">
+                    <group expand="0" string="Group By" name="group_by">
                         <filter string="Receivable Account" name="receivalbeacc" domain="[]" context="{'group_by':'property_account_receivable_id'}"/>
                         <filter string="Payable Account" name="payableacc" domain="[]" context="{'group_by':'property_account_payable_id'}"/>
                         <filter string="Income Account" name="incomeacc" domain="[]" context="{'group_by':'property_account_income_categ_id'}"/>

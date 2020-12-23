@@ -51,7 +51,10 @@ class TestServerActionsBase(common.TransactionCase):
             'name': 'TestAction',
             'model_id': self.res_partner_model.id,
             'state': 'code',
-            'code': 'record.write({"comment": "MyComment"})',
+            'code': '''
+            record.write({"comment": "MyComment"})
+            # some comment
+            ''',
         })
 
 
