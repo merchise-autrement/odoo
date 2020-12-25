@@ -15,7 +15,7 @@ stages:
     - |
       set -x
       apt-get update
-      apt-get install -y --no-install-recommends chromium libsasl2-dev python-dev libldap2-dev libssl-dev postgresql-client
+      apt-get install -y --no-install-recommends libsasl2-dev python-dev libldap2-dev libssl-dev postgresql-client
       export PIP_CACHE_DIR=.cache/pip
       export PIP_DISABLE_PIP_VERSION_CHECK=1
       pip install -r requirements.txt
