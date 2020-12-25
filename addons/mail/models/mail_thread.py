@@ -257,11 +257,6 @@ class MailThread(models.AbstractModel):
         """
         if self._context.get('tracking_disable'):
             thread = super(MailThread, self).create(vals_list)
-            # merchise: Ensure to have the unique index before trying to
-            # create notifications, so that those notification have the proper
-            # thread index.
-            if thread:
-                thread._ensure_index()
             return thread
 
         # subscribe uid unless asked not to
@@ -273,11 +268,6 @@ class MailThread(models.AbstractModel):
                 values['message_follower_ids'] = message_follower_ids
 
         threads = super(MailThread, self).create(vals_list)
-        # merchise: Ensure to have the unique index before trying to
-        # create notifications, so that those notification have the proper
-        # thread index.
-        if threads:
-            threads._ensure_index()
 
         # auto_subscribe: take values and defaults into account
         create_values_list = {}
@@ -319,11 +309,6 @@ class MailThread(models.AbstractModel):
     def write(self, values):
         if self._context.get('tracking_disable'):
             return super(MailThread, self).write(values)
-
-        # merchise: Ensure to have the unique index before trying to
-        # create notifications, so that those notification have the proper
-        # thread index.
-        self._ensure_index()
 
         # Track initial values of tracked fields
         track_self = self.with_lang()
