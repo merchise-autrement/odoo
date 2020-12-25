@@ -18,6 +18,23 @@ odoo.define("web_celery.CeleryAbstractService", function (require) {
     }
 
     /**
+     * Return a promise that will revolved as soon as one of the arguments
+     * resolves, or fail as soon as one of the arguments fails; whichever
+     * happens first.
+     */
+    function whichever() {
+        var res = $.Deferred();
+        var defs = Array.prototype.slice.apply(arguments);
+        defs.forEach((fn) =>
+            $.when(fn)
+                .done(() => res.resolve(fn))
+                .fail(() => res.reject(fn))
+        );
+        return res.promise();
+
+    }
+
+    /**
      * Basic implementation of the celery service.
      *
      * This services coordinates the background jobs with the UI and the rest of
@@ -203,7 +220,7 @@ odoo.define("web_celery.CeleryAbstractService", function (require) {
         _addBackgroundJob: function (job_uuid, next_action, cancellable) {
             var result = $.Deferred();
             var timer = concurrency.delay(JOB_TIME_LIMIT);
-            $.whichever(result, timer).then(function (which) {
+            whichever(result, timer).then(function (which) {
                 if (which === timer) {
                     result.reject({
                         type: "warning",
@@ -232,3 +249,8 @@ odoo.define("web_celery.CeleryAbstractService", function (require) {
 
     return CeleryAbstractService;
 });
+
+// Local Variables:
+// js-indent-level: 4
+// indent-tabs-mode: nil
+// End:

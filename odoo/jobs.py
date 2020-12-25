@@ -854,6 +854,8 @@ class TaskSignature(NamedTuple):
     methodname: str
     dbname: str
     uid: int
+    context: Dict[str, Any]
+    su: bool
     args: Tuple[Any, ...]
     kwargs: Dict[str, Any]
 
@@ -866,13 +868,12 @@ class TaskSignature(NamedTuple):
         self = getattr(method, "__self__", Unset)
         env = getattr(self, "env", Unset)
         if isinstance(self, BaseModel) and isinstance(env, Environment):
-            cr, uid, context = env.args
-            kwargs["context"] = dict(context)
+            cr, uid, context, su = env.args
             model = self
             methodname = method.__name__
             ids = self.ids
             args = args[1:]
-            return cls(model._name, ids, methodname, cr.dbname, uid, args, kwargs)
+            return cls(model._name, ids, methodname, cr.dbname, uid, dict(context), su, args, kwargs)
         raise TypeError("Invalid signature for Deferred; args: %r; kwargs: %r" % (args, kwargs))
 
     def matches_completely(self, args, kwargs):
@@ -889,19 +890,20 @@ class TaskSignature(NamedTuple):
         """True if this signature is for the same DB and user.
 
         If the signature matches the env's DB and the env's user is the
-        SUPERUSER, return True.
+        SUPERUSER or the env's `su` is True, return True.
 
         """
-        return self.dbname == env.cr.dbname and (env.uid == SUPERUSER_ID or env.uid == self.uid)
+        return self.dbname == env.cr.dbname and (env.uid == SUPERUSER_ID or env.su or env.uid == self.uid)
 
     def sudo(self):
-        "The same task signature for the SUPERUSER."
+        """The same task signature with ``sudo()`` applied."""
         return type(self)(
             self.modelname,
             self.ids,
             self.methodname,
             self.dbname,
-            SUPERUSER_ID,
+            self.uid,
+            True,
             self.args,
             self.kwargs,
         )
@@ -1006,7 +1008,7 @@ class Task(BaseTask):
 
 
 @app.task(base=Task, bind=True, max_retries=5, default_retry_delay=0.3)
-def task(self, model, ids, methodname, dbname, uid, args, kwargs, job_uuid=Unset):
+def task(self, model, ids, methodname, dbname, uid, context, su, args, kwargs, job_uuid=Unset):
     """The actual task running all our celery jobs.
 
     Since a model method may be altered in several addons, we funnel all calls
@@ -1030,7 +1032,6 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs, job_uuid=Unset
         from uuid import uuid1
 
         job_uuid = self.request.id if self.request.id else str(uuid1())
-    context = kwargs.pop("context", None)
     try:
         logger.info(
             "Start job (%s): db=%s, uid=%s, model=%s, ids=%r, method=%s",
@@ -1041,7 +1042,7 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs, job_uuid=Unset
             ids,
             methodname,
         )
-        with MaybeRecords(dbname, uid, model, ids, context=context) as r:
+        with MaybeRecords(dbname, uid, model, ids, context, su) as r:
             method = getattr(r, methodname, None)
             if method:
                 if not ids and _require_ids(method):
@@ -1085,15 +1086,15 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs, job_uuid=Unset
 
 
 @contextlib.contextmanager
-def MaybeRecords(dbname, uid, model, ids=None, context=None):
+def MaybeRecords(dbname, uid, model, ids=None, context=None, su=False):
     __traceback_hide__ = True  # noqa: hide from Celery Tracebacks
-    with OdooEnvironment(dbname, uid, context=context) as env:
+    with OdooEnvironment(dbname, uid, context, su) as env:
         records = env[model].browse(ids)
         yield records
 
 
 @contextlib.contextmanager
-def OdooEnvironment(dbname, uid, context=None):
+def OdooEnvironment(dbname, uid, context=None, su=False):
     __traceback_hide__ = True  # noqa: hide from Celery Tracebacks
     with Environment.manage():
         registry = Registry(dbname).check_signaling()
@@ -1102,7 +1103,7 @@ def OdooEnvironment(dbname, uid, context=None):
             # the current thread.
             thread = threading.currentThread()
             with temp_attributes(thread, dict(uid=uid, dbname=dbname)), registry.cursor() as cr:
-                env = Environment(cr, uid, context or {})
+                env = Environment(cr, uid, context or {}, su)
                 yield env
         except:  # noqa
             registry.reset_changes()
@@ -1196,9 +1197,9 @@ def _send(channel, message, env=None):
     if env is None:
         _context = ExecutionContext[CELERY_JOB]
         env = _context["env"]
-    cr, uid, context = env.args
+    cr, uid, context, su = env.args
     with Registry(cr.dbname).cursor() as newcr:
-        newenv = Environment(newcr, uid, context=context)
+        newenv = Environment(newcr, uid, context, su)
         # The bus waits until the COMMIT to actually NOTIFY listening clients,
         # this means that all progress reports, would not be visible to clients
         # until the whole transaction commits:
