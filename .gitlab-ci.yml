@@ -27,7 +27,7 @@ stages:
       ! egrep "(At least one test failed when loading the modules.|(ERROR|CRITICAL) odoodb)" $STDOUT
 
 
-run all tests in MRs:
+run all tests in MRs (Python 3.8):
   <<: *run_tests
   variables:
     POSTGRES_USER: odoodb
@@ -36,3 +36,14 @@ run all tests in MRs:
     GIT_DEPTH: "2"
   only:
     - merge_request
+
+run all tests in MRs (Python 3.9):
+  <<: *run_tests
+  variables:
+    POSTGRES_USER: odoodb
+    PYTHON_VERSION: "3.9"
+    DEBIAN_VERSION: "buster"
+    GIT_DEPTH: "2"
+  only:
+    - merge_request
+  allow_failure: true

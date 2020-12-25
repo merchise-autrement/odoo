@@ -7,7 +7,8 @@ feedparser==5.2.1
 gevent==1.1.2 ; sys_platform != 'win32' and python_version < '3.7'
 gevent~=20.5 ; python_version >= '3.8'
 greenlet==0.4.10 ; python_version < '3.7'
-greenlet==0.4.15 ; python_version >= '3.7'
+greenlet==0.4.16 ; python_version >= '3.7' and python_version < '3.9'
+greenlet==0.4.17 ; python_version >= '3.9'
 html2text==2018.1.9
 Jinja2~=2.10
 libsass==0.12.3; python_version <= '3.6'
