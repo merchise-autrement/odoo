@@ -636,7 +636,7 @@ class Task(models.Model):
             self.company_id = self.project_id.company_id
         else:
             self.stage_id = False
-    
+
     @api.onchange('company_id')
     def _onchange_task_company(self):
         if self.project_id.company_id != self.company_id:
@@ -980,7 +980,9 @@ class ProjectTags(models.Model):
     _name = "project.tags"
     _description = "Project Tags"
 
-    name = fields.Char('Tag Name', required=True)
+    # merchise: Introduced the translate; TODO: What about the _sql_contraints
+    # below?
+    name = fields.Char(required=True, translate=True)
     color = fields.Integer(string='Color Index')
 
     _sql_constraints = [

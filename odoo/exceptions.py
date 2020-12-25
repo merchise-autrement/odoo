@@ -40,6 +40,14 @@ class UserError(except_orm):
         super(UserError, self).__init__(msg, value='')
 
 
+class ExpectedSingletonError(ValueError):
+    pass
+
+
+class BusError(Exception):
+    pass
+
+
 # deprecated due to collision with builtins, kept for compatibility
 Warning = UserError
 
@@ -142,3 +150,13 @@ class DeferredException(Exception):
 
 class QWebException(Exception):
     pass
+
+
+class ExpectedSingletonError(ValueError):
+    """ Access to an multi record set as a single record.
+
+    Example: When you try to access to the value of an field of a recordset
+    with multiple records.
+    """
+    def __init__(self, msg):
+        super(ExpectedSingletonError, self).__init__(msg)

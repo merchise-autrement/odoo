@@ -1,0 +1,40 @@
+.full-screen-container {
+    position: absolute;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 2 * $zindex-modal + 1;
+
+    background-color: fade_out(#000, 0.3);
+    color: $white;
+
+    .progress-bar-container {
+        width: 50% !important;
+        margin: 25% auto;
+    }
+}
+
+.progress {
+    background-color: #aaa;
+    border: 1px solid #444;
+    border-radius: 5px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    height: 1rem;
+}
+
+.progress-bar {
+    width: 1%;
+    height: 100%;
+    background-color: $o-enterprise-primary-color;
+    border-radius: 5px;
+}
+
+.o_progress_message {
+    color: white;
+}
+
+.o_progress_systray {
+    margin: 10px;
+    width: 300px;
+    overflow: auto;
+}

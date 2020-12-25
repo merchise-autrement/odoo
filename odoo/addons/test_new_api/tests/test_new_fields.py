@@ -9,7 +9,7 @@ from PIL import Image
 import psycopg2
 
 from odoo import fields
-from odoo.exceptions import AccessError, UserError, ValidationError
+from odoo.exceptions import AccessError, UserError, ValidationError, ExpectedSingletonError
 from odoo.tests import common
 from odoo.tools import mute_logger, float_repr
 from odoo.tools.date_utils import add, subtract, start_of, end_of
@@ -42,7 +42,7 @@ class TestFields(common.TransactionCase):
         # field access fails on multiple records
         records = self.env['test_new_api.message'].search([])
         assert len(records) > 1
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ExpectedSingletonError):
             faulty = records.body
 
     def test_01_basic_set_assertion(self):

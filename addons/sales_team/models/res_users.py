@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models
+from odoo import fields, models
 
 
 class ResUsers(models.Model):
-    _inherit = 'res.users'
+    _inherit = "res.users"
 
-    sale_team_id = fields.Many2one(
-        'crm.team', "User's Sales Team",
-        help='Sales Team the user is member of. Used to compute the members of a Sales Team through the inverse one2many')
+    sale_teams = fields.Many2many(
+        "crm.team",
+        string="Sales Teams",
+        relation="sale_member_rel",
+        column1="user_id",
+        column2="team_id",
+        help="Sales Teams the user is member of.",
+    )

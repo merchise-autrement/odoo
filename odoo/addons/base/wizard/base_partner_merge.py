@@ -214,7 +214,7 @@ class MergePartnerAutomatic(models.TransientModel):
                 # unknown model or field => skip
                 continue
 
-            if field.compute is not None:
+            if field.compute is not None or not isinstance(Model, models.Model):
                 continue
 
             for partner in src_partners:
@@ -409,7 +409,7 @@ class MergePartnerAutomatic(models.TransientModel):
 
     @api.model
     def _get_ordered_partner(self, partner_ids):
-        """ Helper : returns a `res.partner` recordset ordered by create_date/active fields
+        """ Helper : returns a `res.partner` recordset ordered by id/create_date/active fields
             :param partner_ids : list of partner ids to sort
         """
         return self.env['res.partner'].browse(partner_ids).sorted(

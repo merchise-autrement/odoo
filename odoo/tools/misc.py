@@ -589,6 +589,16 @@ DEFAULT_SERVER_DATETIME_FORMAT = "%s %s" % (
 
 DATE_LENGTH = len(datetime.date.today().strftime(DEFAULT_SERVER_DATE_FORMAT))
 
+# The following format time by leaving seconds to 00.  This is useful in
+# applications where sub-minute timings are not really useful (e.g Instant
+# Messaging).
+DEFAULT_SERVER_TIME_FORMAT_IN_MINUTES = '%H:%M:00'
+DEFAULT_SERVER_DATETIME_FORMAT_IN_MINUTES = '%s %s' % (
+    DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_TIME_FORMAT_IN_MINUTES
+)
+
+
 # Python's strftime supports only the format directives
 # that are available on the platform's libc, so in order to
 # be cross-platform we map to the directives required by
@@ -718,6 +728,7 @@ def split_every(n, iterable, piece_maker=tuple):
     while piece:
         yield piece
         piece = piece_maker(islice(iterator, n))
+
 
 def get_and_group_by_field(cr, uid, obj, ids, field, context=None):
     """ Read the values of ``field´´ for the given ``ids´´ and group ids by value.

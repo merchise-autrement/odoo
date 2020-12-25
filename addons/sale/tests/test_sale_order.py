@@ -36,7 +36,7 @@ class TestSaleOrder(TestCommonSaleNoChart):
             'email': 'team0user@example.com',
             'login': 'team0user',
             'name': 'User in Team 0',
-            'sale_team_id': cls.crm_team0.id
+            'sale_teams': [(4, cls.crm_team0.id)]
         })
         cls.user_not_in_team = cls.env['res.users'].create({
             'email': 'noteamuser@example.com',

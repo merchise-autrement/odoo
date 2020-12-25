@@ -3,6 +3,7 @@ _build/
 
 # dotfiles
 .*
+!.gitlab-ci.yml
 !.gitignore
 !.mailmap
 # compiled python files

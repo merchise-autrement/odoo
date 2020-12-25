@@ -531,7 +531,11 @@ community directory.
 Navigate to the path of your Odoo Community installation (`CommunityPath`) and run **pip**
 on the requirements file:
 
-.. code-block:: console
+Once all dependencies are set up, Odoo can be launched by running `odoo-bin`, the
+command-line interface of the server. It is located at the root of the Odoo Community directory.
+
+To configure the server, you can either specify :ref:`command-line arguments <reference/cmdline/server>` or a
+:ref:`configuration file <reference/cmdline/config>`.
 
     $ cd /CommunityPath
     $ pip3 install setuptools wheel
@@ -613,7 +617,15 @@ git commands.
 
 Community Edition:
 
-.. code-block:: console
+Fetch the sources
+'''''''''''''''''
+
+There are two ways to obtain the source code of Odoo: as a zip **archive** or through **git**.
+
+Archive
+^^^^^^^
+
+Community Edition:
 
     $ git clone https://github.com/odoo/odoo.git
 
