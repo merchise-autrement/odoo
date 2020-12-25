@@ -73,7 +73,6 @@ class configmanager(object):
         # Options not exposed on the command line. Command line options will be added
         # from optparse's parser.
         self.options = {
-            'admin_passwd': 'admin',
             'csv_internal_sep': ',',
             'publisher_warranty_url': 'http://services.openerp.com/publisher-warranty/',
             'reportgz': False,
@@ -137,6 +136,9 @@ class configmanager(object):
                          help="Listen port for the longpolling HTTP service", type="int", metavar="PORT")
         group.add_option("--no-http", dest="http_enable", action="store_false", my_default=True,
                          help="Disable the HTTP and Longpolling services entirely")
+        group.add_option("--no-longpolling", dest="longpolling_autospawn",
+                         action="store_false", my_default=True,
+                         help="Disable the Longpolling service without disabling HTTP")
         group.add_option("--proxy-mode", dest="proxy_mode", action="store_true", my_default=False,
                          help="Activate reverse proxy WSGI wrappers (headers rewriting) "
                               "Only enable this when running behind a trusted web proxy!")
@@ -265,6 +267,10 @@ class configmanager(object):
                             help="Disable the ability to obtain or view the list of databases. "
                                  "Also disable access to the database manager and selector, "
                                  "so be sure to set a proper --database parameter first")
+        security.add_option('--disable-database-manager', action='store_true', dest='disable_database_manager', my_default=False,
+                            help='Disable the ability to manage the databases from the web interface.')
+        security.add_option('--master-password-hash', dest='admin_passwd',
+                            my_default='$pbkdf2-sha512$25000$bE2pdW4thZDSmhMiROj9Hw$UF3D/aGJCTy5OL.jxOMD7xwxYDazPyNQAXBHctlxlzdNT7ThTVdtkiVv4.V7nE.Wdh13vDyPbtyTdGPFyCCMmg')
         parser.add_option_group(security)
 
         # Advanced options
@@ -295,6 +301,8 @@ class configmanager(object):
                          help="Try to enable the unaccent extension when creating new databases.")
         group.add_option("--geoip-db", dest="geoip_database", my_default='/usr/share/GeoIP/GeoLite2-City.mmdb',
                          help="Absolute path to the GeoIP database file.")
+        group.add_option('--process-name', dest='custom_process_name', my_default='odoo',
+                         help="A custom process name.  Only works if setproctitle is installed")
         parser.add_option_group(group)
 
         if os.name == 'posix':
@@ -314,9 +322,12 @@ class configmanager(object):
             group.add_option("--limit-time-cpu", dest="limit_time_cpu", my_default=60,
                              help="Maximum allowed CPU time per request (default 60).",
                              type="int")
-            group.add_option("--limit-time-real", dest="limit_time_real", my_default=120,
-                             help="Maximum allowed Real time per request (default 120).",
+            group.add_option("--limit-time-real", dest="limit_time_real", my_default=115,
+                             help="Maximum allowed Real time per request (default 110).",
                              type="int")
+            group.add_option("--limit-time-real-niceness", dest="limit_time_real_niceness", my_default=5,
+                             help="Amount of time in seconds to wait after --limit-time-real before forcibly killing the worker (default 5s).",
+                             type="float")
             group.add_option("--limit-time-real-cron", dest="limit_time_real_cron", my_default=-1,
                              help="Maximum allowed Real time per cron job. (default: --limit-time-real). "
                                   "Set to 0 for no limit. ",
@@ -454,17 +465,21 @@ class configmanager(object):
             'language', 'translate_out', 'translate_in', 'overwrite_existing_translations',
             'dev_mode', 'shell_interface', 'smtp_ssl', 'load_language',
             'stop_after_init', 'without_demo', 'http_enable', 'syslog',
+            'longpolling_autospawn',
+            'custom_process_name',
             'list_db', 'proxy_mode',
             'test_file', 'test_tags',
             'osv_memory_count_limit', 'osv_memory_age_limit', 'transient_age_limit', 'max_cron_threads', 'unaccent',
             'data_dir',
             'server_wide_modules',
+            'admin_passwd',
         ]
 
         posix_keys = [
             'workers',
             'limit_memory_hard', 'limit_memory_soft',
-            'limit_time_cpu', 'limit_time_real', 'limit_request', 'limit_time_real_cron'
+            'limit_time_cpu', 'limit_time_real', 'limit_request',
+            'limit_time_real_cron', 'limit_time_real_niceness'
         ]
 
         if os.name == 'posix':
@@ -672,6 +687,9 @@ class configmanager(object):
 
     def __getitem__(self, key):
         return self.options[key]
+
+    def setdefault(self, key, default):
+        return self.options.setdefault(key, default)
 
     @property
     def addons_data_dir(self):

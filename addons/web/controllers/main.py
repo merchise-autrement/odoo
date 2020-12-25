@@ -928,6 +928,11 @@ class Home(http.Controller):
         except odoo.exceptions.AccessDenied:
             values['databases'] = None
 
+        values['disable_database_manager'] = odoo.tools.config.get(
+            'disable_database_manager',
+            False
+        )
+
         if request.httprequest.method == 'POST':
             old_uid = request.uid
             try:
@@ -1095,6 +1100,26 @@ class Proxy(http.Controller):
             return client.post('/' + path, base_url=base_url, query_string=query_string,
                                headers=headers, data=data)
 
+
+def require_db_manager_allowed(f):
+    from functools import wraps
+
+    @wraps(f)
+    def result(*args, **kwargs):
+        import werkzeug.exceptions
+        disable_database_manager = odoo.tools.config.get(
+            'disable_database_manager',
+            False
+        )
+        if not disable_database_manager:
+            return f(*args, **kwargs)
+        else:
+            _logger.warning("403: Disabled database manager")
+            return werkzeug.exceptions.Unauthorized()
+
+    return result
+
+
 class Database(http.Controller):
 
     def _render_template(self, **d):
@@ -1116,16 +1141,19 @@ class Database(http.Controller):
         return env.get_template("database_manager.html").render(d)
 
     @http.route('/web/database/selector', type='http', auth="none")
+    @require_db_manager_allowed
     def selector(self, **kw):
         request._cr = None
         return self._render_template(manage=False)
 
     @http.route('/web/database/manager', type='http', auth="none")
+    @require_db_manager_allowed
     def manager(self, **kw):
         request._cr = None
         return self._render_template()
 
     @http.route('/web/database/create', type='http', auth="none", methods=['POST'], csrf=False)
+    @require_db_manager_allowed
     def create(self, master_pwd, name, lang, password, **post):
         insecure = odoo.tools.config.verify_admin_password('admin')
         if insecure and master_pwd:
@@ -1143,6 +1171,7 @@ class Database(http.Controller):
         return self._render_template(error=error)
 
     @http.route('/web/database/duplicate', type='http', auth="none", methods=['POST'], csrf=False)
+    @require_db_manager_allowed
     def duplicate(self, master_pwd, name, new_name):
         insecure = odoo.tools.config.verify_admin_password('admin')
         if insecure and master_pwd:
@@ -1158,6 +1187,7 @@ class Database(http.Controller):
             return self._render_template(error=error)
 
     @http.route('/web/database/drop', type='http', auth="none", methods=['POST'], csrf=False)
+    @require_db_manager_allowed
     def drop(self, master_pwd, name):
         insecure = odoo.tools.config.verify_admin_password('admin')
         if insecure and master_pwd:
@@ -1171,6 +1201,7 @@ class Database(http.Controller):
             return self._render_template(error=error)
 
     @http.route('/web/database/backup', type='http', auth="none", methods=['POST'], csrf=False)
+    @require_db_manager_allowed
     def backup(self, master_pwd, name, backup_format = 'zip'):
         insecure = odoo.tools.config.verify_admin_password('admin')
         if insecure and master_pwd:
@@ -1192,6 +1223,7 @@ class Database(http.Controller):
             return self._render_template(error=error)
 
     @http.route('/web/database/restore', type='http', auth="none", methods=['POST'], csrf=False)
+    @require_db_manager_allowed
     def restore(self, master_pwd, backup_file, name, copy=False):
         insecure = odoo.tools.config.verify_admin_password('admin')
         if insecure and master_pwd:
@@ -1211,6 +1243,7 @@ class Database(http.Controller):
                 os.unlink(data_file.name)
 
     @http.route('/web/database/change_password', type='http', auth="none", methods=['POST'], csrf=False)
+    @require_db_manager_allowed
     def change_password(self, master_pwd, master_pwd_new):
         try:
             dispatch_rpc('db', 'change_admin_password', [master_pwd, master_pwd_new])
@@ -1220,6 +1253,7 @@ class Database(http.Controller):
             return self._render_template(error=error)
 
     @http.route('/web/database/list', type='json', auth='none')
+    @require_db_manager_allowed
     def list(self):
         """
         Used by Mobile application for listing database
@@ -1532,7 +1566,10 @@ class Binary(http.Controller):
             if not (width or height):
                 width, height = odoo.tools.image_guess_size_from_field_name(field)
 
-        image_base64 = image_process(image_base64, size=(int(width), int(height)), crop=crop, quality=int(quality))
+        try:
+            image_base64 = image_process(image_base64, size=(int(width), int(height)), crop=crop, quality=int(quality))
+        except Exception:
+            return request.not_found()
 
         content = base64.b64decode(image_base64)
         headers = http.set_safe_image_headers(headers, content)

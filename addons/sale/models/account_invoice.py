@@ -59,8 +59,10 @@ class AccountMove(models.Model):
 
     @api.onchange('invoice_user_id')
     def onchange_user_id(self):
-        if self.invoice_user_id and self.invoice_user_id.sale_team_id:
-            self.team_id = self.invoice_user_id.sale_team_id
+        # merchise: Updated to use the Many2many definition of a relation
+        # Users -- Teams.
+        if self.invoice_user_id and self.invoice_user_id.sale_teams:
+            self.team_id = self.invoice_user_id.sale_teams[0]
 
     def _reverse_moves(self, default_values_list=None, cancel=False):
         # OVERRIDE

@@ -12,6 +12,8 @@ from collections import defaultdict
 import functools
 import logging
 
+import textwrap
+import dateutil
 from pytz import timezone
 
 _logger = logging.getLogger(__name__)
@@ -436,10 +438,14 @@ class IrActionsServer(models.Model):
     groups_id = fields.Many2many('res.groups', 'ir_act_server_group_rel',
                                  'act_id', 'gid', string='Groups')
 
+    @property
+    def _code(self):
+        return textwrap.dedent(self.code.strip('\r\n'))
+
     @api.constrains('code')
     def _check_python_code(self):
         for action in self.sudo().filtered('code'):
-            msg = test_python_expr(expr=action.code.strip(), mode="exec")
+            msg = test_python_expr(expr=action._code, mode="exec")
             if msg:
                 raise ValidationError(msg)
 

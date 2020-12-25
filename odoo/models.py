@@ -52,6 +52,7 @@ from . import SUPERUSER_ID
 from . import api
 from . import tools
 from .exceptions import AccessError, MissingError, ValidationError, UserError
+from .exceptions import ExpectedSingletonError
 from .osv.query import Query
 from .tools import frozendict, lazy_classproperty, ormcache, \
                    Collector, LastOrderedSet, OrderedSet, IterableGenerator, \
@@ -2014,7 +2015,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
     def _read_group_prepare(self, orderby, aggregated_fields, annotated_groupbys, query):
         """
         Prepares the GROUP BY and ORDER BY terms for the read_group method. Adds the missing JOIN clause
-        to the query if order should be computed against m2o field. 
+        to the query if order should be computed against m2o field.
         :param orderby: the orderby definition in the form "%(field)s %(order)s"
         :param aggregated_fields: list of aggregated fields in the query
         :param annotated_groupbys: list of dictionaries returned by _read_group_process_groupby
@@ -2111,9 +2112,9 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         return {
             'field': split[0],
             'groupby': gb,
-            'type': field_type, 
+            'type': field_type,
             'display_format': display_formats[gb_function or 'month'] if temporal else None,
-            'interval': time_intervals[gb_function or 'month'] if temporal else None,                
+            'interval': time_intervals[gb_function or 'month'] if temporal else None,
             'tz_convert': tz_convert,
             'qualified_field': qualified_field,
         }
@@ -2138,8 +2139,8 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
     @api.model
     def _read_group_format_result(self, data, annotated_groupbys, groupby, domain):
         """
-            Helper method to format the data contained in the dictionary data by 
-            adding the domain corresponding to its values, the groupbys in the 
+            Helper method to format the data contained in the dictionary data by
+            adding the domain corresponding to its values, the groupbys in the
             context and by properly formatting the date/datetime values.
 
         :param data: a single group
@@ -2218,10 +2219,10 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                 The possible aggregation functions are the ones provided by PostgreSQL
                 (https://www.postgresql.org/docs/current/static/functions-aggregate.html)
                 and 'count_distinct', with the expected meaning.
-        :param list groupby: list of groupby descriptions by which the records will be grouped.  
+        :param list groupby: list of groupby descriptions by which the records will be grouped.
                 A groupby description is either a field (then it will be grouped by that field)
                 or a string 'field:groupby_function'.  Right now, the only functions supported
-                are 'day', 'week', 'month', 'quarter' or 'year', and they only make sense for 
+                are 'day', 'week', 'month', 'quarter' or 'year', and they only make sense for
                 date/datetime fields.
         :param int offset: optional number of records to skip
         :param int limit: optional max number of records to return
@@ -2229,7 +2230,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                              overriding the natural sort ordering of the
                              groups, see also :py:meth:`~osv.osv.osv.search`
                              (supported only for many2one fields currently)
-        :param bool lazy: if true, the results are only grouped by the first groupby and the 
+        :param bool lazy: if true, the results are only grouped by the first groupby and the
                 remaining groupbys are put in the __context key.  If false, all the groupbys are
                 done in one call.
         :return: list of dictionaries(one dictionary for each record) containing:
@@ -2386,7 +2387,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             # Right now, read_group only fill results in lazy mode (by default).
             # If you need to have the empty groups in 'eager' mode, then the
             # method _read_group_fill_results need to be completely reimplemented
-            # in a sane way 
+            # in a sane way
             result = self._read_group_fill_results(
                 domain, groupby_fields[0], groupby[len(annotated_groupbys):],
                 aggregated_fields, count_field, result, read_group_order=order,
@@ -3416,7 +3417,7 @@ Fields:
         # mark fields that depend on 'self' to recompute them after 'self' has
         # been deleted (like updating a sum of lines after deleting one line)
         self.flush()
-        self.modified(self._fields)
+        self.modified(self._fields, before=True)
 
         with self.env.norecompute():
             self.check_access_rule('unlink')
@@ -3616,8 +3617,25 @@ Fields:
 
         # protect fields being written against recomputation
         with env.protecting(protected, self):
-            # determine records depending on values
-            self.modified(relational_names)
+            # Determine records depending on values. When modifying a relational
+            # field, you have to recompute what depends on the field's values
+            # before and after modification.  This is because the modification
+            # has an impact on the "data path" between a computed field and its
+            # dependency.  Note that this double call to modified() is only
+            # necessary for relational fields.
+            #
+            # It is best explained with a simple example: consider two sales
+            # orders SO1 and SO2.  The computed total amount on sales orders
+            # indirectly depends on the many2one field 'order_id' linking lines
+            # to their sales order.  Now consider the following code:
+            #
+            #   line = so1.line_ids[0]      # pick a line from SO1
+            #   line.order_id = so2         # move the line to SO2
+            #
+            # In this situation, the total amount must be recomputed on *both*
+            # sales order: the line's order before the modification, and the
+            # line's order after the modification.
+            self.modified(relational_names, before=True)
 
             real_recs = self.filtered('id')
 
@@ -3932,7 +3950,7 @@ Fields:
             # that this limit is well managed by PostgreSQL.
             # In INSERT queries, we inject integers (small) and larger data (TEXT blocks for
             # example).
-            # 
+            #
             # The problem then becomes: how to "estimate" the right size of the batch to have
             # good performance?
             #
@@ -4963,7 +4981,7 @@ Fields:
             _id, = self._ids
             return self
         except ValueError:
-            raise ValueError("Expected singleton: %s" % self)
+            raise ExpectedSingletonError("Expected singleton: %s" % self)
 
     def with_env(self, env):
         """Return a new version of this recordset attached to the provided environment.
@@ -5703,14 +5721,14 @@ Fields:
                [(invf, None) for f in fields for invf in self._field_inverses[f]]
         self.env.cache.invalidate(spec)
 
-    def modified(self, fnames, create=False):
-        """ Notify that fields have been modified on ``self``. This invalidates
-            the cache, and prepares the recomputation of stored function fields
-            (new-style fields only).
+    def modified(self, fnames, create=False, before=False):
+        """ Notify that fields will be or have been modified on ``self``. This
+        invalidates the cache where necessary, and prepares the recomputation of
+        dependent stored fields.
 
-            :param fnames: iterable of field names that have been modified on
-                records ``self``
-            :param create: whether modified is called in the context of record creation
+        :param fnames: iterable of field names modified on records ``self``
+        :param create: whether called in the context of record creation
+        :param before: whether called before modifying records ``self``
         """
         if not self or not fnames:
             return
@@ -5743,34 +5761,59 @@ Fields:
                 node = self.pool.field_triggers.get(self._fields[fname])
                 if node:
                     trigger_tree_merge(tree, node)
+
         if tree:
-            self.sudo().with_context(active_test=False)._modified_triggers(tree, create)
+            # determine what to compute (through an iterator)
+            tocompute = self.sudo().with_context(active_test=False)._modified_triggers(tree, create)
+
+            # When called after modification, one should traverse backwards
+            # dependencies by taking into account all fields already known to be
+            # recomputed.  In that case, we mark fieds to compute as soon as
+            # possible.
+            #
+            # When called before modification, one should mark fields to compute
+            # after having inversed all dependencies.  This is because we
+            # determine what currently depends on self, and it should not be
+            # recomputed before the modification!
+            if before:
+                tocompute = list(tocompute)
+
+            # process what to compute
+            for field, records in tocompute:
+                records -= self.env.protected(field)
+                if not records:
+                    continue
+                # Dont force the recomputation of compute fields which are
+                # not stored as this is not really necessary.
+                recursive = not create and field.recursive
+                if field.compute and field.store:
+                    if recursive:
+                        marked_records = self.env.not_to_compute(field, records)
+                    self.env.add_to_compute(field, records)
+                else:
+                    if recursive:
+                        marked_records = records & self.env.cache.get_records(records, field)
+                    self.env.cache.invalidate([(field, records._ids)])
+                # recursively trigger recomputation of field's dependents
+                if recursive:
+                    marked_records.modified([field.name])
 
     def _modified_triggers(self, tree, create=False):
-        """ Process a tree of field triggers on ``self``. """
+        """ Return an iterator traversing a tree of field triggers on ``self``,
+        traversing backwards field dependencies along the way, and yielding
+        pairs ``(field, records)`` to recompute.
+        """
         if not self:
             return
+
+        # first yield what to compute
+        for field in tree.get(None, ()):
+            yield field, self
+
+        # then traverse dependencies backwards, and proceed recursively
         for key, val in tree.items():
             if key is None:
-                # val is a list of fields to mark as todo
-                for field in val:
-                    records = self - self.env.protected(field)
-                    if not records:
-                        continue
-                    # Dont force the recomputation of compute fields which are
-                    # not stored as this is not really necessary.
-                    recursive = not create and field.recursive
-                    if field.compute and field.store:
-                        if recursive:
-                            added = self.env.not_to_compute(field, records)
-                        self.env.add_to_compute(field, records)
-                    else:
-                        if recursive:
-                            added = self & self.env.cache.get_records(self, field)
-                        self.env.cache.invalidate([(field, records._ids)])
-                    # recursively trigger recomputation of field's dependents
-                    if recursive:
-                        added.modified([field.name])
+                continue
             elif create and key.type in ('many2one', 'many2one_reference'):
                 # upon creation, no other record has a reference to self
                 continue
@@ -5810,7 +5853,7 @@ Fields:
                     if new_records:
                         cache_records = self.env.cache.get_records(model, key)
                         records |= cache_records.filtered(lambda r: set(r[key.name]._ids) & set(self._ids))
-                records._modified_triggers(val)
+                yield from records._modified_triggers(val)
 
     @api.model
     def recompute(self, fnames=None, records=None):
@@ -6159,8 +6202,11 @@ Fields:
         for name in names:
             snapshot0.fetch(name)
 
-        # determine which field(s) should be triggered an onchange
-        todo = list(names or nametree)
+        # Determine which field(s) should be triggered an onchange. On the first
+        # call, 'names' only contains fields with a default. If 'self' is a new
+        # line in a one2many field, 'names' also contains the one2many's inverse
+        # field, and that field may not be in nametree.
+        todo = list(names) + list(nametree) if first_call else list(names)
         done = set()
 
         # dummy assignment: trigger invalidations on the record
@@ -6289,7 +6335,7 @@ Fields:
         field_generators = self._populate_factories()
         if not field_generators:
             return self.browse() # maybe create an automatic generator?
-            
+
         records_batches = []
         generator = populate.chain_factories(field_generators, self._name)
         while record_count <= min_size or not complete:

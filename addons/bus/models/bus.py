@@ -12,10 +12,15 @@ from odoo import api, fields, models, SUPERUSER_ID
 from odoo.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
 from odoo.tools import date_utils
 
+from kombu.asynchronous.hub import Hub  # kombu 4.2.0+
+
+
 _logger = logging.getLogger(__name__)
 
 # longpolling timeout connection
 TIMEOUT = 50
+TIMEOUT_DELTA = datetime.timedelta(seconds=TIMEOUT)
+
 
 #----------------------------------------------------------
 # Bus
@@ -149,39 +154,43 @@ class ImDispatch(object):
         return notifications
 
     def loop(self):
-        """ Dispatch postgres notifications to the relevant polling threads/greenlets """
+        """Dispatch postgres notifications to the relevant polling threads/greenlets"""
+        def on_db_notification(conn):
+            def callback(*a, **kw):
+                conn.poll()
+                channels = []
+                while conn.notifies:
+                    channels.extend(json.loads(conn.notifies.pop().payload))
+                # dispatch to local threads/greenlets
+                events = set()
+                for channel in channels:
+                    events.update(self.channels.pop(hashable(channel), set()))
+                for event in events:
+                    event.set()
+            return callback
+
         _logger.info("Bus.loop listen imbus on db postgres")
         with odoo.sql_db.db_connect('postgres').cursor() as cr:
             conn = cr._cnx
             cr.execute("listen imbus")
-            cr.commit();
-            while True:
-                if select.select([conn], [], [], TIMEOUT) == ([], [], []):
-                    pass
-                else:
-                    conn.poll()
-                    channels = []
-                    while conn.notifies:
-                        channels.extend(json.loads(conn.notifies.pop().payload))
-                    # dispatch to local threads/greenlets
-                    events = set()
-                    for channel in channels:
-                        events.update(self.channels.pop(hashable(channel), set()))
-                    for event in events:
-                        event.set()
+            cr.commit()
+
+            hub = Hub()
+            hub.add_reader(conn, on_db_notification(conn))
+            hub.run_forever()
 
     def run(self):
         while True:
             try:
                 self.loop()
-            except Exception as e:
+            except Exception:
                 _logger.exception("Bus.loop error, sleep and retry")
                 time.sleep(TIMEOUT)
 
     def start(self):
         if odoo.evented:
             # gevent mode
-            import gevent
+            import gevent.event
             self.Event = gevent.event.Event
             gevent.spawn(self.run)
         else:

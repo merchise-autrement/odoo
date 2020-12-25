@@ -107,7 +107,8 @@ class CRMLeadMiningRequest(models.Model):
     @api.depends('user_id')
     def _compute_team_id(self):
         for record in self:
-            record.team_id = record.user_id.sale_team_id
+            user = record.user_id
+            record.team_id = user.sale_teams and user.sale_teams[0]
 
     @api.onchange('lead_number')
     def _onchange_lead_number(self):
@@ -138,7 +139,7 @@ class CRMLeadMiningRequest(models.Model):
     def _onchange_company_size_max(self):
         if self.company_size_max < self.company_size_min:
             self.company_size_max = self.company_size_min
-    
+
     def _prepare_iap_payload(self):
         """
         This will prepare the data to send to the server

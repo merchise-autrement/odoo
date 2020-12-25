@@ -21,7 +21,9 @@ class CrmTeam(models.Model):
 
     def _get_default_team_id(self, user_id=None, domain=None):
         user_id = user_id or self.env.uid
-        user_salesteam_id = self.env['res.users'].browse(user_id).sale_team_id.id
+        # merchise: Update to many sale_teams.
+        user = self.env['res.users'].browse(user_id)
+        user_salesteam_id = user.sale_teams and user.sale_teams[0].id or None
         # Avoid searching on member_ids (+1 query) when we may have the user salesteam already in cache.
         team = self.env['crm.team'].search([
             ('company_id', 'in', [False, self.env.company.id]),
@@ -45,10 +47,17 @@ class CrmTeam(models.Model):
         related='company_id.currency_id', readonly=True)
     user_id = fields.Many2one('res.users', string='Team Leader', check_company=True)
     # memberships
-    member_ids = fields.One2many(
-        'res.users', 'sale_team_id', string='Channel Members',
-        check_company=True, domain=[('share', '=', False)],
-        help="Add members to automatically assign their documents to this sales team. You can only be member of one team.")
+    # merchise: changed to Many2many, because we have the same user in several teams.
+    member_ids = fields.Many2many(
+        'res.users',
+        string='Channel Members',
+        check_company=True,
+        domain=lambda self: [('groups_id', 'in', self.env.ref('base.group_user').id)],
+        help="Add members to automatically assign their documents to this sales team. You can only be member of one team.",
+        relation='sale_member_rel',
+        column1='team_id',
+        column2='user_id',
+    )
     # UX options
     color = fields.Integer(string='Color Index', help="The color of the channel")
     favorite_user_ids = fields.Many2many(
