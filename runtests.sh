@@ -64,6 +64,15 @@ function psql() { `psql_wrapper $@`; }
 
 while [ \! -z "$1" ]; do
     case $1 in
+        -p)
+            shift
+            if [ -z "$1" ]; then
+                echo "-p requires an argument"
+                exit 1;
+            else
+                python="$1"
+            fi
+            ;;
         --no-venv)
             # Trick me to use no virtual env.
             VIRTUAL_ENV='fake'
@@ -122,7 +131,9 @@ if [ -z "$EXECUTABLE" ]; then
 fi
 
 if [ -z $VIRTUAL_ENV ]; then
-    python=`which python3`
+    if [ -z "$python" ]; then
+        python=`which python3`
+    fi
     echo "Creating virtualenv $VENV ($python) and installing the packages.  Wait for it."
     virtualenv -p $python $VENV &&
         trap 'rm -rf $VENV; dropdb $DB; exit $CODE ' EXIT && \
