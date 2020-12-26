@@ -22,6 +22,7 @@ setup(
     packages=find_packages(),
     package_dir={'%s' % lib_name: 'odoo'},
     include_package_data=True,
+    zip_safe=False,
     install_requires=[
         'babel >= 1.0',
         'decorator',
@@ -57,6 +58,15 @@ setup(
         'werkzeug',
         'xlsxwriter',
         'xlwt',
+
+        # Merchise
+        'celery>=4,<6',
+        'flower',
+        'redis',
+        'xotl.tools>=2.1.9,<2.2',
+        'raven>=6.9.0',
+        'raven-sanitize-openerp',
+        'rjsmin>=1.0.12,<1.1',
     ],
     python_requires='>=3.6',
     extras_require={

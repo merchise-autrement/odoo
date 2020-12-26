@@ -13,3 +13,7 @@ from . import server
 from . import shell
 from . import start
 from . import populate
+
+# merchise
+from . import celery  # noqa
+from . import passwd  # noqa

@@ -120,6 +120,15 @@ class ValidationError(UserError):
     """
 
 
+# merchise: Added to better filter those errors in Sentry and/or POSTMORTEM
+class ExpectedSingletonError(ValueError):
+    pass
+
+
+class BusError(Exception):
+    pass
+
+
 # Deprecated exceptions, only kept for backward compatibility, may be
 # removed in the future *without* any futher notice than the Deprecation
 # Warning.

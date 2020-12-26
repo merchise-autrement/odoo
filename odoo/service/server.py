@@ -22,10 +22,26 @@ import psutil
 import werkzeug.serving
 from werkzeug.debug import DebuggedApplication
 
+_signals = {getattr(signal, name): name for name in dir(signal) if name.startswith('SIG')}
+
+
+class WorkerRuntimeError(RuntimeError):
+    _sentry_fingerprint = ['worker runtime error', ]
+
+
+class WorkerLimitException(WorkerRuntimeError):
+    _sentry_fingerprint = ['worker limit', ]
+
+
+class WorkerTimeLimitException(WorkerRuntimeError):
+    _sentry_fingerprint = ['worker request limit', ]
+
+
 if os.name == 'posix':
     # Unix only for workers
     import fcntl
     import resource
+    from os import WEXITSTATUS
     try:
         import inotify
         from inotify.adapters import InotifyTrees
@@ -36,6 +52,8 @@ if os.name == 'posix':
 else:
     # Windows shim
     signal.SIGHUP = -1
+    WEXITSTATUS = lambda st: (st & 0xff00) >> 8   # noqa: E731
+
     inotify = None
 
 if not inotify:
@@ -218,7 +236,8 @@ class ThreadedWSGIServerReloadable(LoggingBaseWSGIServerMixIn, werkzeug.serving.
 #----------------------------------------------------------
 class FSWatcherBase(object):
     def handle_file(self, path):
-        if path.endswith('.py') and not os.path.basename(path).startswith('.~'):
+        fname = os.path.basename(path)
+        if path.endswith('.py') and not fname.startswith('.~') and not fname.startswith('.#'):
             try:
                 source = open(path, 'rb').read() + b'\n'
                 compile(source, path, 'exec')
@@ -561,6 +580,7 @@ class ThreadedServer(CommonServer):
     def reload(self):
         os.kill(self.pid, signal.SIGHUP)
 
+
 class GeventServer(CommonServer):
     def __init__(self, app):
         super(GeventServer, self).__init__(app)
@@ -642,6 +662,7 @@ class GeventServer(CommonServer):
         self.start()
         self.stop()
 
+
 class PreforkServer(CommonServer):
     """ Multiprocessing inspired by (g)unicorn.
     PreforkServer (aka Multicorn) currently uses accept(2) as dispatching
@@ -689,15 +710,16 @@ class PreforkServer(CommonServer):
                 raise
 
     def signal_handler(self, sig, frame):
+        _logger.debug('%s sent to the server', _signals.get(sig, 'UNK'))
         if len(self.queue) < 5 or sig == signal.SIGCHLD:
             self.queue.append(sig)
             self.pipe_ping(self.pipe)
         else:
             _logger.warning("Dropping signal: %s", sig)
 
-    def worker_spawn(self, klass, workers_registry):
+    def worker_spawn(self, klass, workers_registry, *args, **kwargs):
         self.generation += 1
-        worker = klass(self)
+        worker = klass(self, *args, **kwargs)
         pid = os.fork()
         if pid != 0:
             worker.pid = pid
@@ -709,8 +731,9 @@ class PreforkServer(CommonServer):
             sys.exit(0)
 
     def long_polling_spawn(self):
-        nargs = stripped_sys_argv()
+        nargs = stripped_sys_argv('--dev')
         cmd = [sys.executable, sys.argv[0], 'gevent'] + nargs[1:]
+        _logger.info('Spawning longpolling server %s', cmd)
         popen = subprocess.Popen(cmd)
         self.long_polling_pid = popen.pid
 
@@ -731,7 +754,7 @@ class PreforkServer(CommonServer):
         try:
             os.kill(pid, sig)
         except OSError as e:
-            if e.errno == errno.ESRCH:
+            if e.errno == errno.ESRCH:  # No such process
                 self.worker_pop(pid)
 
     def process_signals(self):
@@ -757,16 +780,17 @@ class PreforkServer(CommonServer):
                 self.population -= 1
 
     def process_zombie(self):
-        # reap dead workers
+        # reap dead workers.  See manual page for waitpid(2) to learn about
+        # zombie processes and why this is needed.
         while 1:
             try:
                 wpid, status = os.waitpid(-1, os.WNOHANG)
                 if not wpid:
                     break
-                if (status >> 8) == 3:
-                    msg = "Critial worker error (%s)"
+                if WEXITSTATUS(status) == 3:
+                    msg = "Critical worker error (%s)"
                     _logger.critical(msg, wpid)
-                    raise Exception(msg % wpid)
+                    raise WorkerRuntimeError(msg % wpid)
                 self.worker_pop(wpid)
             except OSError as e:
                 if e.errno == errno.ECHILD:
@@ -776,19 +800,30 @@ class PreforkServer(CommonServer):
     def process_timeout(self):
         now = time.time()
         for (pid, worker) in self.workers.items():
-            if worker.watchdog_timeout is not None and \
-                    (now - worker.watchdog_time) >= worker.watchdog_timeout:
-                _logger.error("%s (%s) timeout after %ss",
-                              worker.__class__.__name__,
-                              pid,
-                              worker.watchdog_timeout)
-                self.worker_kill(pid, signal.SIGKILL)
+            if worker.watchdog_timeout is not None:
+                elapsed = now - worker.watchdog_time
+                if elapsed >= worker.watchdog_timeout_hard:
+                    _logger.error("%s (%s) timeout. After %f > %f, and %f",
+                                  worker.__class__.__name__,
+                                  pid,
+                                  elapsed,
+                                  worker.watchdog_timeout_hard,
+                                  worker.watchdog_timeout)
+                    self.worker_kill(pid, signal.SIGKILL)
+                elif elapsed >= worker.watchdog_timeout:
+                    _logger.debug("%s (%s) soft timeout. After %f > %f, and %f",
+                                  worker.__class__.__name__,
+                                  pid,
+                                  elapsed,
+                                  worker.watchdog_timeout_hard,
+                                  worker.watchdog_timeout)
+                    self.worker_kill(pid, signal.SIGUSR2)
 
     def process_spawn(self):
         if config['http_enable']:
             while len(self.workers_http) < self.population:
                 self.worker_spawn(WorkerHTTP, self.workers_http)
-            if not self.long_polling_pid:
+            if not self.long_polling_pid and config['longpolling_autospawn']:
                 self.long_polling_spawn()
         while len(self.workers_cron) < config['max_cron_threads']:
             self.worker_spawn(WorkerCron, self.workers_cron)
@@ -809,10 +844,21 @@ class PreforkServer(CommonServer):
             if e.args[0] not in [errno.EINTR]:
                 raise
 
-    def start(self):
+    def start(self, stop=False):
         # wakeup pipe, python doesnt throw EINTR when a syscall is interrupted
-        # by a signal simulating a pseudo SA_RESTART. We write to a pipe in the
-        # signal handler to overcome this behaviour
+        # by a signal simulating a pseudo SA_RESTART. We write to a pipe in
+        # the signal handler to overcome this behaviour.
+        #
+        # merchise: The previous means: The select in `sleep` could block
+        # forever if actually interrupted (EINTR) and the signal handler does
+        # not "break" the loop.
+        #
+        # So, inside the signal handler we send a single byte into the pipe,
+        # so that the select in `sleep` does not block forever if it was
+        # interrupted halfway.
+        #
+        # Useful reference: http://250bpm.com/blog:12
+        #
         self.pipe = self.pipe_new()
         # set signal handlers
         signal.signal(signal.SIGINT, self.signal_handler)
@@ -824,7 +870,7 @@ class PreforkServer(CommonServer):
         signal.signal(signal.SIGQUIT, dumpstacks)
         signal.signal(signal.SIGUSR1, log_ormcache_stats)
 
-        if self.address:
+        if self.address and not stop:
             # listen to socket
             _logger.info('HTTP service (werkzeug) running on %s:%s', *self.address)
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -841,7 +887,7 @@ class PreforkServer(CommonServer):
         if graceful:
             _logger.info("Stopping gracefully")
             limit = time.time() + self.timeout
-            for pid in self.workers:
+            for pid in list(self.workers):
                 self.worker_kill(pid, signal.SIGINT)
             while self.workers and time.time() < limit:
                 try:
@@ -853,13 +899,13 @@ class PreforkServer(CommonServer):
                 time.sleep(0.1)
         else:
             _logger.info("Stopping forcefully")
-        for pid in self.workers:
+        for pid in list(self.workers):
             self.worker_kill(pid, signal.SIGTERM)
         if self.socket:
             self.socket.close()
 
     def run(self, preload, stop):
-        self.start()
+        self.start(stop=stop)
 
         rc = preload_registries(preload)
 
@@ -898,6 +944,11 @@ class Worker(object):
         self.wakeup_fd_r, self.wakeup_fd_w = self.eintr_pipe
         # Can be set to None if no watchdog is desired.
         self.watchdog_timeout = multi.timeout
+        #  XXX: The worker is instantiated before forking, so the parent's pid
+        #  (ppid) is actually the running process.  This attribute will be
+        #  "inherited" by children processes.  Notice both parent and children
+        #  keep their "unique view" of the Worker instance.  The pid attribute
+        #  is set by both processes after the fork.
         self.ppid = os.getpid()
         self.pid = None
         self.alive = True
@@ -905,8 +956,19 @@ class Worker(object):
         self.request_max = multi.limit_request
         self.request_count = 0
 
+    @property
+    def watchdog_timeout_hard(self):
+        niceness = config.get('limit_time_real_niceness', 0.0)
+        if self.watchdog_timeout is not None:
+            return self.watchdog_timeout + niceness
+        else:
+            return None
+
     def setproctitle(self, title=""):
-        setproctitle('odoo: %s %s %s' % (self.__class__.__name__, self.pid, title))
+        name = config.get('custom_process_name', 'openerp')
+        setproctitle(f'[%s] {name}: %s %s %s' % (
+            sys.argv[0], self.__class__.__name__, self.pid, title
+        ))
 
     def close(self):
         os.close(self.watchdog_pipe[0])
@@ -915,6 +977,8 @@ class Worker(object):
         os.close(self.eintr_pipe[1])
 
     def signal_handler(self, sig, frame):
+        _logger.debug('%s sent to the worker', _signals.get(sig, 'UNK'))
+        # Handles SIGINT (Ctrl-C).  This will make the worker quit nicely.
         self.alive = False
 
     def signal_time_expired_handler(self, n, stack):
@@ -956,6 +1020,9 @@ class Worker(object):
         soft, hard = resource.getrlimit(resource.RLIMIT_CPU)
         resource.setrlimit(resource.RLIMIT_CPU, (int(cpu_time + config['limit_time_cpu']), hard))
 
+    def raise_timeout(self, *args):
+        raise WorkerTimeLimitException('Request exceeded allowed time')
+
     def process_work(self):
         pass
 
@@ -963,7 +1030,8 @@ class Worker(object):
         self.pid = os.getpid()
         self.setproctitle()
         _logger.info("Worker %s (%s) alive", self.__class__.__name__, self.pid)
-        # Reseed the random number generator
+        # Reseed the random number generator, so that it diverts from parent
+        # and siblings.
         random.seed()
         if self.multi.socket:
             # Prevent fd inheritance: close_on_exec
@@ -1135,9 +1203,10 @@ class WorkerCron(Worker):
         if self.multi.socket:
             self.multi.socket.close()
 
-#----------------------------------------------------------
+
+# ---------------------------------------------------------
 # start/stop public api
-#----------------------------------------------------------
+# ---------------------------------------------------------
 
 server = None
 
@@ -1313,3 +1382,7 @@ def restart():
         threading.Thread(target=_reexec).start()
     else:
         os.kill(server.pid, signal.SIGHUP)
+
+# Local Variables:
+# fill-column: 80
+# End:

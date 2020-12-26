@@ -97,11 +97,18 @@ def check(f):
                 if e.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
                     raise
                 if tries >= MAX_TRIES_ON_CONCURRENCY_FAILURE:
-                    _logger.info("%s, maximum number of tries reached" % errorcodes.lookup(e.pgcode))
+                    _logger.warn("%s, maximum number of tries reached" % errorcodes.lookup(e.pgcode))
                     raise
                 wait_time = random.uniform(0.0, 2 ** tries)
                 tries += 1
-                _logger.info("%s, retry %d/%d in %.04f sec..." % (errorcodes.lookup(e.pgcode), tries, MAX_TRIES_ON_CONCURRENCY_FAILURE, wait_time))
+                if tries > 3:
+                    _logger.warn(
+                        "%s, retry %d/%d in %.04f sec...",
+                        errorcodes.lookup(e.pgcode),
+                        tries,
+                        MAX_TRIES_ON_CONCURRENCY_FAILURE,
+                        wait_time
+                    )
                 time.sleep(wait_time)
             except IntegrityError as inst:
                 registry = odoo.registry(dbname)

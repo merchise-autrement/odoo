@@ -922,7 +922,7 @@ class MailThread(models.AbstractModel):
 
         # 0. Handle bounce: verify whether this is a bounced email and use it to collect bounce data and update notifications for customers
         #    Bounce regex: typical form of bounce is bounce_alias+128-crm.lead-34@domain
-        #       group(1) = the mail ID; group(2) = the model (if any); group(3) = the record ID 
+        #       group(1) = the mail ID; group(2) = the model (if any); group(3) = the record ID
         #    Bounce message (not alias)
         #       See http://datatracker.ietf.org/doc/rfc3462/?include_text=1
         #        As all MTA does not respect this RFC (googlemail is one of them),
@@ -1304,9 +1304,30 @@ class MailThread(models.AbstractModel):
                         body = tools.append_content_to_html(body, html, plaintext=False)
                     # we only strip_classes here everything else will be done in by html field of mail.message
                     body = tools.html_sanitize(body, sanitize_tags=False, strip_classes=True)
-                # 4) Anything else -> attachment
+                # 4) if message/* we will do mostly like text/plain but Python
+                # handles message/* as multipart and thus
+                # get_payload(decode=True) is None.  Letting the "attachment"
+                # catch-all facility to proceed would only result in several
+                # 4-bytes attachments with "None".
+                elif part.get_content_maintype() == 'message':
+                    payload = ''.join(
+                        subpart.as_string() for subpart in part.get_payload()
+                    )
+                    body = tools.append_content_to_html(
+                        body, tools.ustr(payload, encoding, errors='replace'),
+                        preserve=True
+                    )
+
+                # *) Anything else is ignored. Some MUAs don't include the
+                # "Content-Disposition: inline", but simply omit it.  The
+                # "Content-Disposition: attachment" is already dealt in the
+                # item 1) and other stuff like message/reports should not be
+                # considered attachments.  Furthermore, message/ parts are
+                # "is_multipart()", and the payload is None.
+                #
+                # TODO: Validate the previous None with Python 3.6+.
                 else:
-                    attachments.append(self._Attachment(filename or 'attachment', part.get_content(), {}))
+                    pass
 
         return self._message_parse_extract_payload_postprocess(message, {'body': body, 'attachments': attachments})
 
@@ -1694,7 +1715,7 @@ class MailThread(models.AbstractModel):
             m2m_attachment_ids += [(4, id) for id in attachment_ids]
         # Handle attachments parameter, that is a dictionary of attachments
 
-        if attachments: # generate 
+        if attachments: # generate
             cids_in_body = set()
             names_in_body = set()
             cid_list = []
@@ -1783,7 +1804,7 @@ class MailThread(models.AbstractModel):
             :param str body: body of the message, usually raw HTML that will
                 be sanitized
             :param str subject: subject of the message
-            :param str message_type: see mail_message.message_type field. Can be anything but 
+            :param str message_type: see mail_message.message_type field. Can be anything but
                 user_notification, reserved for message_notify
             :param int parent_id: handle thread formation
             :param int subtype_id: subtype_id of the message, mainly use fore
@@ -1966,7 +1987,7 @@ class MailThread(models.AbstractModel):
     def message_notify(self, *,
                        partner_ids=False, parent_id=False, model=False, res_id=False,
                        author_id=None, email_from=None, body='', subject=False, **kwargs):
-        """ Shortcut allowing to notify partners of messages that shouldn't be 
+        """ Shortcut allowing to notify partners of messages that shouldn't be
         displayed on a document. It pushes notifications on inbox or by email depending
         on the user configuration, like other notifications. """
         if self:
@@ -2576,7 +2597,7 @@ class MailThread(models.AbstractModel):
             'button_access': {'title': 'View Simple Chatter Model',
                             'url': '/mail/view?model=mail.test.simple&res_id=1497'},
             'has_button_access': False,
-            'recipients': [4, 5, 6] 
+            'recipients': [4, 5, 6]
         },
         {
             'actions': [],

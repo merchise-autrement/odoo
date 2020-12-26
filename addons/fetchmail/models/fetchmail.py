@@ -176,9 +176,15 @@ odoo_mailgate: "|/path/to/odoo-mailgate.py --host=localhost -u %(uid)d -p PASSWO
                         result, data = imap_server.fetch(num, '(RFC822)')
                         imap_server.store(num, '-FLAGS', '\\Seen')
                         try:
-                            res_id = MailThread.with_context(**additionnal_context).message_process(server.object_id.model, data[0][1], save_original=server.original, strip_attachments=(not server.attach))
+                            with self.env.cr.savepoint():
+                                res_id = MailThread.with_context(**additionnal_context).message_process(
+                                    server.object_id.model,
+                                    data[0][1],
+                                    save_original=server.original,
+                                    strip_attachments=(not server.attach),
+                                )
                         except Exception:
-                            _logger.info('Failed to process mail from %s server %s.', server.server_type, server.name, exc_info=True)
+                            _logger.exception('Failed to process mail from %s server %s.', server.server_type, server.name, exc_info=True)
                             failed += 1
                         imap_server.store(num, '+FLAGS', '\\Seen')
                         self._cr.commit()
@@ -201,10 +207,16 @@ odoo_mailgate: "|/path/to/odoo-mailgate.py --host=localhost -u %(uid)d -p PASSWO
                             message = (b'\n').join(messages)
                             res_id = None
                             try:
-                                res_id = MailThread.with_context(**additionnal_context).message_process(server.object_id.model, message, save_original=server.original, strip_attachments=(not server.attach))
+                                with self.env.cr.savepoint():
+                                    res_id = MailThread.with_context(**additionnal_context).message_process(
+                                        server.object_id.model,
+                                        message,
+                                        save_original=server.original,
+                                        strip_attachments=(not server.attach),
+                                    )
                                 pop_server.dele(num)
                             except Exception:
-                                _logger.info('Failed to process mail from %s server %s.', server.server_type, server.name, exc_info=True)
+                                _logger.exception('Failed to process mail from %s server %s.', server.server_type, server.name, exc_info=True)
                                 failed += 1
                             self.env.cr.commit()
                         if num_messages < MAX_POP_MESSAGES:
