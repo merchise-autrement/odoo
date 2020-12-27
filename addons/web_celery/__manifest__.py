@@ -14,7 +14,10 @@ dict(
     description="Web API for Celery Integration",
     summary="Web API for Celery Integration",
     depends=["web", "bus"],
-    data=["views/assets.xml"],
+    data=[
+        "security/ir.model.access.csv",
+        "views/assets.xml",
+    ],
     qweb=["static/src/xml/*.xml"],
     auto_install=True,
     installable=True,
