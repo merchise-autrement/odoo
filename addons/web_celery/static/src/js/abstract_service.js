@@ -4,14 +4,14 @@ odoo.define("web_celery.CeleryAbstractService", function (require) {
     // That's 20 minutes!  This should account for the time in the queue plus
     // the running time.
     //
-    var JOB_TIME_LIMIT = 1200000;
+    const JOB_TIME_LIMIT = 1200000;
 
-    var Bus = require("web.Bus"),
+    const Bus = require("web.Bus"),
         AbstractService = require("web.AbstractService"),
         concurrency = require("web.concurrency");
 
-    var CSRF_TOKEN = require("web.core").csrf_token;
-    var session = require("web.session");
+    const CSRF_TOKEN = require("web.core").csrf_token;
+    const session = require("web.session");
 
     function getProgressChannel(job_uuid) {
         return "celeryapp:" + job_uuid + ":progress";
@@ -23,15 +23,8 @@ odoo.define("web_celery.CeleryAbstractService", function (require) {
      * happens first.
      */
     function whichever() {
-        var res = $.Deferred();
-        var defs = Array.prototype.slice.apply(arguments);
-        defs.forEach((fn) =>
-            $.when(fn)
-                .done(() => res.resolve(fn))
-                .fail(() => res.reject(fn))
-        );
-        return res.promise();
-
+        const defs = Array.prototype.slice.apply(arguments);
+		return Promise.race(defs);
     }
 
     /**

@@ -25,6 +25,16 @@ from odoo.tools import config
 from xotl.tools.context import context
 
 
+class BackgroundJobAction(models.TransientModel):
+    _name = "web.celery.background_job"
+    _description = "Celery Job Action"
+
+    def _get_readable_fields(self):
+        return {'tag', 'params'}
+
+BACKGROUND_JOB_ACTION = BackgroundJobAction._name
+
+
 def QUIETLY_WAIT_FOR_TASK(job, next_action=None):
     """The client action that waits quietly for a background job to complete.
 
@@ -43,7 +53,7 @@ def QUIETLY_WAIT_FOR_TASK(job, next_action=None):
     """
     if job is not None:
         return dict(
-            type="web.celery.background_job",
+            type=BACKGROUND_JOB_ACTION,
             tag="block_no_progress",
             params=dict(uuid=job.id, next_action=next_action),
         )
@@ -70,7 +80,7 @@ def WAIT_FOR_TASK(job, next_action=None, cancellable=False):
     """
     if job is not None:
         return dict(
-            type="web.celery.background_job",
+            type=BACKGROUND_JOB_ACTION,
             tag="block_with_progress",
             params=dict(uuid=job.id, next_action=next_action, cancellable=cancellable),
         )
