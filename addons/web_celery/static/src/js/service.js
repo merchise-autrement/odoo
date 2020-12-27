@@ -1,10 +1,13 @@
 odoo.define("web_celery.CeleryService", function (require) {
     "use strict";
 
-    var CeleryAbstractService = require("web_celery.CeleryAbstractService");
-    var core = require("web.core"),
-        widgets = require("web_celery.widgets"),
-        FullScreenProgressBar = widgets.FullScreenProgressBar;
+    const CeleryAbstractService = require("web_celery.CeleryAbstractService");
+    const core = require("web.core"),
+          widgets = require("web_celery.widgets"),
+          FullScreenProgressBar = widgets.FullScreenProgressBar;
+
+    // Use the root widget to be able to print the fullscreen progress bar.
+    const root = require('root.widget');
 
     /**
      * A service for the background celery jobs in the Web Client.
@@ -22,7 +25,7 @@ odoo.define("web_celery.CeleryService", function (require) {
      * job.
      *
      */
-    var WebCeleryService = CeleryAbstractService.extend({
+    const WebCeleryService = CeleryAbstractService.extend({
         appendBackgroundJob: function () {
             this._super.apply(this, arguments);
             // This should not happen, but if it does, let's not hold the
@@ -56,9 +59,7 @@ odoo.define("web_celery.CeleryService", function (require) {
                 if (success_message.next_action) {
                     self.do_action(success_message.next_action);
                 } else {
-                    var controller = self
-                        .getParent()
-                        .action_manager.getCurrentController();
+                    var controller = root.action_manager.getCurrentController();
                     if (
                         controller &&
                         controller.widget &&
@@ -91,7 +92,7 @@ odoo.define("web_celery.CeleryService", function (require) {
                 params.uuid,
                 params.cancellable
             );
-            loading.appendTo(this.getParent().$el);
+            loading.appendTo(root.$el);
             finished.always(function () {
                 loading.destroy();
             });
@@ -104,4 +105,6 @@ odoo.define("web_celery.CeleryService", function (require) {
 
 // Local Variables:
 // indent-tabs-mode: nil
+// tab-width: 4
+// js-indent-level: 4
 // End:
