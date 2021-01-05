@@ -327,7 +327,10 @@ class OdooModelSerializer(Serializer):
 
     def serialize(self, value, **kwargs):
         if value:
-            names = value.name_get()
+            if value.env.cr._closed:
+                names = list(value.ids)
+            else:
+                names = value.name_get()
             return transform(Record(value._name, names))
         else:
             return transform(Record(value._name, []))
