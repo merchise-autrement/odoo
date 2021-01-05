@@ -1037,13 +1037,13 @@ class CELERY_JOB(ExecutionContext):
         from odoo.http import _request_stack
 
         _request_stack.push(self.request)
-        return super(CELERY_JOB, self).__enter__()
+        return super().__enter__()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         from odoo.http import _request_stack
 
         _request_stack.pop()
-        return super(CELERY_JOB, self).__exit__(exc_type, exc_val, exc_tb)
+        return super().__exit__(exc_type, exc_val, exc_tb)
 
 
 PG_CONCURRENCY_ERRORS_TO_RETRY = (
@@ -1248,7 +1248,13 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs, job_uuid=Unset
                     method = getattr(r.browse(ids), methodname)
                 options = dict(job=self, env=r.env, job_uuid=job_uuid)
                 with CELERY_JOB(**options):
-                    res = method(*args, **kwargs)
+                    try:
+                        res = method(*args, **kwargs)
+                    except (SoftTimeLimitExceeded, OperationalError, KeyboardInterrupt):
+                        raise
+                    except Exception:
+                        logger.exception("Unhandled exception while executing Celery job")
+                        raise
                 if isinstance(res, BaseModel):
                     res = res.ids  # downgrade to ids
                 _report_success.delay(dbname, uid, job_uuid, result=res)
@@ -1280,7 +1286,6 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs, job_uuid=Unset
                 raise error
     except Exception as error:
         _report_current_failure(dbname, uid, job_uuid, error)
-        raise
 
 
 @contextlib.contextmanager
@@ -1376,7 +1381,6 @@ def _report_current_failure(dbname, uid, job_uuid, error, subtask=True):
             _report_failure.delay(dbname, uid, job_uuid)
     else:
         _report_failure(dbname, uid, job_uuid, message=data)
-    logger.exception("Unhandled exception in task")
 
 
 def get_progress_channel(job_uuid):

@@ -16,29 +16,31 @@ To configure, simply set the global `conf`:obj: dictionary and call
 `patch_logging`:func:.
 
 """
+import logging
 import os
-import raven
+import sys
+import urllib.parse as _urlparse
+from itertools import takewhile
 
+import raven
+from raven.handlers.logging import SentryHandler as SentryLoggingHandlerBase
 from raven.transport.requests import RequestsHTTPTransport
 from raven.transport.threaded_requests import ThreadedRequestsHTTPTransport
 from raven.transport.gevent import GeventedHTTPTransport
 from raven.utils.wsgi import get_headers, get_environ
-
-
 from raven.utils.serializer.manager import manager as _manager, transform
 from raven.utils.serializer import Serializer
 
-
-try:
-    import urlparse as _urlparse
-except ImportError:
-    import urllib.parse as _urlparse
+from odoo import models
+from odoo.addons.base.models.qweb import QWebException
+from odoo.exceptions import except_orm, MissingError, RedirectWarning
+from odoo.http import JsonRequest, HttpRequest
 
 # This module is about logging-only, not wrapping the WSGI application in a
 # middleware, etc.
 
+from xotl.tools.names import nameof
 from xotl.tools.objects import setdefaultattr
-
 from xotl.tools.symbols import Unset
 from xotl.tools.symbols import boolean as Logical
 
@@ -138,9 +140,6 @@ def patch_logging(override=False, force=False):
     The Sentry will only receive the error-level messages.
 
     """
-    import logging
-    from raven.handlers.logging import SentryHandler as Base
-
     def _require_httprequest(func):
         def inner(self, record):
             try:
@@ -159,23 +158,39 @@ def patch_logging(override=False, force=False):
 
         return inner
 
-    class SentryHandler(Base):
+    def _require_request(func):
+        def inner(self, record):
+            try:
+                from odoo.http import request
+                return func(self, record, request)
+            except ImportError:
+                # Not inside an HTTP request
+                pass
+            except RuntimeError:
+                # When upgrading a DB the request may exists but the bound to
+                # it does not.
+                pass
+
+        return inner
+
+    class SentryHandler(SentryLoggingHandlerBase):
         def _emit(self, record, **kwargs):
             self.set_record_tags(record)
             request_context = self._get_http_context(record)
             if request_context:
                 self.client.http_context(request_context)
-            user_context = self._get_user_context(record)
-            if user_context:
-                self.client.user_context(user_context)
             try:
-                super(SentryHandler, self)._emit(record, **kwargs)
-            except:
-                # We should never fail if emitting the log to Sentry fails.
-                # Neither we should print the error, other programs may think
-                # we have fail because of it: For instance, the mailgate
-                # integrated with postfix does.
-                pass
+                user_context = self._get_user_context(record)
+                if user_context:
+                    self.client.user_context(user_context)
+                try:
+                    super()._emit(record, **kwargs)
+                except:
+                    # We should never fail if emitting the log to Sentry fails.
+                    # Neither we should print the error, other programs may think
+                    # we have fail because of it: For instance, the mailgate
+                    # integrated with postfix does.
+                    pass
             finally:
                 self.client.context.clear()
 
@@ -191,22 +206,20 @@ def patch_logging(override=False, force=False):
                 "env": dict(get_environ(request.environ)),
             }
 
-        @_require_httprequest
+        @_require_request
         def _get_user_context(self, record, request):
-            return {"id": getattr(request, "session", {}).get("login", None)}
+            try:
+                return {"id": request.env.user.login}
+            except AttributeError:
+                return None
 
         def _handle_cli_tags(self, record):
-            import sys
-            from itertools import takewhile
-
             tags = setdefaultattr(record, "tags", {})
             if sys.argv:
                 cmd = " ".join(takewhile(lambda arg: not arg.startswith("-"), sys.argv))
             else:
                 cmd = None
             if cmd:
-                import os
-
                 cmd = os.path.basename(cmd)
             if cmd:
                 tags["cmd"] = cmd
@@ -228,8 +241,6 @@ def patch_logging(override=False, force=False):
                 tags["db"] = db
 
         def _handle_fingerprint(self, record):
-            from xotl.tools.names import nameof
-
             exc_info = record.exc_info
             if exc_info:
                 _type, value, _tb = exc_info
@@ -244,7 +255,6 @@ def patch_logging(override=False, force=False):
                     record.fingerprint = fingerprint
 
         def _get_http_request_data(self, request):
-            from odoo.http import JsonRequest, HttpRequest
             from odoo.http import request  # Let it raise
 
             # We can't simply use `isinstance` cause request is actual a
@@ -257,33 +267,16 @@ def patch_logging(override=False, force=False):
                 return None
 
         def can_record(self, record):
-            res = super(SentryHandler, self).can_record(record)
+            res = super().can_record(record)
             if not res:
                 return False
             exc_info = record.exc_info
             if not exc_info:
                 return res
-            from odoo.exceptions import UserError
 
-            ignored = (UserError,)
-            try:
-                from odoo.addons.base.models.qweb import QWebException
-
-                ignored += (QWebException,)
-            except ImportError:
-                pass
-
-            try:
-                from odoo.exceptions import RedirectWarning
-
-                ignored += (RedirectWarning,)
-            except ImportError:
-                pass
-            from odoo.exceptions import except_orm, MissingError
-
-            ignored += (except_orm,)
+            ignored = (QWebException, except_orm, RedirectWarning, MissingError)
             _type, value, _tb = exc_info
-            return not isinstance(value, ignored) or isinstance(value, MissingError)
+            return not isinstance(value, ignored)
 
         def set_record_tags(self, record):
             methods = (getattr(self, m) for m in dir(self) if m.startswith("_handle_"))
@@ -321,8 +314,6 @@ class Record:
 
 
 class OdooModelSerializer(Serializer):
-    from odoo import models
-
     types = (models.BaseModel,)
 
     def serialize(self, value, **kwargs):
