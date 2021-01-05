@@ -65,7 +65,7 @@ setup(
         'xotl.tools>=2.1.9,<2.2',
         'raven>=6.9.0',
         'raven-sanitize-openerp',
-        'rjsmin>=1.0.12,<1.1',
+        'rjsmin>=1.1.0,<1.2',
     ],
     python_requires='>=3.5',
     extras_require={
