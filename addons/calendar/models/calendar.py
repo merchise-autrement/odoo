@@ -203,6 +203,7 @@ class Attendee(models.Model):
                 email_values = {
                     'model': None,  # We don't want to have the mail in the tchatter while in queue!
                     'res_id': None,
+                    'author_id': attendee.event_id.user_id.partner_id.id or self.env.user.partner_id.id,
                 }
                 if ics_file:
                     email_values['attachment_ids'] = [
@@ -984,8 +985,9 @@ class Meeting(models.Model):
         def ics_datetime(idate, allday=False):
             if idate:
                 if allday:
-                    return idate
+                    return fields.Date.to_date(idate)
                 else:
+                    idate = fields.Datetime.to_datetime(idate)
                     return idate.replace(tzinfo=pytz.timezone('UTC'))
             return False
 
