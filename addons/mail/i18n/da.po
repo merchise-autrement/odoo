@@ -1085,6 +1085,12 @@ msgid "Call"
 msgstr "Ring"
 
 #. module: mail
+#: code:addons/mail/models/mail_notification.py:57
+#, python-format
+msgid "Can not update the message or recipient of a notification."
+msgstr "Kan ikke opdatere beskeden eller modtageren af en notifikation."
+
+#. module: mail
 #. openerp-web
 #: code:addons/mail/static/src/js/followers.js:365
 #: code:addons/mail/static/src/xml/activity.xml:86
@@ -1822,6 +1828,13 @@ msgstr "Navn på Dokument"
 
 #. module: mail
 #. openerp-web
+#: code:addons/mail/static/src/xml/thread.xml:524
+#, python-format
+msgid "Document not downloadable"
+msgstr "Dokument kan ikke downloades"
+
+#. module: mail
+#. openerp-web
 #: code:addons/mail/static/src/xml/activity.xml:101
 #, python-format
 msgid "Done"
@@ -2320,6 +2333,14 @@ msgstr "Kun følgere"
 #, python-format
 msgid "Following"
 msgstr "Following"
+
+#. module: mail
+#: code:addons/mail/models/mail_channel.py:778
+#, python-format
+msgid "Following invites are invalid as user groups do not match: %s"
+msgstr ""
+"Følgende invitationer er ugyldige eftersom brugergrupper ikke stemmer "
+"overens: %s"
 
 #. module: mail
 #: model:ir.model.fields,help:mail.field_mail_activity__icon
@@ -3265,6 +3286,13 @@ msgstr "Mærk som To do"
 #, python-format
 msgid "Mark as done"
 msgstr "Markér som udført"
+
+#. module: mail
+#. openerp-web
+#: code:addons/mail/static/src/xml/thread.xml:300
+#, python-format
+msgid "Mark as todo"
+msgstr "Marker som at-gøre"
 
 #. module: mail
 #: model:ir.ui.menu,name:mail.mail_blacklist_menu
@@ -4979,6 +5007,13 @@ msgstr "Send en besked"
 
 #. module: mail
 #. openerp-web
+#: code:addons/mail/static/src/xml/discuss.xml:141
+#, python-format
+msgid "Send by mail"
+msgstr "Send via email"
+
+#. module: mail
+#. openerp-web
 #: code:addons/mail/static/src/js/discuss.js:145
 #, python-format
 msgid "Send explanation to author"
@@ -5369,6 +5404,12 @@ msgstr ""
 "dette felt ikke er indstillet, forsøger systemet at finde den rigtige ejer "
 "baseret på afsenderens (Fra) adresse eller bruger administratorkontoen, hvis"
 " der ikke findes en systembruger for den pågældende adresse."
+
+#. module: mail
+#: code:addons/mail/models/mail_channel.py:0
+#, python-format
+msgid "The partner can not join this channel"
+msgstr "Partneren kan ikke deltage i denne kanal"
 
 #. module: mail
 #: code:addons/mail/models/mail_activity.py:243
@@ -5811,6 +5852,29 @@ msgstr "Bruger felt navn"
 
 #. module: mail
 #. openerp-web
+#: code:addons/mail/static/src/xml/discuss.xml:157
+#: code:addons/mail/static/src/xml/discuss.xml:278
+#, python-format
+msgid "User is idle"
+msgstr "Bruger er inaktiv"
+
+#. module: mail
+#. openerp-web
+#: code:addons/mail/static/src/xml/discuss.xml:158
+#, python-format
+msgid "User is offline"
+msgstr "Bruger er offline"
+
+#. module: mail
+#. openerp-web
+#: code:addons/mail/static/src/xml/discuss.xml:156
+#: code:addons/mail/static/src/xml/discuss.xml:277
+#, python-format
+msgid "User is online"
+msgstr "Bruger er online"
+
+#. module: mail
+#. openerp-web
 #: code:addons/mail/static/src/xml/discuss.xml:62
 #: code:addons/mail/static/src/xml/thread_window.xml:11
 #, python-format
@@ -6075,6 +6139,24 @@ msgstr ""
 "Du kan markere enhver besked som 'stjernet', og den vises i denne postkasse."
 
 #. module: mail
+#: cod:addons/mail/models/mail_channel.py:0
+#, python-format
+msgid "You can not remove this partner from this channel"
+msgstr "Du kan ikke fjerne denne partner fra denne kanal"
+
+#. module: mail
+#: code:addons/mail/models/mail_channel.py:0
+#, python-format
+msgid "You can not write on the record of other users"
+msgstr "Du kan ikke skrive i andre brugers datasæt"
+
+#. module: mail
+#: code:addons/mail/models/mail_channel.py:0
+#, python-format
+msgid "You can not write on this field"
+msgstr "Du kan ikke skrive i dette felt"
+
+#. module: mail
 #: code:addons/mail/models/res_users.py:87
 #, python-format
 msgid ""
@@ -6128,8 +6210,8 @@ msgstr "Du er blevet tildelt"
 #. openerp-web
 #: code:addons/mail/static/src/js/services/mail_notification_manager.js:198
 #, python-format
-msgid "You have been invited to: "
-msgstr "Du er blevet inviteret til:"
+msgid "You have been invited to: %s"
+msgstr "Du er blevet inviteret til: %s"
 
 #. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.mail_channel_notify_moderation
