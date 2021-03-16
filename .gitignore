@@ -5,6 +5,7 @@ _build/
 .*
 !.gitlab-ci.yml
 !.gitignore
+!.github
 !.mailmap
 # compiled python files
 *.py[co]
