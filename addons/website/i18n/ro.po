@@ -7,8 +7,8 @@
 # Cozmin Candea <office@terrabit.ro>, 2020
 # Martin Trigaux, 2020
 # Hongu Cosmin <cosmin513@gmail.com>, 2020
-# Foldi Robert <foldirobert@nexterp.ro>, 2021
 # Dorin Hongu <dhongu@gmail.com>, 2021
+# Foldi Robert <foldirobert@nexterp.ro>, 2021
 # 
 msgid ""
 msgstr ""
@@ -16,7 +16,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-12-04 15:13+0000\n"
 "PO-Revision-Date: 2020-09-07 08:20+0000\n"
-"Last-Translator: Dorin Hongu <dhongu@gmail.com>, 2021\n"
+"Last-Translator: Foldi Robert <foldirobert@nexterp.ro>, 2021\n"
 "Language-Team: Romanian (https://www.transifex.com/odoo/teams/41243/ro/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1784,6 +1784,13 @@ msgid "Building blocks system"
 msgstr ""
 
 #. module: website
+#. openerp-web
+#: code:addons/website/static/src/xml/theme_preview.xml:0
+#, python-format
+msgid "Building your website..."
+msgstr ""
+
+#. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
 #: model_terms:website.page,arch_db:website.bs_debug_page
 msgid "Button"
@@ -3059,7 +3066,8 @@ msgstr "Trageți un alt bloc în pagina ta, sub copertă."
 #: code:addons/website/static/src/js/tours/tour_utils.js:0
 #, python-format
 msgid ""
-"Drag the <b>${snippet.name}</b> building block and drop it in your page."
+"Drag the <b>${snippet.name}</b> building block and drop it at the bottom of "
+"your page."
 msgstr ""
 
 #. module: website
@@ -3847,7 +3855,7 @@ msgstr "Harta Google"
 #: code:addons/website/static/src/js/editor/snippets.editor.js:0
 #, python-format
 msgid "Google Map API Key"
-msgstr ""
+msgstr "Google Map API Key"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_res_config_settings__has_google_maps
@@ -7035,6 +7043,13 @@ msgid "Switch Theme"
 msgstr "Schimbă Tema"
 
 #. module: website
+#. openerp-web
+#: code:addons/website/static/src/xml/theme_preview.xml:0
+#, python-format
+msgid "TIP: Follow the"
+msgstr ""
+
+#. module: website
 #: model_terms:ir.ui.view,arch_db:website.user_navbar
 msgid "TRANSLATE"
 msgstr "TRADUCE"
@@ -9232,6 +9247,13 @@ msgstr "theme.ir.ui.view"
 #, python-format
 msgid "this page"
 msgstr "această pagină"
+
+#. module: website
+#. openerp-web
+#: code:addons/website/static/src/xml/theme_preview.xml:0
+#, python-format
+msgid "to build the perfect page in 5 steps."
+msgstr ""
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippets

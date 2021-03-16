@@ -5,16 +5,17 @@
 # Translators:
 # 棋文 鄭 <a09930185@gmail.com>, 2020
 # 曾逸民 <suncombo@gmail.com>, 2020
-# Martin Trigaux, 2020
 # 敬雲 林 <chingyun@yuanchih-consult.com>, 2020
+# 李振維, 2021
+# Martin Trigaux, 2021
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-27 15:35+0000\n"
+"POT-Creation-Date: 2021-02-25 10:15+0000\n"
 "PO-Revision-Date: 2020-09-07 08:09+0000\n"
-"Last-Translator: 敬雲 林 <chingyun@yuanchih-consult.com>, 2020\n"
+"Last-Translator: Martin Trigaux, 2021\n"
 "Language-Team: Chinese (Taiwan) (https://www.transifex.com/odoo/teams/41243/zh_TW/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -141,6 +142,12 @@ msgid ". You might want to put a higher number here."
 msgstr ""
 
 #. module: account
+#: code:addons/account/wizard/account_resequence.py:0
+#, python-format
+msgid "... (%s other)"
+msgstr ""
+
+#. module: account
 #: model:account.payment.term,name:account.account_payment_term_15days
 msgid "15 Days"
 msgstr "15天"
@@ -248,7 +255,7 @@ msgstr ""
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.portal_my_home_menu_invoice
 msgid "<em>Draft Invoice</em>"
-msgstr "<em>草稿憑單</em>"
+msgstr "<em>發票草稿</em>"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_analytic_default_kanban
@@ -289,7 +296,7 @@ msgstr "<i class=\"fa fa-fw fa-comments\"/><b>發送訊息</b>"
 #: model_terms:ir.ui.view,arch_db:account.view_account_journal_form
 msgid ""
 "<i class=\"fa fa-fw o_button_icon fa-arrow-right\"/> Configure Email Servers"
-msgstr "<i class=\"fa fa-fw o_button_icon fa-arrow-right\"/> 配置信件伺服器"
+msgstr "<i class=\"fa fa-fw o_button_icon fa-arrow-right\"/> 設定郵件伺服器"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.portal_invoice_page
@@ -494,7 +501,7 @@ msgstr "<span class=\"o_form_label\">月份的</span>"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.partner_view_buttons
 msgid "<span class=\"o_stat_text\">Invoiced</span>"
-msgstr "<span class=\"o_stat_text\">已開立憑單</span>"
+msgstr "<span class=\"o_stat_text\">已開立發票</span>"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_move_form
@@ -2347,6 +2354,13 @@ msgstr "信用差的債務人"
 #: model:ir.model.fields.selection,name:account.selection__account_payment_term_line__value__balance
 msgid "Balance"
 msgstr "餘額"
+
+#. module: account
+#. openerp-web
+#: code:addons/account/static/src/js/account_selection.js:0
+#, python-format
+msgid "Balance Sheet"
+msgstr "資產負債表"
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_bank_statement__balance_end
@@ -6161,7 +6175,9 @@ msgid "Internal Notes"
 msgstr "內部備註"
 
 #. module: account
+#: code:addons/account/models/account_payment.py:0
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
+#, python-format
 msgid "Internal Transfer"
 msgstr "內部轉帳"
 
@@ -8085,6 +8101,7 @@ msgstr "只有管理員才能加載會計科目表"
 #. module: account
 #: code:addons/account/models/account_move.py:0
 #: code:addons/account/models/account_move.py:0
+#: code:addons/account/models/ir_actions_report.py:0
 #, python-format
 msgid "Only invoices could be printed."
 msgstr "只能列印憑單。"
@@ -8236,6 +8253,12 @@ msgstr "可選的唯一代碼，用於在總公式中引用此行"
 #: model_terms:ir.ui.view,arch_db:account.tax_adjustments_wizard
 msgid "Options"
 msgstr "選項"
+
+#. module: account
+#: code:addons/account/wizard/account_tour_upload_bill.py:0
+#, python-format
+msgid "Or send a bill to %s@%s"
+msgstr ""
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_resequence_wizard__ordering
@@ -11525,6 +11548,14 @@ msgid "That is the date of the opening entry."
 msgstr ""
 
 #. module: account
+#: code:addons/account/models/sequence_mixin.py:0
+#, python-format
+msgid ""
+"The %(date_field)s (%(date)s) doesn't match the %(sequence_field)s (%(sequence)s).\n"
+"You might want to clear the field %(sequence_field)s before proceeding with the change of the date."
+msgstr ""
+
+#. module: account
 #: model:ir.model.fields,help:account.field_account_account__internal_group
 #: model:ir.model.fields,help:account.field_account_account_type__internal_group
 #: model:ir.model.fields,help:account.field_account_move_line__account_internal_group
@@ -11777,14 +11808,6 @@ msgid ""
 msgstr ""
 
 #. module: account
-#: code:addons/account/models/sequence_mixin.py:0
-#, python-format
-msgid ""
-"The %(date_field)s (%(date)s) doesn't match the %(sequence_field)s (%(sequence)s).\n"
-"You might want to clear the field %(sequence_field)s before proceeding with the change of the date."
-msgstr ""
-
-#. module: account
 #: code:addons/account/models/account_payment_term.py:0
 #, python-format
 msgid "The day of the month used for this term must be strictly positive."
@@ -11895,6 +11918,19 @@ msgstr ""
 #, python-format
 msgid "The holder of a journal's bank account must be the company (%s)."
 msgstr "日記帳銀行帳的所有者必須為公司 (%s)."
+
+#. module: account
+#: code:addons/account/models/account_move.py:0
+#, python-format
+msgid ""
+"The invoice already contains lines, it was not updated from the attachment."
+msgstr ""
+
+#. module: account
+#: code:addons/account/models/account_move.py:0
+#, python-format
+msgid "The invoice is not a draft, it was not updated from the attachment."
+msgstr ""
 
 #. module: account
 #: code:addons/account/models/account_bank_statement.py:0
@@ -12802,6 +12838,12 @@ msgid "Transfers"
 msgstr "轉帳"
 
 #. module: account
+#: code:addons/account/wizard/account_tour_upload_bill.py:0
+#, python-format
+msgid "Try a sample vendor bill"
+msgstr ""
+
+#. module: account
 #: model:ir.model.fields,field_description:account.field_account_account__user_type_id
 #: model:ir.model.fields,field_description:account.field_account_account_template__user_type_id
 #: model:ir.model.fields,field_description:account.field_account_account_type__type
@@ -12999,6 +13041,12 @@ msgstr "自動更新貨幣匯率"
 #, python-format
 msgid "Upload"
 msgstr "上傳"
+
+#. module: account
+#: code:addons/account/wizard/account_tour_upload_bill.py:0
+#, python-format
+msgid "Upload your own bill"
+msgstr ""
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_chart_template__use_anglo_saxon
@@ -13767,8 +13815,7 @@ msgstr "您不能從從已經關閉的銀行對帳單中放/取錢."
 #, python-format
 msgid ""
 "You cannot reduce the number of decimal places of a currency which has "
-"already been used to make accounting entries. If you really need to do that,"
-" please contact tech support."
+"already been used to make accounting entries."
 msgstr ""
 
 #. module: account
@@ -13929,6 +13976,7 @@ msgstr "郵編範圍到"
 
 #. module: account
 #: code:addons/account/models/account_move.py:0
+#: code:addons/account/wizard/account_automatic_entry_wizard.py:0
 #: code:addons/account/wizard/account_automatic_entry_wizard.py:0
 #, python-format
 msgid "[Not set]"

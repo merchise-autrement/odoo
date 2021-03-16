@@ -607,7 +607,7 @@ class Field(MetaField('DummyField', (object,), {})):
         Property._set_multi(self.name, self.model_name, values)
 
     def _search_company_dependent(self, records, operator, value):
-        Property = records.env['ir.property']
+        Property = records.env['ir.property'].sudo()
         return Property.search_multi(self.name, self.model_name, operator, value)
 
     #
@@ -809,6 +809,23 @@ class Field(MetaField('DummyField', (object,), {})):
         self.update_db_column(model, column)
         self.update_db_notnull(model, column)
 
+        # optimization for computing simple related fields like 'foo_id.bar'
+        if (
+            not column
+            and len(self.related or ()) == 2
+            and self.related_field.store and not self.related_field.compute
+            and not (self.related_field.type == 'binary' and self.related_field.attachment)
+            and self.related_field.type not in ('one2many', 'many2many')
+        ):
+            join_field = model._fields[self.related[0]]
+            if (
+                join_field.type == 'many2one'
+                and join_field.store and not join_field.compute
+            ):
+                model.pool.post_init(self.update_db_related, model)
+                # discard the "classical" computation
+                return False
+
         return not column
 
     def update_db_column(self, model, column):
@@ -858,6 +875,22 @@ class Field(MetaField('DummyField', (object,), {})):
 
         elif not self.required and has_notnull:
             sql.drop_not_null(model._cr, model._table, self.name)
+
+    def update_db_related(self, model):
+        """ Compute a stored related field directly in SQL. """
+        comodel = model.env[self.related_field.model_name]
+        model.env.cr.execute("""
+            UPDATE "{model_table}" AS x
+            SET "{model_field}" = y."{comodel_field}"
+            FROM "{comodel_table}" AS y
+            WHERE x."{join_field}" = y.id
+        """.format(
+            model_table=model._table,
+            model_field=self.name,
+            comodel_table=comodel._table,
+            comodel_field=self.related[1],
+            join_field=self.related[0],
+        ))
 
     ############################################################################
     #
@@ -1497,7 +1530,7 @@ class _String(Field):
                 update_trans = True
             elif lang != 'en_US' and lang is not None:
                 # update the translations only except if emptying
-                update_column = cache_value is None
+                update_column = not cache_value
                 update_trans = True
             # else: lang = None
 
@@ -1507,7 +1540,7 @@ class _String(Field):
             for rid in real_recs._ids:
                 # cache_value is already in database format
                 towrite[rid][self.name] = cache_value
-            if self.translate is True and cache_value is not None:
+            if self.translate is True and cache_value:
                 tname = "%s,%s" % (records._name, self.name)
                 records.env['ir.translation']._set_source(tname, real_recs._ids, value)
             if self.translate:
@@ -1530,7 +1563,7 @@ class _String(Field):
                     source_recs[self.name] = value
                     source_value = value
                 tname = "%s,%s" % (self.model_name, self.name)
-                if value is None:
+                if not value:
                     records.env['ir.translation'].search([
                         ('name', '=', tname),
                         ('type', '=', 'model'),
@@ -2945,6 +2978,9 @@ class _RelationalMulti(_Relational):
             value = record.env[self.comodel_name].browse(value)
 
         if isinstance(value, BaseModel) and value._name == self.comodel_name:
+            def get_origin(val):
+                return val._origin if isinstance(val, BaseModel) else val
+
             # make result with new and existing records
             inv_names = {field.name for field in record._field_inverses[self]}
             result = [(6, 0, [])]
@@ -2963,7 +2999,7 @@ class _RelationalMulti(_Relational):
                         values = record._convert_to_write({
                             name: record[name]
                             for name in record._cache
-                            if name not in inv_names and record[name] != origin[name]
+                            if name not in inv_names and get_origin(record[name]) != origin[name]
                         })
                         if values:
                             result.append((1, origin.id, values))
@@ -3270,11 +3306,14 @@ class One2many(_RelationalMulti):
                         browse([command[1]])[inverse] = False
                     elif command[0] == 4:
                         browse([command[1]])[inverse] = recs[-1]
-                    elif command[0] in (5, 6):
+                    elif command[0] == 5:
+                        cache.update(recs, self, itertools.repeat(()))
+                    elif command[0] == 6:
                         # assign the given lines to the last record only
-                        cache.update(recs, self, [()] * len(recs))
-                        lines = comodel.browse(command[2] if command[0] == 6 else [])
-                        cache.set(recs[-1], self, lines._ids)
+                        cache.update(recs, self, itertools.repeat(()))
+                        last, lines = recs[-1], browse(command[2])
+                        cache.set(last, self, lines._ids)
+                        cache.update(lines, inverse_field, itertools.repeat(last.id))
 
         else:
             def link(record, lines):
@@ -3471,6 +3510,7 @@ class Many2many(_RelationalMulti):
         context.update(self.context)
         comodel = records.env[self.comodel_name].with_context(**context)
         domain = self.get_domain_list(records)
+        comodel._flush_search(domain)
         wquery = comodel._where_calc(domain)
         comodel._apply_ir_rules(wquery, 'read')
         order_by = comodel._generate_order_by(None, wquery)

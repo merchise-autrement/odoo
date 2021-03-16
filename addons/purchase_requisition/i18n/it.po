@@ -6,7 +6,7 @@
 # Martin Trigaux, 2020
 # Paolo Valier, 2020
 # Léonie Bouchat <lbo@odoo.com>, 2020
-# Sergio Zanchetta <primes2h@gmail.com>, 2020
+# Sergio Zanchetta <primes2h@gmail.com>, 2021
 # 
 msgid ""
 msgstr ""
@@ -14,7 +14,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-02 14:12+0000\n"
 "PO-Revision-Date: 2020-09-07 08:17+0000\n"
-"Last-Translator: Sergio Zanchetta <primes2h@gmail.com>, 2020\n"
+"Last-Translator: Sergio Zanchetta <primes2h@gmail.com>, 2021\n"
 "Language-Team: Italian (https://www.transifex.com/odoo/teams/41243/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -75,7 +75,7 @@ msgstr "<strong>Tipo di selezione:</strong><br/>"
 #. module: purchase_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisitions
 msgid "<strong>Source:</strong><br/>"
-msgstr "<strong>Fonte:</strong><br/>"
+msgstr "<strong>Origine:</strong><br/>"
 
 #. module: purchase_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisitions
@@ -110,7 +110,7 @@ msgstr "Icona tipo di attività"
 #. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_product_supplierinfo__purchase_requisition_id
 msgid "Agreement"
-msgstr ""
+msgstr "Contratto"
 
 #. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__date_end
@@ -120,7 +120,7 @@ msgstr "Scadenza contratto"
 #. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_type__exclusive
 msgid "Agreement Selection Type"
-msgstr "Tipologia Selezione Contratti"
+msgstr "Tipo di selezione contratto"
 
 #. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__type_id
@@ -132,7 +132,7 @@ msgstr "Tipo di contratto"
 #. module: purchase_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.res_config_settings_view_form
 msgid "Agreement Types"
-msgstr "Tipologie contratti"
+msgstr "Tipi di contratto"
 
 #. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__account_analytic_id
@@ -324,6 +324,7 @@ msgstr "Bozza"
 msgid ""
 "Example of purchase agreements include call for tenders and blanket orders."
 msgstr ""
+"Esempi di contratti di acquisto comprendono bandi di gara e ordini quadro."
 
 #. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__message_follower_ids
@@ -474,7 +475,7 @@ msgstr "Messaggi"
 #. module: purchase_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisitions
 msgid "Multiple Requisitions"
-msgstr "Più richieste"
+msgstr "Richieste multiple"
 
 #. module: purchase_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
@@ -637,7 +638,7 @@ msgstr "Ordini di acquisto"
 #. module: purchase_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_search_inherit
 msgid "Purchase Orders with requisition"
-msgstr "Ordini D'acquisto con richiesta"
+msgstr "Ordini di acquisto con richiesta"
 
 #. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__user_id
@@ -648,18 +649,18 @@ msgstr "Referente acquisti"
 #. module: purchase_requisition
 #: model:ir.model,name:purchase_requisition.model_purchase_requisition
 msgid "Purchase Requisition"
-msgstr "Richiesta d'acquisto"
+msgstr "Richiesta di acquisto"
 
 #. module: purchase_requisition
 #: model:ir.model,name:purchase_requisition.model_purchase_requisition_line
 #: model:ir.model.fields,field_description:purchase_requisition.field_product_supplierinfo__purchase_requisition_line_id
 msgid "Purchase Requisition Line"
-msgstr "Riga di Richiesta d'Acquisto"
+msgstr "Riga richiesta di acquisto"
 
 #. module: purchase_requisition
 #: model:ir.model,name:purchase_requisition.model_purchase_requisition_type
 msgid "Purchase Requisition Type"
-msgstr ""
+msgstr "Tipo richiesta di acquisto"
 
 #. module: purchase_requisition
 #: model:ir.actions.act_window,name:purchase_requisition.act_res_partner_2_purchase_order
@@ -836,6 +837,8 @@ msgid ""
 "There is already an open blanket order for this supplier. We suggest you "
 "complete this open blanket order, instead of creating a new one."
 msgstr ""
+"È già presente un ordine quadro aperto per il fornitore. Invece di crearne "
+"uno nuovo, consigliamo di completare l'ordine aperto.."
 
 #. module: purchase_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
@@ -907,7 +910,7 @@ msgstr "Cronologia comunicazioni sito web"
 #: code:addons/purchase_requisition/models/purchase_requisition.py:0
 #, python-format
 msgid "You can only delete draft requisitions."
-msgstr ""
+msgstr "È possibile eliminare solo richieste in bozza."
 
 #. module: purchase_requisition
 #: code:addons/purchase_requisition/models/purchase_requisition.py:0
@@ -923,13 +926,13 @@ msgstr ""
 #: code:addons/purchase_requisition/models/purchase_requisition.py:0
 #, python-format
 msgid "You cannot confirm the blanket order without price."
-msgstr ""
+msgstr "Impossibile confermare l'ordine quadro senza il prezzo."
 
 #. module: purchase_requisition
 #: code:addons/purchase_requisition/models/purchase_requisition.py:0
 #, python-format
 msgid "You cannot confirm the blanket order without quantity."
-msgstr ""
+msgstr "Impossibile confermare l'ordine quadro senza la quantità."
 
 #. module: purchase_requisition
 #: code:addons/purchase_requisition/models/purchase_requisition.py:0
@@ -938,8 +941,8 @@ msgid ""
 "You have to cancel or validate every RfQ before closing the purchase "
 "requisition."
 msgstr ""
-"È necessario annullare o convalidare ogni richiesta di preventivo prima di "
-"chiudere la richiesta di acquisto."
+"Prima di chiudere la richiesta di acquisto è necessario annullare o "
+"convalidare tutte le RdP."
 
 #. module: purchase_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_form

@@ -9,14 +9,15 @@
 # Seongseok Shin <shinss61@hotmail.com>, 2020
 # JH CHOI <hwangtog@gmail.com>, 2021
 # Linkup <link-up@naver.com>, 2021
+# Mark Lee <odoos@soti.33mail.com>, 2021
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-27 15:35+0000\n"
+"POT-Creation-Date: 2021-02-25 10:15+0000\n"
 "PO-Revision-Date: 2020-09-07 08:09+0000\n"
-"Last-Translator: Linkup <link-up@naver.com>, 2021\n"
+"Last-Translator: Mark Lee <odoos@soti.33mail.com>, 2021\n"
 "Language-Team: Korean (https://www.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -151,6 +152,12 @@ msgstr "-> 부분 조정된 항목 보기"
 #: model_terms:ir.ui.view,arch_db:account.view_move_form
 msgid ". You might want to put a higher number here."
 msgstr ". 더 높은 숫자를 입력해야 합니다."
+
+#. module: account
+#: code:addons/account/wizard/account_resequence.py:0
+#, python-format
+msgid "... (%s other)"
+msgstr ""
 
 #. module: account
 #: model:account.payment.term,name:account.account_payment_term_15days
@@ -315,6 +322,8 @@ msgid ""
 "<li>{amount} ({debit_credit}) from <strong>%s</strong> were transferred to "
 "<strong>{account_target_name}</strong> by {link}</li>"
 msgstr ""
+"<li>  <strong>%s</strong> 로부터 {amount} ({debit_credit})가 {link}를 통해  "
+"<strong>{account_target_name}</strong>로 송금되었습니다</li>"
 
 #. module: account
 #: code:addons/account/wizard/account_automatic_entry_wizard.py:0
@@ -323,6 +332,8 @@ msgid ""
 "<li>{amount} ({debit_credit}) from {link}, "
 "<strong>%(account_source_name)s</strong></li>"
 msgstr ""
+"<li>{amount} ({debit_credit}) from {link}, "
+"<strong>%(account_source_name)s</strong></li>"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_move_form
@@ -827,7 +838,7 @@ msgstr "<strong>소계</strong>"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.report_journal
 msgid "<strong>Target Moves:</strong>"
-msgstr "<strong>표적 이동:</strong>"
+msgstr "<strong>대상 이동:</strong>"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.res_currency_form_inherit
@@ -858,7 +869,7 @@ msgstr "<strong>공급업체: </strong>"
 #: code:addons/account/models/account_move.py:0
 #, python-format
 msgid "@From: %(email)s"
-msgstr ""
+msgstr "@From: %(email)s"
 
 #. module: account
 #: model_terms:ir.actions.act_window,help:account.action_view_bank_statement_tree
@@ -2377,6 +2388,13 @@ msgstr "악성 차변"
 #: model:ir.model.fields.selection,name:account.selection__account_payment_term_line__value__balance
 msgid "Balance"
 msgstr "잔액"
+
+#. module: account
+#. openerp-web
+#: code:addons/account/static/src/js/account_selection.js:0
+#, python-format
+msgid "Balance Sheet"
+msgstr "대차대조표"
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_bank_statement__balance_end
@@ -6205,7 +6223,9 @@ msgid "Internal Notes"
 msgstr "내부 메모"
 
 #. module: account
+#: code:addons/account/models/account_payment.py:0
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
+#, python-format
 msgid "Internal Transfer"
 msgstr "내부 이전"
 
@@ -8134,6 +8154,7 @@ msgstr "관리자만 계정과목 일람표를 불러올 수 있습니다"
 #. module: account
 #: code:addons/account/models/account_move.py:0
 #: code:addons/account/models/account_move.py:0
+#: code:addons/account/models/ir_actions_report.py:0
 #, python-format
 msgid "Only invoices could be printed."
 msgstr "청구서만 인쇄 할 수 있습니다."
@@ -8285,6 +8306,12 @@ msgstr "전체 수식에서 이 내역을 참조하는 선택적 고유 코드"
 #: model_terms:ir.ui.view,arch_db:account.tax_adjustments_wizard
 msgid "Options"
 msgstr "옵션"
+
+#. module: account
+#: code:addons/account/wizard/account_tour_upload_bill.py:0
+#, python-format
+msgid "Or send a bill to %s@%s"
+msgstr ""
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_resequence_wizard__ordering
@@ -11594,6 +11621,14 @@ msgid "That is the date of the opening entry."
 msgstr ""
 
 #. module: account
+#: code:addons/account/models/sequence_mixin.py:0
+#, python-format
+msgid ""
+"The %(date_field)s (%(date)s) doesn't match the %(sequence_field)s (%(sequence)s).\n"
+"You might want to clear the field %(sequence_field)s before proceeding with the change of the date."
+msgstr ""
+
+#. module: account
 #: model:ir.model.fields,help:account.field_account_account__internal_group
 #: model:ir.model.fields,help:account.field_account_account_type__internal_group
 #: model:ir.model.fields,help:account.field_account_move_line__account_internal_group
@@ -11848,14 +11883,6 @@ msgid ""
 msgstr ""
 
 #. module: account
-#: code:addons/account/models/sequence_mixin.py:0
-#, python-format
-msgid ""
-"The %(date_field)s (%(date)s) doesn't match the %(sequence_field)s (%(sequence)s).\n"
-"You might want to clear the field %(sequence_field)s before proceeding with the change of the date."
-msgstr ""
-
-#. module: account
 #: code:addons/account/models/account_payment_term.py:0
 #, python-format
 msgid "The day of the month used for this term must be strictly positive."
@@ -11968,6 +11995,19 @@ msgstr ""
 #, python-format
 msgid "The holder of a journal's bank account must be the company (%s)."
 msgstr "분개의 은행 계좌를 보유한 대상은 회사여야 합니다(%s)."
+
+#. module: account
+#: code:addons/account/models/account_move.py:0
+#, python-format
+msgid ""
+"The invoice already contains lines, it was not updated from the attachment."
+msgstr ""
+
+#. module: account
+#: code:addons/account/models/account_move.py:0
+#, python-format
+msgid "The invoice is not a draft, it was not updated from the attachment."
+msgstr ""
 
 #. module: account
 #: code:addons/account/models/account_bank_statement.py:0
@@ -12887,6 +12927,12 @@ msgid "Transfers"
 msgstr "이동"
 
 #. module: account
+#: code:addons/account/wizard/account_tour_upload_bill.py:0
+#, python-format
+msgid "Try a sample vendor bill"
+msgstr ""
+
+#. module: account
 #: model:ir.model.fields,field_description:account.field_account_account__user_type_id
 #: model:ir.model.fields,field_description:account.field_account_account_template__user_type_id
 #: model:ir.model.fields,field_description:account.field_account_account_type__type
@@ -13084,6 +13130,12 @@ msgstr "환율 자동 업데이트"
 #, python-format
 msgid "Upload"
 msgstr "올리기"
+
+#. module: account
+#: code:addons/account/wizard/account_tour_upload_bill.py:0
+#, python-format
+msgid "Upload your own bill"
+msgstr ""
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_chart_template__use_anglo_saxon
@@ -13860,8 +13912,7 @@ msgstr "마감된 예금거래 명세서에 자금을 투입/인출할 수 없�
 #, python-format
 msgid ""
 "You cannot reduce the number of decimal places of a currency which has "
-"already been used to make accounting entries. If you really need to do that,"
-" please contact tech support."
+"already been used to make accounting entries."
 msgstr ""
 
 #. module: account
@@ -14024,6 +14075,7 @@ msgstr "우편번호 범위 종료"
 
 #. module: account
 #: code:addons/account/models/account_move.py:0
+#: code:addons/account/wizard/account_automatic_entry_wizard.py:0
 #: code:addons/account/wizard/account_automatic_entry_wizard.py:0
 #, python-format
 msgid "[Not set]"

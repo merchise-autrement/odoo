@@ -62,7 +62,7 @@ class AccountMove(models.Model):
         # merchise: Updated to use the Many2many definition of a relation
         # Users -- Teams.
         if self.invoice_user_id and self.invoice_user_id.sale_teams:
-            self.team_id = self.invoice_user_id.sale_teams[0]
+            self.team_id = self.env['crm.team']._get_default_team_id(user_id=self.invoice_user_id.id, domain=[('company_id', '=', self.company_id.id)])
 
     def _reverse_moves(self, default_values_list=None, cancel=False):
         # OVERRIDE

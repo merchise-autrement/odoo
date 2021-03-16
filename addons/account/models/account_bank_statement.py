@@ -188,7 +188,13 @@ class AccountBankStatement(models.Model):
     @api.depends('balance_start', 'previous_statement_id')
     def _compute_is_valid_balance_start(self):
         for bnk in self:
-            bnk.is_valid_balance_start = float_is_zero(bnk.balance_start - bnk.previous_statement_id.balance_end_real, precision_digits=bnk.currency_id.decimal_places)
+            bnk.is_valid_balance_start = (
+                bnk.currency_id.is_zero(
+                    bnk.balance_start - bnk.previous_statement_id.balance_end_real
+                )
+                if bnk.previous_statement_id
+                else True
+            )
 
     @api.depends('date', 'journal_id')
     def _get_previous_statement(self):
@@ -706,7 +712,7 @@ class AccountBankStatementLine(models.Model):
             **counterpart_vals,
             'name': counterpart_vals.get('name', move_line.name if move_line else ''),
             'move_id': self.move_id.id,
-            'partner_id': self.partner_id.id,
+            'partner_id': self.partner_id.id or (move_line.partner_id.id if move_line else False),
             'currency_id': currency_id,
             'account_id': counterpart_vals.get('account_id', move_line.account_id.id if move_line else False),
             'debit': balance if balance > 0.0 else 0.0,
@@ -771,8 +777,10 @@ class AccountBankStatementLine(models.Model):
     # COMPUTE METHODS
     # -------------------------------------------------------------------------
 
-    @api.depends('currency_id', 'amount', 'foreign_currency_id', 'amount_currency',
-                 'move_id.line_ids', 'move_id.line_ids.matched_debit_ids', 'move_id.line_ids.matched_credit_ids')
+    @api.depends('journal_id', 'currency_id', 'amount', 'foreign_currency_id', 'amount_currency',
+                 'move_id.line_ids.account_id', 'move_id.line_ids.amount_currency',
+                 'move_id.line_ids.amount_residual_currency', 'move_id.line_ids.currency_id',
+                 'move_id.line_ids.matched_debit_ids', 'move_id.line_ids.matched_credit_ids')
     def _compute_is_reconciled(self):
         ''' Compute the field indicating if the statement lines are already reconciled with something.
         This field is used for display purpose (e.g. display the 'cancel' button on the statement lines).
@@ -780,19 +788,6 @@ class AccountBankStatementLine(models.Model):
         '''
         for st_line in self:
             liquidity_lines, suspense_lines, other_lines = st_line._seek_for_lines()
-
-            # Compute is_reconciled
-            if not st_line.id:
-                # New record: The journal items are not yet there.
-                st_line.is_reconciled = False
-            elif suspense_lines:
-                # In case of the statement line comes from an older version, it could have a residual amount of zero.
-                st_line.is_reconciled = all(suspense_line.reconciled for suspense_line in suspense_lines)
-            elif st_line.currency_id.is_zero(st_line.amount):
-                st_line.is_reconciled = True
-            else:
-                # The journal entry seems reconciled.
-                st_line.is_reconciled = True
 
             # Compute residual amount
             if st_line.to_check:
@@ -802,6 +797,19 @@ class AccountBankStatementLine(models.Model):
             else:
                 st_line.amount_residual = sum(suspense_lines.mapped('amount_currency'))
 
+            # Compute is_reconciled
+            if not st_line.id:
+                # New record: The journal items are not yet there.
+                st_line.is_reconciled = False
+            elif suspense_lines:
+                # In case of the statement line comes from an older version, it could have a residual amount of zero.
+                st_line.is_reconciled = suspense_lines.currency_id.is_zero(st_line.amount_residual)
+            elif st_line.currency_id.is_zero(st_line.amount):
+                st_line.is_reconciled = True
+            else:
+                # The journal entry seems reconciled.
+                st_line.is_reconciled = True
+
     # -------------------------------------------------------------------------
     # CONSTRAINT METHODS
     # -------------------------------------------------------------------------
@@ -809,18 +817,12 @@ class AccountBankStatementLine(models.Model):
     @api.constrains('amount', 'amount_currency', 'currency_id', 'foreign_currency_id', 'journal_id')
     def _check_amounts_currencies(self):
         ''' Ensure the consistency the specified amounts and the currencies. '''
-        if self._context.get('skip_check_amounts_currencies'):
-            return
 
         for st_line in self:
             if st_line.journal_id != st_line.statement_id.journal_id:
                 raise ValidationError(_('The journal of a statement line must always be the same as the bank statement one.'))
-            if st_line.currency_id.is_zero(st_line.amount):
-                raise ValidationError(_("The amount of a statement line can't be equal to zero."))
             if st_line.foreign_currency_id == st_line.currency_id:
                 raise ValidationError(_("The foreign currency must be different than the journal one: %s", st_line.currency_id.name))
-            if st_line.foreign_currency_id and st_line.foreign_currency_id.is_zero(st_line.amount_currency):
-                raise ValidationError(_("The amount in foreign currency must be set if the amount is not equal to zero."))
             if not st_line.foreign_currency_id and st_line.amount_currency:
                 raise ValidationError(_("You can't provide an amount in foreign currency without specifying a foreign currency."))
 
@@ -1165,6 +1167,12 @@ class AccountBankStatementLine(models.Model):
 
                 counterpart_vals['account_id'] = open_balance_account.id
                 counterpart_vals['partner_id'] = partner.id
+            else:
+                if self.amount > 0:
+                    open_balance_account = self.company_id.partner_id.with_company(self.company_id).property_account_receivable_id
+                else:
+                    open_balance_account = self.company_id.partner_id.with_company(self.company_id).property_account_payable_id
+                counterpart_vals['account_id'] = open_balance_account.id
 
             open_balance_vals = self._prepare_counterpart_move_line_vals(counterpart_vals)
         else:
@@ -1240,6 +1248,7 @@ class AccountBankStatementLine(models.Model):
 
         line_vals_list = [reconciliation_vals['line_vals'] for reconciliation_vals in reconciliation_overview]
         new_lines = self.env['account.move.line'].create(line_vals_list)
+        new_lines = new_lines.with_context(skip_account_move_synchronization=True)
         for reconciliation_vals, line in zip(reconciliation_overview, new_lines):
             if reconciliation_vals.get('payment'):
                 accounts = (self.journal_id.payment_debit_account_id, self.journal_id.payment_credit_account_id)
@@ -1254,11 +1263,15 @@ class AccountBankStatementLine(models.Model):
         # Assign partner if needed (for example, when reconciling a statement
         # line with no partner, with an invoice; assign the partner of this invoice)
         if not self.partner_id:
-            rec_overview_partners = set(overview['counterpart_line'].partner_id
+            rec_overview_partners = set(overview['counterpart_line'].partner_id.id
                                         for overview in reconciliation_overview
                                         if overview.get('counterpart_line') and overview['counterpart_line'].partner_id)
             if len(rec_overview_partners) == 1:
                 self.line_ids.write({'partner_id': rec_overview_partners.pop()})
+
+        # Refresh analytic lines.
+        self.move_id.line_ids.analytic_line_ids.unlink()
+        self.move_id.line_ids.create_analytic_lines()
 
     # -------------------------------------------------------------------------
     # BUSINESS METHODS

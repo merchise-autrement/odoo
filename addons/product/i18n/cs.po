@@ -596,7 +596,7 @@ msgstr ""
 #: model:product.product,name:product.product_product_5
 #: model:product.template,name:product.product_product_5_product_template
 msgid "Corner Desk Right Sit"
-msgstr ""
+msgstr "Rohový stůl, pravý sed"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__standard_price
@@ -778,7 +778,7 @@ msgstr "Popis"
 #: model:product.product,name:product.product_product_3
 #: model:product.template,name:product.product_product_3_product_template
 msgid "Desk Combination"
-msgstr ""
+msgstr "Kombinace stolu"
 
 #. module: product
 #: model:product.product,name:product.product_product_22
@@ -2047,6 +2047,8 @@ msgid ""
 "Register the prices requested by your vendors for each product, based on the"
 " quantity and the period."
 msgstr ""
+"Zaregistrujte ceny požadované vašimi dodavateli pro každý produkt na základě"
+" množství a období."
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute__product_tmpl_ids

@@ -628,6 +628,33 @@ class TestFields(TransactionCaseWithUserDemo):
         with self.assertRaises(AccessError):
             foo.with_user(user).display_name = 'Forbidden'
 
+    def test_13_inverse_with_unlink(self):
+        """ test x2many delete command combined with an inverse field """
+        country1 = self.env['res.country'].create({'name': 'test country'})
+        country2 = self.env['res.country'].create({'name': 'other country'})
+        company = self.env['res.company'].create({
+            'name': 'test company',
+            'child_ids': [
+                (0, 0, {'name': 'Child Company 1'}),
+                (0, 0, {'name': 'Child Company 2'}),
+            ]
+        })
+        child_company = company.child_ids[0]
+
+        # check first that the field has an inverse and is not stored
+        field = type(company).country_id
+        self.assertFalse(field.store)
+        self.assertTrue(field.inverse)
+
+        company.write({'country_id': country1.id})
+        self.assertEqual(company.country_id, country1)
+
+        company.write({
+            'country_id': country2.id,
+            'child_ids': [(2, child_company.id)],
+        })
+        self.assertEqual(company.country_id, country2)
+
     def test_14_search(self):
         """ test search on computed fields """
         discussion = self.env.ref('test_new_api.discussion_0')
@@ -1374,6 +1401,12 @@ class TestFields(TransactionCaseWithUserDemo):
         self.assertEqual(attribute_record.company.foo, 'DEF')
         self.assertEqual(attribute_record.bar, 'DEFDEF')
 
+        # a low priviledge user should be able to search on company_dependent fields
+        company_record.env.user.groups_id -= self.env.ref('base.group_system')
+        self.assertFalse(company_record.env.user.has_group('base.group_system'))
+        company_records = self.env['test_new_api.company'].search([('foo', '=', 'DEF')])
+        self.assertEqual(len(company_records), 1)
+
     def test_30_read(self):
         """ test computed fields as returned by read(). """
         discussion = self.env.ref('test_new_api.discussion_0')
@@ -1645,6 +1678,16 @@ class TestFields(TransactionCaseWithUserDemo):
         self.assertNotEqual(new_disc.participants, disc.participants)
         self.assertEqual(new_disc.participants._origin, disc.participants)
 
+        # check convert_to_write
+        tag = self.env['test_new_api.multi.tag'].create({'name': 'Foo'})
+        rec = self.env['test_new_api.multi'].create({
+            'lines': [(0, 0, {'tags': [(6, 0, tag.ids)]})],
+        })
+        new = rec.new(origin=rec)
+        self.assertEqual(new.lines.tags._origin, rec.lines.tags)
+        vals = new._convert_to_write(new._cache)
+        self.assertEqual(vals['lines'], [(6, 0, rec.lines.ids)])
+
     def test_41_new_compute(self):
         """ Check recomputation of fields on new records. """
         move = self.env['test_new_api.move'].create({
@@ -1683,6 +1726,13 @@ class TestFields(TransactionCaseWithUserDemo):
         self.assertEqual(len(new_move.line_ids), 1)
         self.assertFalse(new_move.line_ids.id)
         self.assertEqual(new_move.line_ids.quantity, 2)
+
+        # assign line to new move without origin
+        new_move = move.new()
+        new_move.line_ids = line
+        self.assertFalse(new_move.line_ids.id)
+        self.assertEqual(new_move.line_ids._origin, line)
+        self.assertEqual(new_move.line_ids.move_id, new_move)
 
     @mute_logger('odoo.addons.base.models.ir_model')
     def test_41_new_related(self):
@@ -1754,8 +1804,8 @@ class TestFields(TransactionCaseWithUserDemo):
             [('author_partner.name', '=', 'Marc Demo')])
         self.assertEqual(messages, self.env.ref('test_new_api.message_0_1'))
 
-    def test_60_x2many_domain(self):
-        """ test the cache consistency of a x2many field with a domain """
+    def test_60_one2many_domain(self):
+        """ test the cache consistency of a one2many field with a domain """
         discussion = self.env.ref('test_new_api.discussion_0')
         message = discussion.messages[0]
         self.assertNotIn(message, discussion.important_messages)
@@ -1768,6 +1818,31 @@ class TestFields(TransactionCaseWithUserDemo):
         discussion.write({'very_important_messages': [(5,)]})
         self.assertFalse(discussion.very_important_messages)
         self.assertFalse(message.exists())
+
+    def test_60_many2many_domain(self):
+        """ test the cache consistency of a many2many field with a domain """
+        discussion = self.env.ref('test_new_api.discussion_0')
+        category = self.env['test_new_api.category'].create({'name': "Foo"})
+        discussion.categories = category
+        discussion.flush()
+        discussion.invalidate_cache()
+
+        # patch the many2many field to give it a domain (this simply avoids
+        # adding yet another test model)
+        field = discussion._fields['categories']
+        self.patch(field, 'domain', [('color', '!=', 42)])
+        self.registry.setup_models(self.cr)
+
+        # the category is in the many2many
+        self.assertIn(category, discussion.categories)
+
+        # modify the category; it should not longer be in the many2many
+        category.color = 42
+        self.assertNotIn(category, discussion.categories)
+
+        # modify again the category; it should be back in the many2many
+        category.color = 69
+        self.assertIn(category, discussion.categories)
 
     def test_70_x2many_write(self):
         discussion = self.env.ref('test_new_api.discussion_0')
@@ -2850,6 +2925,7 @@ class TestSelectionOndelete(common.TransactionCase):
     MODEL_BASE = 'test_new_api.model_selection_base'
     MODEL_REQUIRED = 'test_new_api.model_selection_required'
     MODEL_NONSTORED = 'test_new_api.model_selection_non_stored'
+    MODEL_WRITE_OVERRIDE = 'test_new_api.model_selection_required_for_write_override'
 
     def setUp(self):
         super().setUp()
@@ -2977,6 +3053,26 @@ class TestSelectionOndelete(common.TransactionCase):
         self._unlink_option(self.MODEL_NONSTORED, 'foo')
 
         self.assertFalse(rec.my_selection)
+
+    def test_required_base_selection_field(self):
+        # test that no ondelete action is executed on a required selection field that is not
+        # extended, only required fields that extend it with selection_add should
+        # have ondelete actions defined
+        rec = self.env[self.MODEL_REQUIRED].create({'my_selection': 'foo'})
+        self.assertEqual(rec.my_selection, 'foo')
+
+        self._unlink_option(self.MODEL_REQUIRED, 'foo')
+        self.assertEqual(rec.my_selection, 'foo')
+
+    @mute_logger('odoo.addons.base.models.ir_model')
+    def test_write_override_selection(self):
+        # test that on override to write that raises an error does not prevent the ondelete
+        # policy from executing and cleaning up what needs to be cleaned up
+        rec = self.env[self.MODEL_WRITE_OVERRIDE].create({'my_selection': 'divinity'})
+        self.assertEqual(rec.my_selection, 'divinity')
+
+        self._unlink_option(self.MODEL_WRITE_OVERRIDE, 'divinity')
+        self.assertEqual(rec.my_selection, 'foo')
 
 
 @common.tagged('selection_ondelete_advanced')

@@ -245,7 +245,7 @@ class PosSession(models.Model):
             values = {}
             if not session.start_at:
                 values['start_at'] = fields.Datetime.now()
-            if session.config_id.cash_control:
+            if session.config_id.cash_control and not session.rescue:
                 last_sessions = self.env['pos.session'].search([('config_id', '=', self.config_id.id)]).ids
                 # last session includes the new one already.
                 if len(last_sessions) > 1:
@@ -382,7 +382,8 @@ class PosSession(models.Model):
         return self._credit_amounts(partial_vals, imbalance_amount_session, imbalance_amount)
 
     def _get_balancing_account(self):
-        return self.company_id.account_default_pos_receivable_account_id or self.env['ir.property'].get('property_account_receivable_id', 'res.partner')
+        propoerty_account = self.env['ir.property']._get('property_account_receivable_id', 'res.partner')
+        return self.company_id.account_default_pos_receivable_account_id or propoerty_account or self.env['account.account']
 
     def _create_account_move(self):
         """ Create account.move and account.move.line records for this session.

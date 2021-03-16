@@ -170,6 +170,7 @@ function clickOnSnippet(snippet, position = "bottom") {
 function clickOnSave(position = "bottom") {
     return {
         trigger: "button[data-action=save]",
+        in_modal: false,
         content: _t("Good job! It's time to <b>Save</b> your work."),
         position: position,
     };
@@ -201,7 +202,7 @@ function dragNDrop(snippet, position = "bottom") {
         trigger: `#oe_snippets .oe_snippet[name="${snippet.name}"] .oe_snippet_thumbnail:not(.o_we_already_dragging)`,
         extra_trigger: "body.editor_enable.editor_has_snippets",
         moveTrigger: '.oe_drop_zone',
-        content: _t(`Drag the <b>${snippet.name}</b> building block and drop it in your page.`),
+        content: _t(`Drag the <b>${snippet.name}</b> building block and drop it at the bottom of the page.`),
         position: position,
         run: "drag_and_drop #wrap",
     };

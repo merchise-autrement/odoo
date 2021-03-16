@@ -66,7 +66,7 @@ msgid ""
 "${object.name or 'n/a' })"
 msgstr ""
 "${object.company_id.name} ${object.state in ('draft', 'sent') and "
-"(ctx.get('proforma') and 'Proforma' or 'Quotation') or 'Order'} (Ref "
+"(ctx.get('proforma') and 'Proforma' or 'Offerte') or 'Order'} (Ref "
 "${object.name or 'n/a' })"
 
 #. module: sale
@@ -584,7 +584,7 @@ msgstr "<i class=\"fa fa-times\"/> Weiger"
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
 msgid "<small><b class=\"text-muted\">This offer expires on</b></small>"
-msgstr "<small><b class=\"text-muted\">Dit aanbod vervalt op</b></small>"
+msgstr "<small><b class=\"text-muted\">Deze offerte vervalt op</b></small>"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
@@ -874,7 +874,7 @@ msgstr "Accepteer &amp; Betaal"
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.mail_notification_paynow_online
 msgid "Accept &amp; Pay Quotation"
-msgstr "Accepteer &amp; Betaal online"
+msgstr "Accepteer &amp; Betaal offerte"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
@@ -2987,7 +2987,7 @@ msgstr "Betalingstransactie"
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_content
 msgid "Payment terms"
-msgstr "Betalingstermijnen"
+msgstr "Betalingstermijn"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_payment_acquirer_onboarding_wizard__paypal_user_type
@@ -3156,7 +3156,7 @@ msgstr "Hvhd"
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_report__qty_delivered
 msgid "Qty Delivered"
-msgstr "Aantal geleverd"
+msgstr "Hvh geleverd"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_report__qty_invoiced
@@ -3166,7 +3166,7 @@ msgstr "Gefactureerde hvh"
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_report__product_uom_qty
 msgid "Qty Ordered"
-msgstr "Bestelde hvh"
+msgstr "Hvh bestelde"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_report__qty_to_invoice

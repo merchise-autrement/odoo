@@ -4,12 +4,12 @@
 # 
 # Translators:
 # Tibor Kőnig <konig.tibor@evitalit.hu>, 2021
-# Tamás Németh <ntomasz81@gmail.com>, 2021
 # gezza <geza.nagy@oregional.hu>, 2021
 # Ákos Nagy <akos.nagy@oregional.hu>, 2021
 # Zsolt Godó <zsolttokio@gmail.com>, 2021
 # Martin Trigaux, 2021
 # krnkris, 2021
+# Tamás Németh <ntomasz81@gmail.com>, 2021
 # 
 msgid ""
 msgstr ""
@@ -17,7 +17,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-27 14:13+0000\n"
 "PO-Revision-Date: 2020-09-07 08:21+0000\n"
-"Last-Translator: krnkris, 2021\n"
+"Last-Translator: Tamás Németh <ntomasz81@gmail.com>, 2021\n"
 "Language-Team: Hungarian (https://www.transifex.com/odoo/teams/41243/hu/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -256,7 +256,7 @@ msgstr "Tevékenység állapota"
 #: model:ir.model.fields,field_description:website_event_track.field_event_sponsor__activity_type_icon
 #: model:ir.model.fields,field_description:website_event_track.field_event_track__activity_type_icon
 msgid "Activity Type Icon"
-msgstr ""
+msgstr "Tevékenység típus ikon"
 
 #. module: website_event_track
 #: model_terms:ir.actions.act_window,help:website_event_track.event_track_stage_action
@@ -316,7 +316,7 @@ msgstr ""
 #. module: website_event_track
 #: model:event.track.stage,name:website_event_track.event_track_stage2
 msgid "Announced"
-msgstr ""
+msgstr "Bejelentett"
 
 #. module: website_event_track
 #: model_terms:ir.ui.view,arch_db:website_event_track.event_track_proposal
@@ -653,7 +653,7 @@ msgstr ""
 #: model_terms:event.sponsor,website_description:website_event_track.event_7_sponsor_9
 #: model_terms:event.sponsor,website_description:website_event_track.event_sponsor_1
 msgid "Discover more"
-msgstr ""
+msgstr "Fedezzen fel még többet!"
 
 #. module: website_event_track
 #: model:event.track,name:website_event_track.event_track11
@@ -780,7 +780,7 @@ msgstr ""
 #. module: website_event_track
 #: model:ir.model,name:website_event_track.model_event_type
 msgid "Event Template"
-msgstr ""
+msgstr "Esemény sablon"
 
 #. module: website_event_track
 #: model:ir.model,name:website_event_track.model_event_track

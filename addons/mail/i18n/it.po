@@ -16,8 +16,8 @@
 # Simone Bernini <simone@aperturelabs.it>, 2020
 # Paolo Valier, 2020
 # Luigia Cimmino Caserta <lcc@odoo.com>, 2020
-# Sergio Zanchetta <primes2h@gmail.com>, 2021
 # Léonie Bouchat <lbo@odoo.com>, 2021
+# Sergio Zanchetta <primes2h@gmail.com>, 2021
 # 
 msgid ""
 msgstr ""
@@ -25,7 +25,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-27 11:23+0000\n"
 "PO-Revision-Date: 2020-09-07 08:14+0000\n"
-"Last-Translator: Léonie Bouchat <lbo@odoo.com>, 2021\n"
+"Last-Translator: Sergio Zanchetta <primes2h@gmail.com>, 2021\n"
 "Language-Team: Italian (https://www.transifex.com/odoo/teams/41243/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -288,10 +288,9 @@ msgid ""
 " groups.</p> <p>Try to <b>create your first channel</b> (e.g. sales, "
 "marketing, product XYZ, after work party, etc).</p>"
 msgstr ""
-"<p>I canali facilitano l'organizzazione delle informazioni attraverso "
-"argomenti e gruppi differenti.</p> <p>Prova a <b>creare il tuo primo "
-"canale</b> (ad es. vendite, marketing, prodotto XYZ, festa dopo il lavoro, "
-"ecc).</p>"
+"<p>I canali facilitano l'organizzazione delle informazioni tra argomenti e "
+"gruppi diversi.</p> <p>Prova a <b>creare il primo canale</b> (es. vendite, "
+"marketing, prodotto XYZ, festa dopo il lavoro ecc...).</p>"
 
 #. module: mail
 #. openerp-web
@@ -511,6 +510,9 @@ msgid ""
 "Actions may trigger specific behavior like opening calendar view or "
 "automatically mark as done when a document is uploaded"
 msgstr ""
+"Le azioni possono attivare comportamenti specifici, come aprire una vista "
+"calendario o segnare come completato il caricamento di un documento in modo "
+"automatico"
 
 #. module: mail
 #: model:ir.model.fields,help:mail.field_mail_message_subtype__default
@@ -871,6 +873,8 @@ msgid ""
 "Are you sure you want to discard %s mail delivery failures? You won't be "
 "able to re-send these mails later!"
 msgstr ""
+"Eliminare veramente %s errori di consegna? In seguito non sarà più possibile"
+" reinviare queste e-mail."
 
 #. module: mail
 #. openerp-web
@@ -982,7 +986,7 @@ msgstr "Gruppo autorizzato"
 #: model:ir.model.fields,field_description:mail.field_mail_mail__auto_delete
 #: model:ir.model.fields,field_description:mail.field_mail_template__auto_delete
 msgid "Auto Delete"
-msgstr "Eliminazione Automatica"
+msgstr "Eliminazione automatica"
 
 #. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.mail_channel_view_form
@@ -1187,7 +1191,7 @@ msgstr "Destinatari messaggio in copia carbone"
 #. module: mail
 #: model:ir.model.fields,help:mail.field_mail_template_preview__email_cc
 msgid "Carbon copy recipients"
-msgstr ""
+msgstr "Destinatari in copia carbone"
 
 #. module: mail
 #: model:ir.model.fields,help:mail.field_mail_template__email_cc
@@ -2092,7 +2096,7 @@ msgstr "Modifica partner"
 #: code:addons/mail/static/src/components/follower_subtype_list/follower_subtype_list.xml:0
 #, python-format
 msgid "Edit Subscription of"
-msgstr ""
+msgstr "Modifica iscrizione di"
 
 #. module: mail
 #. openerp-web
@@ -2245,7 +2249,7 @@ msgstr "Messaggio e-mail"
 #. module: mail
 #: model:ir.model.fields,help:mail.field_mail_followers__email
 msgid "Email of the related partner (if exist) or False"
-msgstr ""
+msgstr "E-mail del partner collegato (se esistente) oppure Falso"
 
 #. module: mail
 #: model:ir.model,name:mail.model_mail_resend_message
@@ -2577,6 +2581,7 @@ msgstr "Stai seguendo"
 #, python-format
 msgid "Following invites are invalid as user groups do not match: %s"
 msgstr ""
+"I seguenti inviti non sono validi, i gruppi utente non corrispondono: %s"
 
 #. module: mail
 #: model:ir.model.fields,help:mail.field_mail_activity__icon
@@ -2962,7 +2967,7 @@ msgstr ""
 #. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.mail_resend_message_view_form
 msgid "Ignore all failures"
-msgstr "Ignorare tutti gli errori"
+msgstr "Ignora tutti gli errori"
 
 #. module: mail
 #. openerp-web
@@ -3194,7 +3199,7 @@ msgstr "Lingua"
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_channel_partner__fetched_message_id
 msgid "Last Fetched"
-msgstr ""
+msgstr "Ultimi prelevati"
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_base_module_uninstall____last_update
@@ -3353,8 +3358,7 @@ msgstr ""
 msgid ""
 "List of partners that will be added as follower of the current document."
 msgstr ""
-"Elenco di partner che verranno aggiunti a chi sta seguendo il documento "
-"corrente."
+"Elenco di partner che verranno aggiunti per seguire il documento corrente."
 
 #. module: mail
 #: code:addons/mail/models/mail_channel.py:0
@@ -3498,7 +3502,7 @@ msgstr "Modulo email per il canale"
 #: code:addons/mail/static/src/models/notification_group/notification_group.js:0
 #, python-format
 msgid "Mail Failures"
-msgstr ""
+msgstr "Errori e-mail"
 
 #. module: mail
 #: model:ir.model,name:mail.model_mail_render_mixin
@@ -4026,7 +4030,7 @@ msgstr "Nome ricevuto del documento collegato."
 #. module: mail
 #: model:ir.model.fields,help:mail.field_mail_followers__name
 msgid "Name of the related partner (if exist) or the related channel"
-msgstr "Nome del partner collegato (se esiste) o del canale collegato"
+msgstr "Nome del partner collegato (se esistente) oppure canale collegato"
 
 #. module: mail
 #: model:ir.model.fields,help:mail.field_mail_template__report_name
@@ -4580,6 +4584,7 @@ msgstr ""
 #: model:ir.model.fields,help:mail.field_mail_notification__mail_id
 msgid "Optional mail_mail ID. Used mainly to optimize searches."
 msgstr ""
+"ID mail_mail opzionale. Usato principalmente per ottimizzare le ricerche."
 
 #. module: mail
 #: model:ir.model.fields,help:mail.field_mail_template__mail_server_id
@@ -6227,7 +6232,7 @@ msgstr "Domani:"
 #. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.mail_channel_view_form
 msgid "Topics discussed in this group..."
-msgstr "Argomenti trattati in questo gruppo..."
+msgstr "Argomenti trattati nel gruppo..."
 
 #. module: mail
 #: model:ir.model.fields,help:mail.field_mail_mail__tracking_value_ids
@@ -6899,7 +6904,7 @@ msgstr "Sei stato assegnato a "
 #: code:addons/mail/static/src/models/messaging_notification_handler/messaging_notification_handler.js:0
 #, python-format
 msgid "You have been invited to: %s"
-msgstr ""
+msgstr "Ricevuto un invito per: %s"
 
 #. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.mail_channel_notify_moderation
@@ -7058,6 +7063,7 @@ msgstr "giorno/i"
 
 #. module: mail
 #: code:addons/mail/models/mail_thread.py:0
+#: code:addons/mail/static/src/components/message/message.xml:0
 #, python-format
 msgid "document"
 msgstr "documento"
@@ -7117,7 +7123,7 @@ msgstr "alias scorrettamente configurato (record di riferimento sconosciuto)"
 #. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.mail_blacklist_remove_view_form
 msgid "mail_blacklist_removal"
-msgstr ""
+msgstr "mail_blacklist_removal"
 
 #. module: mail
 #: code:addons/mail/models/mail_thread.py:0
@@ -7275,3 +7281,17 @@ msgstr ""
 #: model:ir.model.fields.selection,name:mail.selection__mail_activity_type__delay_unit__weeks
 msgid "weeks"
 msgstr "settimana/e"
+
+#. module: mail
+#. openerp-web
+#: code:addons/mail/static/src/models/follower/follower.js:0
+#, python-format
+msgid "The subscription preferences were successfully applied."
+msgstr ""
+
+#. module: mail
+#. openerp-web
+#: code:addons/mail/static/src/components/message/message.xml:0
+#, python-format
+msgid "channel"
+msgstr ""

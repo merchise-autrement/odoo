@@ -9,8 +9,8 @@
 # Kevin Harrings <kha@odoo.com>, 2020
 # Hildeberto Abreu Magalhães <hildeberto@gmail.com>, 2020
 # Eduardo Aparicio <eduardo.caparica@gmail.com>, 2020
-# Gabriel Bortolotto Contesotto <gabrielbortolotto@gmail.com>, 2020
 # Lucas Rabelo <lucas.rabelo@nextsolucoes.net.br>, 2020
+# Thiago Alves Cavalcante <thiagoalcav@gmail.com>, 2020
 # 6dd21606a11e5d7d8e94f6aa08fa2771_7a56499 <e74a6544b2625f1cc3570d395d0e36e4_602227>, 2020
 # Rui Andrada <shingonoide@gmail.com>, 2020
 # Cesar Silveira <cesar.consultant@gmail.com>, 2020
@@ -20,7 +20,7 @@
 # Cezar José Sant Anna Junior <cezar.santanna@gmail.com>, 2020
 # Yannick Belot <yannickbh@gmail.com>, 2020
 # mariana rodrigues <mariana12v@gmail.com>, 2020
-# Vanderlei Romera <vanderleiromera@gmail.com>, 2020
+# Vanderlei P. Romera <vanderleiromera@gmail.com>, 2020
 # Gideoni Silva <gd.willian@gmail.com>, 2020
 # Ademílson F. Tonato <apraqueisso@gmail.com>, 2020
 # zimbora <alexandre.ruffer@tkobr.com>, 2020
@@ -28,7 +28,6 @@
 # Paulo C Pinheiro <clanslive@gmail.com>, 2020
 # André Carvalho <and2carvalho@gmail.com>, 2020
 # Raphael Mendonça, 2020
-# Thiago Alves Cavalcante <thiagoalcav@gmail.com>, 2020
 # Clemilton Clementino <clemylton@hotmail.com>, 2020
 # Luiz Carlos de Lima <luiz.carlos@akretion.com.br>, 2020
 # Diego Bittencourt <diegomb86@gmail.com>, 2020
@@ -53,6 +52,7 @@
 # Mateus Lopes <mateus1@gmail.com>, 2020
 # grazziano <gra.negocia@gmail.com>, 2020
 # Fábio Novais <fabionovais@aptu.com.br>, 2020
+# Silmar <pinheirosilmar@gmail.com>, 2020
 # Marcelo Costa <marcelo@comdesk.com.br>, 2020
 # Luiz Carareto Alonso <Luiz.cararetoalonso@gmail.com>, 2020
 # Fernando Colus <fcolus1@gmail.com>, 2020
@@ -60,16 +60,15 @@
 # Guilherme Libardi <guilherme.libardig@gmail.com>, 2020
 # Marcelo at JambuTec <marcelo@jambu.com.br>, 2020
 # Frederico Freire Boaventura <fboaventura@live.com>, 2020
-# Silmar <pinheirosilmar@gmail.com>, 2020
 # Liane Cafarate <lic@odoo.com>, 2020
-# Luis Felipe Miléo <mileo@kmee.com.br>, 2020
+# Luis Felipe Miléo <mileo@kmee.com.br>, 2021
 # Éder Brito <britoederr@gmail.com>, 2021
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-27 15:35+0000\n"
+"POT-Creation-Date: 2021-02-25 10:15+0000\n"
 "PO-Revision-Date: 2020-09-07 08:09+0000\n"
 "Last-Translator: Éder Brito <britoederr@gmail.com>, 2021\n"
 "Language-Team: Portuguese (Brazil) (https://www.transifex.com/odoo/teams/41243/pt_BR/)\n"
@@ -209,6 +208,12 @@ msgid ". You might want to put a higher number here."
 msgstr ". Você pode querer colocar um número maior aqui "
 
 #. module: account
+#: code:addons/account/wizard/account_resequence.py:0
+#, python-format
+msgid "... (%s other)"
+msgstr "... (%s outro)"
+
+#. module: account
 #: model:account.payment.term,name:account.account_payment_term_15days
 msgid "15 Days"
 msgstr "15 Dias"
@@ -236,7 +241,7 @@ msgstr "30% adiantado e restante no final do mês seguinte"
 #. module: account
 #: model:account.payment.term,name:account.account_payment_term_advance_60days
 msgid "30% Now, Balance 60 Days"
-msgstr "30% Agora, Balanço de 60 dias"
+msgstr "30% Agora, Restante de 60 dias"
 
 #. module: account
 #: model:account.payment.term,name:account.account_payment_term_45days
@@ -701,7 +706,7 @@ msgstr "<span role=\"separator\">Visualizar</span>"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
 msgid "<span title=\"Balance in General Ledger\">Balance in GL</span>"
-msgstr "<span title=\"Balance in General Ledger\">Balanço no GL</span>"
+msgstr "<span title=\"Balance in General Ledger\">Saldo no BG</span>"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
@@ -818,8 +823,8 @@ msgid ""
 "<span>This entry has been generated through the Invoicing app, before "
 "installing Accounting. Its balance has been imported separately.</span>"
 msgstr ""
-"<span>Esta entrada foi gerada por meio do app Faturamento, antes de instalar"
-" a Contabilidade. Seu saldo foi importado separadamente.</span>"
+"<span>Esta entrada foi gerada por meio do app Contabilidade, antes de "
+"instalar a Contabilidade. Seu saldo foi importado separadamente.</span>"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.report_invoice_document
@@ -1511,7 +1516,7 @@ msgstr "Dashboard de Contabilidade"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_move_form
 msgid "Accounting Date"
-msgstr "Data da Conta"
+msgstr "Data Contábil"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_move_line_form
@@ -2558,6 +2563,13 @@ msgid "Balance"
 msgstr "Saldo"
 
 #. module: account
+#. openerp-web
+#: code:addons/account/static/src/js/account_selection.js:0
+#, python-format
+msgid "Balance Sheet"
+msgstr "Balanço patrimonial"
+
+#. module: account
 #: model:ir.model.fields,help:account.field_account_bank_statement__balance_end
 msgid "Balance as calculated based on Opening Balance and transaction lines"
 msgstr ""
@@ -2738,7 +2750,7 @@ msgstr ""
 #: code:addons/account/models/account_journal_dashboard.py:0
 #, python-format
 msgid "Bank: Balance"
-msgstr "Banco: Balanço"
+msgstr "Banco: Saldo"
 
 #. module: account
 #: model:ir.ui.menu,name:account.account_banks_menu
@@ -2890,7 +2902,7 @@ msgstr "Mensagem de Bloqueio"
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_account_type__include_initial_balance
 msgid "Bring Accounts Balance Forward"
-msgstr "Antecipar Balanço de Contas"
+msgstr "Antecipar Saldo de Contas"
 
 #. module: account
 #: model_terms:ir.actions.act_window,help:account.open_account_journal_dashboard_kanban
@@ -3813,7 +3825,8 @@ msgstr "País para o qual este relatório está disponível."
 #: model:ir.model.fields,help:account.field_account_account_tag__country_id
 msgid "Country for which this tag is available, when applied on taxes."
 msgstr ""
-"País para o qual esta tag está disponível, quando aplicada sobre impostos."
+"País para o qual este marcador está disponível, quando aplicada sobre "
+"impostos."
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.report_hash_integrity
@@ -5070,7 +5083,7 @@ msgstr "Rascunho de Nota de Crédito de Fornecedor"
 #: model_terms:ir.ui.view,arch_db:account.view_payment_term_line_form
 #, python-format
 msgid "Due"
-msgstr "Devido"
+msgstr "Vencido"
 
 #. module: account
 #: code:addons/account/controllers/portal.py:0
@@ -5852,7 +5865,7 @@ msgstr ""
 msgid ""
 "Gives the sequence order when displaying a list of payment terms lines."
 msgstr ""
-"Dá uma ordem de sequência quando mostrando uma lista de linhas de termos de "
+"Fornece a ordem de sequência ao exibir uma lista de linhas de condições de "
 "pagamento."
 
 #. module: account
@@ -6154,8 +6167,8 @@ msgid ""
 "If the active field is set to False, it will allow you to hide the payment "
 "terms without removing it."
 msgstr ""
-"Ao desativar o campo 'Ativo', permite ocultar as condições de pagamento sem "
-"exclui-las."
+"Se o campo ativo for definido como Falso, permitirá que você oculte as "
+"condições de pagamento sem removê-lo."
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_bank_statement_line__to_check
@@ -6533,7 +6546,9 @@ msgid "Internal Notes"
 msgstr "Anotações Internas"
 
 #. module: account
+#: code:addons/account/models/account_payment.py:0
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
+#, python-format
 msgid "Internal Transfer"
 msgstr "Transferência interna"
 
@@ -7577,7 +7592,7 @@ msgstr "Exibição de Imposto de Subtotais de Linha"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.res_config_settings_view_form
 msgid "Line subtotals tax display"
-msgstr "Exibição de imposto de subtotais de linha"
+msgstr "Exibição de Imposto de Subtotais de Linha"
 
 #. module: account
 #: code:addons/account/models/account_move.py:0
@@ -8516,6 +8531,7 @@ msgstr "Apenas Administradores podem carregar um plano de contas."
 #. module: account
 #: code:addons/account/models/account_move.py:0
 #: code:addons/account/models/account_move.py:0
+#: code:addons/account/models/ir_actions_report.py:0
 #, python-format
 msgid "Only invoices could be printed."
 msgstr "Apenas Faturas puderam ser impressas."
@@ -8673,6 +8689,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account.tax_adjustments_wizard
 msgid "Options"
 msgstr "Opções"
+
+#. module: account
+#: code:addons/account/wizard/account_tour_upload_bill.py:0
+#, python-format
+msgid "Or send a bill to %s@%s"
+msgstr "Ou envie uma conta para %s@%s"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_resequence_wizard__ordering
@@ -9141,37 +9163,37 @@ msgstr "Tipo de pagamento"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_payment_term_form
 msgid "Payment term explanation for the customer..."
-msgstr "Explicação do Termo de Pagamento para o cliente..."
+msgstr "Explicação da Condição de Pagamento para o cliente..."
 
 #. module: account
 #: model:account.payment.term,note:account.account_payment_term_15days
 msgid "Payment terms: 15 Days"
-msgstr "Prazos de pagamento: 15 Dias"
+msgstr "Condição de pagamento: 15 Dias"
 
 #. module: account
 #: model:account.payment.term,note:account.account_payment_term_2months
 msgid "Payment terms: 2 Months"
-msgstr "Condições de pagamento: 2 meses"
+msgstr "Condição de pagamento: 2 meses"
 
 #. module: account
 #: model:account.payment.term,note:account.account_payment_term_21days
 msgid "Payment terms: 21 Days"
-msgstr "Condições de Pagamento: 21 Dias"
+msgstr "Condição de pagamento: 21 Dias"
 
 #. module: account
 #: model:account.payment.term,note:account.account_payment_term_30days
 msgid "Payment terms: 30 Days"
-msgstr "Condições de Pagamento: 30 Dias"
+msgstr "Condição de pagamento: 30 Dias"
 
 #. module: account
 #: model:account.payment.term,note:account.account_payment_term_advance
 msgid "Payment terms: 30% Advance End of Following Month"
-msgstr "Prazo de pagamento: 30% de Adiantamento no Fim do Mês Seguinte"
+msgstr "Condição de pagamento: 30% adiantado no final do mês seguinte"
 
 #. module: account
 #: model:account.payment.term,note:account.account_payment_term_advance_60days
 msgid "Payment terms: 30% Now, Balance 60 Days"
-msgstr "Condições de Pagamento: 30% agora, Saldo em 60 Dias"
+msgstr "Condição de pagamento: 30% agora, Restante em 60 Dias"
 
 #. module: account
 #: model:account.payment.term,note:account.account_payment_term_45days
@@ -9181,12 +9203,12 @@ msgstr "Condições de pagamento: 45 dias"
 #. module: account
 #: model:account.payment.term,note:account.account_payment_term_end_following_month
 msgid "Payment terms: End of Following Month"
-msgstr "Prazo de pagamento: Fim do Mês Seguinte"
+msgstr "Condição de pagamento: Fim do Mês Seguinte"
 
 #. module: account
 #: model:account.payment.term,note:account.account_payment_term_immediate
 msgid "Payment terms: Immediate Payment"
-msgstr "Prazo de pagamento: Pagamento imediato"
+msgstr "Condição de pagamento: Pagamento imediato"
 
 #. module: account
 #: code:addons/account/wizard/account_payment_register.py:0
@@ -9277,7 +9299,8 @@ msgstr "Porcentagem de cada linha para executar a ação."
 #, python-format
 msgid "Percentages on the Payment Terms lines must be between 0 and 100."
 msgstr ""
-"As porcentagens nas linhas Termos de Pagamento devem estar entre 0 e 100."
+"As porcentagens nas linhas das Condições de Pagamento devem estar entre 0 e "
+"100."
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_invoice_filter
@@ -10286,7 +10309,7 @@ msgstr "Arredondamento Global"
 #. module: account
 #: model:ir.model.fields.selection,name:account.selection__res_company__tax_calculation_rounding_method__round_per_line
 msgid "Round per Line"
-msgstr "Rodada por linha"
+msgstr "Arredondamento por Linha"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.rounding_form_view
@@ -10649,7 +10672,7 @@ msgstr "Selecionar o primeiro parceiro"
 #: model:ir.model.fields,help:account.field_account_payment_term_line__value
 msgid "Select here the kind of valuation related to this payment terms line."
 msgstr ""
-"Selecione aqui o tipo de avaliação relacionada a esta linha do prazo de "
+"Selecione aqui o tipo de avaliação relacionada a esta linha da condição de "
 "pagamento."
 
 #. module: account
@@ -10726,7 +10749,7 @@ msgid ""
 "Send invoices to your customers in no time with the <b>Invoicing app</b>."
 msgstr ""
 "Envie faturas para seus clientes em qualquer momento com o <b>Aplicativo de "
-"Faturamento</b>"
+"Contabilidade</b>"
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_journal__alias_id
@@ -10797,7 +10820,7 @@ msgstr "Setembro"
 #: model:ir.model.fields,field_description:account.field_account_tax_report_line__sequence
 #: model:ir.model.fields,field_description:account.field_account_tax_template__sequence
 msgid "Sequence"
-msgstr "Seqüência"
+msgstr "Sequência"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_bank_statement__sequence_number
@@ -10906,7 +10929,7 @@ msgstr "Definições"
 #: model_terms:ir.ui.view,arch_db:account.init_accounts_tree
 #: model_terms:ir.ui.view,arch_db:account.view_account_list
 msgid "Setup"
-msgstr "Instalação"
+msgstr "Definição"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.onboarding_bank_account_step
@@ -11367,8 +11390,8 @@ msgid ""
 "Tag name and formula are mutually exclusive, they should not be set together"
 " on the same tax report line."
 msgstr ""
-"Nome da Tag e a fórmula são mutuamente exclusivos e não devem ser definidos "
-"juntos na mesma linha do relatório de imposto."
+"Nome do Marcador e a fórmula são mutuamente exclusivos e não devem ser "
+"definidos juntos na mesma linha do relatório de imposto."
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_account__tag_ids
@@ -12145,6 +12168,16 @@ msgid "That is the date of the opening entry."
 msgstr "Essa é a data da entrada de abertura."
 
 #. module: account
+#: code:addons/account/models/sequence_mixin.py:0
+#, python-format
+msgid ""
+"The %(date_field)s (%(date)s) doesn't match the %(sequence_field)s (%(sequence)s).\n"
+"You might want to clear the field %(sequence_field)s before proceeding with the change of the date."
+msgstr ""
+"O/a %(date_field)s (%(date)s) não corresponde à %(sequence_field)s (%(sequence)s).\n"
+"Você pode querer limpar o campo %(sequence_field)s antes de proceder à alteração da data."
+
+#. module: account
 #: model:ir.model.fields,help:account.field_account_account__internal_group
 #: model:ir.model.fields,help:account.field_account_account_type__internal_group
 #: model:ir.model.fields,help:account.field_account_move_line__account_internal_group
@@ -12437,16 +12470,6 @@ msgstr ""
 "todas as linhas estão reconciliadas. Não há mais nada para processar."
 
 #. module: account
-#: code:addons/account/models/sequence_mixin.py:0
-#, python-format
-msgid ""
-"The %(date_field)s (%(date)s) doesn't match the %(sequence_field)s (%(sequence)s).\n"
-"You might want to clear the field %(sequence_field)s before proceeding with the change of the date."
-msgstr ""
-"O/a %(date_field)s (%(date)s) não corresponde à %(sequence_field)s (%(sequence)s).\n"
-"Você pode querer limpar o campo %(sequence_field)s antes de proceder à alteração da data."
-
-#. module: account
 #: code:addons/account/models/account_payment_term.py:0
 #, python-format
 msgid "The day of the month used for this term must be strictly positive."
@@ -12544,7 +12567,7 @@ msgid ""
 "set a tag_name on these lines."
 msgstr ""
 "As seguintes linhas de relatório de impostos são usadas em alguns modelos de"
-" distribuição de impostos, embora não gerem nenhuma tag: %s Isso "
+" distribuição de impostos, embora não gerem nenhuma marcador: %s Isso "
 "provavelmente significa que você se esqueceu de definir um tag_name nessas "
 "linhas."
 
@@ -12578,6 +12601,19 @@ msgstr ""
 #, python-format
 msgid "The holder of a journal's bank account must be the company (%s)."
 msgstr "O titular da conta bancária do diário deve ser a empresa (%s)."
+
+#. module: account
+#: code:addons/account/models/account_move.py:0
+#, python-format
+msgid ""
+"The invoice already contains lines, it was not updated from the attachment."
+msgstr "A fatura já contém linhas, não foi atualizada do anexo."
+
+#. module: account
+#: code:addons/account/models/account_move.py:0
+#, python-format
+msgid "The invoice is not a draft, it was not updated from the attachment."
+msgstr "A fatura não é um rascunho, não foi atualizada do anexo."
 
 #. module: account
 #: code:addons/account/models/account_bank_statement.py:0
@@ -12689,7 +12725,7 @@ msgstr "O último dia do mês será usado se o dia escolhido não existir."
 #: code:addons/account/models/account_payment_term.py:0
 #, python-format
 msgid "The last line of a Payment Term should have the Balance type."
-msgstr "A última linha de um Termo de Pagamento deve ter o tipo Saldo."
+msgstr "A última linha de uma Condição de Pagamento deve ter o tipo Saldo."
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_payment_term_form
@@ -12727,7 +12763,7 @@ msgstr "O movimento desta linha de entrada."
 #, python-format
 msgid "The number of days used for a payment term cannot be negative."
 msgstr ""
-"O número de dias usado para um prazo de pagamento não pode ser negativo."
+"O número de dias usado para uma condição de pagamento não pode ser negativo."
 
 #. module: account
 #: code:addons/account/models/account_move.py:0
@@ -13067,7 +13103,7 @@ msgstr ""
 #. module: account
 #: model:ir.model.fields,help:account.field_account_account_tag__tax_report_line_ids
 msgid "The tax report lines using this tag"
-msgstr "As linhas do relatório de impostos usando esta tag"
+msgstr "As linhas do relatório de impostos usando este marcador"
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_tax_repartition_line__invoice_tax_id
@@ -13144,7 +13180,7 @@ msgid ""
 "Configure it in Accounting/Configuration/Settings"
 msgstr ""
 "Não há diário de base de caixa de imposto definido para a empresa  '%s' .\n"
-"Configure isto em Faturamento/Configuração/Definições"
+"Configure isto em Contabilidade/Configuração/Definições"
 
 #. module: account
 #: code:addons/account/models/company.py:0
@@ -13327,8 +13363,8 @@ msgstr "O movimento está configurado para ser auto-lançado em %s"
 msgid ""
 "This move is configured to be posted automatically at the accounting date:"
 msgstr ""
-"Este movimento está configurado para ser lançado automaticamente na data da "
-"fatura:"
+"Este movimento está configurado para ser lançado automaticamente na data "
+"contábil:"
 
 #. module: account
 #: code:addons/account/models/account_move.py:0
@@ -13379,7 +13415,7 @@ msgid ""
 "This payment term will be used instead of the default one for purchase "
 "orders and vendor bills"
 msgstr ""
-"Este prazo de pagamento será usado em vez do padrão de ordens de compra"
+"Esta condição de pagamento será usada em vez da padrão de pedidos de compra"
 
 #. module: account
 #: model:ir.model.fields,help:account.field_res_partner__property_payment_term_id
@@ -13388,7 +13424,7 @@ msgid ""
 "This payment term will be used instead of the default one for sales orders "
 "and customer invoices"
 msgstr ""
-"Este termo de pagamento será usado no lugar do padrão, para pedidos de "
+"Esta condição de pagamento será usada no lugar da padrão, para pedidos de "
 "vendas e faturas de clientes"
 
 #. module: account
@@ -13619,6 +13655,12 @@ msgid "Transfers"
 msgstr "Transferências"
 
 #. module: account
+#: code:addons/account/wizard/account_tour_upload_bill.py:0
+#, python-format
+msgid "Try a sample vendor bill"
+msgstr "Experimente uma amostra de fatura de fornecedor"
+
+#. module: account
 #: model:ir.model.fields,field_description:account.field_account_account__user_type_id
 #: model:ir.model.fields,field_description:account.field_account_account_template__user_type_id
 #: model:ir.model.fields,field_description:account.field_account_account_type__type
@@ -13825,6 +13867,12 @@ msgstr "Atualizar cambio de moedas automaticamente"
 #, python-format
 msgid "Upload"
 msgstr "Enviar"
+
+#. module: account
+#: code:addons/account/wizard/account_tour_upload_bill.py:0
+#, python-format
+msgid "Upload your own bill"
+msgstr "Carregue sua própria conta"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_chart_template__use_anglo_saxon
@@ -14081,7 +14129,7 @@ msgstr "Pagamento de Fornecedor"
 #: model:ir.model.fields,field_description:account.field_res_partner__property_supplier_payment_term_id
 #: model:ir.model.fields,field_description:account.field_res_users__property_supplier_payment_term_id
 msgid "Vendor Payment Terms"
-msgstr "Termos de Pagamento do Fornecedor"
+msgstr "Condições de Pagamento do Fornecedor"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
@@ -14710,12 +14758,10 @@ msgstr ""
 #, python-format
 msgid ""
 "You cannot reduce the number of decimal places of a currency which has "
-"already been used to make accounting entries. If you really need to do that,"
-" please contact tech support."
+"already been used to make accounting entries."
 msgstr ""
 "Você não pode reduzir o número de casas decimais de uma moeda que já foi "
-"usada para fazer lançamentos contábeis. Se você realmente precisar fazer "
-"isso, entre em contato com o suporte técnico."
+"usada para fazer lançamentos contábeis."
 
 #. module: account
 #: code:addons/account/models/account_journal.py:0
@@ -14904,6 +14950,7 @@ msgstr "Faixa de CEP Para"
 
 #. module: account
 #: code:addons/account/models/account_move.py:0
+#: code:addons/account/wizard/account_automatic_entry_wizard.py:0
 #: code:addons/account/wizard/account_automatic_entry_wizard.py:0
 #, python-format
 msgid "[Not set]"

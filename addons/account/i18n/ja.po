@@ -18,20 +18,20 @@
 # Masayuki Takesue <m_takesue@nifty.com>, 2020
 # 城谷 龍弥 <tatsuya.shirotani@pro-spire.co.jp>, 2020
 # Tim Siu Lai <tl@roomsfor.hk>, 2020
-# Tsuda Ryoko <ryoko04nov@gmail.com>, 2020
 # 高木正勝 <masakatsu.takagi@pro-spire.co.jp>, 2020
 # Kohji Katayama <kohji.katayama@dreamyard.co.jp>, 2020
 # Norimichi Sugimoto <norimichi.sugimoto@tls-ltd.co.jp>, 2020
 # Yoshi Tashiro <tashiro@roomsfor.hk>, 2020
 # Ryoko Tsuda <ryoko@quartile.co>, 2020
 # Noma Yuki, 2020
+# Tsuda Ryoko <ryoko04nov@gmail.com>, 2021
 # Martin Trigaux, 2021
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-27 15:35+0000\n"
+"POT-Creation-Date: 2021-02-25 10:15+0000\n"
 "PO-Revision-Date: 2020-09-07 08:09+0000\n"
 "Last-Translator: Martin Trigaux, 2021\n"
 "Language-Team: Japanese (https://www.transifex.com/odoo/teams/41243/ja/)\n"
@@ -158,6 +158,12 @@ msgstr "-> 部分的に消込済の仕訳照会"
 #: model_terms:ir.ui.view,arch_db:account.view_move_form
 msgid ". You might want to put a higher number here."
 msgstr "ここにより大きな数字を適用した方が良い場合もあります。"
+
+#. module: account
+#: code:addons/account/wizard/account_resequence.py:0
+#, python-format
+msgid "... (%s other)"
+msgstr ""
 
 #. module: account
 #: model:account.payment.term,name:account.account_payment_term_15days
@@ -2441,6 +2447,13 @@ msgstr "悪い"
 #: model:ir.model.fields.selection,name:account.selection__account_payment_term_line__value__balance
 msgid "Balance"
 msgstr "残高"
+
+#. module: account
+#. openerp-web
+#: code:addons/account/static/src/js/account_selection.js:0
+#, python-format
+msgid "Balance Sheet"
+msgstr "貸借対照表"
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_bank_statement__balance_end
@@ -6266,7 +6279,9 @@ msgid "Internal Notes"
 msgstr "内部注記"
 
 #. module: account
+#: code:addons/account/models/account_payment.py:0
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
+#, python-format
 msgid "Internal Transfer"
 msgstr "内部振替"
 
@@ -8194,6 +8209,7 @@ msgstr "唯一の管理者アカウントのチャートを読み込むことが
 #. module: account
 #: code:addons/account/models/account_move.py:0
 #: code:addons/account/models/account_move.py:0
+#: code:addons/account/models/ir_actions_report.py:0
 #, python-format
 msgid "Only invoices could be printed."
 msgstr "唯一の請求書を印刷することができます。"
@@ -8345,6 +8361,12 @@ msgstr "数式全体でこの行を参照するためのオプションの一意
 #: model_terms:ir.ui.view,arch_db:account.tax_adjustments_wizard
 msgid "Options"
 msgstr "オプション"
+
+#. module: account
+#: code:addons/account/wizard/account_tour_upload_bill.py:0
+#, python-format
+msgid "Or send a bill to %s@%s"
+msgstr ""
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_resequence_wizard__ordering
@@ -11663,6 +11685,14 @@ msgid "That is the date of the opening entry."
 msgstr "それがオープニングエントリーの日付です。"
 
 #. module: account
+#: code:addons/account/models/sequence_mixin.py:0
+#, python-format
+msgid ""
+"The %(date_field)s (%(date)s) doesn't match the %(sequence_field)s (%(sequence)s).\n"
+"You might want to clear the field %(sequence_field)s before proceeding with the change of the date."
+msgstr ""
+
+#. module: account
 #: model:ir.model.fields,help:account.field_account_account__internal_group
 #: model:ir.model.fields,help:account.field_account_account_type__internal_group
 #: model:ir.model.fields,help:account.field_account_move_line__account_internal_group
@@ -11922,14 +11952,6 @@ msgstr ""
 "銀行取引明細書の現在の状態：-新規：ドラフト仕訳で完全に編集可能。-処理：転記された仕訳で編集できなくなり、照合の準備ができました。-検証済み：すべての行が照合されます。何も処理するものはありません"
 
 #. module: account
-#: code:addons/account/models/sequence_mixin.py:0
-#, python-format
-msgid ""
-"The %(date_field)s (%(date)s) doesn't match the %(sequence_field)s (%(sequence)s).\n"
-"You might want to clear the field %(sequence_field)s before proceeding with the change of the date."
-msgstr ""
-
-#. module: account
 #: code:addons/account/models/account_payment_term.py:0
 #, python-format
 msgid "The day of the month used for this term must be strictly positive."
@@ -12046,6 +12068,19 @@ msgid "The holder of a journal's bank account must be the company (%s)."
 msgstr "ジャーナルの銀行口座の保有者は、会社(%s)でなければなりません。"
 
 #. module: account
+#: code:addons/account/models/account_move.py:0
+#, python-format
+msgid ""
+"The invoice already contains lines, it was not updated from the attachment."
+msgstr ""
+
+#. module: account
+#: code:addons/account/models/account_move.py:0
+#, python-format
+msgid "The invoice is not a draft, it was not updated from the attachment."
+msgstr ""
+
+#. module: account
 #: code:addons/account/models/account_bank_statement.py:0
 #, python-format
 msgid ""
@@ -12080,7 +12115,7 @@ msgstr ""
 "一貫性を保つためには、ジャーナルエントリは、次の項目を常に含む必要があります。\n"
 "- 優秀な支払いを伴う1つのジャーナル項目/領収書が占めている。\n"
 "- 売掛金/買掛金を含む1つのジャーナル項目。\n"
-"- すべて同じアカウントを共有するオプションジャーナル項目。"
+"- すべて同じアカウントを共有するオプションジャーナル項目。\n"
 
 #. module: account
 #: code:addons/account/models/account_payment.py:0
@@ -12980,6 +13015,12 @@ msgid "Transfers"
 msgstr "運送"
 
 #. module: account
+#: code:addons/account/wizard/account_tour_upload_bill.py:0
+#, python-format
+msgid "Try a sample vendor bill"
+msgstr ""
+
+#. module: account
 #: model:ir.model.fields,field_description:account.field_account_account__user_type_id
 #: model:ir.model.fields,field_description:account.field_account_account_template__user_type_id
 #: model:ir.model.fields,field_description:account.field_account_account_type__type
@@ -13177,6 +13218,12 @@ msgstr "為替レートを自動更新"
 #, python-format
 msgid "Upload"
 msgstr "アップロード"
+
+#. module: account
+#: code:addons/account/wizard/account_tour_upload_bill.py:0
+#, python-format
+msgid "Upload your own bill"
+msgstr ""
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_chart_template__use_anglo_saxon
@@ -13958,9 +14005,8 @@ msgstr "閉鎖されている銀行取引明細書の出金/出金はできま�
 #, python-format
 msgid ""
 "You cannot reduce the number of decimal places of a currency which has "
-"already been used to make accounting entries. If you really need to do that,"
-" please contact tech support."
-msgstr "会計仕訳にすでに使用されている通貨の小数点以下の桁数を減らすことはできません。本当に必要な場合は、テクニカルサポートに連絡してください。"
+"already been used to make accounting entries."
+msgstr ""
 
 #. module: account
 #: code:addons/account/models/account_journal.py:0
@@ -14124,6 +14170,7 @@ msgstr "郵便番号範囲の終了"
 
 #. module: account
 #: code:addons/account/models/account_move.py:0
+#: code:addons/account/wizard/account_automatic_entry_wizard.py:0
 #: code:addons/account/wizard/account_automatic_entry_wizard.py:0
 #, python-format
 msgid "[Not set]"

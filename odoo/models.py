@@ -413,6 +413,10 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         field = cls._fields.pop(name, None)
         if hasattr(cls, name):
             delattr(cls, name)
+        if cls._rec_name == name:
+            # fixup _rec_name and display_name's dependencies
+            cls._rec_name = None
+            cls.display_name.depends = tuple(dep for dep in cls.display_name.depends if dep != name)
         return field
 
     @api.model
@@ -2849,14 +2853,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                 raise
 
         for name in bad_fields:
-            del cls._fields[name]
-            delattr(cls, name)
-
-        # fix up _rec_name
-        if 'x_name' in bad_fields and cls._rec_name == 'x_name':
-            cls._rec_name = None
-            field = cls._fields['display_name']
-            field.depends = tuple(name for name in field.depends if name != 'x_name')
+            self._pop_field(name)
 
     @api.model
     def _setup_complete(self):
@@ -3689,6 +3686,11 @@ Fields:
             real_recs._validate_fields(vals, inverse_fields)
 
             for fields in determine_inverses.values():
+                # write again on non-stored fields that have been invalidated from cache
+                for field in fields:
+                    if not field.store and any(self.env.cache.get_missing_ids(real_recs, field)):
+                        field.write(real_recs, vals[field.name])
+
                 # inverse records that are not being computed
                 try:
                     fields[0].determine_inverse(real_recs)
@@ -4674,7 +4676,7 @@ Fields:
         """
         ids, new_ids = [], []
         for i in self._ids:
-            (ids if isinstance(i, int) else new_ids).append(i)
+            (new_ids if isinstance(i, NewId) else ids).append(i)
         if not ids:
             return self
         query = """SELECT id FROM "%s" WHERE id IN %%s""" % self._table

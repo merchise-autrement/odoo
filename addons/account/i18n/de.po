@@ -11,7 +11,6 @@
 # Andreas Stauder <andreas.stauder@brain-tec.ch>, 2020
 # Ermin Trevisan <trevi@twanda.com>, 2020
 # JackTheHunter <Maximilian.N98@gmail.com>, 2020
-# Robert Förster <hello@suppliot.eu>, 2020
 # Marco Gantenbein <gantemar@gmail.com>, 2020
 # Max-Milan Stoyanov, 2020
 # Wolfgang Taferner, 2020
@@ -31,16 +30,18 @@
 # spilymp <visessa+github@gmail.com>, 2020
 # Andreas Jonderko <a.jonderko@gastronovi.com>, 2020
 # Felix Schubert <felix.schubert@go-erp.com>, 2020
-# EugenBrodskiSAMSAIT <eugen.brodski@samsa-it.de>, 2020
+# Udo Hennig <info@udohennig.de>, 2021
 # Martin Trigaux, 2021
+# EugenBrodskiSAMSAIT <eugen.brodski@samsa-it.de>, 2021
+# Robert Förster <hello@suppliot.eu>, 2021
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-27 15:35+0000\n"
+"POT-Creation-Date: 2021-02-25 10:15+0000\n"
 "PO-Revision-Date: 2020-09-07 08:09+0000\n"
-"Last-Translator: Martin Trigaux, 2021\n"
+"Last-Translator: Robert Förster <hello@suppliot.eu>, 2021\n"
 "Language-Team: German (https://www.transifex.com/odoo/teams/41243/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -166,6 +167,12 @@ msgstr "-> teilweise ausgeglichene Buchungen anzeigen"
 #: model_terms:ir.ui.view,arch_db:account.view_move_form
 msgid ". You might want to put a higher number here."
 msgstr ". Sie möchten vielleicht eine höhere Zahl eingeben."
+
+#. module: account
+#: code:addons/account/wizard/account_resequence.py:0
+#, python-format
+msgid "... (%s other)"
+msgstr ""
 
 #. module: account
 #: model:account.payment.term,name:account.account_payment_term_15days
@@ -630,7 +637,7 @@ msgstr "<span> Von </span>"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
 msgid "<span> Manually</span>"
-msgstr "<span> Manuel</span>"
+msgstr "<span> (manuell)</span>"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_position_form
@@ -1099,7 +1106,7 @@ msgstr "Kontoinhaber"
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_setup_bank_manual_config__acc_holder_name
 msgid "Account Holder Name"
-msgstr "Kontoinhaber"
+msgstr "Abweichender Kontoinhaber"
 
 #. module: account
 #: model:ir.model,name:account.model_account_invoice_send
@@ -2439,6 +2446,13 @@ msgstr "Schlechter Debitor"
 #: model:ir.model.fields.selection,name:account.selection__account_payment_term_line__value__balance
 msgid "Balance"
 msgstr "Saldo"
+
+#. module: account
+#. openerp-web
+#: code:addons/account/static/src/js/account_selection.js:0
+#, python-format
+msgid "Balance Sheet"
+msgstr "Bilanz"
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_bank_statement__balance_end
@@ -6386,7 +6400,9 @@ msgid "Internal Notes"
 msgstr "Interne Notizen"
 
 #. module: account
+#: code:addons/account/models/account_payment.py:0
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
+#, python-format
 msgid "Internal Transfer"
 msgstr "Interne Überweisungen"
 
@@ -6786,6 +6802,8 @@ msgid ""
 "It seems that the taxes have been modified since the creation of the journal"
 " entry. You should create the credit note manually instead."
 msgstr ""
+"Es sieht so aus als wären die Steuern seid der Erstellung des Eintrages "
+"geändert worden. Sie sollten eine manuelle Kostenbuchung erstellen."
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_move_form
@@ -6951,7 +6969,7 @@ msgstr ""
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_payment_register__line_ids
 msgid "Journal items"
-msgstr ""
+msgstr "Buchungszeilen"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_move_line_filter
@@ -6994,7 +7012,7 @@ msgstr "Journale"
 #. module: account
 #: model:ir.actions.report,name:account.action_report_journal
 msgid "Journals Audit"
-msgstr "Audit der Journale"
+msgstr "Journalaudit"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_journal__json_activity_data
@@ -7543,7 +7561,7 @@ msgstr "Hauptwährung Ihres Unternehmens"
 #: model:ir.ui.menu,name:account.account_reports_management_menu
 #: model:ir.ui.menu,name:account.menu_finance_entries_management
 msgid "Management"
-msgstr "Verwaltung"
+msgstr "Controlling"
 
 #. module: account
 #: model:account.payment.method,name:account.account_payment_method_manual_in
@@ -8351,6 +8369,7 @@ msgstr "Nur Administratoren können einen Kontenplan hochladen"
 #. module: account
 #: code:addons/account/models/account_move.py:0
 #: code:addons/account/models/account_move.py:0
+#: code:addons/account/models/ir_actions_report.py:0
 #, python-format
 msgid "Only invoices could be printed."
 msgstr "Nur Rechnungen konnten gedruckt werden."
@@ -8509,6 +8528,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account.tax_adjustments_wizard
 msgid "Options"
 msgstr "Optionen"
+
+#. module: account
+#: code:addons/account/wizard/account_tour_upload_bill.py:0
+#, python-format
+msgid "Or send a bill to %s@%s"
+msgstr ""
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_resequence_wizard__ordering
@@ -10552,7 +10577,7 @@ msgstr "Quittung per E-Mail senden"
 #. module: account
 #: model:ir.actions.act_window,name:account.account_send_payment_receipt_by_email_action_multi
 msgid "Send receipts by email"
-msgstr ""
+msgstr "Sende Quittung/Rechnung per e-Mail."
 
 #. module: account
 #. openerp-web
@@ -11913,6 +11938,14 @@ msgid "That is the date of the opening entry."
 msgstr ""
 
 #. module: account
+#: code:addons/account/models/sequence_mixin.py:0
+#, python-format
+msgid ""
+"The %(date_field)s (%(date)s) doesn't match the %(sequence_field)s (%(sequence)s).\n"
+"You might want to clear the field %(sequence_field)s before proceeding with the change of the date."
+msgstr ""
+
+#. module: account
 #: model:ir.model.fields,help:account.field_account_account__internal_group
 #: model:ir.model.fields,help:account.field_account_account_type__internal_group
 #: model:ir.model.fields,help:account.field_account_move_line__account_internal_group
@@ -12192,14 +12225,6 @@ msgid ""
 msgstr ""
 
 #. module: account
-#: code:addons/account/models/sequence_mixin.py:0
-#, python-format
-msgid ""
-"The %(date_field)s (%(date)s) doesn't match the %(sequence_field)s (%(sequence)s).\n"
-"You might want to clear the field %(sequence_field)s before proceeding with the change of the date."
-msgstr ""
-
-#. module: account
 #: code:addons/account/models/account_payment_term.py:0
 #, python-format
 msgid "The day of the month used for this term must be strictly positive."
@@ -12326,6 +12351,19 @@ msgid "The holder of a journal's bank account must be the company (%s)."
 msgstr ""
 "Der Inhaber, eines im Journal verwendeten Bankkontos, muss das Unternehmen "
 "(%s) sein."
+
+#. module: account
+#: code:addons/account/models/account_move.py:0
+#, python-format
+msgid ""
+"The invoice already contains lines, it was not updated from the attachment."
+msgstr ""
+
+#. module: account
+#: code:addons/account/models/account_move.py:0
+#, python-format
+msgid "The invoice is not a draft, it was not updated from the attachment."
+msgstr ""
 
 #. module: account
 #: code:addons/account/models/account_bank_statement.py:0
@@ -13312,6 +13350,12 @@ msgid "Transfers"
 msgstr "Transfers"
 
 #. module: account
+#: code:addons/account/wizard/account_tour_upload_bill.py:0
+#, python-format
+msgid "Try a sample vendor bill"
+msgstr ""
+
+#. module: account
 #: model:ir.model.fields,field_description:account.field_account_account__user_type_id
 #: model:ir.model.fields,field_description:account.field_account_account_template__user_type_id
 #: model:ir.model.fields,field_description:account.field_account_account_type__type
@@ -13512,6 +13556,12 @@ msgstr "Wechselkurse automatisch aktualisieren"
 #, python-format
 msgid "Upload"
 msgstr "Hochladen"
+
+#. module: account
+#: code:addons/account/wizard/account_tour_upload_bill.py:0
+#, python-format
+msgid "Upload your own bill"
+msgstr ""
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_chart_template__use_anglo_saxon
@@ -14228,6 +14278,8 @@ msgstr "Sie können einen einmal gebuchten Eintrag nicht löschen."
 #, python-format
 msgid "You cannot delete an item linked to a posted entry."
 msgstr ""
+"Sie können keinen Eintrag löschen der mit einem gebuchtem Eintrag verbunden "
+"ist."
 
 #. module: account
 #: code:addons/account/models/res_config_settings.py:0
@@ -14359,8 +14411,7 @@ msgstr ""
 #, python-format
 msgid ""
 "You cannot reduce the number of decimal places of a currency which has "
-"already been used to make accounting entries. If you really need to do that,"
-" please contact tech support."
+"already been used to make accounting entries."
 msgstr ""
 
 #. module: account
@@ -14535,6 +14586,7 @@ msgstr "PLZ Bereich bis"
 
 #. module: account
 #: code:addons/account/models/account_move.py:0
+#: code:addons/account/wizard/account_automatic_entry_wizard.py:0
 #: code:addons/account/wizard/account_automatic_entry_wizard.py:0
 #, python-format
 msgid "[Not set]"

@@ -16,6 +16,7 @@
 # Norimichi Sugimoto <norimichi.sugimoto@tls-ltd.co.jp>, 2020
 # Noma Yuki, 2020
 # Shigekazu N. <shigekazu.noka@gmail.com>, 2020
+# Tsuda Ryoko <ryoko04nov@gmail.com>, 2021
 # Yoshi Tashiro <tashiro@roomsfor.hk>, 2021
 # 
 msgid ""
@@ -2986,6 +2987,7 @@ msgid ""
 "When you proceed with the reconciliation, simply select the corresponding batch payment to reconcile all the payments within.\n"
 "    "
 msgstr ""
+"\n"
 "一括支払い\n"
 "=======================================\n"
 "一括支払いではグループ支払いが可能です。\n"
@@ -3436,6 +3438,7 @@ msgid ""
 " * Filter and Tag\n"
 " * Statistics\n"
 msgstr ""
+"\n"
 "オンラインコースの作成\n"
 "=====================\n"
 "\n"
@@ -3448,7 +3451,7 @@ msgstr ""
 "* YouTubeビデオ、Googleドキュメント、PDF、画像、Webページのサポート\n"
 "*テストクイズの知識\n"
 "*フィルターとタグ\n"
-"*統計"
+"*統計\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_industry_fsm_report
@@ -3501,6 +3504,7 @@ msgid ""
 "Coupon & promotion programs can be edited in the Catalog menu of the Website app.\n"
 "    "
 msgstr ""
+"\n"
 "売り上げを伸ばすために共有するクーポンとプロモーションコードを作成します(無料の製品、割引など)。買い物客はeコマースのチェックアウトでそれらを使用できます。\n"
 "\n"
 "\n"
@@ -3661,6 +3665,7 @@ msgid ""
 "This module add completed courses to resumé for employees.\n"
 "        "
 msgstr ""
+"\n"
 "HRのEラーニングとスキル\n"
 "============================\n"
 "\n"
@@ -3883,7 +3888,9 @@ msgstr "従業員の給与明細は、ドキュメントアプリに自動的に
 msgid ""
 "\n"
 "Enable management of UTM trackers: campaign, medium, source.\n"
-msgstr "UTMトラッカーの管理を有効にします:キャンペーン、メディア、ソース。"
+msgstr ""
+"\n"
+"UTMトラッカーの管理を有効にします:キャンペーン、メディア、ソース。\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_base_address_extended
@@ -4383,6 +4390,7 @@ msgid ""
 "\n"
 "This module includes contact phone and mobile numbers validation."
 msgstr ""
+"\n"
 "あなたのウェブサイトのお問い合わせページに公開されたお問い合わせフォームからCRMアプリでリードまたは機会を生成します。\n"
 "このフォームは、* Form Builder *モジュール(Odoo Enterpriseで利用可能)によりカスタマイズできます。\n"
 "\n"
@@ -4396,6 +4404,7 @@ msgid ""
 "Those trackers can be used in Google Analytics to track clicks and visitors, or in Odoo reports to analyze the efficiency of those campaigns in terms of lead generation, related revenues (sales orders), recruitment, etc.\n"
 "    "
 msgstr ""
+"\n"
 "分析トラッカー(UTM)との短いリンクを生成して、マーケティングキャンペーンを通じてページを共有します。\n"
 "これらのトラッカーは、Google Analyticsでクリックと訪問者を追跡するために使用できます。また、Odooレポートで使用して、リード生成、関連する収益(販売注文)、採用などの観点からこれらのキャンペーンの効率を分析できます。"
 
@@ -4505,6 +4514,7 @@ msgid ""
 "\n"
 "    "
 msgstr ""
+"\n"
 "ヘルプデスク-チケット管理アプリ\n"
 "================================\n"
 "\n"
@@ -5660,6 +5670,7 @@ msgid ""
 "\n"
 "Financial requirement contributor: Baskhuu Lodoikhuu. BumanIT LLC\n"
 msgstr ""
+"\n"
 "モンゴルの会計報告。\n"
 "====================================================\n"
 "-損益\n"
@@ -5668,7 +5679,7 @@ msgstr ""
 "-VAT返済レポート\n"
 "-企業収益税レポート\n"
 "\n"
-"財務要件の寄稿者:BaskhuuLodoikhuu。 BumanIT LLC"
+"財務要件の寄稿者:BaskhuuLodoikhuu。 BumanIT LLC\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_nz
@@ -6105,12 +6116,13 @@ msgid ""
 "* Possibility to add a measure to the quality check with a min/max tolerance\n"
 "* Define your stages for the quality alerts\n"
 msgstr ""
+"\n"
 "品質ベース\n"
 "===============\n"
 "*ピッキング、製造指図、または作業指示の品質チェックを生成する品質ポイントを定義します(quality_mrp)\n"
 "*品質アラートは独立して作成することも、品質チェックに関連して作成することもできます\n"
 "*最小/最大許容値で品質チェックに測定値を追加する可能性\n"
-"*品質アラートのステージを定義します"
+"*品質アラートのステージを定義します\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_quality_control
@@ -6124,12 +6136,13 @@ msgid ""
 "* Possibility to add a measure to the quality check with a min/max tolerance\n"
 "* Define your stages for the quality alerts\n"
 msgstr ""
+"\n"
 "品質管理\n"
 "===============\n"
 "*ピッキング、製造指図、または作業指示書の品質チェックを生成する品質ポイントを定義します(quality_mrp)\n"
 "*品質アラートは独立して作成することも、品質チェックに関連して作成することもできます\n"
 "*最小/最大許容値で品質チェックに測定値を追加する可能性\n"
-"*品質アラートのステージを定義します"
+"*品質アラートのステージを定義します\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_hr_payroll_expense
@@ -6285,6 +6298,7 @@ msgid ""
 "Once the order is paid, the file is made available in the order confirmation page and in the customer portal.\n"
 "    "
 msgstr ""
+"\n"
 "eコマースストアでeグッズを販売します(ウェビナー、記事、電子書籍、ビデオチュートリアルなど)。これを行うには、製品を作成し、製品フォームの'ファイル'ボタンを使用して共有するファイルを添付します。注文が支払われると、ファイルは注文確認ページとカスタマーポータルで利用できるようになります。"
 
 #. module: base
@@ -6436,6 +6450,7 @@ msgid ""
 "\n"
 "Note: Only the admin user is allowed to make those customizations.\n"
 msgstr ""
+"\n"
 "Studio-Odooのカスタマイズ\n"
 "=======================\n"
 "このアドオンを使用すると、ユーザーはユーザーインターフェイスのほとんどの要素をシンプルでグラフィカルな方法でカスタマイズできます。\n"
@@ -6444,7 +6459,7 @@ msgstr ""
 "*新しいアプリケーションの作成(モジュールの追加、トップレベルのメニュー項目、デフォルトのアクション)\n"
 "*既存のアプリケーションのカスタマイズ(メニュー、アクション、ビュー、翻訳の編集など)\n"
 "\n"
-"注:管理者ユーザーのみがそれらのカスタマイズを行うことができます。"
+"注:管理者ユーザーのみがそれらのカスタマイズを行うことができます。\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_website_studio
@@ -6791,6 +6806,7 @@ msgid ""
 "Set the payment reference type from the Sales Journal.\n"
 "    "
 msgstr ""
+"\n"
 "これは、フィンランドの会計を管理するためのOdooモジュールです。\n"
 "============================================================\n"
 "\n"
@@ -7677,6 +7693,7 @@ msgid ""
 "\n"
 "    "
 msgstr ""
+"\n"
 "モジュールを使用すると、再販業者/パートナーをWebサイトに公開し、入ってくるリード/機会をそれらに転送できます。 \n"
 "\n"
 "**パートナーの公開**\n"
@@ -7852,10 +7869,11 @@ msgid ""
 "a protection to avoid using it in production environment. However, do\n"
 "not use it in production environment.\n"
 msgstr ""
+"\n"
 "モジュールは、eコマースでの成功した支払い動作のテストを可能にする\n"
 "簡単なテスト支払いアクワイアラーフローを実装します。\n"
 "実稼働環境での使用を回避するための保護が含まれています。\n"
-"ただし、実稼働環境では使用しないでください。"
+"ただし、実稼働環境では使用しないでください。\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_timer
@@ -8585,6 +8603,7 @@ msgid ""
 "Other SIPS providers may be compatible, though this is\n"
 "not guaranteed."
 msgstr ""
+"\n"
 "オンライン支払い用のWorldlineSIPS PaymentAcquirer支払い取得者用のWorldlineSIPSAPIを実装します。\n"
 "他のSIPSプロバイダーは互換性があるかもしれませんが、これは保証されていません。"
 
@@ -13671,7 +13690,7 @@ msgstr "顧客"
 #. module: base
 #: model:ir.module.category,name:base.module_category_customizations
 msgid "Customizations"
-msgstr "カスタマいう"
+msgstr "カスタマイズ"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_purchase_stock_enterprise
@@ -19004,7 +19023,7 @@ msgstr ""
 "\n"
 "アカウント関連の支払い用のツールと、支払いを有効にするポータルオプションを提供します。 \n"
 "\n"
-"*私を更新します"
+"*私を更新します\n"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_actions_server__link_field_id
@@ -19441,7 +19460,7 @@ msgstr ""
 "メールテンプレートを使用して一部の通信を自動化することにより、時間を節約します。\n"
 "\n"
 "履歴書やモチベーションレターなどのドキュメントには自動的にインデックスが付けられるため、\n"
-"特定のスキルを簡単に見つけて、プロファイルのデータベースを構築できます。"
+"特定のスキルを簡単に見つけて、プロファイルのデータベースを構築できます。\n"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_hr_work_entry_holidays
@@ -21184,7 +21203,7 @@ msgstr ""
 "私の会社のためのTwitterのようなネットワーク\n"
 "---------------------------------------\n"
 "自分の会社だけのTwitterのような機能で、すべての従業員をもっと連帯感と、結束感を作りましょう。\n"
-"人々をフォローし、ベストプラクティスを共有し、トップアイデアなどを'いいね'します。"
+"人々をフォローし、ベストプラクティスを共有し、トップアイデアなどを'いいね'します。\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_hr
@@ -22745,7 +22764,7 @@ msgstr ""
 "###何百ものオープンソースアプリを無料で入手\n"
 "### eCommerce製品を宣伝し、オンラインで販売し、訪問者のショッピング体験を最適化します。 \n"
 "###ブログニュースを書き、新しい訪問者を引き付け、顧客ロイヤルティを構築します。 \n"
-"###私たちのチームあなたのチームを効率的に提示することにより、素晴らしい'私たちについて'ページを作成します。"
+"###私たちのチームあなたのチームを効率的に提示することにより、素晴らしい'私たちについて'ページを作成します。\n"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_project
@@ -26370,7 +26389,7 @@ msgstr "スウェーデン語-会計"
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_base_language_install
 msgid "Switch to"
-msgstr "切り替える"
+msgstr "次に切替"
 
 #. module: base
 #: model:res.country,name:base.ch
@@ -29714,6 +29733,13 @@ msgid ""
 "You will be able to define additional access rights by editing the newly "
 "created user under the Settings / Users menu."
 msgstr "[設定]/[ユーザ]メニューの下に新しく作成したユーザを編集して追加のアクセス権を定義することができるようになります。"
+
+#. module: base
+#: model_terms:ir.ui.view,arch_db:base.view_currency_form
+msgid ""
+"You won't be able to reduce the number of decimal places of a currency which"
+" has already been used to make accounting entries."
+msgstr ""
 
 #. module: base
 #: code:addons/base/models/ir_mail_server.py:0

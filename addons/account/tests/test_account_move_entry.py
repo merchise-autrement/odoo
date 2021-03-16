@@ -475,6 +475,33 @@ class TestAccountMove(AccountTestInvoicingCommon):
         self.assertEqual(refund.name, 'RINV/2016/01/0001')
         self.assertEqual(refund2.name, 'RINV/2016/01/0002')
 
+    def test_journal_sequence_groupby_compute(self):
+        # Setup two journals with a sequence that resets yearly
+        journals = self.env['account.journal'].create([{
+            'name': f'Journal{i}',
+            'code': f'J{i}',
+            'type': 'general',
+        } for i in range(2)])
+        account = self.env['account.account'].search([], limit=1)
+        moves = self.env['account.move'].create([{
+            'journal_id': journals[i].id,
+            'line_ids': [(0, 0, {'account_id': account.id, 'name': 'line'})],
+            'date': '2010-01-01',
+        } for i in range(2)])._post()
+        for i in range(2):
+            moves[i].name = f'J{i}/2010/00001'
+
+        # Check that the moves are correctly batched
+        moves = self.env['account.move'].create([{
+            'journal_id': journals[journal_index].id,
+            'line_ids': [(0, 0, {'account_id': account.id, 'name': 'line'})],
+            'date': f'2010-{month}-01',
+        } for journal_index, month in [(1, 1), (0, 1), (1, 2), (1, 1)]])._post()
+        self.assertEqual(
+            moves.mapped('name'),
+            ['J1/2010/00002', 'J0/2010/00002', 'J1/2010/00004', 'J1/2010/00003'],
+        )
+
     def test_journal_override_sequence_regex(self):
         other_moves = self.env['account.move'].search([('journal_id', '=', self.test_move.journal_id.id)]) - self.test_move
         other_moves.unlink()  # Do not interfere when trying to get the highest name for new periods

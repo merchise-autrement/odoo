@@ -43,6 +43,16 @@ class AccountJournal(models.Model):
 
     def _default_alias_domain(self):
         return self.env["ir.config_parameter"].sudo().get_param("mail.catchall.domain")
+    
+    def _default_invoice_reference_model(self):
+        """Get the invoice reference model according to the company's country."""
+        country_code = self.env.company.country_id.code
+        country_code = country_code and country_code.lower()
+        if country_code:
+            for model in self._fields['invoice_reference_model'].get_values(self.env):
+                if model.startswith(country_code):
+                    return model
+        return 'odoo'
 
     name = fields.Char(string='Journal Name', required=True)
     code = fields.Char(string='Short Code', size=5, required=True, help="Shorter name used for display. The journal entries of this journal will also be named using this prefix by default.")
@@ -100,7 +110,7 @@ class AccountJournal(models.Model):
     sequence = fields.Integer(help='Used to order Journals in the dashboard view', default=10)
 
     invoice_reference_type = fields.Selection(string='Communication Type', required=True, selection=[('none', 'Free'), ('partner', 'Based on Customer'), ('invoice', 'Based on Invoice')], default='invoice', help='You can set here the default communication that will appear on customer invoices, once validated, to help the customer to refer to that particular invoice when making the payment.')
-    invoice_reference_model = fields.Selection(string='Communication Standard', required=True, selection=[('odoo', 'Odoo'),('euro', 'European')], default='odoo', help="You can choose different models for each type of reference. The default one is the Odoo reference.")
+    invoice_reference_model = fields.Selection(string='Communication Standard', required=True, selection=[('odoo', 'Odoo'),('euro', 'European')], default=_default_invoice_reference_model, help="You can choose different models for each type of reference. The default one is the Odoo reference.")
 
     #groups_id = fields.Many2many('res.groups', 'account_journal_group_rel', 'journal_id', 'group_id', string='Groups')
     currency_id = fields.Many2one('res.currency', help='The currency used to enter statement', string="Currency")
@@ -406,8 +416,9 @@ class AccountJournal(models.Model):
         result = super(AccountJournal, self).write(vals)
 
         # Ensure the liquidity accounts are sharing the same foreign currency.
-        for journal in self.filtered(lambda journal: journal.type in ('bank', 'cash')):
-            journal.default_account_id.currency_id = journal.currency_id
+        if 'currency_id' in vals:
+            for journal in self.filtered(lambda journal: journal.type in ('bank', 'cash')):
+                journal.default_account_id.currency_id = journal.currency_id
 
         # Create the bank_account_id if necessary
         if 'bank_acc_number' in vals:
@@ -583,7 +594,16 @@ class AccountJournal(models.Model):
         invoices = self.env['account.move']
         for attachment in attachments:
             attachment.write({'res_model': 'mail.compose.message'})
-            invoices += self._create_invoice_from_single_attachment(attachment)
+            decoders = self.env['account.move']._get_create_invoice_from_attachment_decoders()
+            invoice = False
+            for decoder in sorted(decoders, key=lambda d: d[0]):
+                invoice = decoder[1](attachment)
+                if invoice:
+                    break
+            if not invoice:
+                invoice = self.env['account.move'].create({})
+            invoice.with_context(no_new_invoice=True).message_post(attachment_ids=[attachment.id])
+            invoices += invoice
 
         action_vals = {
             'name': _('Generated Documents'),
@@ -602,12 +622,11 @@ class AccountJournal(models.Model):
     def _create_invoice_from_single_attachment(self, attachment):
         """ Creates an invoice and post the attachment. If the related modules
             are installed, it will trigger OCR or the import from the EDI.
+            DEPRECATED : use create_invoice_from_attachment instead
 
             :returns: the created invoice.
         """
-        invoice = self.env['account.move'].create({})
-        invoice.message_post(attachment_ids=[attachment.id])
-        return invoice
+        return self.create_invoice_from_attachment(attachment.ids)
 
     def _create_secure_sequence(self, sequence_fields):
         """This function creates a no_gap sequence on each journal in self that will ensure
@@ -642,13 +661,14 @@ class AccountJournal(models.Model):
         a logic based on accounts.
 
         :param domain:  An additional domain to be applied on the account.move.line model.
-        :return:        The balance expressed in the journal's currency.
+        :return:        Tuple having balance expressed in journal's currency
+                        along with the total number of move lines having the same account as of the journal's default account.
         '''
         self.ensure_one()
         self.env['account.move.line'].check_access_rights('read')
 
         if not self.default_account_id:
-            return 0.0
+            return 0.0, 0
 
         domain = (domain or []) + [
             ('account_id', 'in', tuple(self.default_account_id.ids)),

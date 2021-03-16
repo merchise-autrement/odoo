@@ -159,7 +159,7 @@ const FontFamilyPickerUserValueWidget = SelectUserValueWidget.extend({
                 {
                     text: _t("Save & Reload"),
                     classes: 'btn-primary',
-                    click: () => {
+                    click: async () => {
                         const inputEl = dialog.el.querySelector('.o_input_google_font');
                         // if font page link (what is expected)
                         let m = inputEl.value.match(/\bspecimen\/([\w+]+)/);
@@ -171,6 +171,24 @@ const FontFamilyPickerUserValueWidget = SelectUserValueWidget.extend({
                                 return;
                             }
                         }
+
+                        let isValidFamily = false;
+
+                        try {
+                            const result = await fetch("https://fonts.googleapis.com/css?family=" + m[1], {method: 'HEAD'});
+                            // Google fonts server returns a 400 status code if family is not valid.
+                            if (result.ok) {
+                                isValidFamily = true;
+                            }
+                        } catch (error) {
+                            console.error(error);
+                        }
+
+                        if (!isValidFamily) {
+                            inputEl.classList.add('is-invalid');
+                            return;
+                        }
+
                         const font = m[1].replace(/\+/g, ' ');
                         this.googleFonts.push(font);
                         this.trigger_up('google_fonts_custo_request', {
@@ -1653,6 +1671,7 @@ options.registry.collapse = options.Class.extend({
         var self = this;
         this.$target.on('shown.bs.collapse hidden.bs.collapse', '[role="tabpanel"]', function () {
             self.trigger_up('cover_update');
+            self.$target.trigger('content_changed');
         });
         return this._super.apply(this, arguments);
     },
@@ -1945,6 +1964,42 @@ options.registry.topMenuColor = options.Class.extend({
                 onSuccess: value => resolve(!!value),
             });
         });
+    },
+});
+
+/**
+ * Manage the visibility of snippets on mobile.
+ */
+options.registry.MobileVisibility = options.Class.extend({
+
+    //--------------------------------------------------------------------------
+    // Options
+    //--------------------------------------------------------------------------
+
+    /**
+     * Allows to show or hide the associated snippet in mobile display mode.
+     *
+     * @see this.selectClass for parameters
+     */
+    showOnMobile(previewMode, widgetValue, params) {
+        const classes = `d-none d-md-${this.$target.css('display')}`;
+        this.$target.toggleClass(classes, !widgetValue);
+    },
+
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
+
+    /**
+     * @override
+     */
+    async _computeWidgetState(methodName, params) {
+        if (methodName === 'showOnMobile') {
+            const classList = [...this.$target[0].classList];
+            return classList.includes('d-none') &&
+                classList.some(className => className.startsWith('d-md-')) ? '' : 'true';
+        }
+        return await this._super(...arguments);
     },
 });
 
