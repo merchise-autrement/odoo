@@ -141,6 +141,9 @@ class SaleOrder(models.Model):
 
     def _get_reward_values_discount(self, program):
         if program.discount_type == 'fixed_amount':
+            taxes = program.discount_line_product_id.taxes_id
+            if self.fiscal_position_id:
+                taxes = self.fiscal_position_id.map_tax(taxes)
             return [{
                 'name': _("Discount: ") + program.name,
                 'product_id': program.discount_line_product_id.id,
@@ -148,7 +151,7 @@ class SaleOrder(models.Model):
                 'product_uom_qty': 1.0,
                 'product_uom': program.discount_line_product_id.uom_id.id,
                 'is_reward_line': True,
-                'tax_id': [(4, tax.id, False) for tax in program.discount_line_product_id.taxes_id],
+                'tax_id': [(4, tax.id, False) for tax in taxes],
             }]
         reward_dict = {}
         lines = self._get_paid_order_lines()
@@ -326,7 +329,7 @@ class SaleOrder(models.Model):
             error_status = program._check_promo_code(order, False)
             if not error_status.get('error'):
                 if program.promo_applicability == 'on_next_order':
-                    order._create_reward_coupon(program)
+                    order.state != 'cancel' and order._create_reward_coupon(program)
                 elif program.discount_line_product_id.id not in self.order_line.mapped('product_id').ids:
                     self.write({'order_line': [(0, False, value) for value in self._get_reward_line_values(program)]})
                 order.no_code_promo_program_ids |= program
@@ -447,6 +450,33 @@ class SaleOrder(models.Model):
             self._get_applied_programs_with_rewards_on_next_order()
         """
         return self.code_promo_program_id + self.no_code_promo_program_ids + self.applied_coupon_ids.mapped('program_id')
+
+    def _get_invoice_status(self):
+        # Handling of a specific situation: an order contains
+        # a product invoiced on delivery and a promo line invoiced
+        # on order. We would avoid having the invoice status 'to_invoice'
+        # if the created invoice will only contain the promotion line
+        super()._get_invoice_status()
+        for order in self.filtered(lambda order: order.invoice_status == 'to invoice'):
+            paid_lines = order._get_paid_order_lines()
+            if not any(line.invoice_status == 'to invoice' for line in paid_lines):
+                order.invoice_status = 'no'
+
+    def _get_invoiceable_lines(self, final=False):
+        """ Ensures we cannot invoice only reward lines.
+
+        Since promotion lines are specified with service products,
+        those lines are directly invoiceable when the order is confirmed
+        which can result in invoices containing only promotion lines.
+
+        To avoid those cases, we allow the invoicing of promotion lines
+        iff at least another 'basic' lines is also invoiceable.
+        """
+        invoiceable_lines = super()._get_invoiceable_lines(final)
+        reward_lines = self._get_reward_lines()
+        if invoiceable_lines <= reward_lines:
+            return self.env['sale.order.line'].browse()
+        return invoiceable_lines
 
 
 class SaleOrderLine(models.Model):
