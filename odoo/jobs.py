@@ -208,10 +208,10 @@ class DeferredType(object):
             return
         if self.disallow_nested and CELERY_JOB in ExecutionContext:
             logger.warn("Nested background call detected for model", extra=dict(args_=signature))
-            return task(*signature)
+            return task(*signature, inline_report=True)
         elif self.disallow_tests and _running_tests(env):
             logger.info("Running the deferred job inline in tests", extra=dict(args_=signature))
-            return task(*signature)
+            return task(*signature, inline_report=True)
         else:
             signature = task.signature(signature, immutable=True, **self.options)
             if self.return_signature:
@@ -1205,7 +1205,7 @@ class Task(BaseTask):
 
 
 @app.task(base=Task, bind=True, max_retries=5, default_retry_delay=0.3)
-def task(self, model, ids, methodname, dbname, uid, args, kwargs, job_uuid=Unset):
+def task(self, model, ids, methodname, dbname, uid, args, kwargs, job_uuid=Unset, *, inline_report=False,):
     """The actual task running all our celery jobs.
 
     Since a model method may be altered in several addons, we funnel all calls
@@ -1219,6 +1219,11 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs, job_uuid=Unset
     `job_uuid` is Unset when Deferred executes the task.  `task`:func: is not
     part of the API of this module; it's an implementation detail you should
     only know if you're messing with `task` directly.
+
+    `inline_report` is also set when Deferred runs the task inline and not
+    actually in a Celery job.  In this case, success and failure reports are
+    also done inline.  This is to allow Deferred to run the whole job when
+    running tests without actually requiring for celery workers to be running.
 
     Retries are scheduled with a minimum delay of 300ms.
 
@@ -1257,7 +1262,10 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs, job_uuid=Unset
                         raise
                 if isinstance(res, BaseModel):
                     res = res.ids  # downgrade to ids
-                _report_success.delay(dbname, uid, job_uuid, result=res)
+                if not inline_report:
+                    _report_success.delay(dbname, uid, job_uuid, result=res)
+                else:
+                    _report_success(dbname, uid, job_uuid, result=res)
             else:
                 raise TypeError("Invalid method name %r for model %r" % (methodname, model))
     except SoftTimeLimitExceeded as e:
@@ -1265,11 +1273,11 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs, job_uuid=Unset
         # really a signal.  When integrating with `sentrylog`, I think the
         # best option is collect this events per job: ``(model, methodname)``.
         e._sentry_fingerprint = [type(e), model, methodname]
-        _report_current_failure(dbname, uid, job_uuid, e)
+        _report_current_failure(dbname, uid, job_uuid, e, inline_report=inline_report)
         raise e
     except OperationalError as error:
         if error.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
-            _report_current_failure(dbname, uid, job_uuid, error)
+            _report_current_failure(dbname, uid, job_uuid, error, inline_report=inline_report)
             raise
         else:
             arguments = (model, ids, methodname, dbname, uid, args, kwargs)
@@ -1280,12 +1288,15 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs, job_uuid=Unset
                 extra=dict(arguments=arguments, keywords=keywords),
             )
             try:
-                raise self.retry(args=arguments, kwargs=keywords)
+                if not inline_report:
+                    raise self.retry(args=arguments, kwargs=keywords)
+                else:
+                    raise MaxRetriesExceededError
             except MaxRetriesExceededError:
-                _report_current_failure(dbname, uid, job_uuid, error)
+                _report_current_failure(dbname, uid, job_uuid, error, inline_report=inline_report)
                 raise error
     except Exception as error:
-        _report_current_failure(dbname, uid, job_uuid, error)
+        _report_current_failure(dbname, uid, job_uuid, error, inline_report=inline_report)
 
 
 @contextlib.contextmanager
@@ -1369,12 +1380,12 @@ def _report_failure(self, dbname, uid, job_uuid, tb=None, message=""):
             logger.exception("Max retries exceeded with reporting success")
 
 
-def _report_current_failure(dbname, uid, job_uuid, error, subtask=True):
+def _report_current_failure(dbname, uid, job_uuid, error, *, inline_report=False):
     data = _serialize_exception(error)
     # arguments are most likely where an EncodeError can happen, and
     # we don't really need them in the report.
     data["arguments"] = tuple()
-    if subtask:
+    if not inline_report:
         try:
             _report_failure.delay(dbname, uid, job_uuid, message=data)
         except kombu.exceptions.EncodeError:
