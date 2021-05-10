@@ -14,10 +14,10 @@
 # Michal Veselý <michal@veselyberanek.net>, 2018
 # Jan Horzinka <jan.horzinka@centrum.cz>, 2018
 # Martin Trigaux, 2019
-# trendspotter, 2020
 # karolína schusterová <karolina.schusterova@vdp.sk>, 2021
 # Rastislav Brencic <rastislav.brencic@azet.sk>, 2021
 # David Kliment <daklime@gmail.com>, 2021
+# trendspotter, 2021
 # 
 msgid ""
 msgstr ""
@@ -25,7 +25,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-11-14 07:33+0000\n"
 "PO-Revision-Date: 2018-08-24 09:14+0000\n"
-"Last-Translator: David Kliment <daklime@gmail.com>, 2021\n"
+"Last-Translator: trendspotter, 2021\n"
 "Language-Team: Czech (https://www.transifex.com/odoo/teams/41243/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -809,6 +809,10 @@ msgid ""
 "either in 'Tax-Included' or in 'Tax-Excluded' mode\n"
 "(or switch twice the mode if you are already in the desired one)."
 msgstr ""
+"Uživatel nemůže mít daňový B2B i daňový B2C. Měli byste přejít do Obecných "
+"nastavení a zvolit zobrazení cen produktů buď v režimu „Zahrnuto do daně“, "
+"nebo v režimu „Vyloučeno z daně“ (nebo přepnout dvakrát režim, pokud již "
+"máte požadovaný režim)."
 
 #. module: account
 #: model:res.groups,name:account.group_warning_account
@@ -1718,6 +1722,11 @@ msgid ""
 "                account). The annual accounts of a company are required by law\n"
 "                to disclose a certain amount of information."
 msgstr ""
+"Účet je součástí hlavní knihy, která vaší společnosti umožňuje registrovat "
+"všechny druhy debetních a kreditních transakcí. Společnosti předkládají své "
+"roční účetní závěrky ve dvou hlavních částech: rozvaha a výsledovka (výkaz "
+"zisků a ztrát). Roční účetní závěrka společnosti je ze zákona povinna "
+"zveřejňovat určité množství informací."
 
 #. module: account
 #: model_terms:ir.actions.act_window,help:account.action_account_type_form
@@ -6659,6 +6668,11 @@ msgid ""
 "Batch Deposit: Encase several customer checks at once by generating a batch deposit to submit to your bank. When encoding the bank statement in Odoo, you are suggested to reconcile the transaction with the batch deposit.To enable batch deposit, module account_batch_payment must be installed.\n"
 "SEPA Credit Transfer: Pay bill from a SEPA Credit Transfer file you submit to your bank. To enable sepa credit transfer, module account_sepa must be installed "
 msgstr ""
+"Ruční: Přijměte platbu v hotovosti, šekem nebo jiným způsobem mimo Odoo.\n"
+"Elektronické: Získejte platbu automaticky prostřednictvím příjemce plateb požadováním transakce na kartě uložené zákazníkem při nákupu nebo online předplatném (platební token).\n"
+"Šek: Zaplaťte účet šekem a vytiskněte jej z Odoo.\n"
+"Hromadný vklad: Zapojte několik šeků zákazníků najednou vygenerováním dávkového vkladu, který odešlete do své banky. Při kódování bankovního výpisu v Odoo se doporučuje sladit transakci s dávkovým vkladem. Chcete-li povolit dávkový vklad, musí být nainstalován modul account_batch_payment.\n"
+"Převod kreditu SEPA: Zaplaťte fakturu ze souboru SEPA Credit Transfer, který odešlete do své banky. Chcete-li povolit přenos kreditu sepa, musí být nainstalován modul account_sepa"
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_journal__outbound_payment_method_ids
@@ -6667,6 +6681,9 @@ msgid ""
 "Check:Pay bill by check and print it from Odoo.\n"
 "SEPA Credit Transfer: Pay bill from a SEPA Credit Transfer file you submit to your bank. Enable this option from the settings."
 msgstr ""
+"Ručně: Zaplaťte účet v hotovosti nebo jiným způsobem mimo Odoo.\n"
+"Šek: Zaplaťte účet šekem a vytiskněte jej z Odoo.\n"
+"Převod kreditu SEPA: Zaplaťte fakturu ze souboru SEPA kreditu, který odešlete do své banky. Povolte tuto možnost z nastavení."
 
 #. module: account
 #: selection:account.reconcile.model,rule_type:0
@@ -12350,6 +12367,7 @@ msgstr "transakce v"
 #: model:ir.model.fields,help:account.field_account_invoice__amount_by_group
 msgid "type: [(name, amount, base, formated amount, formated base)]"
 msgstr ""
+"zadejte: [(název, částka, základ, formátovaná částka, formátovaný základ)]"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_bank_statement_form

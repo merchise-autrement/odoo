@@ -160,7 +160,7 @@ class Partner(models.Model):
                                "render date and time values: your computer's timezone.")
     tz_offset = fields.Char(compute='_compute_tz_offset', string='Timezone offset', invisible=True)
     user_id = fields.Many2one('res.users', string='Salesperson',
-      help='The internal user in charge of this contact.', domain=lambda self: [('groups_id', 'in', self.env.ref('base.group_user').id)])
+      help='The internal user in charge of this contact.')
     vat = fields.Char(string='Tax ID', index=True, help="The Tax Identification Number. Complete it if the contact is subjected to government taxes. Used in some legal statements.")
     bank_ids = fields.One2many('res.partner.bank', 'partner_id', string='Banks')
     website = fields.Char()
@@ -536,7 +536,7 @@ class Partner(models.Model):
         if vals.get('active') is False:
             for partner in self:
                 if partner.active and partner.user_ids:
-                    raise ValidationError(_('You cannot archive a contact linked to an internal user.'))
+                    raise ValidationError(_('You cannot archive a contact linked to a portal or internal user.'))
         # res.partner must only allow to set the company_id of a partner if it
         # is the same as the company of all users that inherit from this partner
         # (this is to allow the code from res_users to write to the partner!) or

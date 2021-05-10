@@ -32,8 +32,8 @@
 # Luigia Cimmino Caserta <lcc@odoo.com>, 2019
 # Stefano Consolaro <stefano.consolaro@mymage.it>, 2019
 # Lorenzo Battistini <lb@takobi.online>, 2021
-# Sergio Zanchetta <primes2h@gmail.com>, 2021
 # Francesco Foresti <francesco.foresti@ooops404.com>, 2021
+# Sergio Zanchetta <primes2h@gmail.com>, 2021
 # 
 msgid ""
 msgstr ""
@@ -41,7 +41,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-10 14:44+0000\n"
 "PO-Revision-Date: 2018-08-24 09:14+0000\n"
-"Last-Translator: Francesco Foresti <francesco.foresti@ooops404.com>, 2021\n"
+"Last-Translator: Sergio Zanchetta <primes2h@gmail.com>, 2021\n"
 "Language-Team: Italian (https://www.transifex.com/odoo/teams/41243/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -8930,17 +8930,17 @@ msgstr "Uso azione"
 #. module: base
 #: model:ir.model,name:base.model_ir_actions_act_window
 msgid "Action Window"
-msgstr "Finestra azione"
+msgstr "Azione finestra"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_actions_act_window_close
 msgid "Action Window Close"
-msgstr "Chiusura finestra azione"
+msgstr "Azione chiusura finestra"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_actions_act_window_view
 msgid "Action Window View"
-msgstr "Vista finestra azione"
+msgstr "Azione visualizzazione finestra"
 
 #. module: base
 #: model:ir.actions.act_window,name:base.ir_sequence_actions
@@ -13554,7 +13554,7 @@ msgstr "Executive 4   7.5 x 10 pollici, 190.5 x 254 mm"
 #: model:ir.module.category,name:base.module_category_hr_expense
 #: model:ir.module.module,shortdesc:base.module_hr_expense
 msgid "Expenses"
-msgstr "Note spese"
+msgstr "Spese"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_report_paperformat__report_ids
@@ -24061,8 +24061,7 @@ msgstr "Sottomenù"
 #. module: base
 #: model:ir.module.module,summary:base.module_hr_expense
 msgid "Submit, validate and reinvoice employee expenses"
-msgstr ""
-"Presentazione, conferma e rifatturazione delle note spese dei dipendenti"
+msgstr "Presentazione, conferma e rifatturazione delle spese dei dipendenti"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_sale_subscription
@@ -24872,7 +24871,7 @@ msgstr "TaxCloud e Consegna - eCommerce"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_sale_subscription_taxcloud
 msgid "TaxCloud and Subscriptions"
-msgstr "TaxCloud e sottoscrizioni"
+msgstr "TaxCloud e abbonamenti"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_account_taxcloud
@@ -25247,6 +25246,12 @@ msgstr "Il nome completo della nazione."
 #: model:ir.model.fields,help:base.field_res_users__user_id
 msgid "The internal user in charge of this contact."
 msgstr "L'utente interno responsabile di questo contatto. "
+
+#. module: base
+#: code:addons/base/models/res_country.py:106
+#, python-format
+msgid "The layout contains an invalid format key"
+msgstr "Lo schema contiene una chiave di formato non valido"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_model__inherited_model_ids
@@ -27290,7 +27295,7 @@ msgid ""
 "sequence. Low number means high priority."
 msgstr ""
 "Per le azioni multiple, l'ordine di esecuzione è basato sulla sequenza. Un "
-"numero piccolo indica alta priorità."
+"numero basso indica alta priorità."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_mail_server__sequence
@@ -27501,8 +27506,8 @@ msgstr "Impossibile attivare il superutente."
 #. module: base
 #: code:addons/base/models/res_partner.py:509
 #, python-format
-msgid "You cannot archive a contact linked to an internal user."
-msgstr "Impossibile archiviare un contatto collegato a un utente interno."
+msgid "You cannot archive a contact linked to a portal or internal user."
+msgstr ""
 
 #. module: base
 #: code:addons/base/models/res_partner.py:330

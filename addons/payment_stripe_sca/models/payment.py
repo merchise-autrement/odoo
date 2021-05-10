@@ -34,12 +34,14 @@ class PaymentAcquirerStripeSCA(models.Model):
             "line_items[][name]": tx_values["reference"],
             "client_reference_id": tx_values["reference"],
             "success_url": urls.url_join(base_url, StripeController._success_url)
-            + "?reference=%s" % tx_values["reference"],
+            + "?reference=%s" % urls.url_quote_plus(tx_values["reference"]),
             "cancel_url": urls.url_join(base_url, StripeController._cancel_url)
-            + "?reference=%s" % tx_values["reference"],
+            + "?reference=%s" % urls.url_quote_plus(tx_values["reference"]),
             "payment_intent_data[description]": tx_values["reference"],
             "customer_email": tx_values.get("partner_email") or tx_values.get("billing_partner_email"),
         }
+        if tx_values['type'] == 'form_save':
+            stripe_session_data["payment_intent_data[setup_future_usage]"] = "off_session"
         tx_values["session_id"] = self._create_stripe_session(stripe_session_data)
 
         return tx_values

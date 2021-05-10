@@ -613,6 +613,8 @@ msgid ""
 "        App to upload and manage your documents.\n"
 "    "
 msgstr ""
+"\n"
+"Dokumentumok feltöltése és kezelése."
 
 #. module: base
 #: model:ir.module.module,summary:base.module_partner_autocomplete
@@ -918,6 +920,8 @@ msgid ""
 "\n"
 "        Track equipments and maintenance requests"
 msgstr ""
+"\n"
+"    Berendezések és a karbantartási kérelmek követése"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_account_plaid
@@ -959,6 +963,8 @@ msgid ""
 "\n"
 "        Use myponto.com to retrieve bank statements"
 msgstr ""
+"\n"
+"    Használja a myponto.com-ot a bankszámlakivonatok lekéréséhez"
 
 #. module: base
 #: model:ir.module.module,description:base.module_timesheet_grid_sale
@@ -13370,7 +13376,7 @@ msgstr "Kezdő dátum"
 #. module: base
 #: model:ir.module.module,summary:base.module_sale_management
 msgid "From quotations to invoices"
-msgstr ""
+msgstr "Az ajánlatkérésektől a számlákig"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.ir_access_view_search
@@ -19419,7 +19425,7 @@ msgstr "Jelszó"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_auth_password_policy
 msgid "Password Policy"
-msgstr ""
+msgstr "Jelszó szabályok"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_auth_password_policy_signup
@@ -19440,7 +19446,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_payment
 msgid "Payment - Account"
-msgstr ""
+msgstr "Fizetés - Számla"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_payment_acquirer
@@ -23157,6 +23163,12 @@ msgid "The internal user in charge of this contact."
 msgstr ""
 
 #. module: base
+#: code:addons/base/models/res_country.py:106
+#, python-format
+msgid "The layout contains an invalid format key"
+msgstr ""
+
+#. module: base
 #: model:ir.model.fields,help:base.field_ir_model__inherited_model_ids
 msgid "The list of models that extends the current model."
 msgstr "A jelenlegi modellt túllépő modellek listái."
@@ -25356,7 +25368,7 @@ msgstr ""
 #. module: base
 #: code:addons/base/models/res_partner.py:509
 #, python-format
-msgid "You cannot archive a contact linked to an internal user."
+msgid "You cannot archive a contact linked to a portal or internal user."
 msgstr ""
 
 #. module: base
