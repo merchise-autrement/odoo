@@ -7,48 +7,66 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-"""Extends/Overrides the OpenERP's logging system to Sentry-based approach.
+"""Implement a very ad-hoc integration of Odoo with Sentry.
 
-Sentry_ aggregates logs and lets you inspect the server's health by a web
-application.
+Events are captured with mostly captured with LoggingIntegration,
+CeleryIntegration and RedisIntegration help a bit to provide the basic tags in
+transaction profiling.
 
-To configure, simply set the global `conf`:obj: dictionary and call
-`patch_logging`:func:.
+The WSGI transaction are only set for JsonRequest and HttpRequest.  The
+ir.cron process also gets special attention to provide context in the
+transactions.
+
+SQL queries are also traced by default.
+
+.. rubric:: Environment variables
+
+:odoo_sentry_disable_sql_tracing: If present the SQL tracing is disabled.
+
+:odoo_sentry_traces_sample_rate: A float between 0 and 1 to control the amount
+                                 of tracing.  Defaults to 0.5 (i.e 50% of
+                                 traces are actually sent).
+
+:odoo_sentry_dsn: (required) The DSN of the project to send events.  If not
+                  set, no integration with Sentry is done.
 
 """
+import contextlib
 import logging
 import os
 import sys
-import urllib.parse as _urlparse
 from itertools import takewhile
+from types import MethodType
+from urllib.parse import urlparse
 
-import raven
-from raven.handlers.logging import SentryHandler as SentryLoggingHandlerBase
-from raven.transport.requests import RequestsHTTPTransport
-from raven.transport.threaded_requests import ThreadedRequestsHTTPTransport
-from raven.transport.gevent import GeventedHTTPTransport
-from raven.utils.wsgi import get_headers, get_environ
-from raven.utils.serializer.manager import manager as _manager, transform
-from raven.utils.serializer import Serializer
-
-from odoo import models
-from odoo.addons.base.models.qweb import QWebException
-from odoo.exceptions import except_orm, MissingError, RedirectWarning
-from odoo.http import JsonRequest, HttpRequest
-
-# This module is about logging-only, not wrapping the WSGI application in a
-# middleware, etc.
-
-from xotl.tools.names import nameof
-from xotl.tools.objects import setdefaultattr
-from xotl.tools.symbols import Unset
+import sentry_sdk
+from sentry_sdk import Hub, set_tag, set_user, start_transaction
+from sentry_sdk.integrations.celery import CeleryIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
+from sentry_sdk.integrations.redis import RedisIntegration
+from sentry_sdk.integrations.wsgi import get_request_url
+from sentry_sdk.tracing import Transaction, record_sql_queries
 from xotl.tools.symbols import boolean as Logical
+
+import odoo
+from odoo.addons.base.models.qweb import QWebException
+from odoo.exceptions import MissingError, RedirectWarning, except_orm
 
 Bail = Logical("Bail", False)
 del Logical
 
 
-# A dictionary holding the Raven's client keyword arguments.  You should
+try:
+    _traces_sample_rate = float(
+        os.environ.get(
+            "odoo_sentry_traces_sample_rate",
+            "0.5",
+        )
+    )
+except ValueError:
+    _traces_sample_rate = 0.5
+
+# A dictionary holding the Sentry's Client keyword arguments.  You should
 # modify this dictionary before patching the logging.
 conf = {
     # The Sentry DSN.  If Bail no logging will be done to Sentry.  This should
@@ -56,26 +74,18 @@ conf = {
     "dsn": os.environ.get("odoo_sentry_dsn", Bail),
     # The release to be reported to Sentry.  If Unset, the odoo.release
     # version will be used.
-    "release": os.environ.get("odoo_sentry_release", Unset),
-    # A tag that will be appended to the release.  Only if 'release' is Unset.
-    "release-tag": os.environ.get("odoo_sentry_release_tag", ""),
-    # The Raven transport to use to connect to Sentry. One of 'sync',
-    # 'gevent', or 'threaded'.  If set to None, default to 'threaded'.  In
-    # fact any value other than 'sync', or 'gevent' will be regarded as
-    # 'threaded'.
-    "transport": os.environ.get("odoo_sentry_transport", "threaded"),
-    # Other keyword arguments are passed unchanged to the Raven Client
-    # object.  The following are interesting: environment, auto_log_stacks,
-    # and capture_locals.
+    "release": os.environ.get("odoo_sentry_release", odoo.release.version),
+    "integrations": [
+        CeleryIntegration(),
+        RedisIntegration(),
+        LoggingIntegration(
+            level=logging.INFO,
+            event_level=logging.ERROR,
+        ),
+    ],
+    "traces_sample_rate": _traces_sample_rate,
+    "send_default_pii": True,
 }
-
-# Only report errors with at least this level.
-default_report_level = os.environ.get("odoo_sentry_report_level", "ERROR").upper()
-if default_report_level not in ("ERROR", "WARNING", "INFO", "DEBUG"):
-    default_report_level = "ERROR"
-
-conf["report_level"] = default_report_level
-
 
 default_environment = os.environ.get("odoo_sentry_environment", None)
 if default_environment is not None:
@@ -87,244 +97,255 @@ if default_environment is not None:
 SENTRYLOGGER = object()
 
 
-# A singleton
+# When this is not None, all initialization has been done.
 _sentry_client = None
 
 
-def get_client():
-    from odoo.tools import config
+def setup_sentry():
+    from odoo.tools import config  # noqa
 
     global _sentry_client
-    overrides = config.misc.get("sentry", {})
-    conf.update(overrides)
     if not _sentry_client and conf.get("dsn", Bail):
-        transport = conf.get("transport", None)
-        if transport == "sync":
-            transport = RequestsHTTPTransport
-        elif transport == "requests":
-            transport = RequestsHTTPTransport
-        elif transport == "gevent":
-            transport = GeventedHTTPTransport
-        elif transport == "threaded":
-            transport = ThreadedRequestsHTTPTransport
-        elif transport == "threaded+requests":
-            transport = ThreadedRequestsHTTPTransport
-        else:
-            transport = None
-        if transport is not None:
-            conf["transport"] = transport
-        conf["transport"] = transport
-        include_paths = []
-        try:
-            import pkg_resources
-
-            env = pkg_resources.AvailableDistributions()
-            include_paths.extend(env)
-        except:  # noqa
-            include_paths = ["odoo", "celery", "billiard", "kombu", "ampq"]
-        conf["include_paths"] = include_paths
-        _sentry_client = raven.Client(**conf)
+        sentry_sdk.init(**conf)
+        if conf.get('traces_sample_rate'):
+            install_web_hook()
+            install_ir_cron_hook()
+            if not os.environ.get('odoo_sentry_disable_sql_tracing'):
+                install_sql_hook()
+        _sentry_client = Hub.current.client
     return _sentry_client
 
 
-def patch_logging(override=False, force=False):
-    """Patch openerp's logging.
+def install_web_hook():
+    from odoo.http import HttpRequest, JsonRequest
 
-    :param override: If True suppress all normal logging.  All logs will be
-           sent to the Sentry instead of being logged to the console.  If
-           False, extends the loogers to sent the errors to the Sentry but
-           keep the console log as well.
+    if not getattr(JsonRequest, "_patched_with_sentry", False):
+        JsonRequest._patched_with_sentry = True
+        real_json_dispatch = JsonRequest.dispatch
 
-    :param force: Ignored.  Just to provide compat with xoeuf.
+        def dispatch(self):
+            with _endpoint_transaction(self.endpoint):
+                return real_json_dispatch(self)
 
-    The Sentry will only receive the error-level messages.
+        JsonRequest.dispatch = dispatch
+
+    if not getattr(HttpRequest, "_patched_with_sentry", False):
+        HttpRequest._patched_with_sentry = True
+        real_http_dispatch = HttpRequest.dispatch
+
+        def dispatch(self):
+            with _endpoint_transaction(self.endpoint):
+                return real_http_dispatch(self)
+
+        HttpRequest.dispatch = dispatch
+
+
+@contextlib.contextmanager
+def _endpoint_transaction(endpoint):
+    method = getattr(endpoint, "method", None)
+    if isinstance(method, MethodType):
+        try:
+            # The clsname may have spaces if the controller has been extended.
+            clsname = type(method.__self__).__name__.split(" ")[0]
+            methname = method.__name__
+            transaction_name = f"{clsname}.{methname}"
+            # TODO: If haven't found a better way to exclude the BusController
+            if clsname == "BusController":
+                transaction_name = None
+        except AttributeError:
+            transaction_name = None
+    if transaction_name:
+        transaction = Transaction(op="odoo.http", name=transaction_name)
+        with Hub.current.start_transaction(transaction):
+            try:
+                from odoo.http import request
+            except Exception:
+                pass
+            else:
+                try:
+                    set_user({"id": request.env.user.id, "email": request.env.user.login})
+                except Exception:
+                    pass
+                try:
+                    set_tag("dbname", request.env.cr.dbname)
+                except Exception:
+                    pass
+            yield
+    else:
+        yield
+
+
+def install_ir_cron_hook():
+    from odoo import api
+    from odoo.addons.base.models.ir_cron import ir_cron
+
+    if not getattr(ir_cron, "_patched_with_sentry", False):
+        ir_cron._patched_with_sentry = True
+        real_callback = ir_cron._callback
+
+        @api.model
+        def _callback(self, cron_name, server_action_id, job_id):
+            transaction = Transaction(op="ir.cron", name=f"Cron Job: {cron_name}")
+            with Hub.current.start_transaction(transaction):
+                try:
+                    set_tag("cron_name", cron_name)
+                    set_tag("dbname", self.env.cr.dbname)
+                    set_user({"id": self.env.user.id, "email": self.env.user.login})
+                except Exception:
+                    pass
+                return real_callback(self, cron_name, server_action_id, job_id)
+
+        ir_cron._callback = _callback
+
+
+def install_sql_hook():
+    # type: () -> None
+    """Capture the SQL queries"""
+    from odoo.sql_db import Cursor
+
+    if not getattr(Cursor, "_patched_with_sentry", False):
+        Cursor._patched_with_sentry = True
+        real_execute = Cursor.execute
+
+        def execute(self, query, params=None, log_exceptions=None):
+            if self._closed:
+                return real_execute(self, query, params=params, log_exceptions=log_exceptions)
+            with record_sql_queries(
+                Hub.current,
+                self._obj,
+                query,
+                params,
+                paramstyle="format",
+                executemany=False,
+            ):
+                return real_execute(self, query, params=params, log_exceptions=log_exceptions)
+
+        Cursor.execute = execute
+
+
+class SentryWsgiMiddleware:
+    """A more suitable WSGI middleware for Odoo.
+
+    Sentry's default WSGI middleware setup the transaction name to 'generic
+    WSGI transaction' which is not very helpful.
+
+    This Middleware sets the transaction to the PATH_INFO in the URL.
+
+    .. seealso: `odoo.http.Root.load_addons`:meth:
+
+    We recommend to set this middleware *below* the SharedDataMiddleware to
+    remove statics from the report.
 
     """
-    def _require_httprequest(func):
-        def inner(self, record):
-            try:
-                from odoo.http import request
 
-                httprequest = getattr(request, "httprequest", None)
-                if httprequest:
-                    return func(self, record, httprequest)
-            except ImportError:
-                # Not inside an HTTP request
-                pass
-            except RuntimeError:
-                # When upgrading a DB the request may exists but the bound to
-                # it does not.
-                pass
+    __slots__ = ("app",)
 
-        return inner
+    def __init__(self, app):
+        self.app = app
 
-    def _require_request(func):
-        def inner(self, record):
-            try:
-                from odoo.http import request
-                return func(self, record, request)
-            except ImportError:
-                # Not inside an HTTP request
-                pass
-            except RuntimeError:
-                # When upgrading a DB the request may exists but the bound to
-                # it does not.
-                pass
-
-        return inner
-
-    class SentryHandler(SentryLoggingHandlerBase):
-        def _emit(self, record, **kwargs):
-            self.set_record_tags(record)
-            request_context = self._get_http_context(record)
-            if request_context:
-                self.client.http_context(request_context)
-            try:
-                user_context = self._get_user_context(record)
-                if user_context:
-                    self.client.user_context(user_context)
-                try:
-                    super()._emit(record, **kwargs)
-                except:
-                    # We should never fail if emitting the log to Sentry fails.
-                    # Neither we should print the error, other programs may think
-                    # we have fail because of it: For instance, the mailgate
-                    # integrated with postfix does.
-                    pass
-            finally:
-                self.client.context.clear()
-
-        @_require_httprequest
-        def _get_http_context(self, record, request):
-            urlparts = _urlparse.urlsplit(request.url)
-            return {
-                "url": "%s://%s%s" % (urlparts.scheme, urlparts.netloc, urlparts.path),
-                "query_string": urlparts.query,
-                "method": request.method,
-                "data": self._get_http_request_data(request),
-                "headers": dict(get_headers(request.environ)),
-                "env": dict(get_environ(request.environ)),
-            }
-
-        @_require_request
-        def _get_user_context(self, record, request):
-            try:
-                return {"id": request.env.user.login}
-            except AttributeError:
-                return None
-
-        def _handle_cli_tags(self, record):
-            tags = setdefaultattr(record, "tags", {})
-            if sys.argv:
-                cmd = " ".join(takewhile(lambda arg: not arg.startswith("-"), sys.argv))
-            else:
-                cmd = None
-            if cmd:
-                cmd = os.path.basename(cmd)
-            if cmd:
-                tags["cmd"] = cmd
-
-        @_require_httprequest
-        def _handle_browser_tags(self, record, request):
-            tags = setdefaultattr(record, "tags", {})
-            ua = request.user_agent
-            if ua:
-                tags["os"] = ua.platform.capitalize()
-                browser = str(ua.browser).capitalize() + " " + str(ua.version)
-                tags["browser"] = browser
-
-        @_require_httprequest
-        def _handle_db_tags(self, record, request):
-            db = getattr(request, "session", {}).get("db", None)
-            if db:
-                tags = setdefaultattr(record, "tags", {})
-                tags["db"] = db
-
-        def _handle_fingerprint(self, record):
-            exc_info = record.exc_info
-            if exc_info:
-                _type, value, _tb = exc_info
-                exc = nameof(_type, inner=True, full=True)
-                if exc.startswith("psycopg2."):
-                    fingerprint = [exc]
-                else:
-                    fingerprint = getattr(value, "_sentry_fingerprint", None)
-                if fingerprint:
-                    if not isinstance(fingerprint, list):
-                        fingerprint = [fingerprint]
-                    record.fingerprint = fingerprint
-
-        def _get_http_request_data(self, request):
-            from odoo.http import request  # Let it raise
-
-            # We can't simply use `isinstance` cause request is actual a
-            # 'werkzeug.local.LocalProxy' instance.
-            if request._request_type == JsonRequest._request_type:
-                return request.jsonrequest
-            elif request._request_type == HttpRequest._request_type:
-                return request.params
-            else:
-                return None
-
-        def can_record(self, record):
-            res = super().can_record(record)
-            if not res:
-                return False
-            exc_info = record.exc_info
-            if not exc_info:
-                return res
-
-            ignored = (QWebException, except_orm, RedirectWarning, MissingError)
-            _type, value, _tb = exc_info
-            return not isinstance(value, ignored)
-
-        def set_record_tags(self, record):
-            methods = (getattr(self, m) for m in dir(self) if m.startswith("_handle_"))
-            for method in methods:
-                method(record)
-
-    client = get_client()
-    if not client:
-        return
-
-    loglevel = conf.get("report_level", "ERROR")
-    level = getattr(logging, loglevel.upper(), logging.ERROR)
-    override = conf.get("override", os.environ.get("odoo_sentry_override_log", override))
-
-    def sethandler(logger, override=override, level=level):
-        handler = SentryHandler(client=client)
-        handler.setLevel(level)
-        if override or not logger.handlers:
-            logger.handlers = [handler]
-        else:
-            logger.handlers.append(handler)
-
-    for name in (None, "odoo"):
-        logger = logging.getLogger(name)
-        sethandler(logger)
+    def __call__(self, environ, start_response):
+        try:
+            url = get_request_url(environ)
+            parsed = urlparse(url)
+            name = parsed.path
+        except Exception:
+            name = environ.get("PATH_INFO", "HTTP request")
+        if name.startswith("/longpolling"):
+            # TODO: Find a better way to know if we're in a longpolling
+            # request to remove the trace.  We don't want traces from
+            # longpolling because many of them take up to 50s just waiting
+            # without actually affecting the user.
+            return self.app(environ, start_response)
+        transaction = Transaction.continue_from_environ(environ, op="odoo.http", name=name)
+        with start_transaction(transaction):
+            return self.app(environ, start_response)
 
 
-class Record:
-    def __init__(self, model, names):
-        self.model = model
-        self.names = names
+def _require_httprequest(func):
+    def inner(*args):
+        try:
+            from odoo.http import request
 
-    def __repr__(self):
-        return f"<recordset of {self.model!r}: {self.names}>"
+            httprequest = getattr(request, "httprequest", None)
+            if httprequest:
+                args += (httprequest,)
+                return func(*args)
+        except ImportError:
+            # Not inside an HTTP request
+            pass
+        except RuntimeError:
+            # When upgrading a DB the request may exists but the bound to
+            # it does not.
+            pass
 
-
-class OdooModelSerializer(Serializer):
-    types = (models.BaseModel,)
-
-    def serialize(self, value, **kwargs):
-        if value:
-            if value.env.cr._closed:
-                names = list(value.ids)
-            else:
-                names = value.name_get()
-            return transform(Record(value._name, names))
-        else:
-            return transform(Record(value._name, []))
+    return inner
 
 
-_manager.register(OdooModelSerializer)
+def _require_request(func):
+    def inner(*args):
+        try:
+            from odoo.http import request
+
+            args += (request,)
+            return func(*args)
+        except ImportError:
+            # Not inside an HTTP request
+            pass
+        except RuntimeError:
+            # When upgrading a DB the request may exists but the bound to
+            # it does not.
+            pass
+
+    return inner
+
+
+@_require_request
+def _handle_user_context(request):
+    try:
+        sentry_sdk.set_user({"id": request.env.user.login})
+    except AttributeError:
+        return None
+
+
+def _handle_cli_tags():
+    if sys.argv:
+        cmd = " ".join(takewhile(lambda arg: not arg.startswith("-"), sys.argv))
+    else:
+        cmd = None
+    if cmd:
+        cmd = os.path.basename(cmd)
+    if cmd:
+        sentry_sdk.set_tag("cmd", cmd)
+
+
+@_require_httprequest
+def _handle_browser_tags(request):
+    ua = request.user_agent
+    if ua:
+        sentry_sdk.set_tag("os", ua.platform.capitalize())
+        browser = str(ua.browser).capitalize() + " " + str(ua.version)
+        sentry_sdk.set_tag("browser", browser)
+
+
+@_require_httprequest
+def _handle_db_tags(request):
+    db = getattr(request, "session", {}).get("db", None)
+    if db:
+        sentry_sdk.set_tag("db", db)
+
+
+def can_record(self, record):
+    res = super().can_record(record)
+    if not res:
+        return False
+    exc_info = record.exc_info
+    if not exc_info:
+        return res
+
+    ignored = (QWebException, except_orm, RedirectWarning, MissingError)
+    _type, value, _tb = exc_info
+    return not isinstance(value, ignored)
+
+
+def patch_logging():
+    setup_sentry()

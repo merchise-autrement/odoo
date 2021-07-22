@@ -11,15 +11,14 @@
 # package.
 #
 # Created on 2017-01-30
-import sys
-import signal
 import atexit
 import logging
+import signal
+import sys
 
 import click
-
-from celery.bin.celery import celery
 from celery.bin.base import CeleryCommand
+from celery.bin.celery import celery
 
 from . import Command
 
@@ -44,17 +43,15 @@ class Celery(Command):
         else:
             args, cmdargs = argv[:pos], argv[pos + 1 :]
         odoo.tools.config.parse_config(args=args)
-        from odoo.jobs import app  # noqa: discover the app
-        from celery.bin.celery import celery as celerycli
-        from raven.contrib.celery import register_signal, register_logger_signal
-        from odoo.sentrylog import get_client
 
-        client = get_client()
+        from celery.bin.celery import celery as celerycli
+
+        from odoo.jobs import app  # noqa: discover the app
+        from odoo.sentrylog import setup_sentry
+        setup_sentry()
+
         odoo.evented = False
         odoo.multi_process = True
-        if client:
-            register_logger_signal(client)
-            register_signal(client)
         celerycli(args=cmdargs)
 
 
@@ -89,9 +86,9 @@ class Celery(Command):
 @click.pass_context
 def flower(ctx, **kwargs):
     "Runs flower to monitor the workers"
-    from tornado.options import options
     from flower.app import Flower
     from flower.urls import settings
+    from tornado.options import options
 
     apply_env_options(options)
     for option, value in kwargs.items():
@@ -117,6 +114,7 @@ def flower(ctx, **kwargs):
 
 def extract_settings(options, settings):
     import os
+
     from flower.utils import abs_path, prepend_url
 
     settings["debug"] = options.debug
@@ -173,6 +171,7 @@ def is_flower_envvar(name):
 
 def setup_logging(options):
     from logging import NullHandler
+
     from tornado.log import enable_pretty_logging
 
     if options.debug and options.logging == "info":

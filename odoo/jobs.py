@@ -51,6 +51,7 @@ from celery.exceptions import (
 )
 from kombu import Exchange, Queue
 from psycopg2 import OperationalError, errorcodes
+from sentry_sdk import Hub, set_tag, set_user
 from xotl.tools.context import context as ExecutionContext
 from xotl.tools.objects import temp_attributes
 from xotl.tools.symbols import Unset
@@ -1245,29 +1246,30 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs, job_uuid=Unset
             ids,
             methodname,
         )
-        with MaybeRecords(dbname, uid, model, ids, context=context) as r:
-            method = getattr(r, methodname, None)
-            if method:
-                if not ids and _require_ids(method):
-                    ids, args = args[0], args[1:]
-                    method = getattr(r.browse(ids), methodname)
-                options = dict(job=self, env=r.env, job_uuid=job_uuid)
-                with CELERY_JOB(**options):
-                    try:
-                        res = method(*args, **kwargs)
-                    except (SoftTimeLimitExceeded, OperationalError, KeyboardInterrupt):
-                        raise
-                    except Exception:
-                        logger.exception("Unhandled exception while executing Celery job")
-                        raise
-                if isinstance(res, BaseModel):
-                    res = res.ids  # downgrade to ids
-                if not inline_report:
-                    _report_success.delay(dbname, uid, job_uuid, result=res)
+        with _correct_sentry_transaction_name(model, methodname):
+            with MaybeRecords(dbname, uid, model, ids, context=context) as r:
+                method = getattr(r, methodname, None)
+                if method:
+                    if not ids and _require_ids(method):
+                        ids, args = args[0], args[1:]
+                        method = getattr(r.browse(ids), methodname)
+                    options = dict(job=self, env=r.env, job_uuid=job_uuid)
+                    with CELERY_JOB(**options):
+                        try:
+                            res = method(*args, **kwargs)
+                        except (SoftTimeLimitExceeded, OperationalError, KeyboardInterrupt):
+                            raise
+                        except Exception:
+                            logger.exception("Unhandled exception while executing Celery job")
+                            raise
+                    if isinstance(res, BaseModel):
+                        res = res.ids  # downgrade to ids
+                    if not inline_report:
+                        _report_success.delay(dbname, uid, job_uuid, result=res)
+                    else:
+                        _report_success(dbname, uid, job_uuid, result=res)
                 else:
-                    _report_success(dbname, uid, job_uuid, result=res)
-            else:
-                raise TypeError("Invalid method name %r for model %r" % (methodname, model))
+                    raise TypeError("Invalid method name %r for model %r" % (methodname, model))
     except SoftTimeLimitExceeded as e:
         # Well, SoftTimeLimitExceeded may occur anywhere in the code.  It's
         # really a signal.  When integrating with `sentrylog`, I think the
@@ -1300,9 +1302,48 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs, job_uuid=Unset
 
 
 @contextlib.contextmanager
+def _correct_sentry_transaction_name(model, methodname):
+    if not Hub.current.client:
+        yield
+    else:
+        with Hub.current.configure_scope() as scope:
+            # The CeleryIntegration sets the name of the transaction
+            # to the celery task function name, but since we're
+            # funneling everything into odoo.jobs.task, we should
+            # include the model and method method name.
+            try:
+                scope.transaction.name = f"odoo.jobs.task: {model}, {methodname}"
+            except (AttributeError, TypeError):
+                # This is the documented way, but for me it's not
+                # working.
+                scope.transaction = f"odoo.jobs.task: {model}, {methodname}"
+            except SoftTimeLimitExceeded:
+                raise
+            except Exception:
+                pass
+            try:
+                set_tag("celery_task_model", model)
+                set_tag("celery_task_method", methodname)
+            except SoftTimeLimitExceeded:
+                raise
+            except Exception:
+                pass
+            yield
+
+
+@contextlib.contextmanager
 def MaybeRecords(dbname, uid, model, ids=None, context=None):
     __traceback_hide__ = True  # noqa: hide from Celery Tracebacks
     with OdooEnvironment(dbname, uid, context=context) as env:
+        user_data = {"id": uid}
+        try:
+            user_data["email"] = env.user.login
+            set_tag("dbname", dbname)
+            set_user(user_data)
+        except SoftTimeLimitExceeded:
+            raise
+        except Exception:
+            pass
         records = env[model].browse(ids)
         yield records
 

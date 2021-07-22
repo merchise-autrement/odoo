@@ -63,9 +63,8 @@ setup(
         'flower==0.9.5',
         'redis',
         'xotl.tools>=2.1.9,<2.2',
-        'raven>=6.9.0',
-        'raven-sanitize-openerp',
         'rjsmin>=1.1.0,<1.2',
+        'sentry-sdk~=1.3.0',
     ],
     python_requires='>=3.5',
     extras_require={
