@@ -62,7 +62,7 @@ setup(
         'celery~=5.0',
         'flower==0.9.5',
         'redis',
-        'xotl.tools>=2.1.9,<2.2',
+        'xotl.tools~=2.2.0',
         'rjsmin>=1.1.0,<1.2',
         'sentry-sdk~=1.3.0',
     ],
