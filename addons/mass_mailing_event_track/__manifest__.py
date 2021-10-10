@@ -18,4 +18,5 @@ Bridge module adding UX requirements to ease mass mailing of event track speaker
     ],
     'auto_install': True,
     'installable': False,
+    'license': 'LGPL-3',
 }

@@ -17,4 +17,5 @@ Allows users to send documents by post
     ],
     'auto_install': True,
     'installable': False,
+    'license': 'LGPL-3',
 }

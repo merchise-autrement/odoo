@@ -23,4 +23,5 @@ are agreements you have with vendors to benefit from a predetermined pricing.
         'report/report_purchaserequisition.xml',
     ],
     'installable': False,
+    'license': 'LGPL-3',
 }

@@ -25,4 +25,5 @@ This module allows you to easily add extra costs on pickings and decide the spli
     ],
     'installable': False,
     'auto_install': False,
+    'license': 'LGPL-3',
 }

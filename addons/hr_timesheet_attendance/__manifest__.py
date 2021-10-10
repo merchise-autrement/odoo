@@ -16,4 +16,5 @@
     ],
     'auto_install': True,
     'installable': False,
+    'license': 'LGPL-3',
 }

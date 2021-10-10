@@ -34,4 +34,5 @@ invoice and send propositions for membership renewal.
         '../account/test/account_minimal_test.xml',
     ],
     'installable': False,
+    'license': 'LGPL-3',
 }

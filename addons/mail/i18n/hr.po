@@ -20,6 +20,7 @@
 # Vojislav Opačić <vojislav.opacic@gmail.com>, 2019
 # Igor Krizanovic <krizanovic.igor@gmail.com>, 2019
 # Miro Sertić, 2020
+# 0ba0ac30481a756f36528ba6f9a4317e_6443a87 <52eefe24349934c364624ef40611b7a3_1010754>, 2021
 # Bole <bole@dajmi5.com>, 2021
 # 
 msgid ""
@@ -1846,7 +1847,7 @@ msgstr "Datum dospijeća"
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_ir_actions_server__activity_date_deadline_range
 msgid "Due Date In"
-msgstr ""
+msgstr "Datum dospijeća u"
 
 #. module: mail
 #. openerp-web
@@ -5712,7 +5713,7 @@ msgstr "Ažuriraj zapis"
 #: code:addons/mail/static/src/xml/thread.xml:531
 #, python-format
 msgid "Uploaded"
-msgstr ""
+msgstr "Učitano"
 
 #. module: mail
 #. openerp-web
@@ -5858,7 +5859,7 @@ msgstr ""
 #: code:addons/mail/models/mail_thread.py:752
 #, python-format
 msgid "View %s"
-msgstr ""
+msgstr "Pogledaj %s"
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_ir_actions_act_window_view__view_mode
@@ -6525,7 +6526,7 @@ msgstr "nepoznati odredišni model %s"
 #: code:addons/mail/static/src/js/models/messages/abstract_message.js:52
 #, python-format
 msgid "unnamed"
-msgstr ""
+msgstr "neimenovani"
 
 #. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.message_notification_email

@@ -47,4 +47,5 @@
     'application': True,
     'post_init_hook': '_create_warehouse_data',
     'installable': False,
+    'license': 'LGPL-3',
 }

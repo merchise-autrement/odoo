@@ -26,6 +26,7 @@
 # Kari Lindgren <kari.lindgren@emsystems.fi>, 2019
 # Tuomas Lyyra <tuomas.lyyra@legenda.fi>, 2019
 # Tuomo Aura <tuomo.aura@web-veistamo.fi>, 2020
+# Miika Nissi <miika.nissi@tawasta.fi>, 2021
 # Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2021
 # 
 msgid ""
@@ -5523,7 +5524,7 @@ msgstr ""
 #: code:addons/mail/models/mail_message.py:34
 #, python-format
 msgid "Unable to post message, please configure the sender's email address."
-msgstr ""
+msgstr "Viestin lähettäminen ei onnistu, määritä lähettäjän sähköpostiosoite."
 
 #. module: mail
 #. openerp-web
@@ -5645,7 +5646,7 @@ msgstr ""
 #. module: mail
 #: selection:ir.actions.server,state:0
 msgid "Update the Record"
-msgstr ""
+msgstr "Päivitä tietue"
 
 #. module: mail
 #. openerp-web

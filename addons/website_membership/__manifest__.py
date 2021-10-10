@@ -20,4 +20,5 @@ Publish your members/association directory publicly.
     'demo': ['data/membership_demo.xml'],
     'qweb': ['static/src/xml/*.xml'],
     'installable': False,
+    'license': 'LGPL-3',
 }

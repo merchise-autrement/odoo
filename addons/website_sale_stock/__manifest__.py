@@ -26,4 +26,5 @@ Then it can be made specific at the product level.
     ],
     'auto_install': True,
     'installable': False,
+    'license': 'LGPL-3',
 }

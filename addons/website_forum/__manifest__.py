@@ -37,4 +37,5 @@ Ask questions, get answers, no distractions
     ],
     'installable': False,
     'application': True,
+    'license': 'LGPL-3',
 }

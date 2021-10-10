@@ -17,4 +17,5 @@ Sell event tickets through eCommerce app.
     ],
     'auto_install': True,
     'installable': False,
+    'license': 'LGPL-3',
 }

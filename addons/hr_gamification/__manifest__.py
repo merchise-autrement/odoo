@@ -21,4 +21,5 @@ Badge received are displayed on the user profile.
     ],
     'auto_install': True,
     'installable': False,
+    'license': 'LGPL-3',
 }

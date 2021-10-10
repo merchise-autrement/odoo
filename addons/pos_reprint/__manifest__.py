@@ -21,4 +21,5 @@ Allow cashier to reprint receipts
         'static/src/xml/reprint.xml',
     ],
     'installable': False,
+    'license': 'LGPL-3',
 }

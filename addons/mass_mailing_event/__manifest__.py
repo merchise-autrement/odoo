@@ -18,4 +18,5 @@ Bridge module adding UX requirements to ease mass mailing of event attendees.
     ],
     'auto_install': True,
     'installable': False,
+    'license': 'LGPL-3',
 }

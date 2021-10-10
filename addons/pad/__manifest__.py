@@ -21,4 +21,5 @@ pads (by default, http://etherpad.com/).
     'web': True,
     'qweb': ['static/src/xml/pad.xml'],
     'installable': False,
+    'license': 'LGPL-3',
 }

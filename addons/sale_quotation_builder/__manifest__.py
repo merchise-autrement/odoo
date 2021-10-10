@@ -17,4 +17,5 @@
         'views/sale_order_views.xml',
     ],
     'installable': False,
+    'license': 'LGPL-3',
 }

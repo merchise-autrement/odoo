@@ -9,6 +9,7 @@ from . import test_mail_resend
 from . import test_mail_channel
 from . import test_mail_gateway
 from . import test_mail_template
+from . import test_mail_tools
 from . import test_message_compose
 from . import test_message_track
 from . import test_invite
@@ -34,3 +35,4 @@ from . import test_discuss
 
 from . import test_res_users
 from . import test_odoobot
+from . import test_read_progress_bar

@@ -17,4 +17,5 @@ If the automated inventory valuation is active, the necessary accounting entries
     "data": ["views/product_views.xml"],
     "active": False,
     "installable": False,
+    'license': 'LGPL-3',
 }

@@ -39,4 +39,5 @@ The following topics are covered by this module:
     'installable': False,
     'auto_install': False,
     'application': True,
+    'license': 'LGPL-3',
 }

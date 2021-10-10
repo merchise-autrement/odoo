@@ -24,4 +24,5 @@ by external providers and will automatically generate purchase orders directed t
     ],
     'auto_install': True,
     'installable': False,
+    'license': 'LGPL-3',
 }

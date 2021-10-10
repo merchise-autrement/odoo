@@ -33,4 +33,5 @@ Both goals and badges are flexibles and can be adapted to a large range of modul
         'views/gamification.xml',
     ],
     'installable': False,
+    'license': 'LGPL-3',
 }

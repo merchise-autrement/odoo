@@ -20,4 +20,5 @@ On a simple click, your visitors can subscribe to mailing lists managed in the E
     ],
     'auto_install': True,
     'installable': False,
+    'license': 'LGPL-3',
 }

@@ -17,4 +17,5 @@ Set back field hs_code on pruduct template.
     ],
     'installable': False,
     'auto_install': True,
+    'license': 'LGPL-3',
 }

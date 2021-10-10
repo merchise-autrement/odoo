@@ -23,4 +23,5 @@ sale discount to a customer.
         'static/src/xml/discount_templates.xml',
     ],
     'installable': False,
+    'license': 'LGPL-3',
 }

@@ -31,4 +31,5 @@ invoices from picking, the system is able to add and compute the shipping line.
     ],
     'demo': ['data/delivery_demo.xml'],
     'installable': False,
+    'license': 'LGPL-3',
 }

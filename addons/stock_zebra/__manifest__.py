@@ -25,6 +25,6 @@
         'report/product_packaging.xml',
         'report/stock_reports.xml',
     ],
-
     'installable': False,
+    'license': 'LGPL-3',
 }

@@ -45,4 +45,5 @@ Main Features
 
     'installable': False,
     'application': True,
+    'license': 'LGPL-3',
 }
