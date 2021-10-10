@@ -117,6 +117,7 @@ def force_demo(cr):
 
     env = api.Environment(cr, SUPERUSER_ID, {})
     env['ir.module.module'].invalidate_cache(['demo'])
+    env['res.groups']._update_user_groups_view()
 
 
 def load_module_graph(cr, graph, status=None, perform_checks=True,
@@ -363,6 +364,11 @@ def load_modules(db, force_demo=False, status=None, update_module=False):
     models_to_check = set()
 
     with db.cursor() as cr:
+        # prevent endless wait for locks on schema changes (during online
+        # installs) if a concurrent transaction has accessed the table;
+        # connection settings are automatically reset when the connection is
+        # borrowed from the pool
+        cr.execute("SET SESSION lock_timeout = '15s'")
         if not odoo.modules.db.is_initialized(cr):
             if not update_module:
                 _logger.error("Database %s not initialized, you can force it with `-i base`", cr.dbname)
@@ -421,7 +427,7 @@ def load_modules(db, force_demo=False, status=None, update_module=False):
 
             module_names = [k for k, v in tools.config['update'].items() if v]
             if module_names:
-                modules = Module.search([('state', '=', 'installed'), ('name', 'in', module_names)])
+                modules = Module.search([('state', 'in', ('installed', 'to upgrade')), ('name', 'in', module_names)])
                 if modules:
                     modules.button_upgrade()
 

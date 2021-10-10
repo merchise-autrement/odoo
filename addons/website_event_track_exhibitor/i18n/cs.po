@@ -37,7 +37,7 @@ msgstr ""
 #. module: website_event_track_exhibitor
 #: model_terms:ir.ui.view,arch_db:website_event_track_exhibitor.exhibitor_card
 msgid "<i class=\"fa fa-ban mr-2\"/>Unpublished"
-msgstr ""
+msgstr "<i class=\"fa fa-ban mr-2\"/>Nepublikováno"
 
 #. module: website_event_track_exhibitor
 #: model_terms:ir.ui.view,arch_db:website_event_track_exhibitor.exhibitors_topbar_country
@@ -192,7 +192,7 @@ msgstr "Sponzoři Události"
 #. module: website_event_track_exhibitor
 #: model:ir.model,name:website_event_track_exhibitor.model_event_type
 msgid "Event Template"
-msgstr ""
+msgstr "Šablona události"
 
 #. module: website_event_track_exhibitor
 #: model_terms:ir.ui.view,arch_db:website_event_track_exhibitor.event_sponsor_view_form
@@ -304,12 +304,12 @@ msgstr "Otevírací doba"
 #. module: website_event_track_exhibitor
 #: model:ir.model.fields,field_description:website_event_track_exhibitor.field_event_sponsor__room_participant_count
 msgid "Participant count"
-msgstr ""
+msgstr "Počet účastníků"
 
 #. module: website_event_track_exhibitor
 #: model:ir.model.fields,field_description:website_event_track_exhibitor.field_event_sponsor__room_max_participant_reached
 msgid "Peak participants"
-msgstr ""
+msgstr "Nejvíce účastníků"
 
 #. module: website_event_track_exhibitor
 #: model_terms:ir.ui.view,arch_db:website_event_track_exhibitor.exhibitor_card
@@ -375,7 +375,7 @@ msgstr "Nenašli jsme žádného vystavovatele, který by odpovídal vašemu"
 #. module: website_event_track_exhibitor
 #: model:ir.model,name:website_event_track_exhibitor.model_website_event_menu
 msgid "Website Event Menu"
-msgstr ""
+msgstr "Nabídka událostí webových stránek"
 
 #. module: website_event_track_exhibitor
 #: model:ir.model.fields,field_description:website_event_track_exhibitor.field_event_sponsor__website_url

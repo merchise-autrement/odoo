@@ -474,10 +474,10 @@ class Meeting(models.Model):
             if op in (2, 3):  # Remove partner
                 removed_partner_ids += [command[1]]
             elif op == 6:  # Replace all
-                removed_partner_ids += set(self.partner_ids.ids) - set(command[2])  # Don't recreate attendee if partner already attend the event
-                added_partner_ids += set(command[2]) - set(self.partner_ids.ids)
+                removed_partner_ids += set(self.attendee_ids.mapped('partner_id').ids) - set(command[2])  # Don't recreate attendee if partner already attend the event
+                added_partner_ids += set(command[2]) - set(self.attendee_ids.mapped('partner_id').ids)
             elif op == 4:
-                added_partner_ids += [command[1]] if command[1] not in self.partner_ids.ids else []
+                added_partner_ids += [command[1]] if command[1] not in self.attendee_ids.mapped('partner_id').ids else []
             # commands 0 and 1 not supported
 
         attendees_to_unlink = self.env['calendar.attendee'].search([
@@ -717,11 +717,12 @@ class Meeting(models.Model):
         events = super().create(other_vals)
 
         for vals in recurring_vals:
-
-            recurrence_values = {field: vals.pop(field) for field in recurrence_fields if field in vals}
             vals['follow_recurrence'] = True
-            event = super().create(vals)
-            events |= event
+        recurring_events = super().create(recurring_vals)
+        events += recurring_events
+
+        for event, vals in zip(recurring_events, recurring_vals):
+            recurrence_values = {field: vals.pop(field) for field in recurrence_fields if field in vals}
             if vals.get('recurrency'):
                 detached_events = event._apply_recurrence_values(recurrence_values)
                 detached_events.active = False

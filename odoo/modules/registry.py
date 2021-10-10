@@ -141,8 +141,7 @@ class Registry(Mapping):
         self.cache_sequence = None
 
         # Flags indicating invalidation of the registry or the cache.
-        self.registry_invalidated = False
-        self.cache_invalidated = False
+        self._invalidation_flags = threading.local()
 
         with closing(self.cursor()) as cr:
             self.has_unaccent = odoo.modules.db.has_unaccent(cr)
@@ -452,7 +451,7 @@ class Registry(Mapping):
                 except psycopg2.OperationalError:
                     _schema.error("Unable to add index for %s", self)
             elif not index and indexname in existing:
-                sql.drop_index(cr, indexname, tablename)
+                _schema.info("Keep unexpected index %s on table %s", indexname, tablename)
 
     def add_foreign_key(self, table1, column1, table2, column2, ondelete,
                         model, module, force=True):
@@ -489,15 +488,16 @@ class Registry(Mapping):
         for key, val in self._foreign_keys.items():
             table1, column1 = key
             table2, column2, ondelete, model, module = val
-            conname = '%s_%s_fkey' % key
             deltype = sql._CONFDELTYPES[ondelete.upper()]
             spec = existing.get(key)
             if spec is None:
                 sql.add_foreign_key(cr, table1, column1, table2, column2, ondelete)
+                conname = sql.get_foreign_keys(cr, table1, column1, table2, column2, ondelete)[0]
                 model.env['ir.model.constraint']._reflect_constraint(model, conname, 'f', None, module)
-            elif spec != (conname, table2, column2, deltype):
+            elif spec[1:] != (table2, column2, deltype):
                 sql.drop_constraint(cr, table1, spec[0])
                 sql.add_foreign_key(cr, table1, column1, table2, column2, ondelete)
+                conname = sql.get_foreign_keys(cr, table1, column1, table2, column2, ondelete)[0]
                 model.env['ir.model.constraint']._reflect_constraint(model, conname, 'f', None, module)
 
     def check_tables_exist(self, cr):
@@ -554,6 +554,24 @@ class Registry(Mapping):
             self._ordinary_tables = {row[0] for row in cr.fetchall()}
 
         return model._table in self._ordinary_tables
+
+    @property
+    def registry_invalidated(self):
+        """ Determine whether the current thread has modified the registry. """
+        return getattr(self._invalidation_flags, 'registry', False)
+
+    @registry_invalidated.setter
+    def registry_invalidated(self, value):
+        self._invalidation_flags.registry = value
+
+    @property
+    def cache_invalidated(self):
+        """ Determine whether the current thread has modified the cache. """
+        return getattr(self._invalidation_flags, 'cache', False)
+
+    @cache_invalidated.setter
+    def cache_invalidated(self, value):
+        self._invalidation_flags.cache = value
 
     def setup_signaling(self):
         """ Setup the inter-process signaling on this registry. """

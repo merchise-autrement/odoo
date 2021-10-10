@@ -340,9 +340,28 @@ class Product(models.Model):
         if package_id:
             domain_quant.append(('package_id', '=', package_id))
         quants_groupby = self.env['stock.quant'].read_group(domain_quant, ['product_id', 'quantity'], ['product_id'], orderby='id')
+
+        # check if we need include zero values in result
+        include_zero = (
+            value < 0.0 and operator in ('>', '>=') or
+            value > 0.0 and operator in ('<', '<=') or
+            value == 0.0 and operator in ('>=', '<=', '=')
+        )
+
+        processed_product_ids = set()
         for quant in quants_groupby:
+            product_id = quant['product_id'][0]
+            if include_zero:
+                processed_product_ids.add(product_id)
             if OPERATORS[operator](quant['quantity'], value):
-                product_ids.add(quant['product_id'][0])
+                product_ids.add(product_id)
+
+        if include_zero:
+            products_without_quants_in_domain = self.env['product.product'].search([
+                ('type', '=', 'product'),
+                ('id', 'not in', list(processed_product_ids))]
+            )
+            product_ids |= set(products_without_quants_in_domain.ids)
         return list(product_ids)
 
     def _compute_nbr_reordering_rules(self):
@@ -622,7 +641,7 @@ class ProductTemplate(models.Model):
         'product_variant_ids.stock_move_ids.product_qty',
         'product_variant_ids.stock_move_ids.state',
     )
-    @api.depends_context('company')
+    @api.depends_context('company', 'location', 'warehouse')
     def _compute_quantities(self):
         res = self._compute_quantities_dict()
         for template in self:
@@ -636,14 +655,14 @@ class ProductTemplate(models.Model):
 
     def _compute_quantities_dict(self):
         # TDE FIXME: why not using directly the function fields ?
-        variants_available = self.with_context(active_test=False).mapped('product_variant_ids')._product_available()
+        variants_available = self.mapped('product_variant_ids')._product_available()
         prod_available = {}
         for template in self:
             qty_available = 0
             virtual_available = 0
             incoming_qty = 0
             outgoing_qty = 0
-            for p in template.with_context(active_test=False).product_variant_ids:
+            for p in template.product_variant_ids:
                 qty_available += variants_available[p.id]["qty_available"]
                 virtual_available += variants_available[p.id]["virtual_available"]
                 incoming_qty += variants_available[p.id]["incoming_qty"]
@@ -751,7 +770,7 @@ class ProductTemplate(models.Model):
 
     # Be aware that the exact same function exists in product.product
     def action_open_quants(self):
-        return self.with_context(active_test=False).product_variant_ids.filtered(lambda p: p.active or p.qty_available != 0).action_open_quants()
+        return self.product_variant_ids.filtered(lambda p: p.active or p.qty_available != 0).action_open_quants()
 
     def action_update_quantity_on_hand(self):
         advanced_option_groups = [
@@ -863,7 +882,7 @@ class UoM(models.Model):
                               for f in {'category_id'}))
             if changed:
                 error_msg = _(
-                    "You cannot change the ratio of this unit of mesure"
+                    "You cannot change the ratio of this unit of measure"
                     " as some products with this UoM have already been moved"
                     " or are currently reserved."
                 )

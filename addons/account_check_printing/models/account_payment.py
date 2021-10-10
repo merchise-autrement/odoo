@@ -8,6 +8,17 @@ from odoo.tools.misc import formatLang, format_date
 INV_LINES_PER_STUB = 9
 
 
+class AccountPaymentRegister(models.TransientModel):
+    _inherit = "account.payment.register"
+
+    @api.depends('payment_type', 'journal_id', 'partner_id')
+    def _compute_payment_method_id(self):
+        super()._compute_payment_method_id()
+        for record in self:
+            preferred = record.partner_id.with_company(record.company_id).property_payment_method_id
+            if record.payment_type == 'outbound' and preferred in record.journal_id.outbound_payment_method_ids:
+                record.payment_method_id = preferred
+
 class AccountPayment(models.Model):
     _inherit = "account.payment"
 
@@ -84,7 +95,7 @@ class AccountPayment(models.Model):
     def _inverse_check_number(self):
         for payment in self:
             if payment.check_number:
-                sequence = payment.journal_id.check_sequence_id
+                sequence = payment.journal_id.check_sequence_id.sudo()
                 sequence.padding = len(payment.check_number)
 
     @api.depends('payment_type', 'journal_id', 'partner_id')
@@ -122,6 +133,7 @@ class AccountPayment(models.Model):
                     FROM account_payment payment
                     JOIN account_move move ON movE.id = payment.move_id
                    WHERE journal_id = %(journal_id)s
+                   AND check_number IS NOT NULL
                 ORDER BY check_number::INTEGER DESC
                    LIMIT 1
             """, {

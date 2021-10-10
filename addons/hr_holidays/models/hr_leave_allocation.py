@@ -180,7 +180,12 @@ class HolidaysAllocation(models.Model):
             if holiday.interval_unit == 'years':
                 delta = relativedelta(years=holiday.interval_number)
 
-            values['nextcall'] = (holiday.nextcall if holiday.nextcall else today) + delta
+            if holiday.nextcall:
+                values['nextcall'] = holiday.nextcall + delta
+            else:
+                values['nextcall'] = holiday.date_from
+                while values['nextcall'] <= datetime.combine(today, time(0, 0, 0)):
+                    values['nextcall'] += delta
 
             period_start = datetime.combine(today, time(0, 0, 0)) - delta
             period_end = datetime.combine(today, time(0, 0, 0))
@@ -670,15 +675,15 @@ class HolidaysAllocation(models.Model):
         """ Handle HR users and officers recipients that can validate or refuse holidays
         directly from email. """
         groups = super(HolidaysAllocation, self)._notify_get_groups(msg_vals=msg_vals)
-        msg_vals = msg_vals or {}
+        local_msg_vals = dict(msg_vals or {})
 
         self.ensure_one()
         hr_actions = []
         if self.state == 'confirm':
-            app_action = self._notify_get_action_link('controller', controller='/allocation/validate', **msg_vals)
+            app_action = self._notify_get_action_link('controller', controller='/allocation/validate', **local_msg_vals)
             hr_actions += [{'url': app_action, 'title': _('Approve')}]
         if self.state in ['confirm', 'validate', 'validate1']:
-            ref_action = self._notify_get_action_link('controller', controller='/allocation/refuse', **msg_vals)
+            ref_action = self._notify_get_action_link('controller', controller='/allocation/refuse', **local_msg_vals)
             hr_actions += [{'url': ref_action, 'title': _('Refuse')}]
 
         holiday_user_group_id = self.env.ref('hr_holidays.group_hr_holidays_user').id

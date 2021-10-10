@@ -181,7 +181,7 @@ msgstr "Piano dei conti analitici"
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_group__children_ids
 msgid "Childrens"
-msgstr "Figli"
+msgstr "Secondari"
 
 #. module: analytic
 #: model_terms:ir.actions.act_window,help:analytic.account_analytic_group_action
@@ -234,7 +234,7 @@ msgid ""
 "                invoices, expenses or timesheets."
 msgstr ""
 "I costi vengono generati in modo automatico con la registrazione di\n"
-"                fatture fornitore, note spese oppure fogli ore."
+"                fatture fornitore, spese oppure fogli ore."
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__create_uid
@@ -252,7 +252,7 @@ msgstr "Creato da"
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line__create_date
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_tag__create_date
 msgid "Created on"
-msgstr "Creato il"
+msgstr "Data creazione"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__credit
@@ -351,7 +351,7 @@ msgid ""
 "If the active field is set to False, it will allow you to hide the account "
 "without removing it."
 msgstr ""
-"Se il campo attivo è impostato a Falso, consente di nascondere il conto "
+"Se il campo Attivo è impostato a falso, consente di nascondere il conto "
 "senza rimuoverlo."
 
 #. module: analytic
@@ -458,17 +458,17 @@ msgstr "Numero di messaggi non letti"
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_group__parent_id
 msgid "Parent"
-msgstr "Padre"
+msgstr "Principale"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_group__parent_path
 msgid "Parent Path"
-msgstr "Percorso padre"
+msgstr "Percorso primario"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution__tag_id
 msgid "Parent tag"
-msgstr "Etichetta padre"
+msgstr "Etichetta principale"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line__partner_id

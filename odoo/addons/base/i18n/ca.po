@@ -11,7 +11,8 @@
 # Martin Trigaux, 2020
 # Arnau Ros, 2020
 # Carles Antoli <carlesantoli@hotmail.com>, 2020
-# Josep Anton Belchi, 2021
+# José Cabrera Lozano <jose.cabrera@edukative.es>, 2021
+# jabelchi, 2021
 # 
 msgid ""
 msgstr ""
@@ -19,7 +20,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-27 13:50+0000\n"
 "PO-Revision-Date: 2020-09-07 08:09+0000\n"
-"Last-Translator: Josep Anton Belchi, 2021\n"
+"Last-Translator: jabelchi, 2021\n"
 "Language-Team: Catalan (https://www.transifex.com/odoo/teams/41243/ca/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -479,6 +480,11 @@ msgid ""
 "        Colloquially known as \"Month 13\"\n"
 "    "
 msgstr ""
+"\n"
+"        Permet generar el balanç de comprovació pel assentament de tancament.\n"
+"\n"
+"        Es coneix col·loquialment com a \"Mes 13\"\n"
+"    "
 
 #. module: base
 #: model:ir.module.module,description:base.module_documents
@@ -1214,6 +1220,12 @@ msgid ""
 "This module gives the details of the goods traded between the countries of\n"
 "European Union."
 msgstr ""
+"\n"
+"Mòdul que afegeix la gestió d'estocs als informes Intrastat.\n"
+"============================================================\n"
+"\n"
+"Aquest mòdul dona detalls de les mercaderies venudes entre països de\n"
+"l'Unió Europea."
 
 #. module: base
 #: model:ir.module.module,description:base.module_account_tax_python
@@ -2199,6 +2211,9 @@ msgid ""
 "Bridge module for project and enterprise\n"
 "    "
 msgstr ""
+"\n"
+"Mòdul pont per projecte i empresa\n"
+"    "
 
 #. module: base
 #: model:ir.module.module,description:base.module_project_timesheet_holidays
@@ -2395,6 +2410,9 @@ msgid ""
 "Contains advanced features for sale management\n"
 "    "
 msgstr ""
+"\n"
+"Contè característiques avançades per gestió de vendes\n"
+"    "
 
 #. module: base
 #: model:ir.module.module,description:base.module_stock_account_enterprise
@@ -3085,6 +3103,11 @@ msgid ""
 "Adds the possibility to specify the origin country of goods and the partner VAT in the Intrastat XML report.\n"
 "    "
 msgstr ""
+"\n"
+"Genera informes Intrastat XML per a la declaració\n"
+"Basat en factures.\n"
+"Afegeix la possibilitat d'especificar el país d'origen de les mercaderies i el NIF del partner a l'informe Intrastat XML.\n"
+"    "
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_nl_intrastat
@@ -3094,6 +3117,9 @@ msgid ""
 "Generates Netherlands Intrastat report for declaration based on invoices.\n"
 "    "
 msgstr ""
+"\n"
+"Genera informe Intrastat pels Països Baixos per a la declaració basada en factures.\n"
+"    "
 
 #. module: base
 #: model:ir.module.module,description:base.module_hr_payroll_account
@@ -3302,6 +3328,10 @@ msgid ""
 "==================\n"
 "    "
 msgstr ""
+"\n"
+"Informes Intrastat\n"
+"==================\n"
+"    "
 
 #. module: base
 #: model:ir.module.module,description:base.module_account
@@ -6293,7 +6323,7 @@ msgstr ", només de lectura"
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.report_irmodulereference
 msgid ", required"
-msgstr ",requerit"
+msgstr ", requerit"
 
 #. module: base
 #: code:addons/models.py:0
@@ -6487,6 +6517,8 @@ msgid ""
 "<code>records</code>: recordset of all records on which the action is "
 "triggered in multi mode; may be void"
 msgstr ""
+"<code>records</code>: conjunt de tots els registres en els que es llença "
+"l'acció en mode múltiple. Pot estar buit."
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_model_fields_form
@@ -6567,22 +6599,14 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.view_partner_form
 msgid ""
 "<span class=\"o_form_label o_td_label\" name=\"address_name\">\n"
-"                                <b attrs=\"{'invisible': [('type', '!=', 'contact')]}\">Company Address</b>\n"
-"                                <b attrs=\"{'invisible': [('type', '!=', 'invoice')]}\">Invoice Address</b>\n"
-"                                <b attrs=\"{'invisible': [('type', '!=', 'delivery')]}\">Delivery Address</b>\n"
-"                                <b attrs=\"{'invisible': [('type', '!=', 'other')]}\">Other Address</b>\n"
-"                                <b attrs=\"{'invisible': [('type', '!=', 'private')]}\">Private Address</b>\n"
-"                                <b attrs=\"{'invisible': [('type', '!=', False)]}\">Address</b>\n"
+"                                <b attrs=\"{'invisible': [('company_type', '!=', 'company')]}\">Company Address</b>\n"
+"                                <b attrs=\"{'invisible': ['|', ('type', '!=', 'invoice'), ('company_type', '=', 'company')]}\">Invoice Address</b>\n"
+"                                <b attrs=\"{'invisible': ['|', ('type', '!=', 'delivery'), ('company_type', '=', 'company')]}\">Delivery Address</b>\n"
+"                                <b attrs=\"{'invisible': ['|', ('type', '!=', 'other'), ('company_type', '=', 'company')]}\">Other Address</b>\n"
+"                                <b attrs=\"{'invisible': ['|', ('type', '!=', 'private'), ('company_type', '=', 'company')]}\">Private Address</b>\n"
+"                                <b attrs=\"{'invisible': ['|', ('type', 'not in', (False, 'contact')), ('company_type', '=', 'company')]}\">Address</b>\n"
 "                            </span>"
 msgstr ""
-"<span class=\"o_form_label o_td_label\" name=\"address_name\">\n"
-"                                <b attrs=\"{'invisible': [('type', '!=', 'contact')]}\">Adreça de la empresa</b>\n"
-"                                <b attrs=\"{'invisible': [('type', '!=', 'invoice')]}\">Adreça de facturació</b>\n"
-"                                <b attrs=\"{'invisible': [('type', '!=', 'delivery')]}\">Adreça de lliurament</b>\n"
-"                                <b attrs=\"{'invisible': [('type', '!=', 'other')]}\">Altra adreça</b>\n"
-"                                <b attrs=\"{'invisible': [('type', '!=', 'private')]}\">Adreça privada</b>\n"
-"                                <b attrs=\"{'invisible': [('type', '!=', False)]}\">Adreça</b>\n"
-"                            </span>"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_base_module_update
@@ -7952,7 +7976,7 @@ msgstr ""
 #: model:ir.module.module,description:base.module_payment_alipay
 #: model:ir.module.module,shortdesc:base.module_payment_alipay
 msgid "Alipay Payment Acquirer"
-msgstr ""
+msgstr "Mètode de pagament Alipay"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.ir_cron_view_search
@@ -8115,8 +8139,8 @@ msgid ""
 "Ambiguous specification for field '%(field)s', only provide one of name, "
 "external id or database id"
 msgstr ""
-"Especificació ambigua pel camp '%(field)s'.\n"
-"Especifiqui només un d'aquests: noms, id. extern o id. de la base de dades."
+"Especificació ambigua pel camp '%(field)s', només es proporciona un de nom, "
+"id extern o id de base de dades"
 
 #. module: base
 #: model:res.country,name:base.as
@@ -8602,7 +8626,7 @@ msgstr "Regles automatitzades d'acció"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_base_automation_hr_contract
 msgid "Automated Action based on Employee Contracts"
-msgstr ""
+msgstr "Acció automàtica basada en contractes d'empleat"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_module_module__auto_install
@@ -8899,7 +8923,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,summary:base.module_payment
 msgid "Base Module for Payment Acquirers"
-msgstr ""
+msgstr "Mòdul base per a mètodes de pagament"
 
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__ir_model__state__base
@@ -8962,7 +8986,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,summary:base.module_iot
 msgid "Basic models and helpers to support Internet of Things."
-msgstr ""
+msgstr "Models i assistents que donen suport a la Internet de les Coses (IoT)"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_batch_payment
@@ -9382,7 +9406,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_crm_enterprise
 msgid "CRM enterprise"
-msgstr ""
+msgstr "CRM enterprise"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_social_crm
@@ -10951,7 +10975,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_res_partner__credit_limit
 #: model:ir.model.fields,field_description:base.field_res_users__credit_limit
 msgid "Credit Limit"
-msgstr "Crèdit concedit"
+msgstr "Límit de crèdit"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_pos_mercury
@@ -11039,7 +11063,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,help:base.field_res_currency__symbol
 msgid "Currency sign, to be used when printing amounts."
-msgstr "Fraccions de moneda, que seran utilitzades quan imprimim quantitats."
+msgstr "Símbol de moneda, que s'utilitzarà per imprimir imports."
 
 #. module: base
 #: code:addons/base/models/ir_ui_view.py:0
@@ -11562,7 +11586,7 @@ msgstr "Descripció HTML "
 #. module: base
 #: model:ir.module.module,summary:base.module_mass_mailing_themes
 msgid "Design gorgeous mails"
-msgstr ""
+msgstr "Dissenya bonics correus"
 
 #. module: base
 #: model:ir.module.module,description:base.module_sale_quotation_builder
@@ -11608,7 +11632,7 @@ msgid ""
 "Determines where the currency symbol should be placed after or before the "
 "amount."
 msgstr ""
-"Determinar si el símbol de moneda ha de situar-se abans o després de la "
+"Determina si el símbol de moneda ha de situar-se abans o després de la "
 "quantitat."
 
 #. module: base
@@ -11806,7 +11830,7 @@ msgstr "Mostrar "
 #: model:ir.model.fields,field_description:base.field_reset_view_arch_wizard__display_name
 #: model:ir.model.fields,field_description:base.field_wizard_ir_model_menu_create__display_name
 msgid "Display Name"
-msgstr "Nom mostrat"
+msgstr "Nom a mostrar"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_website_studio
@@ -12460,7 +12484,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,summary:base.module_pos_epson_printer_restaurant
 msgid "Epson Printers as Order Printers"
-msgstr ""
+msgstr "Impressores Epson com a impressores de comandes"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_pos_epson_printer
@@ -13087,7 +13111,7 @@ msgstr "Camp d'Etiqueta"
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_server_action_form
 msgid "Field Mappings"
-msgstr "Camp de Mapejats. "
+msgstr "Mapeig de camps"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_exports_line__name
@@ -13130,7 +13154,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_ir_model_fields__ttype
 #: model_terms:ir.ui.view,arch_db:base.view_model_fields_search
 msgid "Field Type"
-msgstr "Camp de Tipus"
+msgstr "Tipus de camp"
 
 #. module: base
 #: code:addons/base/models/ir_ui_view.py:0
@@ -13854,7 +13878,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_de_reports
 msgid "Germany - Accounting Reports"
-msgstr ""
+msgstr "Alemania - Informes comptables"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_de_skr03
@@ -13906,7 +13930,7 @@ msgstr "Gibraltar"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_mail_github
 msgid "Github Integration with Discuss"
-msgstr ""
+msgstr "Integració de Github amb Converses"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_rule__global
@@ -14086,7 +14110,7 @@ msgstr "Grups (sense grups = global)"
 #. module: base
 #: model:res.country,name:base.gp
 msgid "Guadeloupe"
-msgstr ""
+msgstr "Guadalupe"
 
 #. module: base
 #: model:res.country,name:base.gu
@@ -14166,7 +14190,7 @@ msgstr "Haití"
 #. module: base
 #: model:ir.module.module,summary:base.module_lunch
 msgid "Handle lunch orders of your employees"
-msgstr ""
+msgstr "Gestiona comandes de menjar pels empleats"
 
 #. module: base
 #: model_terms:res.partner,website_description:base.res_partner_1
@@ -14345,7 +14369,7 @@ msgstr "Us ajuda a gestionar els treballadors."
 #. module: base
 #: model:ir.module.category,description:base.module_category_human_resources_expenses
 msgid "Helps you manage your expenses."
-msgstr "L'ajuda a gestionar les seves despeses."
+msgstr "Us ajuda a gestionar les vostres despeses."
 
 #. module: base
 #: model:ir.module.category,description:base.module_category_inventory_inventory
@@ -14750,7 +14774,7 @@ msgstr "URL d'icona"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_base_partner_merge_line__aggr_ids
 msgid "Ids"
-msgstr "ID"
+msgstr "Ids"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_model_fields__group_expand
@@ -14811,7 +14835,7 @@ msgstr "Si s'estableix, l'acció enllaçada només s'aplica a aquest usuari."
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_default__condition
 msgid "If set, applies the default upon condition."
-msgstr ""
+msgstr "Si es marca, s'aplicarà la condició predeterminada."
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_server_action_form
@@ -14912,7 +14936,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_base_module_upgrade
 msgid "If you wish to cancel the process, press the cancel button below"
-msgstr "Si vol cancel·lar el procés, pressioni el botó cancel·lar."
+msgstr "Si voleu cancel·lar el procés, pressioneu el botó cancel·lar."
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_image_mixin__image_1920
@@ -15039,7 +15063,7 @@ msgstr "Importar Extracte Bancari QIF "
 #: code:addons/base/models/res_partner.py:0
 #, python-format
 msgid "Import Template for Customers"
-msgstr ""
+msgstr "Plantilla d'importació de clients"
 
 #. module: base
 #: model:ir.actions.act_window,name:base.action_view_base_import_language
@@ -15185,7 +15209,7 @@ msgstr ""
 #. module: base
 #: model:ir.actions.act_window,name:base.res_partner_industry_action
 msgid "Industries"
-msgstr ""
+msgstr "Indústries"
 
 #. module: base
 #: model:ir.model,name:base.model_res_partner_industry
@@ -15438,7 +15462,7 @@ msgstr "Unitat d'interval"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_intrastat
 msgid "Intrastat Reports"
-msgstr ""
+msgstr "Informes Intrastat"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.report_irmodulereference
@@ -15684,7 +15708,7 @@ msgstr "Irlanda"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_ie
 msgid "Ireland - Accounting"
-msgstr ""
+msgstr "Irlanda - Comptabilitat"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_lock
@@ -18774,6 +18798,90 @@ msgid ""
 "Compare revenues with forecasts and budgets in real time.\n"
 "\n"
 msgstr ""
+"Odoo Recursos Humans\n"
+"--------------------\n"
+"\n"
+"Amb <a href=\"https://www.odoo.com/page/employees\">Recursos Humans</a>d'Odoo,\n"
+"gestioneu l'actiu més important de la vostra empresa: Les persones\n"
+"\n"
+"Tingueu totes les operacions de RRHH gestionades amb facilitat: coneixement compartit, seleccions,\n"
+"avaluacions, fulls d'hores, contractes, assistències, nòmina, etc.\n"
+"\n"
+"Cada necessitat és coberta per una aplicació específica que s'activa sota demanda.\n"
+"\n"
+"Gestioneu els empleats\n"
+"---------------------\n"
+"\n"
+"Superviseu tota la informació important a la llibreta d'adreces de l'empresa. Part de la \n"
+"informació està restringida als responsables de RRHH, la resta és pública per a veure fàcilment els col·legues.\n"
+"\n"
+"Enregistreu els contractes dels empleats y rebeu alertes quan calgui renovar-los.\n"
+"\n"
+"Organitzeu el procés de selecció\n"
+"-----------------------------------\n"
+"\n"
+"Organitzeu currículums, seguiu candidats, cerqueu perfils amb <a href=\"https://www.odoo.com/page/employees\">Odoo RRHH</a>.\n"
+"\n"
+"Publiqueu ofertes i gestiuneu cada candidatura rebuda. Seguiu els candidats\n"
+"del vostre procès amb la vista kanban.\n"
+"\n"
+"Estalvieu temps tot automatitzant algunes comunicacions amb plantilles de correu electrònic. Els currículums s'indexen automàticament, permetent-vos trobar-los per perfils específics.\n"
+"\n"
+"Xarxa social d'empresa\n"
+"-------------------------\n"
+"\n"
+"Desmonteu els espais tancats d'incormació. Compartiu coneixement i les millors pràctiques entre tots els empleats. \n"
+"Seguiu persones específiques o documents i uniu-vos a grups d'interès per a compartir expertesa i documents.\n"
+"\n"
+"Interactueu amb els vostres companys en temps real amb el xat web.\n"
+"\n"
+"Seguiu temps i assistències\n"
+"--------------------------\n"
+"\n"
+"Feu seguiment del temps invertit per projecte, client o tasca. És fàcil enregistrar\n"
+"fulls d'hores o comprovar assistències per a cada empleat. Obtingueu automàticament comptabilitat analítica basada en temps invertit en els projectes. \n"
+"\n"
+"Gestió d'absències\n"
+"-----------------\n"
+"\n"
+"Feu seguiment dels dies de vacances acumulats per cada empleat. Els empleats introdueixen les seves\n"
+"peticions (absències pagades, temps de malaltia, etc), per a que les aprovin i validin\n"
+"els responsables. Tot en uns pocs clics. L'agenda de cada empleat \n"
+"s'actualitza en conseqüència.\n"
+"\n"
+"Feu seguiment de les despeses dels empleats\n"
+"-------------------------------\n"
+"\n"
+"Allibereu-vos de la paperassa i seguiu les despeses dels empleats directament a Odoo.\n"
+"No perdeu temps i diners tot controlant el flux complet: validació de la despesa,\n"
+"reembosament als empleats, comptabilització i refacturació als clients.\n"
+"\n"
+"Seguiment d'avaluacions peròdiques\n"
+"--------------------------\n"
+"\n"
+"Establiu plans d'avaluació o enquestes pels empleats i controleu la seva evolució. Definiu passos per a les entrevistes i Odoo notificarà als responsables o subordinats automàticament per a preparar les avaluacions. Seguiu el procés de la vostra plantilla periòdicament. \n"
+"\n"
+"Milloreu el compromís amb gamificació\n"
+"----------------------------------\n"
+"\n"
+"### Definiu objectius clars i faciliteu feedback en temps real\n"
+"\n"
+"Inspireu l'assoliment amb reptes, objectius i recompenses. Definiu objectius clars\n"
+"i faciliteu feedback i resultats tangibles en temps real. Mostreu els que tenen\n"
+"millor rendiment a tot el canal i reconeixeu-los-hi la feina ben feta done.\n"
+"\n"
+"### Lideratge\n"
+"\n"
+"Promogueu el lideratge i la competició entre l'equip de vendes amb ràtios de rendiment.\n"
+"\n"
+"### Objectius personals\n"
+"\n"
+"Assigneu objectius clars als usuaris per a que estiguin alineats amb els objectius de l'empresa.\n"
+"\n"
+"### Objectius d'equip\n"
+"\n"
+"Compareu en temps real ingressos i amb previsions i pressupostos. \n"
+"\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_mrp
@@ -19520,6 +19628,16 @@ msgid ""
 msgstr ""
 
 #. module: base
+#: code:addons/base/models/ir_actions_report.py:0
+#, python-format
+msgid ""
+"Odoo is unable to merge the PDFs attached to the following records:\n"
+"%s\n"
+"\n"
+"Please exclude them from the selection to continue. It's possible to still retrieve those PDFs by selecting each of the affected records individually, which will avoid merging."
+msgstr ""
+
+#. module: base
 #: model:ir.module.module,shortdesc:base.module_odoo_referral
 msgid "Odoo referral program"
 msgstr ""
@@ -19628,7 +19746,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.category,name:base.module_category_marketing_online_appointment
 msgid "Online Appointment"
-msgstr ""
+msgstr "Cita online"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_online_synchronization
@@ -20437,7 +20555,7 @@ msgstr "Mètode de pagament: Implementació Adyen"
 #. module: base
 #: model:ir.module.module,summary:base.module_payment_alipay
 msgid "Payment Acquirer: Alipay Implementation"
-msgstr ""
+msgstr "Mètode de pagament: Implementació Alipay"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_payment_authorize
@@ -20467,7 +20585,7 @@ msgstr "Mètode de pagament: Implementació Paypal"
 #. module: base
 #: model:ir.module.module,summary:base.module_payment_payulatam
 msgid "Payment Acquirer: PayuLatam Implementation"
-msgstr ""
+msgstr "Mètode de pagament: Implementació PayuLatam"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_payment_payumoney
@@ -20477,7 +20595,7 @@ msgstr "Mètode de pagament: Implementació de PayuMoney"
 #. module: base
 #: model:ir.module.module,summary:base.module_payment_sepa_direct_debit
 msgid "Payment Acquirer: Sepa Direct Debit"
-msgstr ""
+msgstr "Mètode de pagament: SEPA"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_payment_stripe
@@ -20534,7 +20652,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_payment_payulatam
 msgid "PayuLatam Payment Acquirer"
-msgstr ""
+msgstr "Mètode de pagament PayuLatam"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_payment_payumoney
@@ -20544,7 +20662,7 @@ msgstr "Mètode de pagament PayuMoney"
 #. module: base
 #: model:ir.module.module,description:base.module_payment_payulatam
 msgid "Payulatam payment acquirer"
-msgstr ""
+msgstr "Mètode de pagament Payulatam"
 
 #. module: base
 #: model:res.country,name:base.pe
@@ -20826,7 +20944,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,field_description:base.field_report_paperformat__print_page_width
 msgid "Print page width (mm)"
-msgstr ""
+msgstr "Amplada pàgina impressió (mm)"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_actions_report__print_report_name
@@ -21188,7 +21306,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,summary:base.module_purchase
 msgid "Purchase orders, tenders and agreements"
-msgstr ""
+msgstr "Comandes de compra, ofertes i acords"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_event_track_social
@@ -21411,7 +21529,7 @@ msgstr ""
 #. module: base
 #: model:ir.model,name:base.model_ir_qweb_field_many2many
 msgid "Qweb field many2many"
-msgstr ""
+msgstr "Camp Qweb many2many"
 
 #. module: base
 #: model:res.partner.industry,full_name:base.res_partner_industry_R
@@ -22176,7 +22294,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_sale_coupon_delivery
 msgid "Sale Coupon Delivery"
-msgstr ""
+msgstr "Lliurament de cupons de venda"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_sale_intrastat
@@ -22691,7 +22809,7 @@ msgstr "Senegal"
 #: model:ir.module.module,description:base.module_payment_sepa_direct_debit
 #: model:ir.module.module,shortdesc:base.module_payment_sepa_direct_debit
 msgid "Sepa Direct Debit Payment Acquirer"
-msgstr ""
+msgstr "Mètode de pagament SEPA"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_lang__grouping
@@ -23033,7 +23151,7 @@ msgstr "Eslovènia - Comptabilitat"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_snailmail
 msgid "Snail Mail"
-msgstr ""
+msgstr "Correu postal"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_snailmail_account_followup
@@ -23475,7 +23593,7 @@ msgstr "Sub-menús   "
 #: model:ir.module.module,summary:base.module_hr_expense
 #: model:ir.module.module,summary:base.module_hr_payroll_expense
 msgid "Submit, validate and reinvoice employee expenses"
-msgstr ""
+msgstr "Presentar, validar i refacturar despeses d'empletats"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_sales_subscription
@@ -23869,7 +23987,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_payment_test
 msgid "Test Payment Acquirer"
-msgstr ""
+msgstr "Mètode de pagament de test"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_test_performance
@@ -24195,6 +24313,12 @@ msgstr "El nom complert del país."
 #: model:ir.model.fields,help:base.field_res_partner__user_id
 #: model:ir.model.fields,help:base.field_res_users__user_id
 msgid "The internal user in charge of this contact."
+msgstr ""
+
+#. module: base
+#: code:addons/base/models/res_country.py:106
+#, python-format
+msgid "The layout contains an invalid format key"
 msgstr ""
 
 #. module: base
@@ -25050,12 +25174,12 @@ msgstr "Model transitori"
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.report_irmodeloverview
 msgid "Transient: False"
-msgstr "Transitori: False"
+msgstr "Transitori: Fals"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.report_irmodeloverview
 msgid "Transient: True"
-msgstr "Transitori: True"
+msgstr "Transitori: Cert"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_transifex
@@ -26302,12 +26426,12 @@ msgstr "Editor Web"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_web_enterprise
 msgid "Web Enterprise"
-msgstr ""
+msgstr "Web Enterprise"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_web_gantt
 msgid "Web Gantt"
-msgstr ""
+msgstr "Web Gantt"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_test_web_grid
@@ -26401,7 +26525,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_res_partner__website
 #: model:ir.model.fields,field_description:base.field_res_users__website
 msgid "Website Link"
-msgstr ""
+msgstr "Enllaç a Lloc Web"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_livechat
@@ -26666,6 +26790,9 @@ msgid ""
 "Write Python code that the action will execute. Some variables are available"
 " for use; help about python expression is given in the help tab."
 msgstr ""
+"Escriviu el codi Python que executarà l'acció. Hi ha algunes variables "
+"disponibles pel seu ús. Trobareu ajuda sobre expressions Python a la "
+"pestanya d'ajuda. "
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.form_res_users_key_show
@@ -26808,7 +26935,7 @@ msgstr ""
 #. module: base
 #: code:addons/base/models/res_partner.py:0
 #, python-format
-msgid "You cannot archive a contact linked to an internal user."
+msgid "You cannot archive a contact linked to a portal or internal user."
 msgstr ""
 
 #. module: base
@@ -27263,7 +27390,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__ir_model_fields__ttype__many2many
 msgid "many2many"
-msgstr ""
+msgstr "many2many"
 
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__ir_model_fields__ttype__many2one
@@ -27284,7 +27411,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.demo_failures_dialog
 msgid "module(s) failed to install and were disabled"
-msgstr ""
+msgstr "el(s) mòdul(s) han fallat a l'instal·lar-se i han estat inhabilitats"
 
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__ir_model_fields__ttype__monetary

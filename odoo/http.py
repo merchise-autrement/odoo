@@ -52,6 +52,7 @@ from .sql_db import flush_env
 from .tools.func import lazy_property
 from .tools import ustr, consteq, frozendict, pycompat, unique, date_utils
 from .tools.mimetypes import guess_mimetype
+from .tools.misc import str2bool
 from .tools._vendor import sessions
 from .modules.module import module_manifest, load_information_from_description_file
 
@@ -829,7 +830,7 @@ class HttpRequest(WebRequest):
 
 Odoo URLs are CSRF-protected by default (when accessed with unsafe
 HTTP methods). See
-https://www.odoo.com/documentation/14.0/reference/http.html#csrf for
+https://www.odoo.com/documentation/14.0/developer/reference/http.html#csrf for
 more details.
 
 * if this endpoint is accessed through Odoo via py-QWeb form, embed a CSRF
@@ -1224,6 +1225,14 @@ def session_gc(session_store):
                 except OSError:
                     pass
 
+ODOO_DISABLE_SESSION_GC = str2bool(os.environ.get('ODOO_DISABLE_SESSION_GC', '0'))
+
+if ODOO_DISABLE_SESSION_GC:
+    # empty function, in case another module would be
+    # calling it out of setup_session()
+    session_gc = lambda s: None
+
+
 #----------------------------------------------------------
 # WSGI Layer
 #----------------------------------------------------------
@@ -1344,6 +1353,8 @@ class Root(object):
         # Setup http sessions
         path = odoo.tools.config.session_dir
         _logger.debug('HTTP sessions stored in: %s', path)
+        if ODOO_DISABLE_SESSION_GC:
+            _logger.info('Default session GC disabled, manual GC required.')
         return sessions.FilesystemSessionStore(
             path, session_class=OpenERPSession, renew_missing=True)
 

@@ -9569,21 +9569,21 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base.view_partner_form
 msgid ""
 "<span class=\"o_form_label o_td_label\" name=\"address_name\">\n"
-"                                <b attrs=\"{'invisible': [('type', '!=', 'contact')]}\">Company Address</b>\n"
-"                                <b attrs=\"{'invisible': [('type', '!=', 'invoice')]}\">Invoice Address</b>\n"
-"                                <b attrs=\"{'invisible': [('type', '!=', 'delivery')]}\">Delivery Address</b>\n"
-"                                <b attrs=\"{'invisible': [('type', '!=', 'other')]}\">Other Address</b>\n"
-"                                <b attrs=\"{'invisible': [('type', '!=', 'private')]}\">Private Address</b>\n"
-"                                <b attrs=\"{'invisible': [('type', '!=', False)]}\">Address</b>\n"
+"                                <b attrs=\"{'invisible': [('company_type', '!=', 'company')]}\">Company Address</b>\n"
+"                                <b attrs=\"{'invisible': ['|', ('type', '!=', 'invoice'), ('company_type', '=', 'company')]}\">Invoice Address</b>\n"
+"                                <b attrs=\"{'invisible': ['|', ('type', '!=', 'delivery'), ('company_type', '=', 'company')]}\">Delivery Address</b>\n"
+"                                <b attrs=\"{'invisible': ['|', ('type', '!=', 'other'), ('company_type', '=', 'company')]}\">Other Address</b>\n"
+"                                <b attrs=\"{'invisible': ['|', ('type', '!=', 'private'), ('company_type', '=', 'company')]}\">Private Address</b>\n"
+"                                <b attrs=\"{'invisible': ['|', ('type', 'not in', (False, 'contact')), ('company_type', '=', 'company')]}\">Address</b>\n"
 "                            </span>"
 msgstr ""
 "<span class=\"o_form_label o_td_label\" name=\"address_name\">\n"
-"                                <b attrs=\"{'invisible': [('type', '!=', 'contact')]}\">Virksomheds Adresse</b>\n"
-"                                <b attrs=\"{'invisible': [('type', '!=', 'invoice')]}\">Faktura Adresse</b>\n"
-"                                <b attrs=\"{'invisible': [('type', '!=', 'delivery')]}\">Leverings Adresse</b>\n"
-"                                <b attrs=\"{'invisible': [('type', '!=', 'other')]}\">Anden Adresse</b>\n"
-"                                <b attrs=\"{'invisible': [('type', '!=', 'private')]}\">Privat Adresse</b>\n"
-"                                <b attrs=\"{'invisible': [('type', '!=', False)]}\">Adresse</b>\n"
+"                                <b attrs=\"{'invisible': [('company_type', '!=', 'company')]}\">Virksomhedsadresse</b>\n"
+"                                <b attrs=\"{'invisible': ['|', ('type', '!=', 'invoice'), ('company_type', '=', 'company')]}\">Faktureringsadresse</b>\n"
+"                                <b attrs=\"{'invisible': ['|', ('type', '!=', 'delivery'), ('company_type', '=', 'company')]}\">Leveringsadresse</b>\n"
+"                                <b attrs=\"{'invisible': ['|', ('type', '!=', 'other'), ('company_type', '=', 'company')]}\">Anden adresse</b>\n"
+"                                <b attrs=\"{'invisible': ['|', ('type', '!=', 'private'), ('company_type', '=', 'company')]}\">Privat Adresse</b>\n"
+"                                <b attrs=\"{'invisible': ['|', ('type', 'not in', (False, 'contact')), ('company_type', '=', 'company')]}\">Adresse</b>\n"
 "                            </span>"
 
 #. module: base
@@ -23743,6 +23743,20 @@ msgstr ""
 "Modul operationer er ikke mulige lige nu, prøv venligst igen senere, eller kontakt din system administrator."
 
 #. module: base
+#: code:addons/base/models/ir_actions_report.py:0
+#, python-format
+msgid ""
+"Odoo is unable to merge the PDFs attached to the following records:\n"
+"%s\n"
+"\n"
+"Please exclude them from the selection to continue. It's possible to still retrieve those PDFs by selecting each of the affected records individually, which will avoid merging."
+msgstr ""
+"Odoo er ude af stand til at forene PDF filerne forbundet til følgende datasæt:\n"
+"%s\n"
+"\n"
+"Vær venlig at udeluk dem fra valget for at fortsætte. Det er muligt stadig at indhente de pågældende PDF filer, ved at vælge hver af de pågældende datasæt individuelt, hvilket undgår foreningen."
+
+#. module: base
 #: model:ir.module.module,shortdesc:base.module_odoo_referral
 msgid "Odoo referral program"
 msgstr "Odoo henvisningsprogram"
@@ -28664,6 +28678,12 @@ msgid "The internal user in charge of this contact."
 msgstr "Den interne bruger ansvarlig for denne kontakt."
 
 #. module: base
+#: code:addons/base/models/res_country.py:106
+#, python-format
+msgid "The layout contains an invalid format key"
+msgstr "Layoutet indeholder en ugyldig format nøgle"
+
+#. module: base
 #: model:ir.model.fields,help:base.field_ir_model__inherited_model_ids
 msgid "The list of models that extends the current model."
 msgstr "Listen over modeller der udvider den nuværende model."
@@ -31420,8 +31440,10 @@ msgstr "Du kan ikke aktiverer superbrugeren."
 #. module: base
 #: code:addons/base/models/res_partner.py:0
 #, python-format
-msgid "You cannot archive a contact linked to an internal user."
-msgstr "Du kan ikke arkiverer en kontakt forbundet til en intern bruger."
+msgid "You cannot archive a contact linked to a portal or internal user."
+msgstr ""
+"Du kan ikke arkivere en kontakt der er forbundet til en portal- eller intern"
+" bruger."
 
 #. module: base
 #: code:addons/base/models/res_partner.py:0

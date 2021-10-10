@@ -2639,8 +2639,8 @@ msgstr "Nou(ă)"
 #. openerp-web
 #: code:addons/web/static/src/js/fields/relational_fields.js:0
 #, python-format
-msgid "New ${this.name}"
-msgstr "Nou ${this.name}"
+msgid "New %s"
+msgstr ""
 
 #. module: web
 #. openerp-web
@@ -2954,6 +2954,13 @@ msgstr "Numai tu"
 #. openerp-web
 #: code:addons/web/static/src/xml/debug.xml:0
 #, python-format
+msgid "Open Developer Tools"
+msgstr ""
+
+#. module: web
+#. openerp-web
+#: code:addons/web/static/src/xml/debug.xml:0
+#, python-format
 msgid "Open Developer Tools#{widget.debug_mode_help}"
 msgstr "Deschidere Instrumente Dezvoltatori#{widget.debug_mode_help}"
 
@@ -3002,6 +3009,13 @@ msgstr "Deschideți vizualizare listă"
 #, python-format
 msgid "Open: "
 msgstr "Deschis:"
+
+#. module: web
+#. openerp-web
+#: code:addons/web/static/src/js/views/list/list_renderer.js:0
+#, python-format
+msgid "Optional columns"
+msgstr ""
 
 #. module: web
 #. openerp-web
