@@ -231,12 +231,13 @@ var VariantMixin = {
 
         $container.find(variantsValuesSelectors.join(',')).each(function (){
             var $variantValueInput = $(this);
+            var singleNoCustom = $variantValueInput.data('is_single') && !$variantValueInput.data('is_custom');
 
             if ($variantValueInput.is('select')){
                 $variantValueInput = $variantValueInput.find('option[value=' + $variantValueInput.val() + ']');
             }
 
-            if ($variantValueInput.length !== 0){
+            if ($variantValueInput.length !== 0 && !singleNoCustom){
                 noVariantAttributeValues.push({
                     'custom_product_template_attribute_value_id': $variantValueInput.data('value_id'),
                     'attribute_value_name': $variantValueInput.data('value_name'),
@@ -341,7 +342,6 @@ var VariantMixin = {
         $parent
             .find('option, input, label')
             .removeClass('css_not_available')
-            .prop('disabled', false)
             .attr('title', function () { return $(this).data('value_name') || ''; })
             .data('excluded-by', '');
 
@@ -414,7 +414,6 @@ var VariantMixin = {
             .find('option[value=' + attributeValueId + '], input[value=' + attributeValueId + ']');
         $input.addClass('css_not_available');
         $input.closest('label').addClass('css_not_available');
-        $input.prop('disabled', true);
 
         if (excludedBy && attributeNames) {
             var $target = $input.is('option') ? $input : $input.closest('label').add($input);

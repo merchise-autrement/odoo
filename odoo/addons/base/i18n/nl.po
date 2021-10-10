@@ -15,8 +15,9 @@
 # Yenthe Van Ginneken <yenthespam@gmail.com>, 2020
 # Eric Geens <ericgeens@yahoo.com>, 2020
 # Yip132 <yannick.renders@gmail.com>, 2020
-# Erwin van der Ploeg (Odoo Experts) <erwin@odooexperts.nl>, 2020
 # Odoo Experts Consultants <consultants@odooexperts.nl>, 2021
+# Erwin van der Ploeg <erwin@odooexperts.nl>, 2021
+# Kasper Declercq <declercq.kasper@gmail.com>, 2021
 # 
 msgid ""
 msgstr ""
@@ -24,7 +25,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-23 15:12+0000\n"
 "PO-Revision-Date: 2019-08-26 09:06+0000\n"
-"Last-Translator: Odoo Experts Consultants <consultants@odooexperts.nl>, 2021\n"
+"Last-Translator: Kasper Declercq <declercq.kasper@gmail.com>, 2021\n"
 "Language-Team: Dutch (https://www.transifex.com/odoo/teams/41243/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -7861,6 +7862,8 @@ msgid ""
 "\n"
 "This module enables the pairing of the IoT Box with Odoo through odoo.com.\n"
 msgstr ""
+"\n"
+"Deze module maakt het mogelijk een IoT Box met Odoo te koppelen via odoo.com.\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_sms
@@ -13709,7 +13712,7 @@ msgstr "Dashboards"
 #. module: base
 #: model_terms:res.partner,website_description:base.res_partner_10
 msgid "Data Migration"
-msgstr ""
+msgstr "Data migratie"
 
 #. module: base
 #: model:ir.module.module,description:base.module_test_convert
@@ -18023,7 +18026,7 @@ msgstr "IoT box startpagina"
 #. module: base
 #: model:ir.module.module,summary:base.module_iot_pairing
 msgid "IoT Box pairing through odoo.com."
-msgstr ""
+msgstr "IoT Box koppelen via odoo.com"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_iot_pairing
@@ -22803,6 +22806,20 @@ msgstr ""
 "aan een leverancier."
 
 #. module: base
+#: code:addons/base/models/ir_actions_report.py:0
+#, python-format
+msgid ""
+"Odoo is unable to merge the PDFs attached to the following records:\n"
+"%s\n"
+"\n"
+"Please exclude them from the selection to continue. It's possible to still retrieve those PDFs by selecting each of the affected records individually, which will avoid merging."
+msgstr ""
+"Odoo is niet in staat de PDF's samen te voegen die bij de volgende records zijn gevoegd:\n"
+"%s\n"
+"\n"
+"Sluit ze uit van de selectie om door te gaan. Het is mogelijk om die pdf's nog steeds op te halen door elk van de betrokken records afzonderlijk te selecteren, waardoor samenvoeging wordt voorkomen."
+
+#. module: base
 #: model:ir.module.module,shortdesc:base.module_odoo_referral
 msgid "Odoo referral program"
 msgstr "Odoo verwijzingsprogramma"
@@ -27501,6 +27518,12 @@ msgid "The internal user in charge of this contact."
 msgstr "De interne gebruiker verantwoordelijk voor dit contract."
 
 #. module: base
+#: code:addons/base/models/res_country.py:106
+#, python-format
+msgid "The layout contains an invalid format key"
+msgstr "De lay-out bevat een ongeldige indelingssleutel"
+
+#. module: base
 #: model:ir.model.fields,help:base.field_ir_model__inherited_model_ids
 msgid "The list of models that extends the current model."
 msgstr "De lijst met modellen welke het huidige module uitbreiden"
@@ -29995,10 +30018,10 @@ msgstr "U kan de supergebruiker niet activeren."
 #. module: base
 #: code:addons/base/models/res_partner.py:0
 #, python-format
-msgid "You cannot archive a contact linked to an internal user."
+msgid "You cannot archive a contact linked to a portal or internal user."
 msgstr ""
-"U kunt een contactpersoon die is gekoppeld aan een interne gebruiker niet "
-"archiveren."
+"U kunt geen contactpersoon archiveren die is gekoppeld aan een portaal of "
+"interne gebruiker."
 
 #. module: base
 #: code:addons/base/models/res_partner.py:0

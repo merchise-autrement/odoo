@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, fields, models, _
-from odoo.tools.float_utils import float_compare
+from odoo.tools.float_utils import float_compare, float_round
 from dateutil import relativedelta
 from odoo.exceptions import UserError
 
@@ -28,17 +28,10 @@ class PurchaseOrder(models.Model):
     group_id = fields.Many2one('procurement.group', string="Procurement Group", copy=False)
     is_shipped = fields.Boolean(compute="_compute_is_shipped")
 
-    @api.depends('order_line.move_ids.returned_move_ids',
-                 'order_line.move_ids.state',
-                 'order_line.move_ids.picking_id')
+    @api.depends('order_line.move_ids.picking_id')
     def _compute_picking(self):
         for order in self:
-            pickings = self.env['stock.picking']
-            for line in order.order_line:
-                # We keep a limited scope on purpose. Ideally, we should also use move_orig_ids and
-                # do some recursive search, but that could be prohibitive if not done correctly.
-                moves = line.move_ids | line.move_ids.mapped('returned_move_ids')
-                pickings |= moves.mapped('picking_id')
+            pickings = order.order_line.mapped('move_ids.picking_id')
             order.picking_ids = pickings
             order.picking_count = len(pickings)
 
@@ -260,7 +253,7 @@ class PurchaseOrderLine(models.Model):
                     if move.state == 'done':
                         if move.location_dest_id.usage == "supplier":
                             if move.to_refund:
-                                total -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom)
+                                total -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom, rounding_method='HALF-UP')
                         elif move.origin_returned_move_id and move.origin_returned_move_id._is_dropshipped() and not move._is_dropshipped_returned():
                             # Edge case: the dropship is returned to the stock, no to the supplier.
                             # In this case, the received quantity on the PO is set although we didn't
@@ -275,9 +268,9 @@ class PurchaseOrderLine(models.Model):
                                 [("id", "child_of", move.warehouse_id.view_location_id.id)]
                             )
                         ):
-                            total -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom)
+                            total -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom, rounding_method='HALF-UP')
                         else:
-                            total += move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom)
+                            total += move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom, rounding_method='HALF-UP')
                 line.qty_received = total
 
     @api.model
@@ -299,10 +292,24 @@ class PurchaseOrderLine(models.Model):
                     moves_to_update = line.move_dest_ids.filtered(lambda m: m.state not in ('done', 'cancel'))
                 for move in moves_to_update:
                     move.date_expected = move.date_expected + relativedelta.relativedelta(days=delta_days)
+        lines = self.filtered(lambda l: l.order_id.state == 'purchase')
+        previous_product_qty = {line.id: line.product_uom_qty for line in lines}
         result = super(PurchaseOrderLine, self).write(values)
         if 'product_qty' in values:
-            self.filtered(lambda l: l.order_id.state == 'purchase')._create_or_update_picking()
+            lines.with_context(previous_product_qty=previous_product_qty)._create_or_update_picking()
         return result
+
+    def unlink(self):
+        self.move_ids._action_cancel()
+
+        ppg_cancel_lines = self.filtered(lambda line: line.propagate_cancel)
+        ppg_cancel_lines.move_dest_ids._action_cancel()
+
+        not_ppg_cancel_lines = self.filtered(lambda line: not line.propagate_cancel)
+        not_ppg_cancel_lines.move_dest_ids.write({'procure_method': 'make_to_stock'})
+        not_ppg_cancel_lines.move_dest_ids._recompute_state()
+
+        return super().unlink()
 
     # --------------------------------------------------
     # Business methods
@@ -345,10 +352,13 @@ class PurchaseOrderLine(models.Model):
         line = self[0]
         order = line.order_id
         price_unit = line.price_unit
+        price_unit_prec = self.env['decimal.precision'].precision_get('Product Price')
         if line.taxes_id:
+            qty = line.product_qty or 1
             price_unit = line.taxes_id.with_context(round=False).compute_all(
-                price_unit, currency=line.order_id.currency_id, quantity=1.0, product=line.product_id, partner=line.order_id.partner_id
+                price_unit, currency=line.order_id.currency_id, quantity=qty, product=line.product_id, partner=line.order_id.partner_id
             )['total_void']
+            price_unit = float_round(price_unit / qty, precision_digits=price_unit_prec)
         if line.product_uom.id != line.product_id.uom_id.id:
             price_unit *= line.product_uom.factor / line.product_id.uom_id.factor
         if order.currency_id != order.company_id.currency_id:
@@ -364,13 +374,8 @@ class PurchaseOrderLine(models.Model):
         res = []
         if self.product_id.type not in ['product', 'consu']:
             return res
-        qty = 0.0
         price_unit = self._get_stock_move_price_unit()
-        outgoing_moves, incoming_moves = self._get_outgoing_incoming_moves()
-        for move in outgoing_moves:
-            qty -= move.product_uom._compute_quantity(move.product_uom_qty, self.product_uom, rounding_method='HALF-UP')
-        for move in incoming_moves:
-            qty += move.product_uom._compute_quantity(move.product_uom_qty, self.product_uom, rounding_method='HALF-UP')
+        qty = self._get_qty_procurement()
         description_picking = self.product_id.with_context(lang=self.order_id.dest_address_id.lang or self.env.user.lang)._get_description(self.order_id.picking_type_id)
         template = {
             # truncate to 2000 to avoid triggering index limit error
@@ -409,6 +414,16 @@ class PurchaseOrderLine(models.Model):
             res.append(template)
         return res
 
+    def _get_qty_procurement(self):
+        self.ensure_one()
+        qty = 0.0
+        outgoing_moves, incoming_moves = self._get_outgoing_incoming_moves()
+        for move in outgoing_moves:
+            qty -= move.product_uom._compute_quantity(move.product_uom_qty, self.product_uom, rounding_method='HALF-UP')
+        for move in incoming_moves:
+            qty += move.product_uom._compute_quantity(move.product_uom_qty, self.product_uom, rounding_method='HALF-UP')
+        return qty
+    
     def _create_stock_moves(self, picking):
         values = []
         for line in self.filtered(lambda l: not l.display_type):

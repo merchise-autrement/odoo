@@ -19,9 +19,10 @@
 # Algo Kärp <algokarp@gmail.com>, 2020
 # Toomas Ant <toomas.ant@gmail.com>, 2020
 # Martin Trigaux, 2020
-# atriine <triine@avalah.ee>, 2020
 # Piia Paurson <piia@avalah.ee>, 2021
 # Andre Roomet <andreroomet@gmail.com>, 2021
+# Triine Aavik <triine@avalah.ee>, 2021
+# Aveli Kannel <aveli@avalah.ee>, 2021
 # 
 msgid ""
 msgstr ""
@@ -29,7 +30,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-01 12:20+0000\n"
 "PO-Revision-Date: 2019-08-26 09:06+0000\n"
-"Last-Translator: Andre Roomet <andreroomet@gmail.com>, 2021\n"
+"Last-Translator: Aveli Kannel <aveli@avalah.ee>, 2021\n"
 "Language-Team: Estonian (https://www.transifex.com/odoo/teams/41243/et/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -6867,7 +6868,7 @@ msgstr "Postiteenuste tüüp"
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_invoice_send__mailing_list_ids
 msgid "Mailing List"
-msgstr ""
+msgstr "Meililist"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_bank_statement__message_main_attachment_id
@@ -7749,7 +7750,7 @@ msgstr "Algsed arved"
 #: model_terms:ir.ui.view,arch_db:account.view_move_line_tree
 #: model_terms:ir.ui.view,arch_db:account.view_move_line_tree_grouped
 msgid "Original Currency"
-msgstr ""
+msgstr "Algne valuuta"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_move_line__payment_id
@@ -8204,7 +8205,7 @@ msgstr ""
 #: code:addons/account/models/account_payment.py:0
 #, python-format
 msgid "Payments without a customer can't be matched"
-msgstr ""
+msgstr "Ilma partnerit valimata ei saa makset sobitada"
 
 #. module: account
 #: model:ir.model.fields.selection,name:account.selection__account_payment_term_line__value__percent
@@ -10622,7 +10623,7 @@ msgstr "Tehniline väli kasutamiseks sularaha ümardamise rea taastamisel."
 #: model:ir.model.fields,help:account.field_account_reconcile_model__show_force_tax_included
 #: model:ir.model.fields,help:account.field_account_reconcile_model__show_second_force_tax_included
 msgid "Technical field used to show the force tax included button"
-msgstr ""
+msgstr "Tehniline väli mille abil osundada maksu jõuga lisamise nupule"
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_bank_statement_line__account_number
@@ -10630,6 +10631,8 @@ msgid ""
 "Technical field used to store the bank account number before its creation, "
 "upon the line's processing"
 msgstr ""
+"Tehniline väli panga kontonumbri salvestamiseks enne selle loomist, rea "
+"töötlemisel"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_res_config_settings__chart_template_id
@@ -10687,6 +10690,8 @@ msgid ""
 "The 'Internal Group' is used to filter accounts based on the internal group "
 "set on the account type."
 msgstr ""
+"'Sisemine grupp' on kasutusel kontode kontotüübi järgi filtreerimisel "
+"sisemise grupi sätete alusel."
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_account__internal_type
@@ -10705,7 +10710,7 @@ msgstr ""
 #: code:addons/account/models/account_move.py:0
 #, python-format
 msgid "The account %s (%s) is deprecated."
-msgstr ""
+msgstr "Konto %s (%s) on aegunud."
 
 #. module: account
 #: code:addons/account/models/account.py:0
@@ -10714,6 +10719,8 @@ msgid ""
 "The account is already in use in a 'sale' or 'purchase' journal. This means "
 "that the account's type couldn't be 'receivable' or 'payable'."
 msgstr ""
+"Konto on juba kasutusel 'müügi' või 'ostude' registris. Tähendab, konto tüüp"
+" ei või olla 'laekumine' või 'maksmine'."
 
 #. module: account
 #: code:addons/account/models/account_move.py:0
@@ -10722,6 +10729,8 @@ msgid ""
 "The account selected on your journal entry forces to provide a secondary "
 "currency. You should remove the secondary currency on the account."
 msgstr ""
+"Sinu registris valitud konto sunnib määrama teisejärgulise valuuta. Peksid "
+"teisejärgulise valuuta eemaldama oma kontolt."
 
 #. module: account
 #: code:addons/account/models/account_move.py:0
@@ -10783,6 +10792,7 @@ msgid ""
 "The application scope of taxes in a group must be either the same as the "
 "group or left empty."
 msgstr ""
+"Rakenduse maksude määr grupis peab olema kas grupiga sama suur või tühi."
 
 #. module: account
 #: code:addons/account/models/account.py:0
@@ -10919,7 +10929,7 @@ msgstr ""
 #: code:addons/account/models/account_fiscal_year.py:0
 #, python-format
 msgid "The ending date must not be prior to the starting date."
-msgstr ""
+msgstr "Lõppkuupäev ei saa olla enne alguskuupäeva"
 
 #. module: account
 #: model:ir.model.fields,help:account.field_product_category__property_account_expense_categ_id
@@ -11531,7 +11541,7 @@ msgstr ""
 #: code:addons/account/models/account_move.py:0
 #, python-format
 msgid "This move is configured to be auto-posted on %s"
-msgstr ""
+msgstr "See kanne on loodud ja kinnitatakse automaatselt %s"
 
 #. module: account
 #: code:addons/account/models/account_move.py:0
@@ -11832,7 +11842,7 @@ msgstr "Tüübi nimi"
 #: model:ir.model.fields,help:account.field_account_move__activity_exception_decoration
 #: model:ir.model.fields,help:account.field_account_payment__activity_exception_decoration
 msgid "Type of the exception activity on record."
-msgstr ""
+msgstr "Kirjel oleva erandtegevuse tüüp."
 
 #. module: account
 #: model:ir.model.fields.selection,name:account.selection__account_cash_rounding__rounding_method__up
@@ -12010,6 +12020,7 @@ msgstr "Kasuta koondmakseid"
 #: model_terms:ir.ui.view,arch_db:account.res_config_settings_view_form
 msgid "Use budgets to compare actual with expected revenues and costs"
 msgstr ""
+"Kasutage eelarveid, et võrrelda tegelikke ja eeldatud tulusid ja kulusid"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_invoice_send__template_id
@@ -12113,7 +12124,7 @@ msgstr "Kinnita konto liikumine"
 msgid ""
 "Validate the statement line automatically (reconciliation based on your "
 "rule)."
-msgstr ""
+msgstr "Kinnita väljavõtte rida automaatselt (sobitamine vastavalt reeglile)"
 
 #. module: account
 #: model:ir.model.fields.selection,name:account.selection__account_bank_statement__state__confirm
@@ -12352,7 +12363,7 @@ msgstr "Vale kreedit- või deebetväärtus raamatupidamiskirjendil!"
 #: code:addons/account/models/account_move.py:0
 #, python-format
 msgid "You are trying to reconcile some entries that are already reconciled."
-msgstr ""
+msgstr "Te üritate sobitada kirjeid, mis on juba omavahel ühendatud."
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_move_line__blocked
@@ -12433,7 +12444,7 @@ msgstr "Saate registreerida ainult avatud arvete makseid"
 #: code:addons/account/wizard/account_invoice_send.py:0
 #, python-format
 msgid "You can only send invoices."
-msgstr ""
+msgstr "Te saate ainult saata arveid."
 
 #. module: account
 #: code:addons/account/wizard/account_payment_send.py:0
@@ -12804,6 +12815,12 @@ msgstr ""
 #. module: account
 #: code:addons/account/models/account_move.py:0
 #, python-format
+msgid "The entry %s (id %s) is already posted."
+msgstr ""
+
+#. module: account
+#: code:addons/account/models/account_move.py:0
+#, python-format
 msgid "You need to add a line before posting."
 msgstr "Enne postitamist on vaja lisada rida"
 
@@ -12939,7 +12956,7 @@ msgstr ""
 #: code:addons/account/static/src/xml/account_reconciliation.xml:0
 #, python-format
 msgid "have been reconciled automatically."
-msgstr ""
+msgstr "on sobitatud automaatselt"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_invoice_send__invoice_without_email
@@ -12999,7 +13016,7 @@ msgstr "sobitada"
 #: code:addons/account/static/src/xml/account_reconciliation.xml:0
 #, python-format
 msgid "reconciliation models"
-msgstr ""
+msgstr "sobitamise mudelid"
 
 #. module: account
 #. openerp-web
@@ -13049,7 +13066,7 @@ msgstr ""
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_move_form
 msgid "to mark this invoice as paid."
-msgstr ""
+msgstr "märgi see arve makstuks"
 
 #. module: account
 #. openerp-web

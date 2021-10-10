@@ -929,12 +929,11 @@ class Field(MetaField('DummyField', (object,), {})):
         indexname = '%s_%s_index' % (model._table, self.name)
         if self.index:
             try:
-                with model._cr.savepoint(flush=False):
-                    sql.create_index(model._cr, indexname, model._table, ['"%s"' % self.name])
+                sql.create_index(model._cr, indexname, model._table, ['"%s"' % self.name])
             except psycopg2.OperationalError:
                 _schema.error("Unable to add index for %s", self)
-        else:
-            sql.drop_index(model._cr, indexname, model._table)
+        elif sql.index_exists(model._cr, indexname):
+            _schema.info("Keep unexpected index %s on table %s", indexname, model._table)
 
     def update_db_related(self, model):
         """ Compute a stored related field directly in SQL. """
@@ -1629,6 +1628,7 @@ class Html(_String):
         'sanitize_style': False,        # whether to sanitize style attributes
         'strip_style': False,           # whether to strip style attributes (removed and therefore not sanitized)
         'strip_classes': False,         # whether to strip classes attributes
+        'sanitize_form': True,          # whether to sanitize forms
     }
 
     def _get_attrs(self, model, name):
@@ -1663,7 +1663,8 @@ class Html(_String):
                 sanitize_attributes=self.sanitize_attributes,
                 sanitize_style=self.sanitize_style,
                 strip_style=self.strip_style,
-                strip_classes=self.strip_classes)
+                strip_classes=self.strip_classes,
+                sanitize_form=self.sanitize_form)
         return value
 
     def convert_to_cache(self, value, record, validate=True):
@@ -1676,7 +1677,8 @@ class Html(_String):
                 sanitize_attributes=self.sanitize_attributes,
                 sanitize_style=self.sanitize_style,
                 strip_style=self.strip_style,
-                strip_classes=self.strip_classes)
+                strip_classes=self.strip_classes,
+                sanitize_form=self.sanitize_form)
         return value
 
 
@@ -2528,7 +2530,10 @@ class Many2one(_Relational):
             # value is either a pair (id, name), or a tuple of ids
             id_ = value[0] if value else None
         elif isinstance(value, dict):
-            id_ = record.env[self.comodel_name].new(value).id
+            # return a new record (with the given field 'id' as origin)
+            comodel = record.env[self.comodel_name]
+            origin = comodel.browse(value.get('id'))
+            id_ = comodel.new(value, origin=origin).id
         else:
             id_ = None
 
@@ -2880,7 +2885,7 @@ class _RelationalMulti(_Relational):
 
     def _setup_regular_full(self, model):
         super(_RelationalMulti, self)._setup_regular_full(model)
-        if isinstance(self.domain, list):
+        if not self.compute and isinstance(self.domain, list):
             self.depends += tuple(
                 self.name + '.' + arg[0]
                 for arg in self.domain

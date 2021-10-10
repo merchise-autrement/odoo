@@ -8,8 +8,8 @@
 # Jan Horzinka <jan.horzinka@centrum.cz>, 2019
 # Michal Veselý <michal@veselyberanek.net>, 2019
 # milda dvorak <milda.dvorak@optimal4.cz>, 2019
-# trendspotter, 2020
 # karolína schusterová <karolina.schusterova@vdp.sk>, 2021
+# trendspotter, 2021
 # Rastislav Brencic <rastislav.brencic@azet.sk>, 2021
 # 
 msgid ""
@@ -434,7 +434,7 @@ msgstr "Vytvoření deníku při importu bankovního výpisu"
 #. module: account_bank_statement_import
 #: model:ir.model.fields,field_description:account_bank_statement_import.field_account_bank_statement_import_journal_creation__journal_group_ids
 msgid "Journal Groups"
-msgstr "Skupiny časopisů"
+msgstr "Skupiny účetních deníků"
 
 #. module: account_bank_statement_import
 #: model:ir.model.fields,field_description:account_bank_statement_import.field_account_bank_statement_import_journal_creation__name
@@ -458,7 +458,7 @@ msgstr ""
 #. module: account_bank_statement_import
 #: model:ir.model.fields,field_description:account_bank_statement_import.field_account_bank_statement_import_journal_creation__kanban_dashboard
 msgid "Kanban Dashboard"
-msgstr "Kanban Ovládací panel"
+msgstr "Kanban ovládací panel"
 
 #. module: account_bank_statement_import
 #: model:ir.model.fields,field_description:account_bank_statement_import.field_account_bank_statement_import_journal_creation__kanban_dashboard_graph
@@ -516,6 +516,9 @@ msgid ""
 "Check:Pay bill by check and print it from Odoo.\n"
 "SEPA Credit Transfer: Pay bill from a SEPA Credit Transfer file you submit to your bank. Enable this option from the settings."
 msgstr ""
+"Ručně: Zaplaťte účet v hotovosti nebo jiným způsobem mimo Odoo.\n"
+"Šek: Zaplaťte účet šekem a vytiskněte jej z Odoo.\n"
+"Převod kreditu SEPA: Zaplaťte fakturu ze souboru SEPA kreditu, který odešlete do své banky. Povolte tuto možnost z nastavení."
 
 #. module: account_bank_statement_import
 #: model:ir.model.fields,field_description:account_bank_statement_import.field_account_bank_statement_import_journal_creation__message_has_error

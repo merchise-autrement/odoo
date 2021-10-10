@@ -625,6 +625,31 @@ var FieldDateRange = InputField.extend({
         }
         this._super.apply(this, arguments);
     },
+
+    //--------------------------------------------------------------------------
+    // Public
+    //--------------------------------------------------------------------------
+
+    /**
+     * Field widget is valid if value entered can convered to date/dateime value
+     * while parsing input value to date/datetime throws error then widget considered
+     * invalid
+     *
+     * @override
+     */
+    isValid: function () {
+        const value = this.mode === "readonly" ? this.value : this.$input.val();
+        try {
+            return field_utils.parse[this.formatType](value, this.field, { timezone: true }) || true;
+        } catch (error) {
+            return false;
+        }
+    },
+
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
+
     /**
      * Return the date written in the input, in UTC.
      *
@@ -632,7 +657,14 @@ var FieldDateRange = InputField.extend({
      * @returns {Moment|false}
      */
     _getValue: function () {
-        return field_utils.parse[this.formatType](this.$input.val(), this.field, { timezone: true });
+        try {
+            // user may enter manual value in input and it may not be parsed as date/datetime value
+            this.removeInvalidClass();
+            return field_utils.parse[this.formatType](this.$input.val(), this.field, { timezone: true });
+        } catch (error) {
+            this.setInvalidClass();
+            return false;
+        }
     },
 
     //--------------------------------------------------------------------------
@@ -1699,7 +1731,7 @@ var AbstractFieldBinary = AbstractField.extend({
         this._super.apply(this, arguments);
         this.fields = record.fields;
         this.useFileAPI = !!window.FileReader;
-        this.max_upload_size = 25 * 1024 * 1024; // 25Mo
+        this.max_upload_size = session.max_file_upload_size || 128 * 1024 * 1024;
         if (!this.useFileAPI) {
             var self = this;
             this.fileupload_id = _.uniqueId('o_fileupload');
@@ -1982,22 +2014,13 @@ var FieldBinaryFile = AbstractFieldBinary.extend({
         this.filename_value = this.recordData[this.attrs.filename];
     },
     _renderReadonly: function () {
-        this.do_toggle(!!this.value);
-        if (this.value) {
-            this.$el.empty().append($("<span/>").addClass('fa fa-download'));
-            if (this.recordData.id) {
-                this.$el.css('cursor', 'pointer');
-            } else {
-                this.$el.css('cursor', 'not-allowed');
-            }
-            if (this.filename_value) {
-                this.$el.append(" " + this.filename_value);
-            }
-        }
-        if (!this.res_id) {
-            this.$el.css('cursor', 'not-allowed');
-        } else {
-            this.$el.css('cursor', 'pointer');
+        var visible = !!(this.value && this.res_id);
+        this.$el.empty().css('cursor', 'not-allowed');
+        this.do_toggle(visible);
+        if (visible) {
+            this.$el.css('cursor', 'pointer')
+                    .text(this.filename_value || '')
+                    .prepend($('<span class="fa fa-download"/>'), ' ');
         }
     },
     _renderEdit: function () {

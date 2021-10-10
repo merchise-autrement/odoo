@@ -38,7 +38,7 @@ class Web_Editor(http.Controller):
             :returns PNG image converted from given font
         """
         # Make sure we have at least size=1
-        size = max(1, size)
+        size = max(1, min(size, 512))
         # Initialize font
         addons_path = http.addons_manifest['web']['addons_path']
         font_obj = ImageFont.truetype(addons_path + font, size)
@@ -245,6 +245,10 @@ class Web_Editor(http.Controller):
 
     def _attachment_create(self, name='', data=False, url=False, res_id=False, res_model='ir.ui.view', filters=None):
         """Create and return a new attachment."""
+        if name.lower().endswith('.bmp'):
+            # Avoid mismatch between content type and mimetype, see commit msg
+            name = name[:-4]
+
         if not name and url:
             name = url.split("/").pop()
 

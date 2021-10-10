@@ -135,8 +135,9 @@ class SaleCouponProgram(models.Model):
             'name': _('Sales Orders'),
             'view_mode': 'tree,form',
             'res_model': 'sale.order',
+            'search_view_id': [self.env.ref('sale.sale_order_view_search_inherit_quotation').id],
             'type': 'ir.actions.act_window',
-            'domain': [('id', 'in', orders.ids), ('state', 'not in', ('draft', 'sent', 'cancel'))],
+            'domain': [('id', 'in', orders.ids)],
             'context': dict(self._context, create=False)
         }
 
@@ -168,7 +169,7 @@ class SaleCouponProgram(models.Model):
             message = {'error': _('A minimum of %s %s should be purchased to get the reward') % (self.rule_minimum_amount, self.currency_id.name)}
         elif self.promo_code and self.promo_code == order.promo_code:
             message = {'error': _('The promo code is already applied on this order')}
-        elif not self.promo_code and self in order.no_code_promo_program_ids:
+        elif self in order.no_code_promo_program_ids:
             message = {'error': _('The promotional offer is already applied on this order')}
         elif not self.active:
             message = {'error': _('Promo code is invalid')}

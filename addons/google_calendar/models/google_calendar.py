@@ -297,6 +297,7 @@ class GoogleCalendar(models.AbstractModel):
             if e.response.status_code != 403:
                 raise e
             _logger.info("Could not delete Google event %s" % event_id)
+            return False
         return response
 
     def get_calendar_primary_id(self):
@@ -606,6 +607,8 @@ class GoogleCalendar(models.AbstractModel):
                     _logger.info("[%s] Calendar Synchro - Done with status : %s  !", user_to_sync, resp.get("status"))
             except Exception as e:
                 _logger.info("[%s] Calendar Synchro - Exception : %s !", user_to_sync, exception_to_unicode(e))
+            # make commit after processing a user to avoid starting over in case of timeout error
+            self.env.cr.commit()
         _logger.info("Calendar Synchro - Ended by cron")
 
     def synchronize_events(self, lastSync=True):

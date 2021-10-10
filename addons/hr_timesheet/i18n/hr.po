@@ -410,7 +410,7 @@ msgstr "Izvještavanje"
 #: code:addons/hr_timesheet/controllers/portal.py:0
 #, python-format
 msgid "Search in All"
-msgstr ""
+msgstr "Traži svuda"
 
 #. module: hr_timesheet
 #: model:res.groups,name:hr_timesheet.group_hr_timesheet_user
@@ -673,6 +673,14 @@ msgid ""
 "You can register and track your workings hours by project every\n"
 "                day. Every time spent on a project will become a cost and can be re-invoiced to\n"
 "                customers if required."
+msgstr ""
+
+#. module: hr_timesheet
+#: code:addons/hr_timesheet/models/project.py:0
+#, python-format
+msgid ""
+"You cannot delete a project containing timesheets. You can either archive it"
+" or first delete all of its timesheets."
 msgstr ""
 
 #. module: hr_timesheet

@@ -11,7 +11,7 @@
 # Link Up링크업 <linkup.way@gmail.com>, 2019
 # Martin Trigaux, 2020
 # Linkup <link-up@naver.com>, 2020
-# JH CHOI <hwangtog@gmail.com>, 2020
+# JH CHOI <hwangtog@gmail.com>, 2021
 # 
 msgid ""
 msgstr ""
@@ -19,7 +19,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-23 15:12+0000\n"
 "PO-Revision-Date: 2019-08-26 09:06+0000\n"
-"Last-Translator: JH CHOI <hwangtog@gmail.com>, 2020\n"
+"Last-Translator: JH CHOI <hwangtog@gmail.com>, 2021\n"
 "Language-Team: Korean (https://www.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -12336,7 +12336,7 @@ msgstr "이름만으로는 새 '%s' 레코드를 만들 수 없습니다. 이러
 #: code:addons/base/models/res_lang.py:0
 #, python-format
 msgid "Cannot deactivate a language that is currently used by contacts."
-msgstr ""
+msgstr "현재 연락처에서 사용하고 있는 언어는 비활성화할 수 없습니다."
 
 #. module: base
 #: code:addons/base/models/res_lang.py:0
@@ -22887,6 +22887,20 @@ msgid "Odoo helps you easily track all activities related to a vendor."
 msgstr "Odoo는 공급 업체와 관련된 모든 활동을 쉽게 추적하도록 도와줍니다."
 
 #. module: base
+#: code:addons/base/models/ir_actions_report.py:0
+#, python-format
+msgid ""
+"Odoo is unable to merge the PDFs attached to the following records:\n"
+"%s\n"
+"\n"
+"Please exclude them from the selection to continue. It's possible to still retrieve those PDFs by selecting each of the affected records individually, which will avoid merging."
+msgstr ""
+"Odoo는 다음 레코드에 첨부된 PDF를 병합할 수 없습니다 :\n"
+"%s\n"
+"\n"
+"계속하려면 선택 항목에서 제외하십시오. 영향을 받는 레코드를 개별적으로 선택하여 이러한 PDF를 검색할 수 있으므로 병합을 방지할 수 있습니다."
+
+#. module: base
 #: model:ir.module.module,shortdesc:base.module_odoo_referral
 msgid "Odoo referral program"
 msgstr "Odoo 추천 프로그램"
@@ -22956,7 +22970,7 @@ msgstr "사용하려는 문서 중 하나가 삭제되었습니다. 새로 고�
 #: code:addons/base/models/ir_actions_report.py:0
 #, python-format
 msgid "One of the documents, you try to merge is encrypted"
-msgstr ""
+msgstr "병합하려는 문서 중 하나가 암호화되었습니다."
 
 #. module: base
 #: code:addons/models.py:0
@@ -27527,6 +27541,12 @@ msgid "The internal user in charge of this contact."
 msgstr "연락처 담당 내부 사용자를 담당합니다."
 
 #. module: base
+#: code:addons/base/models/res_country.py:106
+#, python-format
+msgid "The layout contains an invalid format key"
+msgstr "양식에 잘못된 형식 키가 있습니다."
+
+#. module: base
 #: model:ir.model.fields,help:base.field_ir_model__inherited_model_ids
 msgid "The list of models that extends the current model."
 msgstr "현재 모델 목록을 확장하십시오."
@@ -29917,8 +29937,8 @@ msgstr "수퍼 유저는 활성화할 수 없습니다."
 #. module: base
 #: code:addons/base/models/res_partner.py:0
 #, python-format
-msgid "You cannot archive a contact linked to an internal user."
-msgstr "내부 사용자에 연결된 연락처를 보관할 수 없습니다."
+msgid "You cannot archive a contact linked to a portal or internal user."
+msgstr "포털 또는 내부 사용자에 연결된 연락처는 보관할 수 없습니다."
 
 #. module: base
 #: code:addons/base/models/res_partner.py:0

@@ -103,6 +103,33 @@ class OdooHook(object):
 
         return sys.modules[name]
 
+
+class UpgradeHook(object):
+    """Makes the legacy `migrations` package being `odoo.upgrade`"""
+
+    def find_module(self, name, path=None):
+        if re.match(r"^odoo.addons.base.maintenance.migrations\b", name):
+            # We can't trigger a DeprecationWarning in this case.
+            # In order to be cross-versions, the multi-versions upgrade scripts (0.0.0 scripts),
+            # the tests, and the common files (utility functions) still needs to import from the
+            # legacy name.
+            return self
+
+    def load_module(self, name):
+        assert name not in sys.modules
+
+        canonical_upgrade = name.replace("odoo.addons.base.maintenance.migrations", "odoo.upgrade")
+
+        if canonical_upgrade in sys.modules:
+            mod = sys.modules[canonical_upgrade]
+        else:
+            mod = importlib.import_module(canonical_upgrade)
+
+        sys.modules[name] = mod
+
+        return sys.modules[name]
+
+
 def initialize_sys_path():
     """
     Setup an import-hook to be able to import OpenERP addons from the different
@@ -149,6 +176,7 @@ def initialize_sys_path():
         odoo.addons.__path__[:] = list(set(ad_paths))
 
     if not getattr(initialize_sys_path, 'called', False): # only initialize once
+        sys.meta_path.insert(0, UpgradeHook())
         sys.meta_path.insert(0, OdooHook())
         sys.meta_path.insert(0, AddonsHook())
         initialize_sys_path.called = True
@@ -606,7 +634,8 @@ def run_unit_tests(module_name, position='at_install'):
     :rtype: bool
     """
     global current_test
-    from odoo.tests.common import TagsSelector # Avoid import loop
+    # avoid dependency hell
+    from odoo.tests.common import TagsSelector, OdooSuite
     current_test = module_name
     mods = get_test_modules(module_name)
     threading.currentThread().testing = True
@@ -615,7 +644,7 @@ def run_unit_tests(module_name, position='at_install'):
     r = True
     for m in mods:
         tests = unwrap_suite(unittest.TestLoader().loadTestsFromModule(m))
-        suite = unittest.TestSuite(t for t in tests if position_tag.check(t) and config_tags.check(t))
+        suite = OdooSuite(t for t in tests if position_tag.check(t) and config_tags.check(t))
 
         if suite.countTestCases():
             t0 = time.time()

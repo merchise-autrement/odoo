@@ -20,6 +20,7 @@ import unittest
 import psutil
 import werkzeug.serving
 from werkzeug.debug import DebuggedApplication
+from odoo.tests.common import OdooSuite
 
 _signals = {getattr(signal, name): name for name in dir(signal) if name.startswith('SIG')}
 
@@ -314,6 +315,7 @@ class FSWatcherInotify(FSWatcherBase):
     def stop(self):
         self.started = False
         self.thread.join()
+        del self.watcher  # ensures inotify watches are freed up before reexec
 
 
 #----------------------------------------------------------
@@ -1238,7 +1240,7 @@ def load_test_file_py(registry, test_file):
             for mod_mod in get_test_modules(mod):
                 mod_path, _ = os.path.splitext(getattr(mod_mod, '__file__', ''))
                 if test_path == config._normalize(mod_path):
-                    suite = unittest.TestSuite()
+                    suite = OdooSuite()
                     for t in unittest.TestLoader().loadTestsFromModule(mod_mod):
                         suite.addTest(t)
                     _logger.log(logging.INFO, 'running tests %s.', mod_mod.__name__)

@@ -297,8 +297,10 @@ class ProductTemplate(models.Model):
 
             # The list_price is always the price of one.
             quantity_1 = 1
+            combination_info['price'] = self.env['account.tax']._fix_tax_included_price_company(combination_info['price'], product.sudo().taxes_id, taxes, company_id)
             price = taxes.compute_all(combination_info['price'], pricelist.currency_id, quantity_1, product, partner)[tax_display]
             if pricelist.discount_policy == 'without_discount':
+                combination_info['list_price'] = self.env['account.tax']._fix_tax_included_price_company(combination_info['list_price'], product.sudo().taxes_id, taxes, company_id)
                 list_price = taxes.compute_all(combination_info['list_price'], pricelist.currency_id, quantity_1, product, partner)[tax_display]
             else:
                 list_price = price
@@ -359,12 +361,12 @@ class ProductTemplate(models.Model):
             return 10000
         return max_sequence + 5
 
-    def set_sequence_top(self):
-        min_sequence = self.sudo().search([], order='website_sequence ASC', limit=1)
+    def set_sequence_top(self, to_remove=[]):
+        min_sequence = self.sudo().search([('id', 'not in', to_remove)], order='website_sequence ASC', limit=1)
         self.website_sequence = min_sequence.website_sequence - 5
 
-    def set_sequence_bottom(self):
-        max_sequence = self.sudo().search([], order='website_sequence DESC', limit=1)
+    def set_sequence_bottom(self, to_remove=[]):
+        max_sequence = self.sudo().search([('id', 'not in', to_remove)], order='website_sequence DESC', limit=1)
         self.website_sequence = max_sequence.website_sequence + 5
 
     def set_sequence_up(self):

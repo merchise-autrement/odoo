@@ -12,6 +12,7 @@ from odoo.api import call_kw
 from odoo.exceptions import AccessError
 from odoo.tests import tagged
 from odoo.tools import mute_logger, formataddr
+from odoo.tests.common import users
 
 
 @tagged('mail_post')
@@ -40,6 +41,43 @@ class TestMessagePost(BaseFunctionalTest, TestRecipients, MockEmails):
         # Use call_kw as shortcut to simulate a RPC call.
         messageId = call_kw(self.env['mail.channel'], 'message_post', [test_channel.id], {'body': 'test'})
         self.assertTrue(isinstance(messageId, int))
+
+    @users('employee')
+    def test_notify_prepare_template_context_company_value(self):
+        """ Verify that the template context company value is right
+        after switching the env company or if a company_id is set
+        on mail record.
+        """
+        current_user = self.env.user
+        main_company = current_user.company_id
+        other_company = self.env['res.company'].with_user(self.user_admin).create({'name': 'Company B'})
+        current_user.sudo().write({'company_ids': [(4, other_company.id)]})
+        test_record = self.env['mail.test.multi.company'].with_user(self.user_admin).create({
+            'name': 'Multi Company Record',
+            'company_id': False,
+        })
+
+        # self.env.company.id = Main Company    AND    test_record.company_id = False
+        self.assertEqual(self.env.company.id, main_company.id)
+        self.assertEqual(test_record.company_id.id, False)
+        template_values = test_record._notify_prepare_template_context(test_record.message_ids, {})
+        self.assertEqual(template_values.get('company').id, self.env.company.id)
+
+        # self.env.company.id = Other Company    AND    test_record.company_id = False
+        current_user.company_id = other_company
+        test_record = self.env['mail.test.multi.company'].browse(test_record.id)
+        self.assertEqual(self.env.company.id, other_company.id)
+        self.assertEqual(test_record.company_id.id, False)
+        template_values = test_record._notify_prepare_template_context(test_record.message_ids, {})
+        self.assertEqual(template_values.get('company').id, self.env.company.id)
+
+        # self.env.company.id = Other Company    AND    test_record.company_id = Main Company
+        test_record.company_id = main_company
+        test_record = self.env['mail.test.multi.company'].browse(test_record.id)
+        self.assertEqual(self.env.company.id, other_company.id)
+        self.assertEqual(test_record.company_id.id, main_company.id)
+        template_values = test_record._notify_prepare_template_context(test_record.message_ids, {})
+        self.assertEqual(template_values.get('company').id, main_company.id)
 
     def test_notify_recipients_internals(self):
         pdata = self._generate_notify_recipients(self.partner_1 | self.partner_employee)
@@ -229,6 +267,16 @@ class TestMessagePost(BaseFunctionalTest, TestRecipients, MockEmails):
 
         self.assertEqual(new_msg.parent_id.id, parent_msg.id, 'message_post: flatten error')
         self.assertEqual(new_msg.partner_ids, self.env['res.partner'])
+
+    @mute_logger('odoo.addons.mail.models.mail_mail')
+    def test_post_email_with_multiline_subject(self):
+        _body, _body_alt, _subject = '<p>Test Body</p>', 'Test Body', '1st line\n2nd line'
+        msg = self.test_record.with_user(self.user_employee).message_post(
+            body=_body, subject=_subject,
+            message_type='comment', subtype='mt_comment',
+            partner_ids=[self.partner_1.id, self.partner_2.id]
+        )
+        self.assertEqual(msg.subject, '1st line 2nd line')
 
     @mute_logger('odoo.addons.mail.models.mail_mail')
     def test_post_portal_ok(self):

@@ -27,7 +27,6 @@ setup(
         'babel >= 1.0',
         'decorator',
         'docutils',
-        'feedparser',
         'gevent',
         'html2text',
         'Jinja2',
