@@ -277,9 +277,12 @@ def _set_user_context(request):
 def _set_browser_tags(request):
     ua = request.user_agent
     if ua:
-        set_tag("os", ua.platform.capitalize())
-        browser = str(ua.browser).capitalize() + " " + str(ua.version)
-        set_tag("browser", browser)
+        platform = getattr(ua, 'platform', '')
+        if platform:
+            set_tag("os", platform.capitalize())
+        browser = getattr(ua, 'browser', '').capitalize()
+        if browser:
+            set_tag("browser", f"{browser} {ua.version}")
 
 
 @_require_httprequest
