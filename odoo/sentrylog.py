@@ -164,7 +164,7 @@ def _endpoint_transaction(endpoint):
         except AttributeError:
             transaction_name = None
     if transaction_name:
-        transaction = Transaction(op="odoo.http", name=transaction_name)
+        transaction = Transaction(op="http", name=transaction_name)
         with start_transaction(transaction):
             _set_db_tags()
             _set_browser_tags()
@@ -184,7 +184,7 @@ def install_ir_cron_hook():
 
         @api.model
         def _callback(self, cron_name, server_action_id, job_id):
-            transaction = Transaction(op="ir.cron", name=f"Cron Job: {cron_name}")
+            transaction = Transaction(op="cron.task", name=f"Cron Job: {cron_name}")
             with start_transaction(transaction):
                 try:
                     set_tag("cron_name", cron_name)
