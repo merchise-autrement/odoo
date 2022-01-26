@@ -13,7 +13,7 @@
     }
 }
 
-.progress {
+.web-celery .progress {
     background-color: #aaa;
     border: 1px solid #444;
     border-radius: 5px;
@@ -22,7 +22,7 @@
     height: 1rem;
 }
 
-.progress-bar {
+.web-celery .progress-bar {
     width: 1%;
     height: 100%;
     background-color: $o-enterprise-primary-color;

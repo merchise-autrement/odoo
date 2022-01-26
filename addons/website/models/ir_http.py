@@ -205,6 +205,7 @@ class Http(models.AbstractModel):
             except Exception as e:
                 if 'werkzeug' in config['dev_mode']:
                     raise e
+                logger.exception("Error in website: %s", e)  # merchise: send to sentry.
                 exception = e
 
             values = dict(

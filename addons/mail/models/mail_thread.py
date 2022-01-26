@@ -1187,8 +1187,15 @@ class MailThread(models.AbstractModel):
 
         # Delivered-To is a safe bet in most modern MTAs, but we have to fallback on To + Cc values
         # for all the odd MTAs out there, as there is no standard header for the envelope's `rcpt_to` value.
-        rcpt_tos = ','.join([
-            tools.decode_message_header(message, 'Delivered-To'),
+        rcpt_tos = ', '.join([
+            # MERCHISE BEGIN
+            # The header 'Delivered-To' can be appended multiple times and we would get a space
+            # separated list of addresses which 'tools.email_split' doesn't really understand.
+            #
+            # This caused messages that were forwarded from gtcsrrf@gmail.com not be properly
+            # routed.
+            tools.decode_message_header(message, 'Delivered-To', separator=', '),
+            # MERCHISE END
             tools.decode_message_header(message, 'To'),
             tools.decode_message_header(message, 'Cc'),
             tools.decode_message_header(message, 'Resent-To'),
@@ -2456,7 +2463,7 @@ class MailThread(models.AbstractModel):
 
         new_partners, new_channels = dict(), dict()
 
-        # return data related to auto subscription based on subtype matching (aka: 
+        # return data related to auto subscription based on subtype matching (aka:
         # default task subtypes or subtypes from project triggering task subtypes)
         updated_relation = dict()
         child_ids, def_ids, all_int_ids, parent, relation = self.env['mail.message.subtype']._get_auto_subscription_subtypes(self._name)

@@ -18,13 +18,6 @@ The generated keys will contain only letters and digits, so you may easily
 embed it using other symbol as a boundary mark.
 
 """
-
-from __future__ import (
-    division as _py3_division,
-    print_function as _py3_print,
-    absolute_import as _py3_abs_import,
-)
-
 from odoo.models import AbstractModel, Model
 from odoo import fields, api
 

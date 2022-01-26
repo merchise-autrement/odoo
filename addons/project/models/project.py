@@ -297,7 +297,7 @@ class Project(models.Model):
         if default is None:
             default = {}
         if not default.get('name'):
-            default['name'] = _("%s (copy)") % (self.name)
+            default['name'] = _("%s (copy)") % (self.name, )
         project = super(Project, self).copy(default)
         if self.subtask_project_id == self:
             project.subtask_project_id = project
@@ -626,7 +626,7 @@ class Task(models.Model):
         if default is None:
             default = {}
         if not default.get('name'):
-            default['name'] = _("%s (copy)") % self.name
+            default['name'] = _("%s (copy)") % (self.name, )
         return super(Task, self).copy(default)
 
     @api.constrains('parent_id')

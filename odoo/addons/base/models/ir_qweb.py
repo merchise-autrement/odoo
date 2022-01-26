@@ -4,6 +4,7 @@ import ast
 import copy
 import json
 import logging
+import sys
 from collections import OrderedDict
 from time import time
 
@@ -431,10 +432,24 @@ class IrQWeb(models.AbstractModel, QWeb):
     def _get_attr_bool(self, attr, default=False):
         if attr:
             if attr is True:
-                return ast.NameConstant(True)
+                return Name(id='True', ctx=ast.Load())
             attr = attr.lower()
             if attr in ('false', '0'):
-                return ast.NameConstant(False)
+                return Name(id='False', ctx=ast.Load())
             elif attr in ('true', '1'):
-                return ast.NameConstant(True)
-        return ast.NameConstant(attr if attr is False else bool(default))
+                return Name(id='True', ctx=ast.Load())
+        return Name(id=str(attr if attr is False else default), ctx=ast.Load())
+
+
+if sys.version_info >= (3, 8, 4):
+    def Name(id, ctx):
+        if id == 'None':
+            return ast.Constant(None, None)
+        elif id == 'False':
+            return ast.Constant(False, None)
+        elif id == 'True':
+            return ast.Constant(True, None)
+        else:
+            return ast.Name(id, ctx)
+else:
+    Name = ast.Name

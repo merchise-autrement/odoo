@@ -12,10 +12,6 @@ odoo.define("web_celery.widgets", function (require) {
      *
      * Properties:
      *
-     * - title, a title for the progress bar.
-     *
-     * - message the current message to show in progress bar.
-     *
      * - valuemin, valuemax and progress provide the minimal, maximal and
      *   current value.  Once set, valuemin and valuemax are not updated.
      *
@@ -24,15 +20,6 @@ odoo.define("web_celery.widgets", function (require) {
      * Invalid values are ignored.
      */
     var AbstractProgressBar = Widget.extend({
-        init: function () {
-            this._super.apply(this, arguments);
-            this.title = _t("Working");
-            this.message = _t(
-                "Your request is being processed (or about " +
-                    "to be processed.)  Please wait."
-            );
-        },
-
         /**
          * Update the internal state of the progress bar.  Triggers the event
          * 'progress_update' so that the UI could reflect the changes.
@@ -41,9 +28,8 @@ odoo.define("web_celery.widgets", function (require) {
          *                             between `valuemin` and `valuemax`
          * @param {int|float} valuemin The minimal value of the progress
          * @param {int|float} valuemax The maximal value of the progress
-         * @param {String} message A message to show the user.
          */
-        update: function (progress, valuemin, valuemax, message) {
+        update: function (progress, valuemin, valuemax) {
             if (isOk(progress) && (!this.progress || this.progress < progress))
                 this.progress = progress;
             // Once set, the valuemin and valuemax cannot be updated.
@@ -65,82 +51,15 @@ odoo.define("web_celery.widgets", function (require) {
                     this.percent = 0;
                 }
             }
-            this.message = message;
             this.trigger("progress_update", this);
         },
-    });
 
-    /**
-     * A progress bar connected to a celery background job.
-     *
-     * Percent is automatically updated from the service 'web_celery'.  Sub
-     * classes are required to provide the actual DOM.  Instances have
-     * Deferred-like methods: then, fail, always, isResolved and isRejected.
-     *
-     */
-    var CeleryProgressBar = AbstractProgressBar.extend({
-        init: function (_parent, job_uuid, cancellable) {
-            this._super.apply(this, arguments);
-            this.job_uuid = job_uuid;
-            this.cancellable = cancellable;
-        },
-
-        /**
-         * Cancel the background job.
-         *
-         */
-        cancel: function () {
-            this.call("web_celery", "cancelBackgroundJob", this.job_uuid);
-        },
-
-        /**
-         * Attach the widget to the web_celery service so that it can track the
-         * progress and status of the background job.
-         *
-         */
-        start: function () {
-            // Only subscribe to events when the widget is visible.
-            this.call(
-                "web_celery",
-                "attachJobNotification",
-                this,
-                this.job_uuid,
-                this.on_job_notification
-            );
-            return $.when();
-        },
-
-        destroy: function () {
-            this.call(
-                "web_celery",
-                "detachJobNotification",
-                this,
-                this.job_uuid,
-                this.on_job_notification
-            );
-            this._super.apply(this, arguments);
-        },
-
-        /**
-         * Handle the status/progress notification from the background job.
-         *
-         * The `message.status` can be 'pending', 'success', 'failure', or
-         * 'cancelled'.
-         *
-         * If it's 'pending', the `message` payload is the progress data.  See
-         * the `update` method.
-         *
-         * @param {Object} message The message comming from the background job
-         */
-        on_job_notification: function (message) {
-            var status = message.status;
-            if (!status || status == "pending") {
-                this.update(
-                    message.progress,
-                    message.valuemin,
-                    message.valuemax,
-                    message.message
-                );
+        forceCompletion: function () {
+            if (isOk(this.valuemax)) {
+                this.update(this.valuemax);
+            } else {
+                this.progress = null;
+                this.update(1, 0, 1);
             }
         },
     });
@@ -148,35 +67,18 @@ odoo.define("web_celery.widgets", function (require) {
     /**
      * A basic progress bar widget.
      *
-     * The default template shows the widget's title, message and progress in
-     * ARIA progressbar:
+     * The default template shows a progress in ARIA progressbar:
      *
-     *     Title
      *     | . . . . 20%  . . . . .'           |
-     *     message
-     *                                [ Cancel ]
-     *
-     * The cancel button is only shown if the background jobs is cancellable.
-     *
-     * We don't define an interface for sub-classes.  If you need to create a
-     * different progress bar, sub-class from {@link CeleryProgressBar} and
-     * connect to the event 'progress_update'.
      *
      */
-    var BasicProgressBar = CeleryProgressBar.extend({
+    var BasicProgressBar = AbstractProgressBar.extend({
         xmlDependencies: ["/web_celery/static/src/xml/templates.xml"],
-        template: "CeleryBasicProgressBar",
-
-        events: {
-            "click button[name='cancel']": "cancel",
-        },
+        template: "ProgressBar",
         custom_events: { progress_update: "on_progress_update" },
 
         on_progress_update: function () {
-            if (this.message) {
-                this.$(".message").text(this.message);
-            }
-            var $progressbar = this.$(".progress-bar");
+            var $progressbar = this.$el.find(".progress-bar");
             if (isOk(this.valuemin) && !$progressbar.attr("aria-valuemin")) {
                 $progressbar.attr("aria-valuemin", this.valuemin);
             }
@@ -213,11 +115,200 @@ odoo.define("web_celery.widgets", function (require) {
         template: "FullScreenProgressBar",
     });
 
+    /**
+     * Mixin to create a coordinated (staged) set of progress bars, adding a
+     * title, message, and Celery service-related capabilities.  Every {@link
+     * BasicProgressBar} progress is updated individually.
+     */
+    var CeleryProgressBarMixin = {
+        events: {
+            "click button[name='cancel']": "cancel",
+        },
+        celery_service: "web_celery",
+
+        init: function (job_uuid, cancellable, stages) {
+            this.stages = stages
+                ? stages
+                : [["", 1, "web-celery-progress-stage-0"]];
+            this._progress_bars = {};
+            this._pending_stages_index = _.map(
+                this.stages,
+                (stage) => stage[0]
+            );
+            this.job_uuid = job_uuid;
+            this.cancellable = cancellable;
+            this.title = _t("Working");
+            this.message = _t(
+                "Your request is being processed (or about to be processed.)  Please wait."
+            );
+        },
+
+        getProgressBarByStage: function (stage_name) {
+            return this._progress_bars[stage_name ? stage_name : ""];
+        },
+
+        renderStages: function () {
+            var self = this;
+            var staged_progress_bars = this.$el.find(
+                "div.staged-progress-bars"
+            );
+            var grid_template_columns = "";
+            self.stages.forEach(function (stage_info) {
+                var stage_name = stage_info[0] ? stage_info[0] : "";
+                var size_fraction = stage_info[1];
+                var css_class = stage_info[2];
+                var div = $(
+                    "<div class='" +
+                        css_class +
+                        " stage-" +
+                        stage_name +
+                        "'></div>"
+                );
+                var basic_progress_bar = new BasicProgressBar(self);
+                basic_progress_bar.appendTo(div);
+                div.appendTo(staged_progress_bars);
+                self._progress_bars[stage_name] = basic_progress_bar;
+                if (!grid_template_columns) {
+                    grid_template_columns = size_fraction + "fr";
+                } else {
+                    grid_template_columns += " " + size_fraction + "fr";
+                }
+            });
+            staged_progress_bars.css(
+                "grid-template-columns",
+                grid_template_columns
+            );
+        },
+
+        /**
+         * Cancel the background job.
+         */
+        cancel: function () {
+            this.call(
+                this.celery_service,
+                "cancelBackgroundJob",
+                this.job_uuid
+            );
+        },
+
+        /**
+         * Attach the widget to the celery service so that it can
+         * track the progress and status of the background job.
+         */
+        start: function () {
+            this.renderStages();
+            // Only subscribe to events when the widget is visible.
+            this.call(
+                this.celery_service,
+                "attachJobNotification",
+                this,
+                this.job_uuid,
+                this.on_job_notification
+            );
+        },
+
+        destroy: function () {
+            this.call(
+                this.celery_service,
+                "detachJobNotification",
+                this,
+                this.job_uuid,
+                this.on_job_notification
+            );
+        },
+
+        /**
+         * Handle the status/progress notification from the background job.
+         *
+         * The `message.status` can be 'pending', 'success', 'failure', or
+         * 'cancelled'.
+         *
+         * If it's 'pending', the `message` payload is the progress data.  See
+         * the `update` method.
+         *
+         * @param {Object} message The message comming from the background job
+         */
+        on_job_notification: function (message) {
+            var status = message.status;
+            if (!status || status == "pending") {
+                this._updatePengingStages(message.stage);
+                var progress_bar = this.getProgressBarByStage(message.stage);
+                if (progress_bar) {
+                    progress_bar.update(
+                        message.progress,
+                        message.valuemin,
+                        message.valuemax
+                    );
+                    if (message.progress == message.valuemax) {
+                        this.$el
+                            .find(".stage-" + message.stage)
+                            .addClass("stage-done");
+                        progress_bar.forceCompletion();
+                        // message.stage is the first in the array because of
+                        // what we do in _updatePendingStages
+                        this._pending_stages_index.shift();
+                    }
+                }
+                if (message.message) {
+                    this.showMessage(message.message);
+                }
+            }
+        },
+
+        showMessage: function (message) {
+            this.$el.find("p.message").text(message);
+        },
+
+        _updatePengingStages: function (stage) {
+            var idx = this._pending_stages_index.indexOf(stage);
+            if (idx !== -1) {
+                var previous = this._pending_stages_index.slice(0, idx);
+                for (const stage of previous) {
+                    this.forceStagedBarCompletion(stage);
+                }
+                this._pending_stages_index.splice(0, idx);
+            }
+        },
+
+        forceStagedBarCompletion: function (stage) {
+            var progress_bar = this.getProgressBarByStage(stage);
+            if (progress_bar) {
+                progress_bar.forceCompletion();
+            }
+        },
+    };
+
+    var FullScreenCeleryProgressBar = FullScreenProgressBar.extend(
+        CeleryProgressBarMixin,
+        {
+            init: function (_parent, job_uuid, cancellable, stages) {
+                this._super.apply(this, arguments);
+                CeleryProgressBarMixin.init.call(
+                    this,
+                    job_uuid,
+                    cancellable,
+                    stages
+                );
+            },
+
+            start: function () {
+                CeleryProgressBarMixin.start.call(this);
+                return this._super.apply(this, arguments);
+            },
+
+            destroy: function () {
+                CeleryProgressBarMixin.destroy.call(this);
+                return this._super.apply(this, arguments);
+            },
+        }
+    );
+
     return {
         AbstractProgressBar: AbstractProgressBar,
-        CeleryProgressBar: CeleryProgressBar,
         BasicProgressBar: BasicProgressBar,
         FullScreenProgressBar: FullScreenProgressBar,
+        CeleryProgressBarMixin: CeleryProgressBarMixin,
+        FullScreenCeleryProgressBar: FullScreenCeleryProgressBar,
     };
 });
 

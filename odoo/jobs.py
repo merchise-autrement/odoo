@@ -12,49 +12,57 @@ Integrates Odoo and Celery, so that jobs can be started from the Odoo HTTP
 workers and tasks can use the Odoo ORM.
 
 """
-import os
+from __future__ import annotations
+
 import contextlib
-import threading
-
-from dataclasses import dataclass
-from time import monotonic
-from typing import Any, Dict, Iterable, NamedTuple, Optional, Sequence, Tuple, TypeVar
-
 import logging
+import os
+import threading
+from dataclasses import dataclass
+from itertools import cycle
+from time import monotonic
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    NamedTuple,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeVar,
+    Union,
+)
 
 logger = logging.getLogger(__name__)
 del logging
 
-from xotl.tools.context import context as ExecutionContext
-from xotl.tools.objects import temp_attributes
+from functools import total_ordering
 
-from kombu import Exchange, Queue
-
+import kombu.exceptions
 from celery import Celery as _CeleryApp
 from celery import Task as BaseTask
-
-
 from celery.exceptions import (
     MaxRetriesExceededError,
     SoftTimeLimitExceeded,
+    Terminated,
     TimeLimitExceeded,
     WorkerLostError,
-    Terminated,
 )
-
-from functools import total_ordering
-
-from odoo import SUPERUSER_ID
-import odoo.tools.config as config
-from odoo.tools.func import lazy_property
-
-from odoo.release import version_info
-from odoo.api import Environment
-from odoo.modules.registry import Registry
-from odoo.http import serialize_exception as _serialize_exception
-
+from kombu import Exchange, Queue
 from psycopg2 import OperationalError, errorcodes
+from sentry_sdk import Hub, set_tag, set_user
+from xotl.tools.context import context as ExecutionContext
+from xotl.tools.objects import temp_attributes
+from xotl.tools.symbols import Unset
 
+import odoo.tools.config as config
+from odoo import SUPERUSER_ID
+from odoo.api import Environment
+from odoo.http import serialize_exception as _serialize_exception
+from odoo.modules.registry import Registry
+from odoo.release import version_info
+from odoo.tools.func import lazy_property
 
 # The queues are named using the version info major number, ie:
 # odoo-12.default, odoo-12.cdr, etc.  This is to avoid clashes with other
@@ -118,12 +126,43 @@ class DeferredType(object):
                  bus.  If False (the default), calling a Deferred during
                  tests, runs the method directly without issuing a Celery job.
 
+        :keyword require_ready_registry: If True the job won't be issue if the
+                 Odoo registry is not ready.  In this case, calls to Deferred
+                 return None.
+
+                 The default is False, meaning that the job will be issued
+                 regardless of the status of the registry.
+
         """
         self.__return_signature = options.pop("return_signature", False)
         self.__disallow_nested = not options.pop("allow_nested", False)
         self.__disallow_tests = not options.pop("allow_tests", False)
+        self.__require_ready_registry = options.pop("require_ready_registry", False)
         options.setdefault("queue", DEFAULT_QUEUE_NAME)
         self.__options = options
+
+    def replace(
+        self,
+        /,
+        return_signature: bool = None,
+        allow_nested: bool = None,
+        allow_tests: bool = None,
+        require_ready_registry: bool = None,
+        queue: str = None,
+    ) -> DeferredType:
+        "Return a copy of a deferred type with some of its parameters changed."
+
+        return DeferredType(
+            return_signature=coalesce(return_signature, self.__return_signature),
+            allow_nested=coalesce(allow_nested, not self.__disallow_nested),
+            allow_tests=coalesce(allow_tests, not self.__disallow_tests),
+            require_ready_registry=coalesce(require_ready_registry, self.require_ready_registry),
+            queue=coalesce(queue, self.__options["queue"]),
+        )
+
+    @property
+    def require_ready_registry(self):
+        return self.__require_ready_registry
 
     @property
     def disallow_nested(self):
@@ -151,7 +190,10 @@ class DeferredType(object):
         The first argument must be a *bound method of a record set*.  The rest
         of the arguments must match the signature of such method.
 
-        :returns: An AsyncResult that represents the job.
+        :returns: An AsyncResult that represents the job or None.
+
+                  We return None if the deferred requires the registry to be
+                  ready, but it isn't.
 
         .. warning:: Nested calls don't issue sub-tasks.
 
@@ -163,18 +205,40 @@ class DeferredType(object):
 
         """
         signature, env = _extract_signature(args, kwargs)
+        if self.require_ready_registry and not env.registry.ready:
+            return
         if self.disallow_nested and CELERY_JOB in ExecutionContext:
             logger.warn("Nested background call detected for model", extra=dict(args_=signature))
-            return task(*signature)
+            return task(*signature, inline_report=True)
         elif self.disallow_tests and _running_tests(env):
             logger.info("Running the deferred job inline in tests", extra=dict(args_=signature))
-            return task(*signature)
+            return task(*signature, inline_report=True)
         else:
             signature = task.signature(signature, immutable=True, **self.options)
             if self.return_signature:
                 return signature
             else:
                 return signature.delay()
+
+    def delay(self, env: Environment, fn, *args, **kwargs) -> None:
+        """Execute ``fn(*args, **kwargs)`` when the cursor is commited.
+
+        While running tests, the job is run directly without waiting the
+        cursor to commit (in many tests the cursor gets a rollback).  This
+        don't event take in to account the value of `allow_tests` in the
+        initializer.
+
+        You cannot expect to get the AsyncResult when this method is called.
+
+        """
+        if not _running_tests(env):
+
+            def inner():
+                self(fn, *args, **kwargs)
+
+            env.cr.after("commit", inner)
+        else:
+            fn(*args, **kwargs)
 
 
 Deferred = DeferredType()
@@ -223,7 +287,12 @@ def terminate_task_with_env(task_id, env):
 
 
 def iter_and_report(
-    iterator: Iterable[T], start=0, valuemax=None, report_rate=1, messagetmpl="Progress: {progress}"
+    iterator: Iterable[T],
+    start: Optional[int] = 1,
+    valuemax: int = None,
+    report_rate: Union[ReportRate, int] = 1,
+    messagetmpl: str = "Progress: {progress}",
+    stage: str = "",
 ) -> Iterable[T]:
     """Iterate over 'iterator' while reporting progress.
 
@@ -240,12 +309,12 @@ def iter_and_report(
     the result of calling `ReportRate`, or it can be an integer (with is
     equivalent to ``ReportRate(n)``).
 
-    When the `iterator` is fully consumed, despite the value of `report_rate`,
-    we issue a final report making progress=valuemax (i.e. 100%).
-
     The `messagetmpl` is a string template to format the message to be
     reported.  The allowed keywords in the template are 'progress' and
     'valuemax' (the provided argument).
+
+    The `stage` is the name of the `ProgressStage`:class: to which this
+    iterable belongs.
 
     .. rubric:: Co-routine behavior
 
@@ -261,19 +330,33 @@ def iter_and_report(
         raise TypeError("report_rate must be an integer or a ReportRate")
     if not isinstance(report_rate, ReportRate):
         report_rate = ReportRate(report_rate)
+    last_reported_progress = 0
+    progress = valuemax  # ensure a value of 100% if the iterator is empty.
     for progress, x in enumerate(iterator, start):
         if valuemax and report_rate.tick():
+            last_reported_progress = progress
             report_progress(
-                message=messagetmpl.format(progress=progress, valuemax=valuemax),
+                message=messagetmpl.format(
+                    progress=progress, valuemax=valuemax, progress_percent=progress / valuemax * 100
+                ),
                 progress=progress,
                 valuemax=valuemax,
                 valuemin=start,
+                stage=stage,
             )
         msg = yield x
         if msg and isinstance(msg, str):
             messagetmpl = msg
-    if valuemax and valuemax % report_rate.minrate != 0:
-        report_progress(progress=progress)
+    if valuemax and last_reported_progress != progress:
+        report_progress(
+            message=messagetmpl.format(
+                progress=progress, valuemax=valuemax, progress_percent=progress / valuemax * 100
+            ),
+            progress=progress,
+            valuemax=valuemax,
+            valuemin=start,
+            stage=stage,
+        )
 
 
 @dataclass(init=False)
@@ -344,6 +427,122 @@ class ReportRate:
         return result
 
 
+class ProgressStage(NamedTuple):
+    """Describe a discrete stage within a single background job.
+
+    The stages allows you to report progress in smaller fractions of the
+    overall job.
+
+    The `size_fraction` is a cue to the UI how big this stage should be in
+    relation to its siblings.  The UI might actually put either a lower or
+    upper (or both) limits because of restrictions (the actual size of device,
+    for instance) or other reasons.
+
+    The expected behavior is that the UI divides the total available width of
+    the progress bar into chunks so that each stage takes a fraction of the
+    total width.  For example, if the available width is 500 px and you have 3
+    stages with fractions of 2.1, 3 and 4.9, those 500 px are divided by the
+    total of fractions (10) to compute the size of each fraction (50 px); then
+    the first stage is assigned 2.1 fractions (105 px), the second stage gets
+    3 fractions (150 px) and the last stage gets the remaining 245 px.
+
+    .. note:: Any resemblance to `CSS Grids`__ is *not* purely coincidental.
+
+    __ https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout
+
+    Example::
+
+        .---------.------------------.-------------.
+        |   1fr   |        2fr       |    1.5fr    |
+        `---------'------------------'-------------'
+
+    The standard widgets in the addon 'web_celery' generate the
+    `grid-template-columns` from these values.
+
+    The `css_class` allows to customize the style of each stage so that the
+    user can distinguish them visually.  If `css_class` is None we assign one
+    automatically, starting with 'web-celery-progress-stage-0',
+    'web-celery-progress-stage-4', and the we cycle those classes.
+
+    """
+
+    name: str
+    size_fraction: Union[int, float] = 1
+    css_class: Optional[str] = None
+    display_name: Optional[str] = None
+
+    @classmethod
+    def from_stage_value(cls, value: IntoProgressStage):
+        "Create a stage from the type of values of the parameter `stages`."
+        if isinstance(value, ProgressStage):
+            return value
+        elif isinstance(value, str):
+            return cls(value)
+        else:
+            return cls(*value)
+
+    @classmethod
+    def fill_css_class(cls, stages: Iterable[IntoProgressStage]) -> Iterable[ProgressStage]:
+        """Yield the stages with css_class of the given stages.
+
+        Any stage for which `css_class` is None is assigned an automatic value
+        of 'web-celery-progress-stage-0', 'web-celery-progress-stage-1', and
+        up to 'web-celery-progress-stage-4'.
+
+        Notice that we only increase the counter each time we assign a class.
+
+        Example:
+
+          >>> list(
+          ...     ProgressStage.fill_css_class(
+          ...         ['prepare', ('execute', 10, 'executing'), ('combine', 2), ('deliver', 1, 'delivering', _('Deliver'))]
+          ...     )
+          ... )
+            [
+              ProgressStage(name='prepare', size_fraction=1, css_class='web-celery-progress-stage-0'),
+              ProgressStage(name='execute', size_fraction=10, css_class='executing'),
+              ProgressStage(name='combine', size_fraction=2, css_class='web-celery-progress-stage-1'),
+              ProgressStage(name='deliver', size_fraction=1, css_class='delivering', display_name='Deliver'),
+            ]
+
+        """
+        of_css_classes = cycle(f"web-celery-progress-stage-{i}" for i in range(5))
+        for stage in stages:
+            stage = cls.from_stage_value(stage)
+            if stage.css_class is None:
+                yield stage.replace(css_class=next(of_css_classes))
+            else:
+                yield stage.replace()
+
+    def replace(
+        self,
+        name: str = Unset,
+        size_fraction: Union[int, float] = Unset,
+        css_class: str = Unset,
+        display_name: str = Unset,
+    ):
+        "Return a copy of `self` with some of its attributes replaced."
+        args = (
+            name if name is not Unset else self.name,
+            size_fraction if size_fraction is not Unset else self.size_fraction,
+            css_class if css_class is not Unset else self.css_class,
+            display_name if display_name is not Unset else self.display_name,
+        )
+        return type(self)(*args)
+
+
+# Types we can convert to 'ProgressStage' using `ProgressStage.from_stage_value`.
+IntoProgressStage = Union[
+    str,  # Ex: 'prepare'
+    Tuple[str, Union[int, float]],  # Ex: ('combine', 2)
+    Tuple[str, Union[int, float], Optional[str]],  # Ex: ('execute', 10, 'executing')
+    Tuple[
+        str, Union[int, float], Optional[str], Optional[str]
+    ],  # Ex: ('deliver', 1, 'delivering', _('Deliver'))
+    ProgressStage,
+]
+
+
 def iter_at_savepoint(self, items: Iterable[T]) -> Iterable[T]:
     """Iterate over `items` yielding elements at a SAVEPOINT boundary.
 
@@ -371,7 +570,7 @@ def iter_at_savepoint(self, items: Iterable[T]) -> Iterable[T]:
                 yield item
 
 
-def until_timeout(iterator: Iterable[T], on_timeout=None) -> Iterable[T]:
+def until_timeout(iterator: Iterable[T], on_timeout: Callable[[], None] = None) -> Iterable[T]:
     """Iterate and yield from `iterator` while the job has time to work.
 
     Celery can be configured to raise a SoftTimeLimitExceeded exception when a
@@ -447,7 +646,7 @@ _UNTIL_TIMEOUT_CONTEXT = object()
 
 # TODO (med, manu):  Should we have this in xotl.tools?
 @total_ordering
-class EventCounter(object):
+class EventCounter:
     """A simple counter of an event.
 
     Instances are callables that you can call to count the times an event
@@ -603,7 +802,7 @@ class _WrappedCounter(EventCounter):
         return "_WrappedCounter(%r, name=%r)" % (self._target, self.name)
 
 
-class EventCounterChain(object):
+class EventCounterChain:
     __slots__ = ("events",)
 
     def __init__(self, e1, e2):
@@ -630,7 +829,9 @@ class EventCounterChain(object):
         return "(%s)" % " | ".join(repr(e) for e in self.events)
 
 
-def report_progress(message=None, progress=None, valuemin=None, valuemax=None, status=None):
+def report_progress(
+    message=None, progress=None, valuemin=None, valuemax=None, status=None, stage: str = ""
+):
     """Send a progress notification to whomever is polling the current job.
 
     :param message: The message to send to those waiting for the message.
@@ -646,13 +847,15 @@ def report_progress(message=None, progress=None, valuemin=None, valuemax=None, s
     :param valuemax: The maximum value `progress` can take.
 
     The `valuemin` and `valuemax` arguments must be reported together.  And
-    once settle they cannot be changed.
+    once settle they cannot be changed per `stage`.
 
     :param status: The reported status. This should be one of the strings
        'success', 'failure' or 'pending'.
 
        .. warning:: This argument should not be used but for internal (job
                     framework module) purposes.
+
+    :param stage: A string with the name of the stage this report belongs to.
 
     """
     _context = ExecutionContext[CELERY_JOB]
@@ -670,6 +873,7 @@ def report_progress(message=None, progress=None, valuemin=None, valuemax=None, s
                 progress=progress,
                 valuemin=valuemin,
                 valuemax=valuemax,
+                stage=stage,
             ),
         )
 
@@ -734,13 +938,17 @@ class Configuration(object):
 
     task_create_missing_queues = config.get("celery.create_missing_queues", True)
 
-    task_time_limit = config.get(
-        "celery.task_time_limit", os.environ.get("odoo_celery_task_time_limit", 600)  # 10 minutes
+    task_time_limit = int(
+        config.get(
+            "celery.task_time_limit",
+            os.environ.get("odoo_celery_task_time_limit", 600),  # 10 minutes
+        )
     )
     _softtime = config.get(
         "celery.task_soft_time_limit",
         os.environ.get(
-            "odoo_celery_task_soft_time_limit", 595  # 9min 55 seconds (5 seconds to finish)
+            "odoo_celery_task_soft_time_limit",
+            595,  # 9min 55 seconds (5 seconds to finish)
         ),
     )
     if _softtime is not None:
@@ -830,13 +1038,13 @@ class CELERY_JOB(ExecutionContext):
         from odoo.http import _request_stack
 
         _request_stack.push(self.request)
-        return super(CELERY_JOB, self).__enter__()
+        return super().__enter__()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         from odoo.http import _request_stack
 
         _request_stack.pop()
-        return super(CELERY_JOB, self).__exit__(exc_type, exc_val, exc_tb)
+        return super().__exit__(exc_type, exc_val, exc_tb)
 
 
 PG_CONCURRENCY_ERRORS_TO_RETRY = (
@@ -859,7 +1067,6 @@ class TaskSignature(NamedTuple):
 
     @classmethod
     def from_deferred_signature(cls, args, kwargs):
-        from xotl.tools.symbols import Unset
         from odoo.models import BaseModel
 
         method = args[0]
@@ -984,19 +1191,12 @@ class TaskRecord:
             _report_cancelled.delay(self, self.args.dbname, self.args.uid, self.id)
 
 
-def _extract_signature(args, kwargs):
-    """Extract the task' signature and environment.
-
-    """
-    from xotl.tools.symbols import Unset
-
+def _extract_signature(args, kwargs) -> Tuple[TaskSignature, Environment]:
+    """Extract the task' signature and environment."""
     method = args[0]
     self = getattr(method, "__self__", Unset)
     env = getattr(self, "env", Unset)
     return TaskSignature.from_deferred_signature(args, kwargs), env
-
-
-Unset = object()
 
 
 class Task(BaseTask):
@@ -1006,7 +1206,7 @@ class Task(BaseTask):
 
 
 @app.task(base=Task, bind=True, max_retries=5, default_retry_delay=0.3)
-def task(self, model, ids, methodname, dbname, uid, args, kwargs, job_uuid=Unset):
+def task(self, model, ids, methodname, dbname, uid, args, kwargs, job_uuid=Unset, *, inline_report=False,):
     """The actual task running all our celery jobs.
 
     Since a model method may be altered in several addons, we funnel all calls
@@ -1020,6 +1220,11 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs, job_uuid=Unset
     `job_uuid` is Unset when Deferred executes the task.  `task`:func: is not
     part of the API of this module; it's an implementation detail you should
     only know if you're messing with `task` directly.
+
+    `inline_report` is also set when Deferred runs the task inline and not
+    actually in a Celery job.  In this case, success and failure reports are
+    also done inline.  This is to allow Deferred to run the whole job when
+    running tests without actually requiring for celery workers to be running.
 
     Retries are scheduled with a minimum delay of 300ms.
 
@@ -1041,30 +1246,40 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs, job_uuid=Unset
             ids,
             methodname,
         )
-        with MaybeRecords(dbname, uid, model, ids, context=context) as r:
-            method = getattr(r, methodname, None)
-            if method:
-                if not ids and _require_ids(method):
-                    ids, args = args[0], args[1:]
-                    method = getattr(r.browse(ids), methodname)
-                options = dict(job=self, env=r.env, job_uuid=job_uuid)
-                with CELERY_JOB(**options):
-                    res = method(*args, **kwargs)
-                if isinstance(res, BaseModel):
-                    res = res.ids  # downgrade to ids
-                _report_success.delay(dbname, uid, job_uuid, result=res)
-            else:
-                raise TypeError("Invalid method name %r for model %r" % (methodname, model))
+        with _correct_sentry_transaction_name(model, methodname):
+            with MaybeRecords(dbname, uid, model, ids, context=context) as r:
+                method = getattr(r, methodname, None)
+                if method:
+                    if not ids and _require_ids(method):
+                        ids, args = args[0], args[1:]
+                        method = getattr(r.browse(ids), methodname)
+                    options = dict(job=self, env=r.env, job_uuid=job_uuid)
+                    with CELERY_JOB(**options):
+                        try:
+                            res = method(*args, **kwargs)
+                        except (SoftTimeLimitExceeded, OperationalError, KeyboardInterrupt):
+                            raise
+                        except Exception:
+                            logger.exception("Unhandled exception while executing Celery job")
+                            raise
+                    if isinstance(res, BaseModel):
+                        res = res.ids  # downgrade to ids
+                    if not inline_report:
+                        _report_success.delay(dbname, uid, job_uuid, result=res)
+                    else:
+                        _report_success(dbname, uid, job_uuid, result=res)
+                else:
+                    raise TypeError("Invalid method name %r for model %r" % (methodname, model))
     except SoftTimeLimitExceeded as e:
         # Well, SoftTimeLimitExceeded may occur anywhere in the code.  It's
         # really a signal.  When integrating with `sentrylog`, I think the
         # best option is collect this events per job: ``(model, methodname)``.
         e._sentry_fingerprint = [type(e), model, methodname]
-        _report_current_failure(dbname, uid, job_uuid, e)
+        _report_current_failure(dbname, uid, job_uuid, e, inline_report=inline_report)
         raise e
     except OperationalError as error:
         if error.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
-            _report_current_failure(dbname, uid, job_uuid, error)
+            _report_current_failure(dbname, uid, job_uuid, error, inline_report=inline_report)
             raise
         else:
             arguments = (model, ids, methodname, dbname, uid, args, kwargs)
@@ -1075,19 +1290,60 @@ def task(self, model, ids, methodname, dbname, uid, args, kwargs, job_uuid=Unset
                 extra=dict(arguments=arguments, keywords=keywords),
             )
             try:
-                raise self.retry(args=arguments, kwargs=keywords)
+                if not inline_report:
+                    raise self.retry(args=arguments, kwargs=keywords)
+                else:
+                    raise MaxRetriesExceededError
             except MaxRetriesExceededError:
-                _report_current_failure(dbname, uid, job_uuid, error)
+                _report_current_failure(dbname, uid, job_uuid, error, inline_report=inline_report)
                 raise error
     except Exception as error:
-        _report_current_failure(dbname, uid, job_uuid, error)
-        raise
+        _report_current_failure(dbname, uid, job_uuid, error, inline_report=inline_report)
+
+
+@contextlib.contextmanager
+def _correct_sentry_transaction_name(model, methodname):
+    if not Hub.current.client:
+        yield
+    else:
+        with Hub.current.configure_scope() as scope:
+            # The CeleryIntegration sets the name of the transaction
+            # to the celery task function name, but since we're
+            # funneling everything into odoo.jobs.task, we should
+            # include the model and method method name.
+            try:
+                scope.transaction.name = f"odoo.jobs.task: {model}, {methodname}"
+            except (AttributeError, TypeError):
+                # This is the documented way, but for me it's not
+                # working.
+                scope.transaction = f"odoo.jobs.task: {model}, {methodname}"
+            except SoftTimeLimitExceeded:
+                raise
+            except Exception:
+                pass
+            try:
+                set_tag("celery_task_model", model)
+                set_tag("celery_task_method", methodname)
+            except SoftTimeLimitExceeded:
+                raise
+            except Exception:
+                pass
+            yield
 
 
 @contextlib.contextmanager
 def MaybeRecords(dbname, uid, model, ids=None, context=None):
     __traceback_hide__ = True  # noqa: hide from Celery Tracebacks
     with OdooEnvironment(dbname, uid, context=context) as env:
+        user_data = {"id": uid}
+        try:
+            user_data["email"] = env.user.login
+            set_tag("dbname", dbname)
+            set_user(user_data)
+        except SoftTimeLimitExceeded:
+            raise
+        except Exception:
+            pass
         records = env[model].browse(ids)
         yield records
 
@@ -1165,13 +1421,18 @@ def _report_failure(self, dbname, uid, job_uuid, tb=None, message=""):
             logger.exception("Max retries exceeded with reporting success")
 
 
-def _report_current_failure(dbname, uid, job_uuid, error, subtask=True):
+def _report_current_failure(dbname, uid, job_uuid, error, *, inline_report=False):
     data = _serialize_exception(error)
-    if subtask:
-        _report_failure.delay(dbname, uid, job_uuid, message=data)
+    # arguments are most likely where an EncodeError can happen, and
+    # we don't really need them in the report.
+    data["arguments"] = tuple()
+    if not inline_report:
+        try:
+            _report_failure.delay(dbname, uid, job_uuid, message=data)
+        except kombu.exceptions.EncodeError:
+            _report_failure.delay(dbname, uid, job_uuid)
     else:
         _report_failure(dbname, uid, job_uuid, message=data)
-    logger.exception("Unhandled exception in task")
 
 
 def get_progress_channel(job_uuid):
@@ -1271,49 +1532,8 @@ def _report_failure_for_request(self, exc, delay=None):
         pass
 
 
-if not getattr(BaseTask, "Request", None):
-    # So this is a celery that has not accepted our patch
-    # (https://github.com/celery/celery/pull/3977).  Let's proceed to
-    # monkey-patch the Request.
-    from celery.worker import request
-
-    _super_create_request_cls = request.create_request_cls
-
-    def create_request_cls(
-        base,
-        task,
-        pool,
-        hostname,
-        eventer,
-        ref=request.ref,
-        revoked_tasks=request.revoked_tasks,
-        task_ready=request.task_ready,
-        trace=request.trace_task_ret,
-    ):
-
-        if base is BaseRequest:
-            Base = Request
-        else:
-
-            class Base(base, Request):
-                pass
-
-        class PatchedRequest(Base):
-            pass
-
-        return _super_create_request_cls(
-            PatchedRequest,
-            task,
-            pool,
-            hostname,
-            eventer,
-            ref=ref,
-            revoked_tasks=revoked_tasks,
-            task_ready=task_ready,
-            trace=trace,
-        )
-
-    request.create_request_cls = create_request_cls
+def coalesce(a: Optional[T], b: T) -> T:
+    return a if a is not None else b
 
 
 def _running_tests(env):

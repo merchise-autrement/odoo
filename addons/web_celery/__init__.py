@@ -17,9 +17,18 @@ Features:
 """
 import time
 
+from typing import Sequence
+
 import odoo
 from odoo import _, api, models, http
-from odoo.jobs import Deferred, CELERY_JOB, report_progress, terminate_task_with_env
+from odoo.jobs import (
+    Deferred,
+    CELERY_JOB,
+    report_progress,
+    terminate_task_with_env,
+    IntoProgressStage,
+    ProgressStage,
+)
 from odoo.tools import config
 
 from xotl.tools.context import context
@@ -51,7 +60,9 @@ def QUIETLY_WAIT_FOR_TASK(job, next_action=None):
         return CLOSE_FEEDBACK
 
 
-def WAIT_FOR_TASK(job, next_action=None, cancellable=False):
+def WAIT_FOR_TASK(
+    job, next_action=None, cancellable=False, stages: Sequence[IntoProgressStage] = None
+):
     """The client action for waiting for a background job to complete.
 
     :param job:  The AsyncResult that represents the background job.
@@ -63,16 +74,22 @@ def WAIT_FOR_TASK(job, next_action=None, cancellable=False):
 
     :param cancellable: If True the user could cancel the background job.
 
+    :param stages: A sequence that describes the stages of the background job.
+                   See the notes in `odoo.jobs.ProgressStage`:class:
+
     .. warning:: Reloading after waiting for a background job will make the UI
                  to wait again for a job that's already finished and the UI
                  will stale.
 
     """
+    stages = list(ProgressStage.fill_css_class(stages or [""]))
     if job is not None:
         return dict(
             type="web.celery.background_job",
             tag="block_with_progress",
-            params=dict(uuid=job.id, next_action=next_action, cancellable=cancellable),
+            params=dict(
+                uuid=job.id, next_action=next_action, cancellable=cancellable, stages=stages
+            ),
         )
     else:
         return CLOSE_FEEDBACK
