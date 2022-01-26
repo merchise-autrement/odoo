@@ -535,7 +535,7 @@ class AccountEdiFormat(models.Model):
             # beginning.
             if not partner:
                 try:
-                    vat_only_numeric = str(int(re.sub('^\D{2}', '', normalized_vat) or 0))
+                    vat_only_numeric = str(int(re.sub(r'^\D{2}', '', normalized_vat) or 0))
                 except ValueError:
                     vat_only_numeric = None
 

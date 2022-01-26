@@ -21,6 +21,7 @@ On a simple click, your visitors can subscribe to mailing lists managed in the E
     'qweb': [
         'static/src/xml/*.xml',
     ],
-    'auto_install': True,
+    'auto_install': False,
+    'installable': False,
     'license': 'LGPL-3',
 }

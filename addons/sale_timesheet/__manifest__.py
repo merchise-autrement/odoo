@@ -40,7 +40,8 @@ have real delivered quantities in sales orders.
     'demo': [
         'data/sale_service_demo.xml',
     ],
-    'auto_install': True,
+    'auto_install': False,
     'uninstall_hook': 'uninstall_hook',
+    'installable': False,
     'license': 'LGPL-3',
 }

@@ -35,7 +35,7 @@ this event.
         'wizard/event_configurator_views.xml',
     ],
     'demo': ['data/event_demo.xml'],
-    'installable': True,
+    'installable': False,
     'auto_install': True,
     'license': 'LGPL-3',
 }

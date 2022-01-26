@@ -20,7 +20,7 @@ class AccountAccountTag(models.Model):
         """ Returns all the tax tags corresponding to the tag name given in parameter
         in the specified country.
         """
-        escaped_tag_name = tag_name.replace('\\', '\\\\').replace('%', '\%').replace('_', '\_')
+        escaped_tag_name = tag_name.replace('\\', '\\\\').replace('%', r'\%').replace('_', r'\_')
         return self.env['account.account.tag'].search([('name', '=like', '_' + escaped_tag_name), ('country_id', '=', country_id), ('applicability', '=', 'taxes')])
 
     @api.constrains('country_id', 'applicability')

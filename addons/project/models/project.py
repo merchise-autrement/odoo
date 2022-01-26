@@ -556,6 +556,12 @@ class Task(models.Model):
         return self.env.company
 
     @api.model
+    def _default_company_id(self):
+        if self._context.get('default_project_id'):
+            return self.env['project.project'].browse(self._context['default_project_id']).company_id
+        return self.env['res.company']._company_default_get()
+
+    @api.model
     def _read_group_stage_ids(self, stages, domain, order):
         search_domain = [('id', 'in', stages.ids)]
         if 'default_project_id' in self.env.context:
@@ -1174,7 +1180,7 @@ class Task(models.Model):
                 if task.project_id.partner_id:
                     task.partner_id = task.project_id.partner_id
             else:
-                task.partner_id = task.project_id.partner_id or task.parent_id.partner_id 
+                task.partner_id = task.project_id.partner_id or task.parent_id.partner_id
 
     @api.depends('partner_id.email', 'parent_id.email_from')
     def _compute_email_from(self):
@@ -1439,7 +1445,9 @@ class ProjectTags(models.Model):
     def _get_default_color(self):
         return randint(1, 11)
 
-    name = fields.Char('Name', required=True)
+    # merchise: Introduced the translate; TODO: What about the _sql_contraints
+    # below?
+    name = fields.Char('Name', required=True, translate=True)
     color = fields.Integer(string='Color', default=_get_default_color)
 
     _sql_constraints = [

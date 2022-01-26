@@ -22,6 +22,6 @@ discount to a customer.
     'qweb': [
         'static/src/xml/DiscountButton.xml',
     ],
-    'installable': True,
+    'installable': False,
     'license': 'LGPL-3',
 }

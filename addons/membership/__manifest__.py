@@ -31,4 +31,5 @@ invoice and send propositions for membership renewal.
     ],
     'website': 'https://www.odoo.com/page/community-builder',
     'license': 'LGPL-3',
+    'installable': False,
 }

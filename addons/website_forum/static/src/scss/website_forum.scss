@@ -212,6 +212,14 @@ $bronze: #eea91e;
     overflow: hidden;
 }
 
+.question, .forum_answer {
+    .oe_no_empty::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+}
+
 img.o_forum_avatar {
     @include size(40px);
     object-fit: cover;

@@ -31,6 +31,6 @@ invoices from picking, the system is able to add and compute the shipping line.
         'wizard/choose_delivery_carrier_views.xml',
     ],
     'demo': ['data/delivery_demo.xml'],
-    'installable': True,
+    'installable': False,
     'license': 'LGPL-3',
 }

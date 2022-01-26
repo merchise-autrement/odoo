@@ -57,13 +57,12 @@ setup(
         'xlwt',
 
         # Merchise
-        'celery>=4,<6',
+        'celery>=5,<6',
         'flower',
         'redis',
-        'xotl.tools>=2.1.9,<2.2',
+        'xotl.tools~=2.2.0,<2.3',
         'raven>=6.9.0',
         'raven-sanitize-openerp',
-        'rjsmin>=1.0.12,<1.1',
     ],
     python_requires='>=3.6',
     extras_require={

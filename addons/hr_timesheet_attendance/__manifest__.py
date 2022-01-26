@@ -14,6 +14,7 @@
         'security/ir.model.access.csv',
         'report/hr_timesheet_attendance_report_view.xml',
     ],
-    'auto_install': True,
+    'auto_install': False,
+    'installable': False,
     'license': 'LGPL-3',
 }

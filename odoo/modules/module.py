@@ -14,11 +14,8 @@ from os.path import join as opj
 
 import odoo
 import odoo.tools as tools
-from odoo.tools.safe_eval import safe_eval
-
 import odoo.release as release
-from odoo.tools import pycompat
-from odoo.tools.misc import mute_logger
+from odoo.tools.safe_eval import safe_eval
 
 MANIFEST_NAMES = ('__manifest__.py', '__openerp__.py')
 README = ['README.rst', 'README.md', 'README.txt']
@@ -137,6 +134,10 @@ def initialize_sys_path():
     base_path = os.path.normcase(os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'addons')))
     if base_path not in odoo.addons.__path__ and os.path.isdir(base_path):
         odoo.addons.__path__.append(base_path)
+
+    if not _xoeuf_external_addons:
+        _xoeuf_external_addons.extend(find_external_addons())
+        odoo.addons.__path__.extend(_xoeuf_external_addons)
 
     # hook odoo.upgrade on upgrade-path
     from odoo import upgrade
@@ -451,3 +452,45 @@ def adapt_version(version):
     return version
 
 current_test = None
+
+# MERCHISE BEGIN:
+XOEUF_EXTERNAL_ADDON_GROUP = 'xoeuf.addons'
+_xoeuf_external_addons = []
+
+
+def find_external_addons():
+    '''Finds all externally installed addons.
+
+    Externally installed addons are modules that are distributed with
+    setuptools' distributions.
+
+    An externally addon is defined in a package that defines an `entry
+    point`__ in the group "xoeuf.addons" which points to a standard package
+    (i.e loadable without any specific loader).
+
+    :returns:  A dictionary from addons to it's a tuple of `(container's path,
+               entry_point)`.
+
+    Example::
+
+       [xoeuf.addons]
+       xopgi_account = xopgi.addons.xopgi_account
+
+    '''
+    import os
+    from pkg_resources import iter_entry_points
+    from xotl.tools.future.itertools import delete_duplicates
+    res = []
+    for entry in iter_entry_points(XOEUF_EXTERNAL_ADDON_GROUP):
+        if not entry.attrs:
+            # The entry-point is a whole module.  We can't load the module
+            # here, cause the whole point is to grab the paths before openerp
+            # is configured, but if you load an OpenERP addon you will be
+            # importing openerp somehow and enacting configuration
+            loc = entry.dist.location
+            relpath = entry.module_name.replace('.', os.path.sep)
+            # The parent directory is the one!
+            abspath = os.path.abspath(os.path.join(loc, relpath, '..'))
+            if os.path.isdir(abspath):
+                res.append(abspath)
+    return delete_duplicates(res)

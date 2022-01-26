@@ -23,6 +23,6 @@ Finally, the module comes with an option to display an attribute summary table i
         'data/website_sale_comparison_data.xml',
         'data/website_sale_comparison_demo.xml',
     ],
-    'installable': True,
+    'installable': False,
     'license': 'LGPL-3',
 }

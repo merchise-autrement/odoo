@@ -19,5 +19,6 @@ social media configuration for any other module that might need it.
     'demo': [
         'demo/res_company_demo.xml',
     ],
+    'installable': True,
     'license': 'LGPL-3',
 }

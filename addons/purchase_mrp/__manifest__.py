@@ -18,7 +18,7 @@ from purchase order.
         'views/mrp_production_views.xml'
     ],
     'depends': ['mrp', 'purchase_stock'],
-    'installable': True,
-    'auto_install': True,
+    'installable': False,
+    'auto_install': False,
     'license': 'LGPL-3',
 }

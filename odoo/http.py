@@ -26,6 +26,8 @@ from os.path import join as opj
 from zlib import adler32
 
 import babel.core
+from datetime import datetime, date
+import passlib.utils
 import psycopg2
 import json
 import werkzeug.datastructures
@@ -109,6 +111,7 @@ def replace_request_password(args):
         args[2] = '*'
     return tuple(args)
 
+
 class AuthenticationError(Exception):
     pass
 
@@ -122,7 +125,9 @@ class SessionExpiredException(Exception):
 # *broken*
 NO_POSTMORTEM = (odoo.exceptions.AccessDenied,
                  odoo.exceptions.UserError,
-                 odoo.exceptions.RedirectWarning)
+                 odoo.exceptions.RedirectWarning,
+                 AuthenticationError,
+                 SessionExpiredException,)
 
 
 def dispatch_rpc(service_name, method, params):
@@ -966,10 +971,6 @@ def _generate_routing_rules(modules, nodb_only, converters=None):
                         for url in routing['routes']:
                             yield (url, endpoint, routing)
 
-
-
-class SessionExpiredException(Exception):
-    pass
 
 class OpenERPSession(sessions.Session):
     def __init__(self, *args, **kwargs):

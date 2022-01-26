@@ -19,6 +19,7 @@ Badge received are displayed on the user profile.
         'views/hr_employee_views.xml',
         'views/gamification_templates.xml',
     ],
-    'auto_install': True,
+    'auto_install': False,
+    'installable': False,
     'license': 'LGPL-3',
 }

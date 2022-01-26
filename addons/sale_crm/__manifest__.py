@@ -25,7 +25,8 @@ modules.
         'views/crm_team_views.xml',
         'wizard/crm_opportunity_to_quotation_views.xml'
     ],
-    'auto_install': True,
+    'installable': False,
+    'auto_install': False,
     'uninstall_hook': 'uninstall_hook',
     'license': 'LGPL-3',
 }

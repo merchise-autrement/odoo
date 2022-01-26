@@ -14,6 +14,7 @@
     'demo': [
         'data/mass_mailing_demo.xml',
     ],
-    'auto_install': True,
+    'auto_install': False,
+    'installable': False,
     'license': 'LGPL-3',
 }

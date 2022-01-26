@@ -913,7 +913,7 @@ class PaymentTransaction(models.Model):
 
     @api.model
     def _compute_reference(self, values=None, prefix=None):
-        '''Compute a unique reference for the transaction.
+        r'''Compute a unique reference for the transaction.
         If prefix:
             prefix-\d+
         If some invoices:
@@ -933,7 +933,7 @@ class PaymentTransaction(models.Model):
 
         # Fetch the last reference
         # E.g. If the last reference is SO42-5, this query will return '-5'
-        self._cr.execute('''
+        self._cr.execute(r'''
                 SELECT CAST(SUBSTRING(reference FROM '-\d+$') AS INTEGER) AS suffix
                 FROM payment_transaction WHERE reference LIKE %s ORDER BY suffix
             ''', [prefix + '-%'])

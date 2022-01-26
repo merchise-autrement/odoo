@@ -24,6 +24,7 @@ Then it can be made specific at the product level.
     'demo': [
         'data/website_sale_stock_demo.xml',
     ],
-    'auto_install': True,
+    'auto_install': False,
+    'installable': False,
     'license': 'LGPL-3',
 }

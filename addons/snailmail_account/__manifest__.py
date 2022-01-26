@@ -14,6 +14,7 @@ Allows users to send invoices by post
         'wizard/account_invoice_send_views.xml',
         'security/ir.model.access.csv',
     ],
-    'auto_install': True,
+    'auto_install': False,
+    'installable': False,
     'license': 'LGPL-3',
 }

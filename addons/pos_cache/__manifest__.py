@@ -20,4 +20,5 @@ time it takes to load a POS session with a lot of products.
         'views/pos_cache_templates.xml',
     ],
     'license': 'LGPL-3',
+    'installable': False,
 }
