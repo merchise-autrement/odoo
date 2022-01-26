@@ -11,12 +11,6 @@
 # package.
 #
 # Created on 2017-01-30
-
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
-
-
 from . import Command
 
 
@@ -38,7 +32,7 @@ class Celery(Command):
             args, cmdargs = argv[:pos], argv[pos + 1:]
         odoo.tools.config.parse_config(args=args)
         from odoo.jobs import app  # noqa: discover the app
-        from celery.bin.celery import main as _main
+        from celery.bin.celery import celery as celery_command
         from raven.contrib.celery import (
             register_signal,
             register_logger_signal
@@ -50,4 +44,4 @@ class Celery(Command):
         if client:
             register_logger_signal(client)
             register_signal(client)
-        _main(argv=['celery', ] + cmdargs)
+        celery_command(args=cmdargs)

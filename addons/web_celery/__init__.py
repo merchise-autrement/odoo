@@ -19,8 +19,14 @@ import time
 
 import odoo
 from odoo import _, models, http
-from odoo.jobs import Deferred, CELERY_JOB, report_progress, terminate_task_with_env
+from odoo.jobs import (
+    Deferred,
+    CELERY_JOB,
+    report_progress,
+    terminate_task_with_env,
+)
 from odoo.tools import config
+from odoo.addons.base.models.ir_module import assert_log_admin_access
 
 from xotl.tools.context import context
 
@@ -30,7 +36,8 @@ class BackgroundJobAction(models.TransientModel):
     _description = "Celery Job Action"
 
     def _get_readable_fields(self):
-        return {'tag', 'params'}
+        return {"tag", "params"}
+
 
 BACKGROUND_JOB_ACTION = BackgroundJobAction._name
 
@@ -82,7 +89,9 @@ def WAIT_FOR_TASK(job, next_action=None, cancellable=False):
         return dict(
             type=BACKGROUND_JOB_ACTION,
             tag="block_with_progress",
-            params=dict(uuid=job.id, next_action=next_action, cancellable=cancellable),
+            params=dict(
+                uuid=job.id, next_action=next_action, cancellable=cancellable
+            ),
         )
     else:
         return CLOSE_FEEDBACK
@@ -106,6 +115,7 @@ CLOSE_PROGRESS_BAR = CLOSE_FEEDBACK
 class Module(models.Model):
     _inherit = "ir.module.module"
 
+    @assert_log_admin_access
     def button_immediate_install(self):
         if (
             CELERY_JOB in context

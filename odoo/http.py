@@ -126,6 +126,7 @@ class SessionExpiredException(Exception):
 NO_POSTMORTEM = (odoo.exceptions.AccessDenied,
                  odoo.exceptions.UserError,
                  odoo.exceptions.RedirectWarning,
+                 odoo.exceptions.BusError,
                  AuthenticationError,
                  SessionExpiredException,)
 
