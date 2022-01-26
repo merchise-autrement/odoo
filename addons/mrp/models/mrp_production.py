@@ -1459,6 +1459,7 @@ class MrpProduction(models.Model):
                         new_moves_vals.append(move_vals[0])
                 new_moves = self.env['stock.move'].create(new_moves_vals)
             backorders |= backorder_mo
+            first_wo = self.env['mrp.workorder']
             for old_wo, wo in zip(production.workorder_ids, backorder_mo.workorder_ids):
                 wo.qty_produced = max(old_wo.qty_produced - old_wo.qty_producing, 0)
                 if wo.product_tracking == 'serial':
@@ -1467,6 +1468,9 @@ class MrpProduction(models.Model):
                     wo.qty_producing = wo.qty_remaining
                 if wo.qty_producing == 0:
                     wo.action_cancel()
+                if not first_wo and wo.state != 'cancel':
+                    first_wo = wo
+            first_wo.state = 'ready'
 
             # We need to adapt `duration_expected` on both the original workorders and their
             # backordered workorders. To do that, we use the original `duration_expected` and the
@@ -1555,7 +1559,7 @@ class MrpProduction(models.Model):
         action = {
             'res_model': 'mrp.production',
             'type': 'ir.actions.act_window',
-            'context': dict(context, mo_ids_to_backorder=None)
+            'context': dict(context, mo_ids_to_backorder=None, button_mark_done_production_ids=None)
         }
         if len(backorders) == 1:
             action.update({
@@ -1748,7 +1752,13 @@ class MrpProduction(models.Model):
                     duplicates_unbuild = self.env['stock.move.line'].search_count(domain_unbuild + [
                         ('move_id.unbuild_id', '!=', False)
                     ])
-                    if not (duplicates_unbuild and duplicates - duplicates_unbuild == 0):
+                    removed = self.env['stock.move.line'].search_count([
+                        ('lot_id', '=', move_line.lot_id.id),
+                        ('state', '=', 'done'),
+                        ('location_dest_id.scrap_location', '=', True)
+                    ])
+                    # Either removed or unbuild
+                    if not ((duplicates_unbuild or removed) and duplicates - duplicates_unbuild - removed == 0):
                         raise UserError(message)
                 # Check presence of same sn in current production
                 duplicates = co_prod_move_lines.filtered(lambda ml: ml.qty_done and ml.lot_id == move_line.lot_id) - move_line
@@ -1761,30 +1771,28 @@ class MrpProduction(models.Model):
             for move_line in move.move_line_ids:
                 if float_is_zero(move_line.qty_done, precision_rounding=move_line.product_uom_id.rounding):
                     continue
-                domain = [
-                    ('lot_id', '=', move_line.lot_id.id),
-                    ('qty_done', '=', 1),
-                    ('state', '=', 'done')
-                ]
                 message = _('The serial number %(number)s used for component %(component)s has already been consumed',
                     number=move_line.lot_id.name,
                     component=move_line.product_id.name)
                 co_prod_move_lines = self.move_raw_ids.move_line_ids
-                domain_unbuild = domain + [
-                    ('production_id', '=', False),
-                    ('location_id.usage', '=', 'production')
-                ]
 
                 # Check presence of same sn in previous productions
-                duplicates = self.env['stock.move.line'].search_count(domain + [
-                    ('location_dest_id.usage', '=', 'production')
+                duplicates = self.env['stock.move.line'].search_count([
+                    ('lot_id', '=', move_line.lot_id.id),
+                    ('qty_done', '=', 1),
+                    ('state', '=', 'done'),
+                    ('location_dest_id.usage', '=', 'production'),
                 ])
                 if duplicates:
                     # Maybe some move lines have been compensated by unbuild
-                    duplicates_unbuild = self.env['stock.move.line'].search_count(domain_unbuild + [
-                            ('move_id.unbuild_id', '!=', False)
-                        ])
-                    if not (duplicates_unbuild and duplicates - duplicates_unbuild == 0):
+                    duplicates_returned = move.product_id._count_returned_sn_products(move_line.lot_id)
+                    removed = self.env['stock.move.line'].search_count([
+                        ('lot_id', '=', move_line.lot_id.id),
+                        ('state', '=', 'done'),
+                        ('location_dest_id.scrap_location', '=', True)
+                    ])
+                    # Either removed or unbuild
+                    if not ((duplicates_returned or removed) and duplicates - duplicates_returned - removed == 0):
                         raise UserError(message)
                 # Check presence of same sn in current production
                 duplicates = co_prod_move_lines.filtered(lambda ml: ml.qty_done and ml.lot_id == move_line.lot_id) - move_line

@@ -398,10 +398,7 @@ body.editor_enable.editor_has_snippets {
                 border-left: $o-we-sidebar-blocks-content-snippet-spacing solid transparent;
                 margin-bottom: $o-we-sidebar-blocks-content-snippet-spacing;
                 user-select: none;
-
-                cursor: pointer;
-                cursor: copy;
-                cursor: grab;
+                @include o-grab-cursor;
 
                 .oe_snippet_thumbnail_title {
                     display: block;
@@ -944,6 +941,7 @@ body.editor_enable.editor_has_snippets {
                 height: $o-we-sidebar-content-field-colorpicker-size;
                 border: $o-we-sidebar-content-field-border-width solid $o-we-sidebar-content-field-border-color;
                 border-radius: 10rem;
+                cursor: pointer;
 
                 &::after {
                     box-shadow: $o-we-sidebar-content-field-colorpicker-shadow;
@@ -1771,7 +1769,7 @@ body.editor_enable.editor_has_snippets {
             z-index: auto;
 
             .o_we_overlay_content {
-                cursor: grab;
+                @include o-grab-cursor;
 
                 .o_we_grabbing {
                     cursor: grabbing;

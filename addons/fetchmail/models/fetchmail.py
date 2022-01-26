@@ -105,7 +105,7 @@ odoo_mailgate: "|/path/to/odoo-mailgate.py --host=localhost -u %(uid)d -p PASSWO
                 connection = IMAP4_SSL(self.server, int(self.port))
             else:
                 connection = IMAP4(self.server, int(self.port))
-            connection.login(self.user, self.password)
+            self._imap_login(connection)
         elif self.server_type == 'pop':
             if self.is_ssl:
                 connection = POP3_SSL(self.server, int(self.port))
@@ -118,6 +118,16 @@ odoo_mailgate: "|/path/to/odoo-mailgate.py --host=localhost -u %(uid)d -p PASSWO
         # Add timeout on socket
         connection.sock.settimeout(MAIL_TIMEOUT)
         return connection
+
+    def _imap_login(self, connection):
+        """Authenticate the IMAP connection.
+
+        Can be overridden in other module for different authentication methods.
+
+        :param connection: The IMAP connection to authenticate
+        """
+        self.ensure_one()
+        connection.login(self.user, self.password)
 
     def button_confirm_login(self):
         for server in self:
@@ -197,6 +207,8 @@ odoo_mailgate: "|/path/to/odoo-mailgate.py --host=localhost -u %(uid)d -p PASSWO
             elif server.server_type == 'pop':
                 try:
                     while True:
+                        failed_in_loop = 0
+                        num = 0
                         pop_server = server.connect()
                         (num_messages, total_size) = pop_server.stat()
                         pop_server.list()
@@ -216,11 +228,13 @@ odoo_mailgate: "|/path/to/odoo-mailgate.py --host=localhost -u %(uid)d -p PASSWO
                             except Exception:
                                 _logger.exception('Failed to process mail from %s server %s.', server.server_type, server.name, exc_info=True)
                                 failed += 1
+                                failed_in_loop += 1
                             self.env.cr.commit()
-                        if num_messages < MAX_POP_MESSAGES:
+                        _logger.info("Fetched %d email(s) on %s server %s; %d succeeded, %d failed.", num, server.server_type, server.name, (num - failed_in_loop), failed_in_loop)
+                        # Stop if (1) no more message left or (2) all messages have failed
+                        if num_messages < MAX_POP_MESSAGES or failed_in_loop == num:
                             break
                         pop_server.quit()
-                        _logger.info("Fetched %d email(s) on %s server %s; %d succeeded, %d failed.", num_messages, server.server_type, server.name, (num_messages - failed), failed)
                 except Exception:
                     _logger.info("General failure when trying to fetch mail from %s server %s.", server.server_type, server.name, exc_info=True)
                 finally:

@@ -19,9 +19,11 @@
 # Roey Weiser <roey@laylinetech.com>, 2021
 # Amit Spilman <amit@laylinetech.com>, 2021
 # Lilach Gilliam <lilach@apprcase.com>, 2021
-# hed shefetr <hed@laylinetech.com>, 2021
 # shaked <shaked@laylinetech.com>, 2021
+# david danilov, 2021
 # Lilach Gilliam <lilach.gilliam@gmail.com>, 2021
+# hed shefetr <hed@laylinetech.com>, 2021
+# Jonathan Spier, 2021
 # 
 msgid ""
 msgstr ""
@@ -29,7 +31,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-25 10:15+0000\n"
 "PO-Revision-Date: 2020-09-07 08:09+0000\n"
-"Last-Translator: Lilach Gilliam <lilach.gilliam@gmail.com>, 2021\n"
+"Last-Translator: Jonathan Spier, 2021\n"
 "Language-Team: Hebrew (https://www.transifex.com/odoo/teams/41243/he/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -82,6 +84,8 @@ msgstr "# מטבעות/שטרות"
 #, python-format
 msgid "#Created by: %s"
 msgstr ""
+"#נוצר ב: %s\n"
+" "
 
 #. module: account
 #: model:mail.template,report_name:account.mail_template_data_payment_receipt
@@ -109,7 +113,7 @@ msgstr ""
 #: code:addons/account/wizard/account_automatic_entry_wizard.py:0
 #, python-format
 msgid "%d moves"
-msgstr ""
+msgstr "%dצעדים"
 
 #. module: account
 #: code:addons/account/models/account_tax.py:0
@@ -380,12 +384,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account.portal_my_invoices
 msgid ""
 "<span class=\"badge badge-pill badge-info\"><i class=\"fa fa-fw fa-clock-o\""
-" aria-label=\"Opened\" title=\"Opened\" role=\"img\"/><span class=\"d-none d"
-"-md-inline\"> Waiting for Payment</span></span>"
+" aria-label=\"Opened\" title=\"Opened\" role=\"img\"/><span class=\"d-none "
+"d-md-inline\"> Waiting for Payment</span></span>"
 msgstr ""
 "<span class=\"badge badge-pill badge-info\"><i class=\"fa fa-fw fa-clock-o\""
-" aria-label=\"Opened\" title=\"Opened\" role=\"img\"/><span class=\"d-none d"
-"-md-inline\"> ממתין לתשלום</span></span>"
+" aria-label=\"Opened\" title=\"Opened\" role=\"img\"/><span class=\"d-none "
+"d-md-inline\"> ממתין לתשלום</span></span>"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.portal_my_invoices
@@ -444,6 +448,9 @@ msgid ""
 "('state', '!=', 'draft'), ('invoice_payment_term_id', '!=', False)]}\"> or "
 "</span>"
 msgstr ""
+"<span class=\"o_form_label mx-3 oe_edit_only\" attrs=\"{'invisible': ['|', "
+"('state', '!=', 'draft'), ('invoice_payment_term_id', '!=', "
+"False)]}\">או</span>"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_reconcile_model_form
@@ -699,7 +706,7 @@ msgstr "<span>העלה חשבוניות לקוח</span>"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
 msgid "<span>Upload</span>"
-msgstr ""
+msgstr "<span>העלה</span>"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
@@ -1490,7 +1497,7 @@ msgstr "מצב פעילות"
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_journal__sale_activity_note
 msgid "Activity Summary"
-msgstr ""
+msgstr "סיכום פעילות"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__activity_type_icon
@@ -1804,12 +1811,12 @@ msgstr ""
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_journal__type_control_ids
 msgid "Allowed account types"
-msgstr ""
+msgstr "סוגי חשבונות מותרים"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_journal__account_control_ids
 msgid "Allowed accounts"
-msgstr ""
+msgstr "חשבונות מותרים"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.res_config_settings_view_form
@@ -1944,12 +1951,12 @@ msgstr "סכום במטבע"
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_payment_register__source_amount
 msgid "Amount to Pay (company currency)"
-msgstr ""
+msgstr "סה\"כ לתשלום (מטבע חברה)"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_payment_register__source_amount_currency
 msgid "Amount to Pay (foreign currency)"
-msgstr ""
+msgstr "סה\"כ לתשלום (מטבע זר)"
 
 #. module: account
 #. openerp-web
@@ -2071,7 +2078,7 @@ msgstr "חשבונאות אנליטית ברירות מחדל"
 #: model:ir.actions.act_window,name:account.action_analytic_default_list
 #: model:ir.ui.menu,name:account.menu_analytic_default_list
 msgid "Analytic Defaults Rules"
-msgstr ""
+msgstr "כללי ברירת מחדל אנליטיים"
 
 #. module: account
 #: model:ir.model,name:account.model_account_analytic_default
@@ -2310,7 +2317,7 @@ msgstr ""
 #. module: account
 #: model:ir.model.fields,field_description:account.field_res_config_settings__module_currency_rate_live
 msgid "Automatic Currency Rates"
-msgstr ""
+msgstr "שערי מטבע אוטומטיים"
 
 #. module: account
 #: model:ir.actions.server,name:account.action_automatic_entry
@@ -2715,7 +2722,7 @@ msgstr "לפי ארץ"
 #. module: account
 #: model:ir.filters,name:account.filter_invoice_refund
 msgid "By Credit Note"
-msgstr "לפי תעודת זיכוי"
+msgstr "לפי חשבונית זיכוי"
 
 #. module: account
 #: model:ir.filters,name:account.filter_invoice_product
@@ -3633,7 +3640,7 @@ msgstr "צור חשבון בנק"
 #. module: account
 #: model_terms:ir.actions.act_window,help:account.action_move_out_refund_type
 msgid "Create a credit note"
-msgstr "צור תעודת זיכוי"
+msgstr "צור חשבונית זיכוי"
 
 #. module: account
 #: model_terms:ir.actions.act_window,help:account.action_move_out_invoice_type
@@ -3703,7 +3710,7 @@ msgstr "צור חשבונית ספק"
 #. module: account
 #: model_terms:ir.actions.act_window,help:account.action_move_in_refund_type
 msgid "Create a vendor credit note"
-msgstr "צור תעודת זיכוי ספק"
+msgstr "צור חשבונית זיכוי ספק"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.tax_adjustments_wizard
@@ -3912,13 +3919,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account.report_invoice_document
 #, python-format
 msgid "Credit Note"
-msgstr "תעודת זיכוי"
+msgstr "חשבונית זיכוי"
 
 #. module: account
 #: code:addons/account/models/account_move.py:0
 #, python-format
 msgid "Credit Note Created"
-msgstr "תעודת זיכוי נוצרה"
+msgstr "חשבונית זיכוי נוצרה"
 
 #. module: account
 #: model:ir.actions.act_window,name:account.action_move_out_refund_type
@@ -3926,7 +3933,7 @@ msgstr "תעודת זיכוי נוצרה"
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
 #: model_terms:ir.ui.view,arch_db:account.view_account_invoice_report_search
 msgid "Credit Notes"
-msgstr "תעודות זיכוי"
+msgstr "חשבוניות זיכוי"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_tax_adjustments_wizard__credit_account_id
@@ -4046,7 +4053,7 @@ msgstr "לקוח"
 #: model:ir.model.fields.selection,name:account.selection__account_invoice_report__move_type__out_refund
 #: model:ir.model.fields.selection,name:account.selection__account_move__move_type__out_refund
 msgid "Customer Credit Note"
-msgstr "תעודת זיכוי לקוח"
+msgstr "חשבונית זיכוי לקוח"
 
 #. module: account
 #: model:ir.model.fields.selection,name:account.selection__account_invoice_report__move_type__out_invoice
@@ -4692,7 +4699,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account.field_account_tax__invoice_repartition_line_ids
 #: model_terms:ir.ui.view,arch_db:account.view_tax_form
 msgid "Distribution for Invoices"
-msgstr ""
+msgstr "הפצה עבור חשבוניות"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_tax__refund_repartition_line_ids
@@ -4760,7 +4767,7 @@ msgstr "טיוטת חשבונית ספק"
 #: code:addons/account/models/account_move.py:0
 #, python-format
 msgid "Draft Credit Note"
-msgstr "טיוטת תעודת זיכוי"
+msgstr "טיוטת חשבונית זיכוי"
 
 #. module: account
 #: code:addons/account/models/account_move.py:0
@@ -4855,6 +4862,8 @@ msgid ""
 "Duplicated vendor reference detected. You probably encoded twice the same vendor bill/credit note:\n"
 "%s"
 msgstr ""
+"נמצאו שני מזהי ספק זהים. בדוק שלא הכנסת את אותה חשבונית פעמיים:\n"
+"%s"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_res_config_settings__module_account_reports
@@ -5161,17 +5170,17 @@ msgstr "חשבון פיננסי"
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_tax_repartition_line_template__tag_ids
 msgid "Financial Tags"
-msgstr ""
+msgstr "תגיות פיננסיות"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_reconcile_model_partner_mapping__payment_ref_regex
 msgid "Find Text in Label"
-msgstr ""
+msgstr "מצא טקסט בתווית"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_reconcile_model_partner_mapping__narration_regex
 msgid "Find Text in Notes"
-msgstr ""
+msgstr "מצא טקסט בהערות "
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.dashboard_onboarding_bill_step
@@ -5209,7 +5218,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account.field_account_tax_repartition_line__tax_fiscal_country_id
 #: model:ir.model.fields,field_description:account.field_res_company__account_tax_fiscal_country_id
 msgid "Fiscal Country"
-msgstr ""
+msgstr "מדינה פיסקלית"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_partner_property_form
@@ -5592,7 +5601,7 @@ msgstr "קבץ לפי"
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_payment_register__group_payment
 msgid "Group Payments"
-msgstr ""
+msgstr "קיבוץ תשלומים"
 
 #. module: account
 #: model:ir.model.fields.selection,name:account.selection__account_tax__amount_type__group
@@ -6259,7 +6268,7 @@ msgstr "מס' חשבונית"
 #. module: account
 #: model:ir.ui.menu,name:account.menu_action_account_invoice_report_all
 msgid "Invoice Analysis"
-msgstr ""
+msgstr "ניתוח חשבוניות"
 
 #. module: account
 #: code:addons/account/models/account_move.py:0
@@ -6514,7 +6523,7 @@ msgstr "גדול מ"
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_payment__is_internal_transfer
 msgid "Is Internal Transfer"
-msgstr ""
+msgstr "העברה פנימית"
 
 #. module: account
 #: model:ir.model.fields.selection,name:account.selection__account_reconcile_model__match_amount__lower
@@ -6678,7 +6687,7 @@ msgstr "פקודת יומן"
 #. module: account
 #: model:ir.model.fields.selection,name:account.selection__account_move_reversal__date_mode__entry
 msgid "Journal Entry Date"
-msgstr ""
+msgstr "תאריך פקודת יומן"
 
 #. module: account
 #: model:ir.model.fields.selection,name:account.selection__account_print_journal__sort_selection__move_name
@@ -6753,7 +6762,7 @@ msgstr "קבוצות יומנים משמשות להצגת נתונים רלוו�
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_payment_register__line_ids
 msgid "Journal items"
-msgstr ""
+msgstr "תנועות יומן"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_move_line_filter
@@ -6890,7 +6899,7 @@ msgstr "תווית"
 #: model:ir.model.fields,field_description:account.field_account_reconcile_model__match_label_param
 #: model:ir.model.fields,field_description:account.field_account_reconcile_model_template__match_label_param
 msgid "Label Parameter"
-msgstr ""
+msgstr "פרמטר תווית"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_tax__description
@@ -7379,7 +7388,7 @@ msgstr "מרץ"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.res_config_settings_view_form
 msgid "Margin Analysis"
-msgstr ""
+msgstr "ניתוח רווחים"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_payment_form
@@ -7389,12 +7398,12 @@ msgstr ""
 #. module: account
 #: model:ir.model.fields.selection,name:account.selection__account_payment_register__payment_difference_handling__reconcile
 msgid "Mark as fully paid"
-msgstr ""
+msgstr "שולם במלואו"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_reconcile_model_form
 msgid "Match Invoice/bill with"
-msgstr ""
+msgstr "התאם חשבונית עם "
 
 #. module: account
 #: model:ir.model.fields.selection,name:account.selection__account_reconcile_model__match_label__match_regex
@@ -7410,13 +7419,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:account.field_account_reconcile_model__match_text_location_label
 #: model:ir.model.fields,field_description:account.field_account_reconcile_model_template__match_text_location_label
 msgid "Match Text Location Label"
-msgstr ""
+msgstr "התאמת טקסט מיקום תווית"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_reconcile_model__match_text_location_note
 #: model:ir.model.fields,field_description:account.field_account_reconcile_model_template__match_text_location_note
 msgid "Match Text Location Note"
-msgstr ""
+msgstr "התאמת טקסט מיקום הערה"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_reconcile_model__match_text_location_reference
@@ -7598,7 +7607,7 @@ msgstr "שנה סכום מס"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.res_config_settings_view_form
 msgid "Monitor your product margins from invoices"
-msgstr ""
+msgstr "סקירה של רווחי המוצר מחשבוניות"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_invoice_report__move_id
@@ -7698,7 +7707,7 @@ msgstr ""
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
 msgid "New Transaction"
-msgstr ""
+msgstr "עסקה חדשה"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_resequence_wizard__new_values
@@ -7879,7 +7888,7 @@ msgid ""
 "Note that the easiest way to create a credit note is to do it directly\n"
 "                from the customer invoice."
 msgstr ""
-"שים לב שהדרך הקלה ביותר ליצור תעודת זיכוי\n"
+"שים לב שהדרך הקלה ביותר ליצור חשבונית זיכוי\n"
 "                היא מחשבונית הלקוח."
 
 #. module: account
@@ -7888,7 +7897,7 @@ msgid ""
 "Note that the easiest way to create a vendor credit note it to do it "
 "directly from the vendor bill."
 msgstr ""
-"שים לב שהדרך הקלה ביותר ליצור תעודת זיכוי ספק היא ישירות מחשבונית הספק."
+"שים לב שהדרך הקלה ביותר ליצור חשבונית זיכוי ספק היא ישירות מחשבונית הספק."
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_fiscal_position__note
@@ -8559,7 +8568,7 @@ msgstr "ספר ראשי של לקוח/ספק"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_reconcile_model_form
 msgid "Partner Mapping"
-msgstr ""
+msgstr "מיפוי שותפים"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_reconcile_model__partner_mapping_line_ids
@@ -9362,7 +9371,7 @@ msgstr "קבל כסף"
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__partner_bank_id
 #: model:ir.model.fields,field_description:account.field_account_move__partner_bank_id
 msgid "Recipient Bank"
-msgstr ""
+msgstr "בנק מקבל "
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_payment__partner_bank_id
@@ -9749,7 +9758,7 @@ msgstr "חשבון הכנסות/הוצאות"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_move_reversal
 msgid "Reversal Date"
-msgstr ""
+msgstr "תאריך פקודה נגדית "
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__reversal_move_id
@@ -9761,7 +9770,7 @@ msgstr "סטורנו"
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_move_reversal__date
 msgid "Reversal date"
-msgstr ""
+msgstr "תאריך פקודה נגדית"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__reversed_entry_id
@@ -9799,7 +9808,7 @@ msgstr ""
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_move_reversal
 msgid "Reverse Journal Entry"
-msgstr ""
+msgstr "פקודת יומן נגדית"
 
 #. module: account
 #: code:addons/account/models/account_move.py:0
@@ -9906,7 +9915,7 @@ msgstr "מכירה"
 #: model:ir.model.fields,field_description:account.field_res_config_settings__group_show_sale_receipts
 #: model:res.groups,name:account.group_sale_receipts
 msgid "Sale Receipt"
-msgstr ""
+msgstr "קבלה על מכירה"
 
 #. module: account
 #: model:ir.actions.act_window,name:account.action_account_moves_journal_sales
@@ -10598,7 +10607,7 @@ msgstr "לפעמים נקרא BIC או Swift"
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_payment_register__source_currency_id
 msgid "Source Currency"
-msgstr ""
+msgstr "מטבע מקור"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_invoice_tree
@@ -10616,7 +10625,7 @@ msgstr "דוא\"ל מקור"
 #. module: account
 #: model:ir.model.fields.selection,name:account.selection__account_move_reversal__date_mode__custom
 msgid "Specific"
-msgstr ""
+msgstr "תאריך מסוים"
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_cash_rounding__strategy
@@ -10863,7 +10872,7 @@ msgstr ""
 #. module: account
 #: model:ir.actions.server,name:account.action_move_switch_invoice_to_credit_note
 msgid "Switch into refund/credit note"
-msgstr "החלף לזיכוי / תעודת זיכוי"
+msgstr "החלף לזיכוי / חשבונית זיכוי"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_account_tag__name
@@ -11121,7 +11130,7 @@ msgstr "תבניות מס"
 #: model:ir.model.fields,field_description:account.field_account_tax_template__type_tax_use
 #: model_terms:ir.ui.view,arch_db:account.view_account_tax_search
 msgid "Tax Type"
-msgstr ""
+msgstr "סוג מס"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__amount_by_group
@@ -11275,7 +11284,7 @@ msgstr "מיסים במכירה"
 msgid ""
 "Taxes, fiscal positions, chart of accounts &amp; legal statements for your "
 "country"
-msgstr ""
+msgstr "מסים, עמדות פיסקאליות, תרשים חשבונות והצהרות משפטיות עבור המדינה שלך"
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_move_line__display_type
@@ -11611,7 +11620,7 @@ msgstr ""
 #: code:addons/account/models/account_move.py:0
 #, python-format
 msgid "The Bill/Refund date is required to validate this document."
-msgstr ""
+msgstr "תאריך החשבונית הוא שדה חובה באישור המסמך"
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_bank_statement__country_code
@@ -11818,7 +11827,7 @@ msgstr ""
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_move_reversal
 msgid "The credit note is auto-validated and reconciled with the invoice."
-msgstr "תעודת הזיכוי מאושרת אוטומטית ומותאמת עם החשבונית."
+msgstr "חשבונית הזיכוי מאושרת אוטומטית ומותאמת עם החשבונית."
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_move_reversal
@@ -11826,14 +11835,14 @@ msgid ""
 "The credit note is auto-validated and reconciled with the invoice.\n"
 "                               The original invoice is duplicated as a new draft."
 msgstr ""
-"תעודת הזיכוי מאומתת באופן אוטומטי ומותאמת לחשבונית. החשבונית המקורית תשוכפל "
-"כטיוטה חדשה."
+"חשבונית הזיכוי מאומתת באופן אוטומטי ומותאמת לחשבונית. החשבונית המקורית "
+"תשוכפל כטיוטה חדשה."
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_move_reversal
 msgid ""
 "The credit note is created in draft and can be edited before being issued."
-msgstr "תעודת הזיכוי נוצרה בטיוטה וניתן לערוך אותה לפני הוצאתה."
+msgstr "חשבונית הזיכוי נוצרה בטיוטה וניתן לערוך אותה לפני הוצאתה."
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_journal__currency_id
@@ -12189,6 +12198,14 @@ msgstr ""
 #: model:ir.model.fields,help:account.field_account_payment_register__currency_id
 #: model:ir.model.fields,help:account.field_account_payment_register__source_currency_id
 msgid "The payment's currency."
+msgstr ""
+
+#. module: account
+#: code:addons/account/models/account_move.py:0
+#, python-format
+msgid ""
+"The recipient bank account link to this invoice is archived.\n"
+"So you cannot confirm the invoice."
 msgstr ""
 
 #. module: account
@@ -13344,7 +13361,7 @@ msgstr "חשבוניות הספק"
 #: model:ir.model.fields.selection,name:account.selection__account_move__move_type__in_refund
 #: model_terms:ir.ui.view,arch_db:account.report_invoice_document
 msgid "Vendor Credit Note"
-msgstr "תעודת זיכוי ספק"
+msgstr "חשבונית זיכוי ספק"
 
 #. module: account
 #: code:addons/account/models/account_payment.py:0

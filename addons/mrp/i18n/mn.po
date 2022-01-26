@@ -12,13 +12,14 @@
 # Khoschuluu Khuderchuluu <khoschuluu@gmail.com>, 2020
 # Martin Trigaux, 2020
 # Otgonbayar.A <gobi.mn@gmail.com>, 2020
-# nasaaskii <nasaaskii@gmail.com>, 2020
+# Насан-Очир <nasaaskii@gmail.com>, 2020
 # Batzul B <batzul.active@gmail.com>, 2020
 # nurbakhit nurka <nurbakhit@bumanit.mn>, 2020
 # Batmunkh Ganbat <batmunkh.g@bumanit.mn>, 2020
 # Батмөнх Ганбат <batmunkh2522@gmail.com>, 2020
 # Munkhbaatar g <muuguu17@gmail.com>, 2021
 # Baskhuu Lodoikhuu <baskhuujacara@gmail.com>, 2021
+# Sanjaajamts Badamjunai <b.sanjaajamtsfc@gmail.com>, 2021
 # 
 msgid ""
 msgstr ""
@@ -26,7 +27,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-29 15:48+0000\n"
 "PO-Revision-Date: 2020-09-07 08:14+0000\n"
-"Last-Translator: Baskhuu Lodoikhuu <baskhuujacara@gmail.com>, 2021\n"
+"Last-Translator: Sanjaajamts Badamjunai <b.sanjaajamtsfc@gmail.com>, 2021\n"
 "Language-Team: Mongolian (https://www.transifex.com/odoo/teams/41243/mn/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -106,12 +107,12 @@ msgstr ""
 #: code:addons/mrp/models/mrp_production.py:0
 #, python-format
 msgid "%s cannot be deleted. Try to cancel them before."
-msgstr ""
+msgstr "%s устгах боломжгүй. Эхлээд цуцлах шаардлагатай."
 
 #. module: mrp
 #: model:ir.actions.report,print_report_name:mrp.action_report_bom_structure
 msgid "'Bom Structure - %s' % object.display_name"
-msgstr ""
+msgstr "'Орцын бүтэц - %s' % object.display_name"
 
 #. module: mrp
 #: model:ir.actions.report,print_report_name:mrp.action_report_finished_product
@@ -189,10 +190,9 @@ msgid ""
 "specific.\" role=\"img\" aria-label=\"Values set here are company-"
 "specific.\" groups=\"base.group_multi_company\"/>"
 msgstr ""
-"<span class=\"fa fa-lg fa-building-o\" title=\"Эдгээр утгууд нь зөвхөн "
-"тухайн компаны хувьд хадгалагдана.\" aria-label=\"Эдгээр утгууд нь зөвхөн "
-"тухайн компаны хувьд хадгалагдана.\" groups=\"base.group_multi_company\" "
-"role=\"img\"/>"
+"<span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-"
+"specific.\" role=\"img\" aria-label=\"Values set here are company-"
+"specific.\" groups=\"base.group_multi_company\"/>"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_form_view
@@ -207,7 +207,7 @@ msgstr ""
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_workcenter_view
 msgid "<span class=\"o_stat_text\">Load</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">Ачаалал</span>"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_workcenter_view
@@ -233,7 +233,7 @@ msgstr "<span class=\"o_stat_text\">Гүйцэтгэл</span>"
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_bom_form_view
 msgid "<span class=\"o_stat_text\">Routing<br/>Performance</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">Чиглүүлэлт<br/>Гүйцэтгэл</span>"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_form_view
@@ -244,12 +244,12 @@ msgstr "<span class=\"o_stat_text\">Гологдол</span>"
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_form_view
 msgid "<span class=\"o_stat_text\">Source MO</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">Эх үйлдвэрлэл</span>"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_form_view
 msgid "<span class=\"text-bf\">To Produce</span>"
-msgstr ""
+msgstr "<span class=\"text-bf\">Үйлдвэрлэгдэх нь</span>"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.report_mrp_bom
@@ -275,7 +275,7 @@ msgstr "<span>Шинэ</span>"
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.stock_production_type_kanban
 msgid "<span>Orders</span>"
-msgstr ""
+msgstr "<span>Захиалга</span>"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_workcenter_kanban
@@ -285,7 +285,7 @@ msgstr "<span>ЗАХИАЛГА ТӨЛӨВЛӨХ</span>"
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.stock_report_delivery_no_kit_section
 msgid "<span>Products not associated with a kit</span>"
-msgstr ""
+msgstr "<span>Иж бүрдэлд хамааралгүй бүтээгдэхүүн</span>"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_workcenter_kanban
@@ -300,7 +300,7 @@ msgstr "<span>АЖЛЫН ЗАХИАЛГУУД</span>"
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_workorder_form_view_inherit
 msgid "<span>minutes</span>"
-msgstr ""
+msgstr "<span>Минут</span>"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_workorder_form_view_inherit
@@ -310,7 +310,7 @@ msgstr ""
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.report_mrporder
 msgid "<strong>Description:</strong><br/>"
-msgstr ""
+msgstr "<strong>Тайлбар:</strong><br/>"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.view_mrp_workcenter_productivity_loss_kanban
@@ -378,7 +378,7 @@ msgstr "<strong>Дамжлага</strong>"
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_workorder_view_gantt
 #: model_terms:ir.ui.view,arch_db:mrp.workcenter_line_gantt_production
 msgid "<strong>Workcenter: </strong>"
-msgstr ""
+msgstr "<strong>Дамжлага: </strong>"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.stock_warn_insufficient_qty_unbuild_form_view
@@ -389,6 +389,8 @@ msgstr "? Энэ нь таны бараа материалыг зөрчилд х
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_bom_form_view
 msgid "A BoM of type kit is used to split the product into its components."
 msgstr ""
+"Жорын төрөл нь бүрдэл байх нь гарах бэлэн бүтээгдэхүүн нь өөрөө ямар нэг "
+"бүтээгдэхүүний орцын бүрэлдэхүүн болгоно."
 
 #. module: mrp
 #: code:addons/mrp/models/mrp_workorder.py:0
@@ -407,7 +409,7 @@ msgstr ""
 #: code:addons/mrp/models/mrp_workcenter.py:0
 #, python-format
 msgid "A workcenter cannot be an alternative of itself"
-msgstr ""
+msgstr "Дамжлага дээр өөрийг нь сонгох боломжгүй."
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_document__access_token
@@ -482,7 +484,7 @@ msgstr "Үйлдвэрлэлийн ажлын захиалгад чанарын 
 #: code:addons/mrp/models/mrp_production.py:0
 #, python-format
 msgid "Add some materials to consume before marking this MO as to do."
-msgstr ""
+msgstr "Үйлдвэрлэлийг захиалга дээр зарлагадах материалыг сонгох ёстой."
 
 #. module: mrp
 #: model:res.groups,name:mrp.group_mrp_manager
@@ -515,7 +517,7 @@ msgstr ""
 #: model:ir.model.fields,help:mrp.field_mrp_workorder__use_create_components_lots
 #: model:ir.model.fields,help:mrp.field_stock_picking_type__use_create_components_lots
 msgid "Allow to create new lot/serial numbers for the components"
-msgstr ""
+msgstr "Уг бүрэлдэхүүнээс хамаарсан шинэ цувралын дугаар үүсгэх боломжыг нээх"
 
 #. module: mrp
 #: model:ir.model.fields.selection,name:mrp.selection__mrp_bom__consumption__flexible
@@ -603,7 +605,7 @@ msgstr "Архивласан"
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_bom_form_view
 msgid "At the creation of a Manufacturing Order."
-msgstr ""
+msgstr "Үйлдвэрлэлийн захиалга үүсгэх үед."
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_bom_form_view
@@ -684,7 +686,7 @@ msgstr "Орцын барааны ангилал"
 #. module: mrp
 #: model:ir.model.fields,help:mrp.field_mrp_bom_line__bom_product_template_attribute_value_ids
 msgid "BOM Product Variants needed to apply this line."
-msgstr ""
+msgstr "Орцонд орж буй материалуудыг энэ мөр дээр сонгож өгнө."
 
 #. module: mrp
 #: model:ir.model,name:mrp.model_report_mrp_report_bom_structure
@@ -699,12 +701,12 @@ msgstr "Зөвлөх орцын мөрүүд"
 #. module: mrp
 #: model:ir.model,name:mrp.model_mrp_production_backorder_line
 msgid "Backorder Confirmation Line"
-msgstr ""
+msgstr "Буцаалтын баримтын батлах мөр"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_production_backorder__mrp_production_backorder_line_ids
 msgid "Backorder Confirmation Lines"
-msgstr ""
+msgstr "Буцаалтын баримтын батлах мөрүүд"
 
 #. module: mrp
 #: code:addons/mrp/models/mrp_production.py:0
@@ -762,7 +764,7 @@ msgstr "Орцын мөр"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_unbuild__mo_bom_id
 msgid "Bill of Material used on the Production Order"
-msgstr ""
+msgstr "Үйлдвэрлэлийн захиалгад ашигласан материалын тооцоо"
 
 #. module: mrp
 #: model:ir.actions.act_window,name:mrp.product_open_bom
@@ -785,6 +787,8 @@ msgid ""
 "Bill of Materials allow you to define the list of required components to "
 "make a finished product."
 msgstr ""
+"Материалын жагсаалт нь эцсийн бүтээгдэхүүн хийхэд шаардлагатай бүрэлдэхүүн "
+"хэсгүүдийн жагсаалтыг тодорхойлох боломжийг танд олгоно."
 
 #. module: mrp
 #: model:ir.actions.act_window,name:mrp.mrp_bom_form_action
@@ -807,7 +811,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_workorder_tree_editable_view
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_workcenter_block_wizard_form
 msgid "Block"
-msgstr "Блок"
+msgstr "Түгжих"
 
 #. module: mrp
 #: model:ir.actions.act_window,name:mrp.act_mrp_block_workcenter
@@ -832,12 +836,12 @@ msgstr "Хоригдсон хугацаа"
 #. module: mrp
 #: model:ir.model.fields,help:mrp.field_mrp_workcenter__blocked_time
 msgid "Blocked hours over the last month"
-msgstr ""
+msgstr "Өнгөрсөн сард блоклогдсон цаг"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workcenter_productivity_loss__name
 msgid "Blocking Reason"
-msgstr ""
+msgstr "Блоклох шалтгаан"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_bom_byproduct__bom_id
@@ -902,6 +906,8 @@ msgid ""
 "BoM cannot concern product %s and have a line with attributes (%s) at the "
 "same time."
 msgstr ""
+"Орцонд %s барааг бүрэлдэхүүнээр сонгосон тохиолдолд нэмж барааны шинж "
+"чанаруудыг (%s) сонгож ашиглах боломжгүй."
 
 #. module: mrp
 #: code:addons/mrp/models/mrp_bom.py:0
@@ -919,12 +925,12 @@ msgstr "Эрэг"
 #: model:ir.model.fields,field_description:mrp.field_res_config_settings__group_mrp_byproducts
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_form_view
 msgid "By-Products"
-msgstr "Дайвар бүтээгдэхүүн"
+msgstr "Дайвар бүтээгдэхүүнүүд"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_bom_byproduct__product_id
 msgid "By-product"
-msgstr ""
+msgstr "Дайвар бүтээгдэхүүн"
 
 #. module: mrp
 #: model:ir.model.fields,help:mrp.field_stock_move__byproduct_id
@@ -936,7 +942,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp.field_stock_move__byproduct_id
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_bom_form_view
 msgid "By-products"
-msgstr ""
+msgstr "Дайвар бүтээгдэхүүнүүд"
 
 #. module: mrp
 #: model:ir.model,name:mrp.model_mrp_bom_byproduct
@@ -969,7 +975,7 @@ msgstr "Цуцлагдсан"
 #: code:addons/mrp/models/mrp_production.py:0
 #, python-format
 msgid "Cannot delete a manufacturing order in done state."
-msgstr ""
+msgstr "Дууссан төлөвтэй үйлдвэрлэлийн захиалгыг устгах боломжгүй."
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workcenter__capacity
@@ -1004,7 +1010,7 @@ msgstr "Үйлдвэрлэх тоо хэмжээг өөрчлөх"
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_form_view
 msgid "Check availability"
-msgstr "Бэлэн байдлыг шалгах"
+msgstr "Нөөц хүрэлцээг шалгах"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_document__checksum
@@ -1091,7 +1097,7 @@ msgstr ""
 #. module: mrp
 #: model:ir.model.fields.selection,name:mrp.selection__mrp_routing_workcenter__time_mode__auto
 msgid "Compute based on tracked time"
-msgstr ""
+msgstr "Цаг хөтлөлт дээр суурилах"
 
 #. module: mrp
 #: model:ir.model,name:mrp.model_res_config_settings
@@ -1108,18 +1114,18 @@ msgstr "Тохиргоо"
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_form_view
 #: model_terms:ir.ui.view,arch_db:mrp.view_mrp_consumption_warning_form
 msgid "Confirm"
-msgstr "Илгээх"
+msgstr "Батлах"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_production__confirm_cancel
 msgid "Confirm Cancel"
-msgstr ""
+msgstr "Цуцлалтыг батлах"
 
 #. module: mrp
 #: model:ir.model.fields.selection,name:mrp.selection__mrp_production__state__confirmed
 #: model_terms:ir.ui.view,arch_db:mrp.view_mrp_production_filter
 msgid "Confirmed"
-msgstr "Илгээсэн"
+msgstr "Батлагдсан"
 
 #. module: mrp
 #: model_terms:ir.actions.act_window,help:mrp.mrp_production_action
@@ -1199,7 +1205,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp.field_mrp_workorder__use_create_components_lots
 #: model:ir.model.fields,field_description:mrp.field_stock_picking_type__use_create_components_lots
 msgid "Create New Lots/Serial Numbers for Components"
-msgstr ""
+msgstr "Бүрэлдэхүүнд зориулж шинэ цувралын дугаар үүсгэх"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.view_mrp_production_backorder_form
@@ -1221,7 +1227,7 @@ msgstr "Үйлдвэрлэлийн захиалга үүсгэх"
 #. module: mrp
 #: model_terms:ir.actions.act_window,help:mrp.mrp_routing_action
 msgid "Create a new operation"
-msgstr ""
+msgstr "Шинэ ажиллагаа үүсгэх"
 
 #. module: mrp
 #: model_terms:ir.actions.act_window,help:mrp.mrp_workcenter_action
@@ -1296,7 +1302,7 @@ msgstr "Үүсгэсэн огноо"
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_form_view
 msgid "Creates a new serial/lot number"
-msgstr ""
+msgstr "Цувралын дугаар шинээр үүсгэнэ"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.view_mrp_document_form
@@ -1489,7 +1495,7 @@ msgstr ""
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.stock_warn_insufficient_qty_unbuild_form_view
 msgid "Do you confirm you want to unbuild"
-msgstr ""
+msgstr "Та үүнийг задлахыг хүсч буйгаа баталгаажуулна уу"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.view_document_file_kanban_mrp
@@ -1756,7 +1762,7 @@ msgstr "Font awesome icon e.g. fa-tasks"
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.view_mrp_consumption_warning_form
 msgid "Force"
-msgstr ""
+msgstr "Хүчээр"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.oee_search_view
@@ -2404,6 +2410,9 @@ msgid ""
 "Makes confirmed manufacturing orders locked rather than unlocked by default."
 " This only applies to new manufacturing orders, not previously created ones."
 msgstr ""
+"Батлагдсан үйлдвэрлэлийн захиалгууд нь анхнаасаа түгжигдсэн байхаар "
+"тохируулна. Гэхдээ энэ нь цаашид шинээр үүсэх үйлдвэрлэлийн захиалгуудад "
+"хэрэгжинэ. Өмнө нь үүссэн захиалгуудад хэрэгжихгүй."
 
 #. module: mrp
 #: model:res.groups,name:mrp.group_mrp_routings
@@ -2700,7 +2709,7 @@ msgstr "Дутагдлын захиалга үүсгэхгүй"
 #. module: mrp
 #: model_terms:ir.actions.act_window,help:mrp.mrp_bom_form_action
 msgid "No bill of materials found. Let's create one!"
-msgstr ""
+msgstr "Одоогоор ямар нэг орцын бүртгэл алга. Шинээр үүсгэнэ үү!"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.report_mrp_bom
@@ -2762,12 +2771,21 @@ msgstr "Хэвийн"
 #: code:addons/mrp/models/mrp_production.py:0
 #, python-format
 msgid "Not Available"
-msgstr ""
+msgstr "Нөөцгүй"
 
 #. module: mrp
 #: model:ir.model.fields,help:mrp.field_stock_scrap__workorder_id
 msgid "Not to restrict or prefer quants, but informative."
 msgstr "Тоо бүртгэлийг хязгаарлах эсвэл зөвлөх биш, зөвхөн мэдээллэх."
+
+#. module: mrp
+#: code:addons/mrp/models/mrp_workcenter.py:0
+#, python-format
+msgid ""
+"Note that archived work center(s): '%s' is/are still linked to active Bill "
+"of Materials, which means that operations can still be planned on it/them. "
+"To prevent this, deletion of the work center is recommended instead."
+msgstr ""
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_bom__message_needaction_counter
@@ -3067,7 +3085,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_form_view
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_tree_view
 msgid "Plan"
-msgstr "Төлөвлөгөө"
+msgstr "Төлөвлөх"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_workcenter_kanban
@@ -3151,7 +3169,7 @@ msgstr ""
 #: code:addons/mrp/models/stock_warehouse.py:0
 #, python-format
 msgid "Pre-Production"
-msgstr ""
+msgstr "Урьдчилсан үйлдвэрлэл"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.res_config_settings_view_form
@@ -3206,12 +3224,12 @@ msgstr ""
 #. module: mrp
 #: model:res.groups,name:mrp.group_mrp_byproducts
 msgid "Produce residual products"
-msgstr ""
+msgstr "Үлдэгдэл бүтээгдэхүүн үйлдвэрлэх"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.res_config_settings_view_form
 msgid "Produce residual products (A + B -&gt; C + D)"
-msgstr ""
+msgstr "Үлдэгдэл бүтээгдэхүүн үйлдвэрлэх (A + B - & gt; C + D)"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_form_view
@@ -3244,7 +3262,7 @@ msgstr "Бараа"
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_bom_form_view
 msgid "Product Attachments"
-msgstr ""
+msgstr "Барааны хавсралт"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.report_mrp_bom
@@ -3254,7 +3272,7 @@ msgstr "Барааны өртөг"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_res_config_settings__module_mrp_plm
 msgid "Product Lifecycle Management (PLM)"
-msgstr ""
+msgstr "Бүтээгдэхүүний амьдралын мөчлөгийн менежмент (PLM)"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_form_view
@@ -3304,12 +3322,12 @@ msgstr "Үйлдвэрлэлийн Огноо"
 #. module: mrp
 #: model:ir.model,name:mrp.model_mrp_document
 msgid "Production Document"
-msgstr ""
+msgstr "Үйлдвэрлэлийн баримт бичиг"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_workcenter_view
 msgid "Production Information"
-msgstr ""
+msgstr "Үйлдвэрлэлийн мэдээлэл"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_production__production_location_id
@@ -3326,7 +3344,7 @@ msgstr "Үйлдвэрлэлийн захиалга"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_stock_move__raw_material_production_id
 msgid "Production Order for components"
-msgstr ""
+msgstr "Үйлдвэрлэлийн бүрэлдэхүүн хэсгүүд"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_stock_move__production_id
@@ -3336,7 +3354,7 @@ msgstr "Эцсийн бүтээгдэхүүний Үйлвэрлэлийн За�
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workorder__production_state
 msgid "Production State"
-msgstr ""
+msgstr "Үйлдвэрлэлийн төлөв"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_workorder_form_view_inherit
@@ -3346,7 +3364,7 @@ msgstr "Үйлдвэрлэлийн Дамжлага"
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_report_product_product_replenishment
 msgid "Production of Draft MO"
-msgstr ""
+msgstr "Үйлдвэрлэсэн эсвэл ноорог MO"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.view_mrp_production_workorder_form_view_filter
@@ -3371,7 +3389,7 @@ msgstr "Бүтээмжтэй Хугацаа"
 #. module: mrp
 #: model:ir.model.fields,help:mrp.field_mrp_workcenter__productive_time
 msgid "Productive hours over the last month"
-msgstr ""
+msgstr "Өнгөрсөн сард үр бүтээлтэй ажилласан цаг"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_workorder_form_view_inherit
@@ -3398,7 +3416,7 @@ msgstr "Хангах Бараанууд"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workorder__progress
 msgid "Progress Done (%)"
-msgstr ""
+msgstr "Дуусах прогресс (%)"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_production__propagate_cancel
@@ -3445,17 +3463,17 @@ msgstr "Үйлдвэрлэсэн Тоо хэмжээ"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_production__qty_producing
 msgid "Quantity Producing"
-msgstr ""
+msgstr "Үйлдэрлэж буй тоо хэмжээ"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workorder__qty_remaining
 msgid "Quantity To Be Produced"
-msgstr ""
+msgstr "Үйлдвэрлэгдсэн байх тоо"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_stock_move__should_consume_qty
 msgid "Quantity To Consume"
-msgstr ""
+msgstr "Зарлагадсан тоо хэмжэж"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_change_production_qty__product_qty
@@ -3473,7 +3491,7 @@ msgstr "Тоо хэмжээ:"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workorder__move_raw_ids
 msgid "Raw Moves"
-msgstr ""
+msgstr "Түүхий эдийн хөдөлгөөн"
 
 #. module: mrp
 #: model:ir.model.fields.selection,name:mrp.selection__mrp_production__reservation_state__assigned
@@ -3524,21 +3542,21 @@ msgstr "Баримтын дугаар"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_document__ir_attachment_id
 msgid "Related attachment"
-msgstr ""
+msgstr "Холбоотой хавсралт файл"
 
 #. module: mrp
 #. openerp-web
 #: code:addons/mrp/static/src/xml/mrp.xml:0
 #, python-format
 msgid "Replan"
-msgstr ""
+msgstr "Дахин төлөвлөх"
 
 #. module: mrp
 #. openerp-web
 #: code:addons/mrp/static/src/xml/mrp.xml:0
 #, python-format
 msgid "Report:"
-msgstr ""
+msgstr "Тайлан:"
 
 #. module: mrp
 #: model:ir.ui.menu,name:mrp.menu_mrp_reporting
@@ -3589,7 +3607,7 @@ msgstr "Хариуцсан хэрэглэгч"
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.view_mrp_consumption_warning_form
 msgid "Review Consumption"
-msgstr ""
+msgstr "Хэрэглээг хянана"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workcenter__routing_line_ids
@@ -3623,6 +3641,7 @@ msgstr "Хадгалах"
 #: model_terms:ir.ui.view,arch_db:mrp.res_config_settings_view_form
 msgid "Schedule manufacturing orders earlier to avoid delays"
 msgstr ""
+"Хугацаа саатахаас зайлсхийхийн тулд үйлдвэрлэлийн захиалгыг эрт төлөвлө"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_production__date_planned_start
@@ -3659,7 +3678,7 @@ msgstr ""
 #: code:addons/mrp/static/src/js/mrp_workorder_popover.js:0
 #, python-format
 msgid "Scheduling Information"
-msgstr ""
+msgstr "Төлөвлөлтийн мэдээлэл"
 
 #. module: mrp
 #: code:addons/mrp/models/mrp_production.py:0
@@ -3767,27 +3786,27 @@ msgstr "Тохиргоо"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_stock_warehouse_orderpoint__show_bom
 msgid "Show BoM column"
-msgstr ""
+msgstr "Орцны мөрүүдийг харуулах"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_production__show_final_lots
 msgid "Show Final Lots"
-msgstr ""
+msgstr "Дууссан сери дугаарыг харуулах"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_production__show_lock
 msgid "Show Lock/unlock buttons"
-msgstr ""
+msgstr "Түгжих/тайлах товчлууруудыг харуулах"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workorder__show_json_popover
 msgid "Show Popover?"
-msgstr ""
+msgstr "Поповерыг харуулах уу?"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_immediate_production__show_productions
 msgid "Show Productions"
-msgstr ""
+msgstr "Үйлдвэрлэлүүдийг харуулах"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_unbuild_search_view
@@ -3953,7 +3972,7 @@ msgstr "Барааны хөдөлгөөн"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_production__move_dest_ids
 msgid "Stock Movements of Produced Goods"
-msgstr ""
+msgstr "Бэлэн бүтээгдэхүүний агуулахын хөдөлгөөн"
 
 #. module: mrp
 #: model:ir.actions.act_window,name:mrp.action_mrp_unbuild_moves
@@ -3999,7 +4018,7 @@ msgstr ""
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_bom_form_view
 msgid "Structure & Cost"
-msgstr ""
+msgstr "Бүтэц & Өртөг"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_bom_line__child_bom_id
@@ -4159,6 +4178,8 @@ msgid ""
 "The planned end date of the work order cannot be prior to the planned start "
 "date, please correct this to save the work order."
 msgstr ""
+"Ажлын захиалгын төлөвлөсөн дуусах огноо нь төлөвлөсөн эхлэх өдрөөс өмнө байж"
+" болохгүй тул ажлын захиалгыг хадгалахын тулд үүнийг засна уу."
 
 #. module: mrp
 #: code:addons/mrp/models/mrp_production.py:0
@@ -4196,12 +4217,14 @@ msgid ""
 "The unit of measure you choose is in a different category than the product "
 "unit of measure."
 msgstr ""
+"Таны сонгосон хэмжүүр нь бүтээгдэхүүний хэмжих нэгжээс өөр ангилалд багтаж "
+"байна."
 
 #. module: mrp
 #: code:addons/mrp/models/mrp_workorder.py:0
 #, python-format
 msgid "The work order should have already been processed."
-msgstr ""
+msgstr "Ажлын захиалгыг аль хэдийн боловсруулсан байх ёстой."
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_document__theme_template_id
@@ -4253,7 +4276,7 @@ msgstr ""
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.report_mrp_bom
 msgid "This is the cost defined on the product."
-msgstr ""
+msgstr "Энэ нь бүтээгдэхүүн дээр тодорхойлогдсон өртөг юм."
 
 #. module: mrp
 #: model_terms:ir.actions.act_window,help:mrp.action_mrp_unbuild_moves
@@ -4267,7 +4290,7 @@ msgstr ""
 #: code:addons/mrp/models/mrp_workorder.py:0
 #, python-format
 msgid "This serial number for product %s has already been produced"
-msgstr ""
+msgstr "Энэ %s барааны сери дугаар аль хэдийн тохируулагдсан байна"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workorder__time_ids
@@ -4277,7 +4300,7 @@ msgstr "Цаг"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workcenter__time_efficiency
 msgid "Time Efficiency"
-msgstr ""
+msgstr "Цагийн үр ашиг"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workcenter__time_ids
@@ -4331,7 +4354,7 @@ msgstr "Цагийн бүс"
 #: model:digest.tip,name:mrp.digest_tip_mrp_0
 #: model_terms:digest.tip,tip_description:mrp.digest_tip_mrp_0
 msgid "Tip: Use tablets in the shop to control manufacturing"
-msgstr ""
+msgstr "Зөвлөмж: Үйлдвэрлэлийг хянахын тулд дэлгүүрт таблет ашиглана уу"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_production_backorder_line__to_backorder
@@ -4382,12 +4405,12 @@ msgstr "Өнөөдрийн ажилбар"
 #: model:product.product,description:mrp.product_product_wood_wear
 #: model:product.template,description:mrp.product_product_wood_wear_product_template
 msgid "Top layer of a wood panel."
-msgstr ""
+msgstr "Модон хавтангийн дээд давхарга."
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_routing_workcenter_tree_view
 msgid "Total Duration"
-msgstr ""
+msgstr "Нийт хугацаа"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workcenter__workorder_late_count
@@ -4397,7 +4420,7 @@ msgstr "Нийт Хоцролттой Захиалгууд"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workcenter__workorder_pending_count
 msgid "Total Pending Orders"
-msgstr ""
+msgstr "Нийт хүлээгдэж буй захиалгууд"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_tree_view
@@ -4417,12 +4440,12 @@ msgstr "Нийт Ажиллаж байгаа Захиалгууд"
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.view_stock_move_operations_raw
 msgid "Total To Consume"
-msgstr ""
+msgstr "Нийт зарцуулагдсан материал"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_workorder_form_view_inherit
 msgid "Total duration"
-msgstr ""
+msgstr "Нийт хугацаа"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_form_view
@@ -4506,7 +4529,7 @@ msgstr "Задаргааны Захиалга"
 #: code:addons/mrp/models/mrp_production.py:0
 #, python-format
 msgid "Unbuild: %s"
-msgstr ""
+msgstr "Буцаалт: %s"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.report_mrp_bom_line
@@ -4538,7 +4561,7 @@ msgstr "Хэмжих нэгж"
 msgid ""
 "Unit of Measure (Unit of Measure) is the unit of measurement for the "
 "inventory control"
-msgstr "Хэмжих нэгж нь нөөцийн хяналтын хэмжих нэгж"
+msgstr "Хэмжих нэгж нь бараа материалын хяналтыг хэмжих нэгж юм"
 
 #. module: mrp
 #: model:product.product,uom_name:mrp.product_product_computer_desk
@@ -4580,11 +4603,13 @@ msgstr "Түгжээг нээх"
 msgid ""
 "Unlock the manufacturing order to adjust what has been consumed or produced."
 msgstr ""
+"Хэрэглэсэн эсвэл үйлдвэрлэсэн зүйлийг тохируулахын тулд үйлдвэрлэлийн "
+"захиалгын түгжээг тайл."
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_form_view
 msgid "Unplan"
-msgstr "Төлөвлөгөөг болих"
+msgstr "Төлөвлөлтийг болих"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_bom__message_unread
@@ -4617,7 +4642,7 @@ msgstr "Оруулах"
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_routing_workcenter_form_view
 msgid "Upload your PDF file."
-msgstr ""
+msgstr "PDF файл ачааллах"
 
 #. module: mrp
 #: model:ir.model.fields.selection,name:mrp.selection__mrp_production__priority__1
@@ -4661,7 +4686,7 @@ msgstr "Зөвшөөрөх"
 #: code:addons/mrp/static/src/xml/mrp.xml:0
 #, python-format
 msgid "Variant:"
-msgstr ""
+msgstr "Хувилбар:"
 
 #. module: mrp
 #: model:ir.model.fields.selection,name:mrp.selection__mrp_document__priority__3
@@ -4694,12 +4719,12 @@ msgstr "Материал Хүлээж буй"
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.view_mrp_production_filter
 msgid "Waiting for Component"
-msgstr ""
+msgstr "Бүрэлдэхүүн хэсгийг хүлээж байна"
 
 #. module: mrp
 #: model:ir.model.fields.selection,name:mrp.selection__mrp_workorder__state__pending
 msgid "Waiting for another WO"
-msgstr ""
+msgstr "Өөр ажиллагаа хүлээж байна"
 
 #. module: mrp
 #: code:addons/mrp/models/mrp_workorder.py:0
@@ -4715,7 +4740,7 @@ msgstr "Агуулах"
 #. module: mrp
 #: model:ir.model,name:mrp.model_stock_warn_insufficient_qty_unbuild
 msgid "Warn Insufficient Unbuild Quantity"
-msgstr ""
+msgstr "Тоо хэмжээ хангалтгүй байгааг анхааруулж байна"
 
 #. module: mrp
 #: code:addons/mrp/models/mrp_bom.py:0 code:addons/mrp/models/mrp_bom.py:0
@@ -4773,7 +4798,7 @@ msgstr ""
 #. module: mrp
 #: model:ir.model.fields.selection,name:mrp.selection__mrp_bom__ready_to_produce__asap
 msgid "When components for 1st operation are available"
-msgstr ""
+msgstr "1-р ажиллагааны бүрэлдэхүүн хэсгүүд бэлэн болсон үед"
 
 #. module: mrp
 #: model:ir.model.fields,help:mrp.field_stock_warehouse__manufacture_to_resupply
@@ -4814,7 +4839,7 @@ msgstr ""
 #: model:product.product,name:mrp.product_product_wood_panel
 #: model:product.template,name:mrp.product_product_wood_panel_product_template
 msgid "Wood Panel"
-msgstr ""
+msgstr "Модон хавтан"
 
 #. module: mrp
 #: model:ir.model,name:mrp.model_mrp_workcenter
@@ -4866,7 +4891,7 @@ msgstr "Дамжлага"
 #. module: mrp
 #: model:ir.actions.act_window,name:mrp.mrp_workcenter_kanban_action
 msgid "Work Centers Overview"
-msgstr ""
+msgstr "Ажлын төвүүдийн тойм"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_workorder_form_view_inherit
@@ -4937,6 +4962,8 @@ msgid ""
 "Work orders are operations to do as part of a manufacturing order.\n"
 "                    Operations are defined in the bill of materials or added in the manufacturing order directly."
 msgstr ""
+"Ажлын захиалга гэдэг нь үйлдвэрлэлийн захиалгын нэг хэсэг болгон хийх үйлдлүүд юм.\n"
+"Үйл ажиллагаа нь материалын тооцоонд тодорхойлогддог эсвэл үйлдвэрлэлийн дараалалд шууд нэмэгддэг."
 
 #. module: mrp
 #: model_terms:ir.actions.act_window,help:mrp.action_mrp_workorder_production
@@ -4947,6 +4974,8 @@ msgid ""
 "Work orders are operations to do as part of a manufacturing order.\n"
 "            Operations are defined in the bill of materials or added in the manufacturing order directly."
 msgstr ""
+"Ажлын захиалга гэдэг нь үйлдвэрлэлийн захиалгын нэг хэсэг болгон хийх үйлдлүүд юм..\n"
+"Үйл ажиллагаа нь материалын тооцоонд тодорхойлогддог эсвэл үйлдвэрлэлийн дараалалд шууд нэмэгддэг."
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_workcenter_kanban
@@ -4981,7 +5010,7 @@ msgstr "Дамжлагын Бүтээмжийн Алдагдал"
 #. module: mrp
 #: model:ir.model,name:mrp.model_mrp_workcenter_productivity_loss
 msgid "Workcenter Productivity Losses"
-msgstr ""
+msgstr "Ажлын төвийн бүтээмжийн алдагдал"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workcenter__working_state
@@ -5002,7 +5031,7 @@ msgstr "Ажлын цаг"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workorder__working_user_ids
 msgid "Working user on this work order."
-msgstr ""
+msgstr "Энэ ажлын захиалга дээр ажиллаж байгаа хэрэглэгч."
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workorder__worksheet
@@ -5012,12 +5041,12 @@ msgstr "Ажлын хүснэгт"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workorder__worksheet_type
 msgid "Worksheet Type"
-msgstr ""
+msgstr "Ажлын хуудасны төрөл"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workorder__worksheet_google_slide
 msgid "Worksheet URL"
-msgstr ""
+msgstr "Ажлын хуудасны URL"
 
 #. module: mrp
 #: code:addons/mrp/models/stock_production_lot.py:0
@@ -5028,6 +5057,9 @@ msgid ""
 "the operation type and tick the box \"Create New Lots/Serial Numbers for "
 "Components\"."
 msgstr ""
+"Та \"Үйлдвэрлэл\" төрөлтэй үйл ажиллагаанд цувралын дугаарыг гараар үүсгэх, "
+"засварлах боломжгүй. Хэрэв өөрчлөхийг хүсвэл ажиллагааны төрөл рүү очоод "
+"\"Бэлэн бүтээгдэхүүнд шинээр цувралын дугаар үүсгэх\" сонголтыг сонгоно уу."
 
 #. module: mrp
 #: model:ir.model.fields,help:mrp.field_mrp_document__type
@@ -5063,18 +5095,20 @@ msgid ""
 "You cannot change the workcenter of a work order that is in progress or "
 "done."
 msgstr ""
+"Та явагдаж буй эсвэл дууссан төлөвтэй үйлдвэрлэлийн дамжлагыг солих "
+"боломжгүй."
 
 #. module: mrp
 #: code:addons/mrp/models/mrp_bom.py:0
 #, python-format
 msgid "You cannot create a new Bill of Material from here."
-msgstr ""
+msgstr "Та эндээс шинэ жорын бүртгэл үүсгэх боломжгүй."
 
 #. module: mrp
 #: code:addons/mrp/models/mrp_unbuild.py:0
 #, python-format
 msgid "You cannot delete an unbuild order if the state is 'Done'."
-msgstr ""
+msgstr "Та дууссан төлөвтэй үйлдэрлэлийн буцаалтыг устгах боломжгүй."
 
 #. module: mrp
 #: code:addons/mrp/models/mrp_production.py:0
@@ -5087,24 +5121,27 @@ msgstr ""
 #, python-format
 msgid "You cannot link this work order to another manufacturing order."
 msgstr ""
+"Та энэ ажлын захиалгыг өөр үйлдвэрлэлийн захиалгатай холбох боломжгүй."
 
 #. module: mrp
 #: code:addons/mrp/models/mrp_production.py:0
 #, python-format
 msgid "You cannot move a manufacturing order once it is cancelled or done."
 msgstr ""
+"Та үйлдвэрлэлийн захиалгыг цуцалсан эсвэл дууссаны дараа шилжүүлэх "
+"боломжгүй."
 
 #. module: mrp
 #: code:addons/mrp/models/mrp_workorder.py:0
 #, python-format
 msgid "You cannot produce the same serial number twice."
-msgstr ""
+msgstr "Та нэг серийн дугаарыг хоёр удаа гаргаж болохгүй."
 
 #. module: mrp
 #: code:addons/mrp/models/mrp_unbuild.py:0
 #, python-format
 msgid "You cannot unbuild a undone manufacturing order."
-msgstr ""
+msgstr "Та буцаагдсан үйлдвэрлэлийн захиалгыг задлах боломжгүй."
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.view_mrp_consumption_warning_form
@@ -5184,18 +5221,18 @@ msgstr ""
 #: code:addons/mrp/models/mrp_workorder.py:0
 #, python-format
 msgid "You need to provide a lot for the finished product."
-msgstr ""
+msgstr "Та бэлэн бүтээгдэхүүний сери дугаарыг оноох шаардлагатай."
 
 #. module: mrp
 #: code:addons/mrp/wizard/mrp_immediate_production.py:0
 #, python-format
 msgid "You need to supply Lot/Serial Number for products:"
-msgstr ""
+msgstr "Та бүтээгдэхүүний сери дугаарыг оноож өгөх шаардлагатай:"
 
 #. module: mrp
 #: model:ir.actions.act_window,name:mrp.action_mrp_production_backorder
 msgid "You produced less than initial demand"
-msgstr ""
+msgstr "Та анх төлөвлөсөнөөс дутуу тоо хэмжээгээр үйлдвэрлэсэн."
 
 #. module: mrp
 #: code:addons/mrp/models/mrp_unbuild.py:0
@@ -5209,6 +5246,8 @@ msgstr ""
 msgid ""
 "You should provide either a product or a product template to search a BoM"
 msgstr ""
+"Та орцноос бүтээгдэхүүн хайхын тулд бүтээгдэхүүн эсвэл бүтээгдэхүүний "
+"загварыг өгөх ёстой."
 
 #. module: mrp
 #: model_terms:ir.actions.act_window,help:mrp.mrp_production_action
@@ -5218,7 +5257,7 @@ msgstr ""
 #. module: mrp
 #: model_terms:ir.actions.act_window,help:mrp.mrp_production_action
 msgid "bills of materials"
-msgstr ""
+msgstr "Орцнууд"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.exception_on_mo
@@ -5228,7 +5267,7 @@ msgstr "цуцлагдсан"
 #. module: mrp
 #: model_terms:ir.actions.act_window,help:mrp.mrp_production_action
 msgid "components"
-msgstr ""
+msgstr "бүрэлдэхүүн хэсгүүд"
 
 #. module: mrp
 #: code:addons/mrp/models/stock_rule.py:0
@@ -5246,7 +5285,7 @@ msgstr "өдөр"
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.stock_warn_insufficient_qty_unbuild_form_view
 msgid "from location"
-msgstr ""
+msgstr "Гарах байрлал"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_routing_workcenter_form_view
@@ -5286,7 +5325,7 @@ msgstr "оронд нь захиалагдсан"
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.production_message
 msgid "quantity has been updated."
-msgstr ""
+msgstr "тоо хэмжээ шинэчлэгдсэн."
 
 #. module: mrp
 #. openerp-web

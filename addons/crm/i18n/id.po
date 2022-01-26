@@ -49,7 +49,7 @@ msgstr "# Pertemuan"
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_recurring_plan__number_of_months
 msgid "# Months"
-msgstr ""
+msgstr "# Bulan"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_team__opportunities_count
@@ -516,18 +516,21 @@ msgid ""
 "By saving this change, the customer email and phone number will also be "
 "updated."
 msgstr ""
+"Dengan menyimpan perubahan ini, email dan nomor ponsel pelanggan juga akan "
+"berubah."
 
 #. module: crm
 #: code:addons/crm/models/crm_lead.py:0
 #, python-format
 msgid "By saving this change, the customer email will also be updated."
-msgstr ""
+msgstr "Dengan menyimpan perubahan ini, email pelanggan juga akan berubah."
 
 #. module: crm
 #: code:addons/crm/models/crm_lead.py:0
 #, python-format
 msgid "By saving this change, the customer phone number will also be updated."
 msgstr ""
+"Dengan menyimpan perubahan ini, nomor ponsel pelanggan juga akan berubah."
 
 #. module: crm
 #: model:ir.ui.menu,name:crm.crm_menu_root
@@ -778,7 +781,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:crm.selection__crm_lead__email_state__correct
 #: model:ir.model.fields.selection,name:crm.selection__crm_lead__phone_state__correct
 msgid "Correct"
-msgstr ""
+msgstr "Benar"
 
 #. module: crm
 #: model:ir.model.fields,help:crm.field_crm_lead__message_bounce

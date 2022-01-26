@@ -49,7 +49,7 @@ msgstr ""
 #. module: hr_fleet
 #: model:ir.model,name:hr_fleet.model_hr_departure_wizard
 msgid "Departure Wizard"
-msgstr ""
+msgstr "Avgångsguide"
 
 #. module: hr_fleet
 #: model:ir.model.fields,field_description:hr_fleet.field_fleet_vehicle__display_name
@@ -124,6 +124,11 @@ msgstr ""
 msgid ""
 "This report will contain only PDF files. If you want all documents, please "
 "go on vehicle page. Do you want to proceed?"
+msgstr ""
+
+#. module: hr_fleet
+#: code:addons/hr_fleet/controllers/main.py:0
+msgid "There is no pdf attached to generate a claim report."
 msgstr ""
 
 #. module: hr_fleet

@@ -9,6 +9,7 @@
 # Fishfur A Banter <fishfurbanter@gmail.com>, 2020
 # Yihya Hugirat <hugirat@gmail.com>, 2020
 # ZVI BLONDER <ZVIBLONDER@gmail.com>, 2020
+# Jonathan Spier, 2021
 # Lilach Gilliam <lilach.gilliam@gmail.com>, 2021
 # 
 msgid ""
@@ -301,7 +302,7 @@ msgstr ""
 #. module: web
 #: model_terms:ir.ui.view,arch_db:web.report_invoice_wizard_preview
 msgid "<span>Amount</span>"
-msgstr ""
+msgstr "<span>סכום כולל</span>"
 
 #. module: web
 #: model_terms:ir.ui.view,arch_db:web.report_invoice_wizard_preview
@@ -691,6 +692,7 @@ msgstr ""
 
 #. module: web
 #. openerp-web
+#: code:addons/web/static/src/js/fields/basic_fields.js:0
 #: code:addons/web/static/src/xml/base.xml:0
 #: code:addons/web/static/src/xml/base.xml:0
 #, python-format
@@ -951,6 +953,7 @@ msgstr "לתצוגת יומן אין תכונת  \"date_start\" מוגדרת."
 #. openerp-web
 #: code:addons/web/static/src/js/core/dialog.js:0
 #: code:addons/web/static/src/js/core/dialog.js:0
+#: code:addons/web/static/src/js/fields/basic_fields.js:0
 #: code:addons/web/static/src/js/fields/relational_fields.js:0
 #: code:addons/web/static/src/js/fields/upgrade_fields.js:0
 #: code:addons/web/static/src/js/services/crash_manager.js:0
@@ -2405,7 +2408,7 @@ msgstr ""
 #: code:addons/web/static/src/xml/base.xml:0
 #, python-format
 msgid "Main actions"
-msgstr ""
+msgstr "פעולה עיקרית"
 
 #. module: web
 #. openerp-web
@@ -4790,7 +4793,7 @@ msgstr "לדוגמה: שעות פתיחה, חשבונות הבנק (אחד בכ�
 #: code:addons/web/static/src/xml/base.xml:0
 #, python-format
 msgid "for:"
-msgstr ""
+msgstr "לפי"
 
 #. module: web
 #. openerp-web

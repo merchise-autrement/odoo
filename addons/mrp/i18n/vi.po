@@ -15,6 +15,8 @@
 # thanhnguyen.icsc <thanhnguyen.icsc@gmail.com>, 2021
 # Trần Hà <tranthuha13590@gmail.com>, 2021
 # Duy BQ <duybq86@gmail.com>, 2021
+# Hoàng Tiến Dũng, 2021
+# Vo Thanh Thuy, 2022
 # 
 msgid ""
 msgstr ""
@@ -22,7 +24,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-29 15:48+0000\n"
 "PO-Revision-Date: 2020-09-07 08:14+0000\n"
-"Last-Translator: Duy BQ <duybq86@gmail.com>, 2021\n"
+"Last-Translator: Vo Thanh Thuy, 2022\n"
 "Language-Team: Vietnamese (https://www.transifex.com/odoo/teams/41243/vi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -236,7 +238,7 @@ msgstr "<span class=\"o_stat_text\">Năng suất</span>"
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_bom_form_view
 msgid "<span class=\"o_stat_text\">Routing<br/>Performance</span>"
-msgstr "<span class=\"o_stat_text\">Routing<br/>Performance</span>"
+msgstr "<span class=\"o_stat_text\">Hiệu suất<br/>Quy trình</span>"
 
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_form_view
@@ -530,7 +532,7 @@ msgstr "Cho phép tạo mới một Lô/Số sê-ri cho các thành phần"
 #: model:ir.model.fields.selection,name:mrp.selection__mrp_consumption_warning__consumption__flexible
 #: model:ir.model.fields.selection,name:mrp.selection__mrp_production__consumption__flexible
 msgid "Allowed"
-msgstr "Allowed"
+msgstr "Cho phép"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_unbuild__allowed_mo_ids
@@ -564,7 +566,7 @@ msgstr "Allowed to Unreserve Production"
 #: model:ir.model.fields.selection,name:mrp.selection__mrp_consumption_warning__consumption__warning
 #: model:ir.model.fields.selection,name:mrp.selection__mrp_production__consumption__warning
 msgid "Allowed with warning"
-msgstr "Allowed with warning"
+msgstr "Cho phép kèm theo cảnh báo"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_workcenter__alternative_workcenter_ids
@@ -1752,7 +1754,7 @@ msgstr "Linh hoạt"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_bom__consumption
 msgid "Flexible Consumption"
-msgstr "Flexible Consumption"
+msgstr "Tiêu thụ linh hoạt"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_bom__message_follower_ids
@@ -2811,6 +2813,18 @@ msgstr "Không có hàng"
 #: model:ir.model.fields,help:mrp.field_stock_scrap__workorder_id
 msgid "Not to restrict or prefer quants, but informative."
 msgstr "Không hạn chế hoặc cần số lượng, nhưng thông tin."
+
+#. module: mrp
+#: code:addons/mrp/models/mrp_workcenter.py:0
+#, python-format
+msgid ""
+"Note that archived work center(s): '%s' is/are still linked to active Bill "
+"of Materials, which means that operations can still be planned on it/them. "
+"To prevent this, deletion of the work center is recommended instead."
+msgstr ""
+"Lưu ý rằng xưởng được lưu trữ: '%s' vẫn được liên kết với định mức vật tư "
+"đang hoạt động, điều đó có nghĩa là vẫn có thể lập kế hoạch hoạt động cho "
+"xưởng. Để phòng tránh trường hợp này, xóa xưởng sẽ được đề xuất. "
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_bom__message_needaction_counter
@@ -5044,6 +5058,8 @@ msgid ""
 "Work orders are operations to do as part of a manufacturing order.\n"
 "                    Operations are defined in the bill of materials or added in the manufacturing order directly."
 msgstr ""
+"Đơn công đoạn là các hoạt động thành phần của một đơn sản xuất. \n"
+"                    Các hoạt động được định nghĩa trong định mức vật liệu hoặc thêm trực tiếp trong đơn sản xuất. "
 
 #. module: mrp
 #: model_terms:ir.actions.act_window,help:mrp.action_mrp_workorder_production
@@ -5277,6 +5293,7 @@ msgid ""
 "You must indicate a non-zero amount consumed for at least one of your "
 "components"
 msgstr ""
+"Bạn phải chỉ ra số lượng tiêu thụ khác 0 cho ít nhất một trong các linh kiện"
 
 #. module: mrp
 #: code:addons/mrp/models/mrp_workorder.py:0

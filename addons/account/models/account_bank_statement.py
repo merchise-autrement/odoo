@@ -214,9 +214,9 @@ class AccountBankStatement(models.Model):
     reference = fields.Char(string='External Reference', states={'open': [('readonly', False)]}, copy=False, readonly=True, help="Used to hold the reference of the external mean that created this statement (name of imported file, reference of online synchronization...)")
     date = fields.Date(required=True, states={'confirm': [('readonly', True)]}, index=True, copy=False, default=fields.Date.context_today)
     date_done = fields.Datetime(string="Closed On")
-    balance_start = fields.Monetary(string='Starting Balance', states={'confirm': [('readonly', True)]}, compute='_compute_starting_balance', readonly=False, store=True)
-    balance_end_real = fields.Monetary('Ending Balance', states={'confirm': [('readonly', True)]}, compute='_compute_ending_balance', readonly=False, store=True)
-    state = fields.Selection(string='Status', required=True, readonly=True, copy=False, selection=[
+    balance_start = fields.Monetary(string='Starting Balance', states={'confirm': [('readonly', True)]}, compute='_compute_starting_balance', readonly=False, store=True, tracking=True)
+    balance_end_real = fields.Monetary('Ending Balance', states={'confirm': [('readonly', True)]}, compute='_compute_ending_balance', readonly=False, store=True, tracking=True)
+    state = fields.Selection(string='Status', required=True, readonly=True, copy=False, tracking=True, selection=[
             ('open', 'New'),
             ('posted', 'Processing'),
             ('confirm', 'Validated'),
@@ -507,6 +507,7 @@ class AccountBankStatementLine(models.Model):
     # == Business fields ==
     move_id = fields.Many2one(
         comodel_name='account.move',
+        auto_join=True,
         string='Journal Entry', required=True, readonly=True, ondelete='cascade',
         check_company=True)
     statement_id = fields.Many2one(
@@ -1268,8 +1269,8 @@ class AccountBankStatementLine(models.Model):
         if not self.partner_id:
             rec_overview_partners = set(overview['counterpart_line'].partner_id.id
                                         for overview in reconciliation_overview
-                                        if overview.get('counterpart_line') and overview['counterpart_line'].partner_id)
-            if len(rec_overview_partners) == 1:
+                                        if overview.get('counterpart_line'))
+            if len(rec_overview_partners) == 1 and rec_overview_partners != {False}:
                 self.line_ids.write({'partner_id': rec_overview_partners.pop()})
 
         # Refresh analytic lines.

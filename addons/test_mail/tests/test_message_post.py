@@ -37,6 +37,31 @@ class TestMessagePost(TestMailCommon, TestRecipients):
         self.assertTrue(isinstance(messageId, int))
 
     @users('employee')
+    def test_notify_mail_add_signature(self):
+        self.test_track = self.env['mail.test.track'].with_context(self._test_context).with_user(self.user_employee).create({
+            'name': 'Test',
+            'email_from': 'ignasse@example.com'
+        })
+        self.test_track.user_id = self.env.user
+
+        signature = self.env.user.signature
+
+        template = self.env.ref('mail.mail_notification_paynow', raise_if_not_found=True).sudo()
+        self.assertIn("record.user_id.sudo().signature", template.arch)
+
+        with self.mock_mail_gateway():
+            self.test_track.message_post(body="Test body", mail_auto_delete=False, add_sign=True, partner_ids=[self.partner_1.id, self.partner_2.id], email_layout_xmlid="mail.mail_notification_paynow")
+        found_mail = self._new_mails
+        self.assertIn(signature, found_mail.body_html)
+        self.assertEqual(found_mail.body_html.count(signature), 1)
+
+        with self.mock_mail_gateway():
+            self.test_track.message_post(body="Test body", mail_auto_delete=False, add_sign=False, partner_ids=[self.partner_1.id, self.partner_2.id], email_layout_xmlid="mail.mail_notification_paynow")
+        found_mail = self._new_mails
+        self.assertNotIn(signature, found_mail.body_html)
+        self.assertEqual(found_mail.body_html.count(signature), 0)
+
+    @users('employee')
     def test_notify_prepare_template_context_company_value(self):
         """ Verify that the template context company value is right
         after switching the env company or if a company_id is set
@@ -405,3 +430,25 @@ class TestMessagePost(TestMailCommon, TestRecipients):
                 subject='About %s' % test_record.name,
                 body_content=test_record.name,
                 attachments=[('first.txt', b'My first attachment', 'text/plain'), ('second.txt', b'My second attachment', 'text/plain')])
+
+    @mute_logger('odoo.addons.mail.models.mail_mail')
+    def test_post_notify_no_button(self):
+        pdata = self._generate_notify_recipients(self.partner_employee)
+        msg_vals = {
+            'body': 'Message body',
+            'model': False,
+            'res_id': False,
+            'subject': 'Message subject',
+        }
+        link_vals = {
+            'token': 'token_val',
+            'access_token': 'access_token_val',
+            'auth_signup_token': 'auth_signup_token_val',
+            'auth_login': 'auth_login_val',
+        }
+        notify_msg_vals = dict(msg_vals, **link_vals)
+        classify_res = self.env[self.test_record._name]._notify_classify_recipients(pdata, 'Test', msg_vals=notify_msg_vals)
+        # find back information for partner
+        partner_info = next(item for item in classify_res)
+        # check there is sno access button
+        self.assertFalse(partner_info['has_button_access'])

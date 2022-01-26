@@ -66,7 +66,7 @@ def assert_log_admin_access(method):
     def check_and_log(method, self, *args, **kwargs):
         user = self.env.user
         origin = request.httprequest.remote_addr if request else 'n/a'
-        log_data = (method.__name__, self.sudo().mapped('name'), user.login, user.id, origin)
+        log_data = (method.__name__, self.sudo().mapped('display_name'), user.login, user.id, origin)
         if not self.env.is_admin():
             _logger.warning('DENY access to module.%s on %s to user %s ID #%s via %s', *log_data)
             raise AccessDenied()
@@ -962,7 +962,6 @@ class Module(models.Model):
                     [('id', 'not in', excluded_category_ids)],
                 ])
 
-            Module = self.env['ir.module.module']
             records = self.env['ir.module.category'].search_read(domain, ['display_name'], order="sequence")
 
             values_range = OrderedDict()
@@ -975,7 +974,7 @@ class Module(models.Model):
                         kwargs.get('filter_domain', []),
                         [('category_id', 'child_of', record_id), ('category_id', 'not in', excluded_category_ids)]
                     ])
-                    record['__count'] = Module.search_count(model_domain)
+                    record['__count'] = self.env['ir.module.module'].search_count(model_domain)
                 values_range[record_id] = record
 
             return {

@@ -28,7 +28,6 @@ setup(
         'decorator',
         'docutils',
         'gevent',
-        'html2text',
         'idna',
         'Jinja2',
         'lxml',  # windows binary http://www.lfd.uci.edu/~gohlke/pythonlibs/
