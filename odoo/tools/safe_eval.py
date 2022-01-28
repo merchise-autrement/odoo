@@ -75,6 +75,7 @@ _operations = [
     'POWER', 'MULTIPLY', # 'MATRIX_MULTIPLY', # matrix operator (3.5+)
     'FLOOR_DIVIDE', 'TRUE_DIVIDE', 'MODULO', 'ADD',
     'SUBTRACT', 'LSHIFT', 'RSHIFT', 'AND', 'XOR', 'OR',
+    'IS_OP', 'CONTAINS_OP',
 ]
 # operations on literal values
 _EXPR_OPCODES = _CONST_OPCODES.union(to_opcodes([
@@ -84,7 +85,8 @@ _EXPR_OPCODES = _CONST_OPCODES.union(to_opcodes([
     'BUILD_SLICE',
     # comprehensions
     'LIST_APPEND', 'MAP_ADD', 'SET_ADD',
-    'COMPARE_OP',
+    'COMPARE_OP', 'LIST_TO_TUPLE', 'LIST_EXTEND', 'SET_UPDATE', 'DICT_UPDATE',
+    'DICT_MERGE',
     # specialised comparisons
     'IS_OP', 'CONTAINS_OP',
     'DICT_MERGE', 'DICT_UPDATE',
@@ -105,6 +107,7 @@ _SAFE_OPCODES = _EXPR_OPCODES.union(to_opcodes([
     'JUMP_FORWARD', 'JUMP_ABSOLUTE',
     'JUMP_IF_FALSE_OR_POP', 'JUMP_IF_TRUE_OR_POP', 'POP_JUMP_IF_FALSE', 'POP_JUMP_IF_TRUE',
     'SETUP_FINALLY', 'END_FINALLY',
+
     # Added in 3.8 https://bugs.python.org/issue17611
     'BEGIN_FINALLY', 'CALL_FINALLY', 'POP_FINALLY',
 
@@ -113,7 +116,16 @@ _SAFE_OPCODES = _EXPR_OPCODES.union(to_opcodes([
     'STORE_SUBSCR',
     'LOAD_GLOBAL',
 
+    # 3.9
     'RERAISE', 'JUMP_IF_NOT_EXC_MATCH',
+
+    # new in python 3.10
+    'GEN_START',
+
+    # 3.10
+    'ROT_N',  # apparently only used in pattern matching
+    'COPY_DICT_WITHOUT_KEYS',
+    'GET_LEN',
 ])) - _BLACKLIST
 
 _logger = logging.getLogger(__name__)
