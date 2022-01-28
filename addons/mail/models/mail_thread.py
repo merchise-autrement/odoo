@@ -1444,7 +1444,14 @@ class MailThread(models.AbstractModel):
         # for all the odd MTAs out there, as there is no standard header for the envelope's `rcpt_to` value.
         msg_dict['recipients'] = ','.join(set(formatted_email
             for address in [
-                tools.decode_message_header(message, 'Delivered-To'),
+                # MERCHISE BEGIN
+                # The header 'Delivered-To' can be appended multiple times and we would get a space
+                # separated list of addresses which 'tools.email_split' doesn't really understand.
+                #
+                # This caused messages that were forwarded from @gmail.com not be properly
+                # routed.
+                tools.decode_message_header(message, 'Delivered-To', separator=', '),
+                # MERCHISE END
                 tools.decode_message_header(message, 'To'),
                 tools.decode_message_header(message, 'Cc'),
                 tools.decode_message_header(message, 'Resent-To'),
@@ -1454,7 +1461,14 @@ class MailThread(models.AbstractModel):
         )
         msg_dict['to'] = ','.join(set(formatted_email
             for address in [
-                tools.decode_message_header(message, 'Delivered-To'),
+                # MERCHISE BEGIN
+                # The header 'Delivered-To' can be appended multiple times and we would get a space
+                # separated list of addresses which 'tools.email_split' doesn't really understand.
+                #
+                # This caused messages that were forwarded from gmail.com not be properly
+                # routed.
+                tools.decode_message_header(message, 'Delivered-To', separator=', '),
+                # MERCHISE END
                 tools.decode_message_header(message, 'To')
             ] if address
             for formatted_email in tools.email_split_and_format(address))

@@ -1,0 +1,58 @@
+.web-celery.staged-progress-bars {
+    // Each progress bar is a grid item; which will normally will be layout in
+    // a single row. 'grid-template-columns' is computed in JS because it
+    // depends on the actual number of stages
+    display: grid;
+    grid-template-columns: 1fr;
+
+
+	// Make the borders of each stage touch each other.  This can look bad if
+	// the UI is forced to put each item top-to-bottom, but we'll deal with
+	// that later.
+	& > *:first-child:not(:last-child) {
+		.progress, .progress-bar {
+			border-radius: 5px 0 0 5px;
+			border-right: 0;
+		}
+	}
+	& > *:last-child:not(:first-child) {
+		.progress, .progress-bar {
+			border-radius: 0 5px 5px 0;
+			border-left: 0;
+		}
+	}
+	& > *:not(last-child):not(:first-child) {
+		.progress, .progress-bar {
+			border-radius: 0;
+			border-left: 0;
+			border-right: 0;
+		}
+	}
+
+
+    @include web-celery-progress-stage-fn(
+        0,
+        #bababa,
+        $o-enterprise-primary-color
+    );
+    @include web-celery-progress-stage-fn(
+        1,
+        #797979,
+        $o-enterprise-primary-color
+    );
+    @include web-celery-progress-stage-fn(
+        2,
+        #bababa,
+        $o-enterprise-primary-color
+    );
+    @include web-celery-progress-stage-fn(
+        3,
+        #797979,
+        $o-enterprise-primary-color
+    );
+    @include web-celery-progress-stage-fn(
+        4,
+		#bababa,
+        $o-enterprise-primary-color
+    );
+}

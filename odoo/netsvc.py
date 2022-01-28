@@ -182,7 +182,12 @@ def init_logger():
     def is_a_tty(stream):
         return hasattr(stream, 'fileno') and os.isatty(stream.fileno())
 
-    if os.name == 'posix' and isinstance(handler, logging.StreamHandler) and is_a_tty(handler.stream):
+    # The ColoredFormatter is applied to the record and makes Sentry unable to recognize the error
+    # level.
+    from .sentrylog import setup_sentry
+    sentry_client = setup_sentry()
+
+    if not sentry_client and os.name == 'posix' and isinstance(handler, logging.StreamHandler) and is_a_tty(handler.stream):
         formatter = ColoredFormatter(format)
         perf_filter = ColoredPerfFilter()
     else:
@@ -218,9 +223,6 @@ def init_logger():
 
     for logconfig_item in logging_configurations:
         _logger.debug('logger level set: "%s"', logconfig_item)
-
-    from .sentrylog import patch_logging
-    patch_logging()
 
 
 DEFAULT_LOG_CONFIGURATION = [

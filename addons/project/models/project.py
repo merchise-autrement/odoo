@@ -338,7 +338,7 @@ class Project(models.Model):
         if default is None:
             default = {}
         if not default.get('name'):
-            default['name'] = _("%s (copy)") % (self.name)
+            default['name'] = _("%s (copy)", self.name)
         project = super(Project, self).copy(default)
         if self.subtask_project_id == self:
             project.subtask_project_id = project
@@ -484,7 +484,7 @@ class Project(models.Model):
     def action_view_all_rating(self):
         """ return the action to see all the rating of the project and activate default filters"""
         action = self.env['ir.actions.act_window']._for_xml_id('project.rating_rating_action_view_project_rating')
-        action['name'] = _('Ratings of %s') % (self.name,)
+        action['name'] = _('Ratings of %s', self.name)
         action_context = ast.literal_eval(action['context']) if action['context'] else {}
         action_context.update(self._context)
         action_context['search_default_parent_res_name'] = self.name

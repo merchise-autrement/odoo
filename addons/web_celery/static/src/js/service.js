@@ -4,7 +4,7 @@ odoo.define("web_celery.CeleryService", function (require) {
     const CeleryAbstractService = require("web_celery.CeleryAbstractService");
     const core = require("web.core"),
           widgets = require("web_celery.widgets"),
-          FullScreenProgressBar = widgets.FullScreenProgressBar;
+          FullScreenCeleryProgressBar = widgets.FullScreenCeleryProgressBar;
 
     // Use the root widget to be able to print the fullscreen progress bar.
     const root = require('root.widget');
@@ -87,10 +87,11 @@ odoo.define("web_celery.CeleryService", function (require) {
         },
 
         do_tag_block_with_progress: function (params, finished) {
-            var loading = new FullScreenProgressBar(
+            var loading = new FullScreenCeleryProgressBar(
                 this,
                 params.uuid,
-                params.cancellable
+                params.cancellable,
+                params.stages
             );
             loading.appendTo(root.$el);
             finished.always(function () {

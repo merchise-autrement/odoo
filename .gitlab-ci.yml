@@ -47,3 +47,14 @@ run all tests in MRs (Python 3.9):
   only:
     - merge_request
   allow_failure: true
+
+run all tests in MRs (Python 3.10):
+  <<: *run_tests
+  variables:
+    POSTGRES_USER: odoodb
+    PYTHON_VERSION: "3.10"
+    DEBIAN_VERSION: "bullseye"
+    GIT_DEPTH: "2"
+  only:
+    - merge_request
+  allow_failure: true
