@@ -3,7 +3,7 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, UserError
-from odoo.tools import float_compare
+from odoo.tools import float_compare, float_round
 
 
 class MrpUnbuild(models.Model):
@@ -87,6 +87,7 @@ class MrpUnbuild(models.Model):
             self.product_id = self.mo_id.product_id.id
             self.product_qty = self.mo_id.product_qty
             self.product_uom_id = self.mo_id.product_uom_id
+            self.bom_id = self.mo_id.bom_id
 
     @api.onchange('product_id')
     def _onchange_product_id(self):
@@ -174,7 +175,7 @@ class MrpUnbuild(models.Model):
                         })
                         needed_quantity -= taken_quantity
             else:
-                move.quantity_done = move.product_uom_qty
+                move.quantity_done = float_round(move.product_uom_qty, precision_rounding=move.product_uom.rounding)
 
         finished_moves._action_done()
         consume_moves._action_done()

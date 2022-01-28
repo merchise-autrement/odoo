@@ -14340,6 +14340,12 @@ msgid "Invalid model name %r in action definition."
 msgstr ""
 
 #. module: base
+#: code:addons/base/models/ir_actions.py:611
+#, python-format
+msgid "many2many fields cannot be evaluated by reference"
+msgstr ""
+
+#. module: base
 #: code:addons/template_inheritance.py:0
 #, python-format
 msgid "Invalid position attribute: '%s'"
@@ -19193,7 +19199,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.category,name:base.module_category_sales_point_of_sale
 msgid "Point Of Sale"
-msgstr "Kasseløsning"
+msgstr "Kasse"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_point_of_sale

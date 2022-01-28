@@ -60,13 +60,14 @@ class SaleOrderLine(models.Model):
                 # when the product sold is made only of kits. In this case, the BOM of the stock moves
                 # do not correspond to the product sold => no relevant BOM.
                 elif boms:
-                    if all([m.state == 'done' for m in order_line.move_ids]):
+                    # if the move is ingoing, the product **sold** has delivered qty 0
+                    if all([m.state == 'done' and m.location_dest_id.usage == 'customer' for m in order_line.move_ids]):
                         order_line.qty_delivered = order_line.product_uom_qty
                     else:
                         order_line.qty_delivered = 0.0
 
     def _get_bom_component_qty(self, bom):
-        bom_quantity = self.product_uom._compute_quantity(1, bom.product_uom_id)
+        bom_quantity = self.product_id.uom_id._compute_quantity(1, bom.product_uom_id, rounding_method='HALF-UP')
         boms, lines = bom.explode(self.product_id, bom_quantity)
         components = {}
         for line, line_data in lines:
@@ -95,6 +96,6 @@ class SaleOrderLine(models.Model):
         # and after update, and return the difference. We don't take into account what was already
         # sent, or any other exceptional case.
         bom = self.env['mrp.bom']._bom_find(product=self.product_id, bom_type='phantom')
-        if bom and previous_product_uom_qty:
-            return previous_product_uom_qty and previous_product_uom_qty.get(self.id, 0.0)
+        if bom:
+            return previous_product_uom_qty and previous_product_uom_qty.get(self.id, 0.0) or self.qty_delivered
         return super(SaleOrderLine, self)._get_qty_procurement(previous_product_uom_qty=previous_product_uom_qty)

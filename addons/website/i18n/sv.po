@@ -11,13 +11,14 @@
 # Martin Trigaux, 2019
 # Christelle Wehbe <libanon_cristelle@hotmail.com>, 2019
 # Robert Frykelius <robert.frykelius@linserv.se>, 2019
-# Kim Asplund <kim.asplund@gmail.com>, 2020
 # Anto Nilsson <anton.nilsson@vertel.se>, 2020
 # Jakob Krabbe <jakob.krabbe@vertel.se>, 2021
 # STefan Rundgren <stefanrundgren@cellglas.com>, 2021
-# Chrille Hedberg <hedberg.chrille@gmail.com>, 2021
 # Anders Wallenquist <anders.wallenquist@vertel.se>, 2021
+# Kim Asplund <kim.asplund@gmail.com>, 2021
+# Daniel Osser <danielosser@gmail.com>, 2021
 # Simon S, 2021
+# Chrille Hedberg <hedberg.chrille@gmail.com>, 2021
 # 
 msgid ""
 msgstr ""
@@ -25,7 +26,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-27 09:21+0000\n"
 "PO-Revision-Date: 2019-08-26 09:15+0000\n"
-"Last-Translator: Simon S, 2021\n"
+"Last-Translator: Chrille Hedberg <hedberg.chrille@gmail.com>, 2021\n"
 "Language-Team: Swedish (https://www.transifex.com/odoo/teams/41243/sv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -50,7 +51,7 @@ msgstr "\" meddela med en"
 #: code:addons/website/models/website_rewrite.py:0
 #, python-format
 msgid "\"URL to\" can not be empty."
-msgstr ""
+msgstr "\"URL till\" kan inte vara tom."
 
 #. module: website
 #: code:addons/website/models/website_rewrite.py:0
@@ -61,7 +62,7 @@ msgstr ""
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_visitor__page_count
 msgid "# Visited Pages"
-msgstr ""
+msgstr "# Besökta Sidor"
 
 #. module: website
 #: code:addons/website/models/website.py:0
@@ -718,7 +719,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_comparisons
 msgid "<small>/ month</small>"
-msgstr ""
+msgstr "<small>/ månad</small>"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_carousel
@@ -945,7 +946,7 @@ msgstr "Åtkomstfel"
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_visitor__access_token
 msgid "Access Token"
-msgstr ""
+msgstr "Åtkomst Token"
 
 #. module: website
 #: model:ir.model.constraint,message:website.constraint_website_visitor_access_token_unique
@@ -1012,7 +1013,7 @@ msgstr ""
 #: code:addons/website/static/src/xml/website.editor.xml:0
 #, python-format
 msgid "Add a Google Font"
-msgstr ""
+msgstr "Lägg till en Google Font"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_features_grid
@@ -1204,7 +1205,7 @@ msgstr "Bas"
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_page__arch_base
 msgid "Base View Architecture"
-msgstr ""
+msgstr "Arkitektur för basvy"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_comparisons
@@ -1280,7 +1281,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:website.field_res_config_settings__cdn_filters
 #: model:ir.model.fields,field_description:website.field_website__cdn_filters
 msgid "CDN Filters"
-msgstr ""
+msgstr "CDN-filter"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_res_partner__can_publish
@@ -1340,7 +1341,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "Center"
-msgstr ""
+msgstr "Centrera"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
@@ -1552,7 +1553,7 @@ msgstr "Bekräftelse"
 #: code:addons/website/static/src/xml/website.backend.xml:0
 #, python-format
 msgid "Connect Google Analytics"
-msgstr ""
+msgstr "Anslut Google Analytics"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.footer_custom
@@ -1595,7 +1596,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:website.field_res_config_settings__cdn_activated
 #: model:ir.model.fields,field_description:website.field_website__cdn_activated
 msgid "Content Delivery Network (CDN)"
-msgstr ""
+msgstr "Content Delivery Network (CDN)"
 
 #. module: website
 #. openerp-web
@@ -1758,7 +1759,7 @@ msgstr "Standard huvudmeny"
 #: model:ir.model.fields,field_description:website.field_website__social_default_image
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
 msgid "Default Social Share Image"
-msgstr ""
+msgstr "Standardbild för social delning"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_res_config_settings__website_default_lang_id
@@ -1909,7 +1910,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
 msgid "Display this website when users visit this domain"
-msgstr ""
+msgstr "Visa den här webbplatsen när användare besöker den här domänen"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_banner
@@ -1945,12 +1946,12 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "Dotted"
-msgstr ""
+msgstr "Prickad"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "Double"
-msgstr ""
+msgstr "Dubbel"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_features_grid
@@ -2302,7 +2303,7 @@ msgstr "Sidfot"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
 msgid "Force your user to create an account per website"
-msgstr ""
+msgstr "Tvinga användaren att skapa ett konto per webbplats"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_page_ir_ui_view
@@ -2470,7 +2471,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:website.field_res_config_settings__has_google_maps
 #: model_terms:ir.ui.view,arch_db:website.company_description
 msgid "Google Maps"
-msgstr ""
+msgstr "Google Maps"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_res_config_settings__google_maps_api_key
@@ -2517,14 +2518,14 @@ msgstr "Grupper"
 #: code:addons/website/static/src/xml/website.seo.xml:0
 #, python-format
 msgid "H1"
-msgstr ""
+msgstr "H1"
 
 #. module: website
 #. openerp-web
 #: code:addons/website/static/src/xml/website.seo.xml:0
 #, python-format
 msgid "H2"
-msgstr ""
+msgstr "H2"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.user_navbar
@@ -2823,7 +2824,7 @@ msgstr "Instagram"
 #: model:ir.model.fields,field_description:website.field_res_config_settings__social_instagram
 #: model:ir.model.fields,field_description:website.field_website__social_instagram
 msgid "Instagram Account"
-msgstr ""
+msgstr "Instagram Konto"
 
 #. module: website
 #. openerp-web
@@ -3003,7 +3004,7 @@ msgstr "Språk"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
 msgid "Languages available on your website"
-msgstr ""
+msgstr "Språk tillgängliga på din webbplats "
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_page_ir_ui_view
@@ -3106,13 +3107,13 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.theme_customize
 msgid "Layout"
-msgstr ""
+msgstr "Layout"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_text_image
 #: model_terms:ir.ui.view,arch_db:website.s_three_columns
 msgid "Learn more"
-msgstr ""
+msgstr "Läs mer"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
@@ -3337,7 +3338,7 @@ msgstr "Meddelanden"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_company_team
 msgid "Mich Stark, COO"
-msgstr ""
+msgstr "Mich Stark, COO"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_company_team
@@ -3706,6 +3707,8 @@ msgid ""
 "Once the selection of available websites by domain is done, you can filter "
 "by country group."
 msgstr ""
+"När valet av tillgängliga webbplatser efter domän är klart kan du filtrera "
+"efter landsgrupp"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.website_visitor_view_kanban
@@ -3873,7 +3876,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.website_visitor_view_form
 msgid "Page views"
-msgstr ""
+msgstr "Sidvisningar"
 
 #. module: website
 #: code:addons/website/models/website.py:0
@@ -3907,7 +3910,7 @@ msgstr "Överliggande meny"
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_menu__parent_path
 msgid "Parent Path"
-msgstr ""
+msgstr "Förälder Sökväg"
 
 #. module: website
 #: model:ir.model.fields,help:website.field_website_visitor__partner_id
@@ -4096,7 +4099,7 @@ msgstr ""
 #. module: website
 #: model:ir.ui.menu,name:website.menu_website_rewrite
 msgid "Redirects"
-msgstr ""
+msgstr "Omdirigeringar"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_references
@@ -4344,7 +4347,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
 msgid "Select the Website to Configure"
-msgstr ""
+msgstr "Välj den webbplats som ska konfigureras"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.website_visitor_view_form
@@ -4386,6 +4389,7 @@ msgstr "Inställningar"
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
 msgid "Settings on this page will apply to this website"
 msgstr ""
+"Inställningarna på den här sidan kommer att gälla för den här webbplatsen "
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
@@ -4447,7 +4451,7 @@ msgstr ""
 #: code:addons/website/static/src/xml/website.gallery.xml:0
 #, python-format
 msgid "Slide image"
-msgstr ""
+msgstr "Slide-bild"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
@@ -4510,7 +4514,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:website.field_res_config_settings__specific_user_account
 #: model:ir.model.fields,field_description:website.field_website__specific_user_account
 msgid "Specific User Account"
-msgstr ""
+msgstr "Specifikt användarkonto"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
@@ -4736,7 +4740,7 @@ msgstr ""
 #: code:addons/website/static/src/xml/website.backend.xml:0
 #, python-format
 msgid "There is no data currently available."
-msgstr ""
+msgstr "Det finns för närvarande ingen data tillgänglig."
 
 #. module: website
 #: code:addons/website/models/website_visitor.py:0
@@ -4896,18 +4900,18 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_page_ir_ui_view
 #: model_terms:website.page,arch_db:website.bs_debug_page
 msgid "Toggle"
-msgstr ""
+msgstr "Växla"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_page_ir_ui_view
 #: model_terms:website.page,arch_db:website.bs_debug_page
 msgid "Toggle navigation"
-msgstr ""
+msgstr "Växla navigering"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_company_team
 msgid "Tony Fred, CEO"
-msgstr ""
+msgstr "Tony Fred, CEO"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
@@ -5062,7 +5066,7 @@ msgstr "UA-XXXXXXXX-Y"
 #: model:ir.model.fields,field_description:website.field_website_rewrite__url_from
 #: model_terms:ir.ui.view,arch_db:website.view_website_rewrite_form
 msgid "URL from"
-msgstr ""
+msgstr "URL från"
 
 #. module: website
 #: model:ir.model.fields,help:website.field_res_config_settings__cdn_filters
@@ -5073,7 +5077,7 @@ msgstr ""
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_rewrite__url_to
 msgid "URL to"
-msgstr ""
+msgstr "URL till"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
@@ -5141,6 +5145,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
 msgid "Use a CDN to optimize the availability of your website's content"
 msgstr ""
+"Använd ett CDN för att optimera tillgängligheten av webbplatsens innehåll"
 
 #. module: website
 #. openerp-web
@@ -5257,7 +5262,7 @@ msgstr "Typ av vy"
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_page__mode
 msgid "View inheritance mode"
-msgstr ""
+msgstr "Visa ärvsläget"
 
 #. module: website
 #: model:ir.actions.act_window,name:website.website_visitor_view_action
@@ -5268,7 +5273,7 @@ msgstr "Vyer"
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_page__inherit_children_ids
 msgid "Views which inherit from this one"
-msgstr ""
+msgstr "Vyer som ärver från denna"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.one_page_line
@@ -5292,7 +5297,7 @@ msgstr "Synlig på vald webbplats"
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_track__visit_datetime
 msgid "Visit Date"
-msgstr ""
+msgstr "Besöksdatum"
 
 #. module: website
 #: model:ir.model,name:website.model_website_track
@@ -5347,7 +5352,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website.website_visitor_view_graph
 #: model_terms:ir.ui.view,arch_db:website.website_visitor_view_search
 msgid "Visitors"
-msgstr ""
+msgstr "Besökare"
 
 #. module: website
 #. openerp-web
@@ -5404,7 +5409,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.website_visitor_view_tree
 msgid "Web Visitors"
-msgstr ""
+msgstr "Web besökare"
 
 #. module: website
 #. openerp-web
@@ -5506,7 +5511,7 @@ msgstr "Webbplatsinställningar"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
 msgid "Website Title"
-msgstr ""
+msgstr "Webbplatsens titel"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_ir_attachment__website_url
@@ -5588,7 +5593,7 @@ msgstr "Webbplatsens metatitel"
 #: model:ir.model.fields,field_description:website.field_website_page__website_meta_og_img
 #: model:ir.model.fields,field_description:website.field_website_seo_metadata__website_meta_og_img
 msgid "Website opengraph image"
-msgstr ""
+msgstr "Webbplats opengraph bild"
 
 #. module: website
 #: model:ir.model,name:website.model_website_rewrite
@@ -5635,7 +5640,7 @@ msgstr "Välkommen till din"
 #: code:addons/website/static/src/xml/website.editor.xml:0
 #, python-format
 msgid "What do you want to do?"
-msgstr ""
+msgstr "Vad vill du göra?"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
@@ -5681,7 +5686,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "Yellow"
-msgstr ""
+msgstr "Gul"
 
 #. module: website
 #. openerp-web
@@ -5761,21 +5766,21 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
 msgid "YouTube"
-msgstr ""
+msgstr "YouTube"
 
 #. module: website
 #. openerp-web
 #: code:addons/website/static/src/xml/website.backend.xml:0
 #, python-format
 msgid "Your Client ID:"
-msgstr ""
+msgstr "Ditt Klient-ID:"
 
 #. module: website
 #. openerp-web
 #: code:addons/website/static/src/xml/website.backend.xml:0
 #, python-format
 msgid "Your Tracking ID:"
-msgstr ""
+msgstr "Ditt Tracking-ID"
 
 #. module: website
 #. openerp-web
@@ -5839,7 +5844,7 @@ msgstr "eCommerce kontrollpanel"
 #: code:addons/website/static/src/xml/website.editor.xml:0
 #, python-format
 msgid "fonts.google.com"
-msgstr ""
+msgstr "fonts.google.com"
 
 #. module: website
 #. openerp-web
@@ -5882,7 +5887,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "px"
-msgstr ""
+msgstr "px"
 
 #. module: website
 #. openerp-web

@@ -8,6 +8,7 @@
 # hed shefetr <hed@laylinetech.com>, 2019
 # דודי מלכה <Dudimalka6@gmail.com>, 2019
 # ZVI BLONDER <ZVIBLONDER@gmail.com>, 2020
+# david danilov, 2021
 # Lilach Gilliam <lilach.gilliam@gmail.com>, 2021
 # 
 msgid ""
@@ -228,7 +229,7 @@ msgstr "גלוי באתר הנוכחי"
 #: model_terms:ir.ui.view,arch_db:website_customer.view_partner_tag_list
 #: model_terms:ir.ui.view,arch_db:website_customer.view_partners_form_website
 msgid "Website Tags"
-msgstr ""
+msgstr "תגיות אתר אינטרנט"
 
 #. module: website_customer
 #: model:ir.model.fields,field_description:website_customer.field_res_partner_tag__website_url
@@ -239,7 +240,7 @@ msgstr "כתובת אתר אינטרנט"
 #: model:ir.model.fields,field_description:website_customer.field_res_partner__website_tag_ids
 #: model:ir.model.fields,field_description:website_customer.field_res_users__website_tag_ids
 msgid "Website tags"
-msgstr ""
+msgstr "תגיות אתר"
 
 #. module: website_customer
 #: model_terms:ir.ui.view,arch_db:website_customer.opt_country
@@ -249,4 +250,4 @@ msgstr "מפת העולם"
 #. module: website_customer
 #: model_terms:ir.ui.view,arch_db:website_customer.implemented_by_block
 msgid "reference(s))"
-msgstr ""
+msgstr "הפניה(ןת)"

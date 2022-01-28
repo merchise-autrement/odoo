@@ -9,15 +9,15 @@
 # Martin Wilderoth <martin.wilderoth@linserv.se>, 2019
 # Robert Frykelius <robert.frykelius@linserv.se>, 2019
 # lynnliuying <lynn.liu1971@gmail.com>, 2019
-# Chrille Hedberg <hedberg.chrille@gmail.com>, 2019
-# Daniel Osser <danielosser@gmail.com>, 2019
 # Martin Trigaux, 2019
 # Haojun Zou <apollo_zhj@msn.com>, 2019
 # Leif Persson <leifpz54@gmail.com>, 2019
-# Kim Asplund <kim.asplund@gmail.com>, 2020
 # Jakob Krabbe <jakob.krabbe@vertel.se>, 2020
 # Anders Wallenquist <anders.wallenquist@vertel.se>, 2021
 # STefan Rundgren <stefanrundgren@cellglas.com>, 2021
+# Kim Asplund <kim.asplund@gmail.com>, 2021
+# Daniel Osser <danielosser@gmail.com>, 2021
+# Chrille Hedberg <hedberg.chrille@gmail.com>, 2021
 # Simon S, 2021
 # 
 msgid ""
@@ -374,7 +374,7 @@ msgstr ""
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_document__access_token
 msgid "Access Token"
-msgstr ""
+msgstr "Åtkomst Token"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_stock_rule__action
@@ -686,7 +686,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_production_workorder_form_view_inherit
 #: model_terms:ir.ui.view,arch_db:mrp.mrp_workcenter_block_wizard_form
 msgid "Block"
-msgstr ""
+msgstr "Block"
 
 #. module: mrp
 #: model:ir.actions.act_window,name:mrp.act_mrp_block_workcenter
@@ -1079,7 +1079,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp.field_mrp_workorder__use_create_components_lots
 #: model:ir.model.fields,field_description:mrp.field_stock_picking_type__use_create_components_lots
 msgid "Create New Lots/Serial Numbers for Components"
-msgstr ""
+msgstr "Skapa nya parti- / serienummer för komponenter"
 
 #. module: mrp
 #: model_terms:ir.actions.act_window,help:mrp.mrp_bom_form_action
@@ -1328,7 +1328,7 @@ msgstr "Utkast"
 #: model:product.product,name:mrp.product_product_drawer_drawer
 #: model:product.template,name:mrp.product_product_drawer_drawer_product_template
 msgid "Drawer Black"
-msgstr ""
+msgstr "Låda Svart"
 
 #. module: mrp
 #: model:product.product,name:mrp.product_product_drawer_case
@@ -1519,7 +1519,7 @@ msgstr "Finished Products Location"
 #: model:ir.model.fields.selection,name:mrp.selection__mrp_product_produce__consumption__flexible
 #: model:ir.model.fields.selection,name:mrp.selection__mrp_workorder__consumption__flexible
 msgid "Flexible"
-msgstr ""
+msgstr "Flexibel"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_bom__message_follower_ids
@@ -2265,7 +2265,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp.field_mrp_workorder__production_availability
 #: model_terms:ir.ui.view,arch_db:mrp.view_mrp_production_filter
 msgid "Material Availability"
-msgstr ""
+msgstr "Materialtillgänglighet"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_bom__message_has_error
@@ -2376,7 +2376,7 @@ msgstr ""
 #: model_terms:ir.actions.act_window,help:mrp.action_mrp_routing_time
 #: model_terms:ir.actions.act_window,help:mrp.mrp_workorder_delta_report
 msgid "No data to display"
-msgstr ""
+msgstr "Ingen data att visa"
 
 #. module: mrp
 #: model_terms:ir.actions.act_window,help:mrp.mrp_workcenter_productivity_loss_action
@@ -3260,7 +3260,7 @@ msgstr "Resurs"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_document__res_field
 msgid "Resource Field"
-msgstr ""
+msgstr "Resursfält"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_document__res_id
@@ -3270,7 +3270,7 @@ msgstr "Resurs ID"
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_document__res_model
 msgid "Resource Model"
-msgstr ""
+msgstr "Resursmodell"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_mrp_document__res_name
@@ -3664,7 +3664,7 @@ msgstr "Lagerrörelser"
 #. module: mrp
 #: model:ir.model,name:mrp.model_stock_rule
 msgid "Stock Rule"
-msgstr ""
+msgstr "Lager Regel"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_stock_warehouse__sam_loc_id
@@ -3874,7 +3874,7 @@ msgstr ""
 #. module: mrp
 #: model:ir.model.fields,help:mrp.field_mrp_document__res_id
 msgid "The record id this is attached to."
-msgstr ""
+msgstr "Det post-id som denna är kopplad till."
 
 #. module: mrp
 #: model:ir.model.fields,help:mrp.field_mrp_production__propagate_date
@@ -4200,7 +4200,7 @@ msgstr ""
 #. module: mrp
 #: model_terms:ir.ui.view,arch_db:mrp.report_mrp_bom_line
 msgid "Unfold"
-msgstr ""
+msgstr "Veckla ut"
 
 #. module: mrp
 #: model:ir.model.fields,field_description:mrp.field_stock_move__unit_factor

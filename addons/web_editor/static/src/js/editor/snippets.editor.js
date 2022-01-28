@@ -253,7 +253,8 @@ var SnippetEditor = Widget.extend({
         function isEmptyAndRemovable($el, editor) {
             editor = editor || $el.data('snippet-editor');
             return $el.children().length === 0 && $el.text().trim() === ''
-                && !$el.hasClass('oe_structure') && (!editor || editor.isTargetParentEditable);
+                && !$el.hasClass('oe_structure') && !$el.parent().hasClass('carousel-item')
+                && (!editor || editor.isTargetParentEditable);
         }
     },
     /**
@@ -926,6 +927,15 @@ var SnippetsMenu = Widget.extend({
     _activateInsertionZones: function ($selectorSiblings, $selectorChildren) {
         var self = this;
 
+        // If a dropdown is shown, the drop zones must be created only in this
+        // element.
+        const $editableArea = self.getEditableArea();
+        const $dropdown = $editableArea.find('.dropdown-menu.show').addBack('.dropdown-menu.show').parent();
+        if ($dropdown.length) {
+            $selectorSiblings = $dropdown.find($selectorSiblings);
+            $selectorChildren = $dropdown.find($selectorChildren);
+        }
+
         // Check if the drop zone should be horizontal or vertical
         function setDropZoneDirection($elem, $parent, $sibling) {
             var vertical = false;
@@ -1516,6 +1526,13 @@ var SnippetsMenu = Widget.extend({
                             $selectorChildren = $selectorChildren.add(temp[k]['drop-in'].all());
                         }
                     }
+                }
+
+                // TODO mentioning external app snippet but done as a stable fix
+                // that will be adapted in master: if popup snippet, do not
+                // allow to add it in another snippet
+                if ($baseBody[0].matches('.o_newsletter_popup')) {
+                    $selectorChildren = $selectorChildren.not('.oe_structure *, [data-oe-type=html] *');
                 }
 
                 $toInsert = $baseBody.clone();

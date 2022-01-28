@@ -5,6 +5,7 @@
 # Translators:
 # Anders Wallenquist <anders.wallenquist@vertel.se>, 2019
 # Martin Trigaux, 2021
+# Kim Asplund <kim.asplund@gmail.com>, 2021
 # Simon S, 2021
 # 
 msgid ""
@@ -50,6 +51,7 @@ msgstr "Anställd"
 #, python-format
 msgid "In order to get an organigram, set a manager and save the record."
 msgstr ""
+"För att få ett organigram behöver du ställa in en chef och spara posten."
 
 #. module: hr_org_chart
 #: model:ir.model.fields,field_description:hr_org_chart.field_hr_employee__child_all_count
@@ -77,14 +79,14 @@ msgstr ""
 #: code:addons/hr_org_chart/static/src/xml/hr_org_chart.xml:86
 #, python-format
 msgid "No hierarchy position."
-msgstr ""
+msgstr "Ingen hierarkisk position"
 
 #. module: hr_org_chart
 #: model_terms:ir.ui.view,arch_db:hr_org_chart.hr_employee_public_view_form_inherit_org_chart
 #: model_terms:ir.ui.view,arch_db:hr_org_chart.hr_employee_view_form_inherit_org_chart
 #: model_terms:ir.ui.view,arch_db:hr_org_chart.res_users_view_form
 msgid "Organization Chart"
-msgstr ""
+msgstr "Organisationsschema"
 
 #. module: hr_org_chart
 #: model:ir.model,name:hr_org_chart.model_hr_employee_public
@@ -96,7 +98,7 @@ msgstr "Offentlig anställd"
 #: code:addons/hr_org_chart/static/src/xml/hr_org_chart.xml:155
 #, python-format
 msgid "Redirect"
-msgstr ""
+msgstr "Dirigera om"
 
 #. module: hr_org_chart
 #. openerp-web
@@ -123,7 +125,7 @@ msgstr "Lag"
 #: code:addons/hr_org_chart/static/src/xml/hr_org_chart.xml:87
 #, python-format
 msgid "This employee has no manager or subordinate."
-msgstr ""
+msgstr "Den här anställde har ingen chef eller underordnad."
 
 #. module: hr_org_chart
 #. openerp-web

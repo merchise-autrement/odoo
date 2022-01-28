@@ -6,11 +6,11 @@
 # Kristoffer Grundström <lovaren@gmail.com>, 2019
 # Martin Trigaux, 2019
 # Robin Chatfield <robin.chatfield@gmail.com>, 2019
-# Kim Asplund <kim.asplund@gmail.com>, 2019
 # fah_odoo <fah@odoo.com>, 2019
 # Jakob Krabbe <jakob.krabbe@vertel.se>, 2019
 # Anders Wallenquist <anders.wallenquist@vertel.se>, 2021
 # Chrille Hedberg <hedberg.chrille@gmail.com>, 2021
+# Kim Asplund <kim.asplund@gmail.com>, 2021
 # Simon S, 2021
 # 
 msgid ""
@@ -63,7 +63,7 @@ msgstr ""
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.stock_production_lot_view_form
 msgid "<span class=\"o_stat_text\">Sales</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">Försäljning</span>"
 
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.product_template_view_form_inherit_stock
@@ -112,6 +112,9 @@ msgid ""
 "A consumable product is a product for which stock is not managed.\n"
 "A service is a non-material product you provide."
 msgstr ""
+"En lagringsbar produkt är en produkt som du hanterar lager för. Inventer appen måste installeras.\n"
+"En förbrukningsvara är en produkt för vilken lager inte hanteras.\n"
+"En tjänst är en icke-materiell produkt du tillhandahåller."
 
 #. module: sale_stock
 #: model:ir.model.fields,help:sale_stock.field_sale_order_line__qty_delivered_method
@@ -558,7 +561,7 @@ msgstr "Lagerrörelser"
 #. module: sale_stock
 #: model:ir.model,name:sale_stock.model_stock_rule
 msgid "Stock Rule"
-msgstr ""
+msgstr "Lager Regel"
 
 #. module: sale_stock
 #: model:ir.model,name:sale_stock.model_stock_rules_report

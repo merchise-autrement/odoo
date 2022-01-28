@@ -79,42 +79,6 @@ COOKIE_MAX_AGE = DAYS(90)
 request_log_entries = collections.deque(maxlen=256)
 
 
-class _AccelMixin(object):
-    '''A mixin for classes with an :attr:`~BaseResponse.environ` attribute
-    that tests for SPDY/HTTP2 proxies/accelerators.
-
-    '''
-    spdy_version = werkzeug.utils.environ_property(
-        'HTTP_X_SPDY_VERSION', '',
-        doc='''The provided negotiated version of SPDY.
-
-        Proxies or accelerators should be configured to provide
-        this header when using SPDY.
-
-        ''')
-
-    http2_proto = werkzeug.utils.environ_property(
-        'HTTP_X_HTTP2_PROTO', '',
-        doc='''The provided negotiated protocol for HTTP/2 connections.
-
-        Proxies or accelerator should be configured to provide this header
-        when using HTTP/2.
-
-        ''')
-
-    @werkzeug.utils.cached_property
-    def is_spdy(self):
-        return bool(self.spdy_version)
-
-    @werkzeug.utils.cached_property
-    def is_http2(self):
-        return bool(self.http2_proto)
-
-
-class WerkzeugOdooRequest(werkzeug.wrappers.Request, _AccelMixin):
-    pass
-
-
 # To remove when corrected in Babel
 babel.core.LOCALE_ALIASES['nb'] = 'nb_NO'
 
@@ -1522,8 +1486,7 @@ class Root(object):
         Performs the actual WSGI dispatching for the application.
         """
         try:
-            httprequest = WerkzeugOdooRequest(environ)
-            httprequest.app = self
+            httprequest = werkzeug.wrappers.Request(environ)
             httprequest.parameter_storage_class = werkzeug.datastructures.ImmutableOrderedMultiDict
 
             current_thread = threading.current_thread()

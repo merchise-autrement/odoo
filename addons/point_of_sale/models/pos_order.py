@@ -194,7 +194,7 @@ class PosOrder(models.Model):
             .mapped('picking_id.move_lines')\
             .filtered(lambda m: m.product_id.id == product.id)\
             .sorted(lambda x: x.date)
-        price_unit = product._compute_average_price(0, quantity, moves)
+        price_unit = product.with_context(force_company=self.company_id.id)._compute_average_price(0, quantity, moves)
         return - price_unit
 
     name = fields.Char(string='Order Ref', required=True, readonly=True, copy=False, default='/')
@@ -672,7 +672,6 @@ class PosOrder(models.Model):
             'datas': ticket,
             'res_model': 'pos.order',
             'res_id': orders[:1].id,
-            'store_fname': filename,
             'mimetype': 'image/jpeg',
         })
         template_data = {
@@ -691,7 +690,6 @@ class PosOrder(models.Model):
                 'name': filename,
                 'type': 'binary',
                 'datas': base64.b64encode(report[0]),
-                'store_fname': filename,
                 'res_model': 'pos.order',
                 'res_id': orders[:1].id,
                 'mimetype': 'application/x-pdf'

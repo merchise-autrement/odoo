@@ -424,6 +424,36 @@ class TestWorkOrderProcess(TestMrpCommon):
         door_wo_2.record_production()
         self.assertEqual(door_wo_2.state, 'done', "Workorder should be in done state.")
 
+    def test_unlink_workorder(self):
+        laptop = self.env.ref("product.product_product_25")
+        bom = self.env['mrp.bom'].browse(self.ref("mrp.mrp_bom_desk"))
+        bom.routing_id = self.env.ref("mrp.mrp_routing_1")
+
+        production_table_form = Form(self.env['mrp.production'])
+        production_table_form.product_id = laptop
+        production_table_form.bom_id = bom
+        production_table_form.product_qty = 2.0
+        production_table_form.product_uom_id = laptop.uom_id
+        production_table = production_table_form.save()
+        production_table.action_confirm()
+
+        production_table.button_plan()
+
+        self.assertEqual(len(production_table.workorder_ids), 3)
+
+        workorders = production_table.workorder_ids
+
+        for i in range(len(workorders)-1):
+            self.assertEqual(workorders[i].next_work_order_id, workorders[i+1])
+
+        production_table.workorder_ids[1].unlink()
+
+        self.assertEqual(len(production_table.workorder_ids), 2)
+
+        workorders = production_table.workorder_ids
+        for i in range(len(workorders)-1):
+            self.assertEqual(workorders[i].next_work_order_id, workorders[i+1])
+
 
     def test_01_without_workorder(self):
         """ Testing consume quants and produced quants without workorder """
@@ -1271,6 +1301,33 @@ class TestWorkOrderProcess(TestMrpCommon):
         self.assertEqual(line2.qty_done, 1)
         self.assertEqual(line3.product_id, self.product_1)
         self.assertEqual(line3.qty_done, 4)
+
+    def test_change_production_qty(self):
+        """
+        This test checks the expected duration of a work order after the user has changed
+        the production quantity
+        """
+        factor = 2
+        self.bom_1.routing_id.operation_ids[1:].unlink()
+        self.bom_1.routing_id.operation_ids.workcenter_id.write({
+            'capacity': 1,
+            'time_start': 0,
+            'time_stop': 0,
+            'time_efficiency': 100,
+        })
+
+        mo_form = Form(self.env['mrp.production'])
+        mo_form.product_id = self.bom_1.product_id
+        mo = mo_form.save()
+        mo.action_confirm()
+        mo.button_plan()
+
+        wizard = Form(self.env['change.production.qty'].with_context(default_mo_id=mo.id)).save()
+        wizard.product_qty = self.bom_1.product_qty * factor
+        wizard.change_prod_qty()
+
+        duration_expected = self.bom_1.routing_id.operation_ids.time_cycle_manual * self.bom_1.product_qty * factor
+        self.assertEqual(mo.workorder_ids.duration_expected, duration_expected)
 
 
 class TestRoutingAndKits(SavepointCase):
