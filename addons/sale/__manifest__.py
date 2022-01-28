@@ -41,6 +41,6 @@ This module contains all the common features of Sales Management and eCommerce.
     ],
     'uninstall_hook': "uninstall_hook",
     'installable': False,
-    'auto_install': False
+    'auto_install': False,
     'license': 'LGPL-3',
 }
