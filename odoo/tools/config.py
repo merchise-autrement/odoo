@@ -73,6 +73,7 @@ class configmanager(object):
         # Options not exposed on the command line. Command line options will be added
         # from optparse's parser.
         self.options = {
+            # merchise: removed bc. master-password-hash: 'admin_passwd': 'admin',
             'csv_internal_sep': ',',
             'publisher_warranty_url': 'http://services.openerp.com/publisher-warranty/',
             'reportgz': False,
@@ -697,6 +698,7 @@ class configmanager(object):
     def __getitem__(self, key):
         return self.options[key]
 
+    # merchise: nice addition used in other merchise's changes
     def setdefault(self, key, default):
         return self.options.setdefault(key, default)
 

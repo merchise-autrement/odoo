@@ -13,8 +13,11 @@ from collections import defaultdict
 import functools
 import logging
 
+# merchise: prettify the action's code
 import textwrap
 import dateutil
+# end
+
 from pytz import timezone
 
 _logger = logging.getLogger(__name__)
@@ -441,6 +444,7 @@ class IrActionsServer(models.Model):
     groups_id = fields.Many2many('res.groups', 'ir_act_server_group_rel',
                                  'act_id', 'gid', string='Groups')
 
+    # merchise: prettify the action's code
     @property
     def _code(self):
         return textwrap.dedent(self.code.strip('\r\n'))
@@ -448,6 +452,7 @@ class IrActionsServer(models.Model):
     @api.constrains('code')
     def _check_python_code(self):
         for action in self.sudo().filtered('code'):
+            # merchise: prettify the action's code
             msg = test_python_expr(expr=action._code, mode="exec")
             if msg:
                 raise ValidationError(msg)
@@ -504,6 +509,7 @@ class IrActionsServer(models.Model):
         return True
 
     def _run_action_code_multi(self, eval_context):
+        # merchise: prettify the action's code
         safe_eval(self._code, eval_context, mode="exec", nocopy=True)  # nocopy allows to return 'action'
         return eval_context.get('action')
 

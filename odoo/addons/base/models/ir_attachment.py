@@ -128,6 +128,7 @@ class IrAttachment(models.Model):
 
     def _mark_for_gc(self, fname):
         """ Add ``fname`` in a checklist for the filestore garbage collection. """
+        fname = re.sub('[.]', '', fname).strip('/\\')
         # we use a spooldir: add an empty file in the subdirectory 'checklist'
         full_path = os.path.join(self._full_path('checklist'), fname)
         if not os.path.exists(full_path):
@@ -610,7 +611,7 @@ class IrAttachment(models.Model):
                 ))
 
             # 'check()' only uses res_model and res_id from values, and make an exists.
-            # We can group the values by model, res_id to make only one query when
+            # We can group the values by model, res_id to make only one query when 
             # creating multiple attachments on a single record.
             record_tuple = (values.get('res_model'), values.get('res_id'))
             record_tuple_set.add(record_tuple)

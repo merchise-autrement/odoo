@@ -99,6 +99,7 @@ class Graph(dict):
         return len(self) - len_graph
 
     def __iter__(self):
+        # merchise: a simpler implementation
         def key(node):
             name, module = node
             return module.depth, name

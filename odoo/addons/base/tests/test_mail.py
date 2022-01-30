@@ -2,7 +2,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 
-from email.mime.multipart import MIMEMultipart
 from unittest.mock import patch
 import email.policy
 import email.message
@@ -120,9 +119,9 @@ class TestSanitizer(BaseCase):
                 ['background-color:red', 'Coin coin'],
                 ['position', 'top', 'left']
             ), (
-                """<div style='before: "Email Address; coincoin cheval: lapin";
+                """<div style='before: "Email Address; coincoin cheval: lapin";  
    font-size: 30px; max-width: 100%; after: "Not sure
-
+    
           this; means: anything ?#ùµ"
     ; some-property: 2px; top: 3'>youplaboum</div>""",
                 ['font-size:30px', 'youplaboum'],
