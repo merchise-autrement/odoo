@@ -32,5 +32,4 @@
         'demo/demo_company.xml',
         'demo/demo_partner.xml',
     ],
-    'license': 'LGPL-3',
 }

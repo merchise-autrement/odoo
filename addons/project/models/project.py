@@ -556,12 +556,6 @@ class Task(models.Model):
         return self.env.company
 
     @api.model
-    def _default_company_id(self):
-        if self._context.get('default_project_id'):
-            return self.env['project.project'].browse(self._context['default_project_id']).company_id
-        return self.env['res.company']._company_default_get()
-
-    @api.model
     def _read_group_stage_ids(self, stages, domain, order):
         search_domain = [('id', 'in', stages.ids)]
         if 'default_project_id' in self.env.context:
