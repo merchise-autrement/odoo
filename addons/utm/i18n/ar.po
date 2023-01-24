@@ -12,6 +12,8 @@
 # Shaima Safar <shaima.safar@open-inside.com>, 2019
 # Mostafa Hanafy <mostafa.s.hanafy@gmail.com>, 2019
 # Osama Ahmaro <osamaahmaro@gmail.com>, 2019
+# Mohamed Abofanas <mohammed.abofanas@it.misuratau.edu.ly>, 2022
+# Malaz Abuidris <msea@odoo.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -19,7 +21,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-23 11:33+0000\n"
 "PO-Revision-Date: 2019-08-26 09:15+0000\n"
-"Last-Translator: Osama Ahmaro <osamaahmaro@gmail.com>, 2019\n"
+"Last-Translator: Malaz Abuidris <msea@odoo.com>, 2022\n"
 "Language-Team: Arabic (https://www.transifex.com/odoo/teams/41243/ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -61,7 +63,7 @@ msgstr "اسم الحملة"
 #. module: utm
 #: model:ir.model,name:utm.model_utm_stage
 msgid "Campaign Stage"
-msgstr ""
+msgstr "مرحلة الحملة"
 
 #. module: utm
 #: model:ir.actions.act_window,name:utm.action_view_utm_tag
@@ -79,7 +81,7 @@ msgstr "الحملات"
 #. module: utm
 #: model:utm.campaign,name:utm.utm_campaign_christmas_special
 msgid "Christmas Special"
-msgstr ""
+msgstr "كريسمس خاص"
 
 #. module: utm
 #: model:ir.model.fields,field_description:utm.field_utm_campaign__color
@@ -95,7 +97,7 @@ msgstr "اللون"
 #. module: utm
 #: model_terms:ir.actions.act_window,help:utm.action_view_utm_stage
 msgid "Create a stage for your campaigns"
-msgstr ""
+msgstr "أنشئ مسرحا لمرحلتك"
 
 #. module: utm
 #: model:ir.model.fields,field_description:utm.field_utm_campaign__create_uid
@@ -158,12 +160,12 @@ msgstr "القائمة المنسدلة"
 #. module: utm
 #: model:utm.campaign,name:utm.utm_campaign_email_campaign_products
 msgid "Email Campaign - Products"
-msgstr ""
+msgstr "حملة البريد الإلكتروني - المنتجات "
 
 #. module: utm
 #: model:utm.campaign,name:utm.utm_campaign_email_campaign_services
 msgid "Email Campaign - Services"
-msgstr ""
+msgstr "حملة البريد الإلكتروني - الخدمات "
 
 #. module: utm
 #: model:utm.source,name:utm.utm_source_facebook
@@ -226,7 +228,7 @@ msgstr "آخر تحديث في"
 #. module: utm
 #: model:utm.source,name:utm.utm_source_mailing
 msgid "Lead Recall"
-msgstr ""
+msgstr "استرجاع العملاء المهتمين "
 
 #. module: utm
 #: model:ir.ui.menu,name:utm.menu_link_tracker_root
@@ -247,14 +249,14 @@ msgstr "وسط"
 #. module: utm
 #: model:ir.model.fields,field_description:utm.field_utm_medium__name
 msgid "Medium Name"
-msgstr ""
+msgstr "اسم الوسط "
 
 #. module: utm
 #: model:ir.actions.act_window,name:utm.utm_medium_action
 #: model:ir.ui.menu,name:utm.menu_utm_medium
 #: model_terms:ir.ui.view,arch_db:utm.utm_medium_view_tree
 msgid "Mediums"
-msgstr ""
+msgstr "الأوساط "
 
 #. module: utm
 #: model:ir.model.fields,field_description:utm.field_utm_stage__name
@@ -291,7 +293,7 @@ msgstr "جدولة"
 #. module: utm
 #: model_terms:ir.ui.view,arch_db:utm.utm_medium_view_search
 msgid "Search UTM Medium"
-msgstr ""
+msgstr "البحث في وسط UTM "
 
 #. module: utm
 #: model:utm.source,name:utm.utm_source_search_engine
@@ -329,7 +331,7 @@ msgstr "اسم المصدر"
 #: model:ir.actions.act_window,name:utm.utm_source_action
 #: model:ir.ui.menu,name:utm.menu_utm_source
 msgid "Sources"
-msgstr ""
+msgstr "المصادر "
 
 #. module: utm
 #: model:ir.model.fields,field_description:utm.field_utm_campaign__stage_id
@@ -349,6 +351,8 @@ msgid ""
 "Stages allow you to organize your workflow  (e.g. : plan, design, in "
 "progress,  done, …)."
 msgstr ""
+"تتيح لك المراحل تنظيم سير عملك (مثال: التخطيط، التصميم، قيد التنفيذ، تم "
+"الانتهاء، ...). "
 
 #. module: utm
 #: model:ir.model.constraint,message:utm.constraint_utm_tag_name_uniq
@@ -400,37 +404,37 @@ msgstr "حملة UTM"
 #: model_terms:ir.ui.view,arch_db:utm.utm_campaign_view_tree
 #: model_terms:ir.ui.view,arch_db:utm.view_utm_campaign_view_search
 msgid "UTM Campaigns"
-msgstr ""
+msgstr "مرحلة UTM"
 
 #. module: utm
 #: model:ir.model,name:utm.model_utm_medium
 msgid "UTM Medium"
-msgstr ""
+msgstr "وسط UTM "
 
 #. module: utm
 #: model:ir.model,name:utm.model_utm_mixin
 msgid "UTM Mixin"
-msgstr ""
+msgstr "UTM Mixin"
 
 #. module: utm
 #: model:ir.model,name:utm.model_utm_source
 msgid "UTM Source"
-msgstr ""
+msgstr "مصدر UTM "
 
 #. module: utm
 #: model:ir.actions.act_window,name:utm.action_view_utm_stage
 msgid "UTM Stages"
-msgstr ""
+msgstr "مراحل UTM "
 
 #. module: utm
 #: model:ir.model,name:utm.model_utm_tag
 msgid "UTM Tag"
-msgstr ""
+msgstr "وسم UTM"
 
 #. module: utm
 #: model:ir.ui.menu,name:utm.marketing_utm
 msgid "UTMs"
-msgstr ""
+msgstr "UTMs"
 
 #. module: utm
 #: model_terms:ir.actions.act_window,help:utm.action_view_utm_tag

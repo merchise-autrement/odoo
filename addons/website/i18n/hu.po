@@ -12,16 +12,18 @@
 # krnkris, 2019
 # Istvan <leki69@gmail.com>, 2019
 # Ákos Nagy <akos.nagy@oregional.hu>, 2020
-# Tamás Németh <ntomasz81@gmail.com>, 2021
 # gezza <geza.nagy@oregional.hu>, 2021
+# sixsix six, 2022
+# Tamás Németh <ntomasz81@gmail.com>, 2022
+# Tamás Dombos, 2022
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 13.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-27 09:21+0000\n"
+"POT-Creation-Date: 2022-01-07 12:31+0000\n"
 "PO-Revision-Date: 2019-08-26 09:15+0000\n"
-"Last-Translator: gezza <geza.nagy@oregional.hu>, 2021\n"
+"Last-Translator: Tamás Dombos, 2022\n"
 "Language-Team: Hungarian (https://www.transifex.com/odoo/teams/41243/hu/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -51,6 +53,24 @@ msgstr ""
 #. module: website
 #: code:addons/website/models/website_rewrite.py:0
 #, python-format
+msgid "\"URL to\" cannot contain parameter %s which is not used in \"URL from\"."
+msgstr ""
+
+#. module: website
+#: code:addons/website/models/website_rewrite.py:0
+#, python-format
+msgid "\"URL to\" is invalid: %s"
+msgstr ""
+
+#. module: website
+#: code:addons/website/models/website_rewrite.py:0
+#, python-format
+msgid "\"URL to\" must contain parameter %s used in \"URL from\"."
+msgstr ""
+
+#. module: website
+#: code:addons/website/models/website_rewrite.py:0
+#, python-format
 msgid "\"URL to\" must start with a leading slash."
 msgstr ""
 
@@ -70,17 +90,6 @@ msgstr "%s (id: %s)"
 #: model_terms:ir.ui.view,arch_db:website.show_website_info
 msgid "&amp;times;"
 msgstr "&amp;times;"
-
-#. module: website
-#: model_terms:ir.ui.view,arch_db:website.sitemap_index_xml
-#: model_terms:ir.ui.view,arch_db:website.sitemap_xml
-msgid "&lt;?xml version=\"1.0\" encoding=\"UTF-8\"?&gt;"
-msgstr "&lt;?xml verzió=\"1.0\" kódolás=\"UTF-8\"?&gt;"
-
-#. module: website
-#: model_terms:ir.ui.view,arch_db:website.default_xml
-msgid "&lt;?xml version=\"1.0\" encoding=\"utf-8\"?&gt;"
-msgstr "&lt;?xml verzió=\"1.0\" kódolás=\"UTF-8\"?&gt;"
 
 #. module: website
 #. openerp-web
@@ -121,11 +130,6 @@ msgid ""
 ".\n"
 "            Changing its name will break these calls."
 msgstr ". A név megváltoztatása megszakítja ezeket a hívásokat."
-
-#. module: website
-#: model_terms:ir.ui.view,arch_db:website.default_csv
-msgid "1,2,3"
-msgstr "1,2,3"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
@@ -608,6 +612,8 @@ msgid ""
 "<i class=\"fa fa-fw o_button_icon fa-circle text-danger\"/>\n"
 "                            <span>Offline</span>"
 msgstr ""
+"<i class=\"fa fa-fw o_button_icon fa-circle text-danger\"/>\n"
+"                            <span>Offline</span>"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.website_visitor_view_form
@@ -615,6 +621,8 @@ msgid ""
 "<i class=\"fa fa-fw o_button_icon fa-circle text-success\"/>\n"
 "                            <span>Connected</span>"
 msgstr ""
+"<i class=\"fa fa-fw o_button_icon fa-circle text-success\"/>\n"
+"                            <span>Kapcsolódva</span>"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippets
@@ -726,6 +734,8 @@ msgid ""
 "<small id=\"emailHelp\" class=\"form-text text-muted\">We'll never share "
 "your email with anyone else.</small>"
 msgstr ""
+"<small id=\"emailHelp\" class=\"form-text text-muted\">Soha nem osztjuk meg "
+"az e-mailedet másokkal.</small>"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_comparisons
@@ -991,7 +1001,7 @@ msgid ""
 "Adapt these three columns to fit your design need. To duplicate, delete or "
 "move columns, select the column and use the top icons to perform your "
 "action."
-msgstr ""
+msgstr "Oszlopok"
 
 #. module: website
 #. openerp-web
@@ -1047,7 +1057,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
 msgid "Add links to social media on your website"
-msgstr ""
+msgstr "Közösségi média hivatkozások hozzáadása a weboldalhoz"
 
 #. module: website
 #. openerp-web
@@ -1323,25 +1333,25 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_page_ir_ui_view
 #: model_terms:website.page,arch_db:website.bs_debug_page
 msgid "Card"
-msgstr ""
+msgstr "Kártya"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_page_ir_ui_view
 #: model_terms:website.page,arch_db:website.bs_debug_page
 msgid "Card Body"
-msgstr ""
+msgstr "Kártya szövege"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_page_ir_ui_view
 #: model_terms:website.page,arch_db:website.bs_debug_page
 msgid "Card Footer"
-msgstr ""
+msgstr "Kártya lábléce"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_page_ir_ui_view
 #: model_terms:website.page,arch_db:website.bs_debug_page
 msgid "Card Header"
-msgstr ""
+msgstr "Kártya fejléce"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_cover
@@ -1565,7 +1575,7 @@ msgstr "Megerősítés"
 #: code:addons/website/static/src/xml/website.backend.xml:0
 #, python-format
 msgid "Connect Google Analytics"
-msgstr ""
+msgstr "Google Analytics bekötése"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.footer_custom
@@ -2355,7 +2365,7 @@ msgstr "Teljes képernyő"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "Full-Width"
-msgstr ""
+msgstr "Teljes szélesség"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_comparisons
@@ -2495,6 +2505,18 @@ msgid "Google Maps API Key"
 msgstr "Google Maps API kulcs"
 
 #. module: website
+#. openerp-web
+#: code:addons/website/static/src/xml/website.backend.xml:0
+#, python-format
+msgid ""
+"Google deprecated both its \"Universal Analytics\" and \"Google Sign-In\" "
+"API. It means that only accounts and keys created before 2020 will be able "
+"to integrate their Analytics dashboard in Odoo (or any other website). This "
+"will be possible only up to mid 2023. After that, those services won't work "
+"anymore, at all."
+msgstr ""
+
+#. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_features_grid
 msgid "Great Value"
 msgstr "Alapértelmezés szerinti érték"
@@ -2571,49 +2593,49 @@ msgstr "Fejléc Szín"
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_page__header_overlay
 msgid "Header Overlay"
-msgstr ""
+msgstr "Fejléc átfedés"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_page_ir_ui_view
 #: model_terms:ir.ui.view,arch_db:website.theme_customize
 #: model_terms:website.page,arch_db:website.bs_debug_page
 msgid "Headings 1"
-msgstr ""
+msgstr "Címsor 1"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_page_ir_ui_view
 #: model_terms:ir.ui.view,arch_db:website.theme_customize
 #: model_terms:website.page,arch_db:website.bs_debug_page
 msgid "Headings 2"
-msgstr ""
+msgstr "Címsor 2"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_page_ir_ui_view
 #: model_terms:ir.ui.view,arch_db:website.theme_customize
 #: model_terms:website.page,arch_db:website.bs_debug_page
 msgid "Headings 3"
-msgstr ""
+msgstr "Címsor 3"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_page_ir_ui_view
 #: model_terms:ir.ui.view,arch_db:website.theme_customize
 #: model_terms:website.page,arch_db:website.bs_debug_page
 msgid "Headings 4"
-msgstr ""
+msgstr "Címsor 4"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_page_ir_ui_view
 #: model_terms:ir.ui.view,arch_db:website.theme_customize
 #: model_terms:website.page,arch_db:website.bs_debug_page
 msgid "Headings 5"
-msgstr ""
+msgstr "Címsor 5"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_page_ir_ui_view
 #: model_terms:ir.ui.view,arch_db:website.theme_customize
 #: model_terms:website.page,arch_db:website.bs_debug_page
 msgid "Headings 6"
-msgstr ""
+msgstr "Címsor 6"
 
 #. module: website
 #. openerp-web
@@ -2653,6 +2675,8 @@ msgstr "Magas"
 msgid ""
 "Hint: Type '/' to search an existing page and '#' to link to an anchor."
 msgstr ""
+"Gépeld be, hogy '/' ahhoz, hogy a létező oldalak között keressen, vagy hogy "
+"'#', hogy egy horgonyra hivatkozzon."
 
 #. module: website
 #. openerp-web
@@ -2934,7 +2958,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:website.field_website_menu__is_visible
 #: model:ir.model.fields,field_description:website.field_website_page__is_visible
 msgid "Is Visible"
-msgstr ""
+msgstr "Látható?"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_visitor__is_connected
@@ -2947,17 +2971,6 @@ msgstr ""
 #, python-format
 msgid "It looks like your file is being called by"
 msgstr "Úgy tűnik, hogy a fájlt hívja"
-
-#. module: website
-#. openerp-web
-#: code:addons/website/static/src/js/content/website_root.js:0
-#, python-format
-msgid ""
-"It might be possible to edit the relevant items or fix the issue in <a "
-"href=\"%s\">the classic Odoo interface</a>"
-msgstr ""
-"Lehet, hogy szerkesztheti a megfelelő elemeket, vagy javíthatja a problémát "
-"<a href=\"%s\">a klasszikus Odoo felületen</a>"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_page_ir_ui_view
@@ -3189,7 +3202,7 @@ msgstr "Hivatkozás"
 #: code:addons/website/static/src/js/editor/snippets.options.js:0
 #, python-format
 msgid "Link Anchor"
-msgstr ""
+msgstr "Hivatkozás horgony"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_res_config_settings__module_website_links
@@ -3200,7 +3213,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_page_ir_ui_view
 #: model_terms:website.page,arch_db:website.bs_debug_page
 msgid "Link button"
-msgstr ""
+msgstr "Hivatkozás gomb"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_visitor__partner_id
@@ -3221,7 +3234,7 @@ msgstr "LinkedIn fiók"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_faq_collapse
 msgid "Links to other Websites"
-msgstr ""
+msgstr "Más weboldalra mutató hivatkozások"
 
 #. module: website
 #. openerp-web
@@ -3275,7 +3288,7 @@ msgstr "Oldalak kezelése"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.list_website_pages
 msgid "Manage Your Pages"
-msgstr ""
+msgstr "Oldalak szerkesztése"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.user_navbar
@@ -3516,6 +3529,15 @@ msgstr "Új esemény"
 #: model_terms:ir.ui.view,arch_db:website.user_navbar
 msgid "New Forum"
 msgstr "Új fórum"
+
+#. module: website
+#. openerp-web
+#: code:addons/website/static/src/xml/website.backend.xml:0
+#, python-format
+msgid ""
+"New Google Analytics accounts and keys are now using Google Analytics 4 "
+"which, for now, can't be integrated/embed in external websites."
+msgstr ""
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.user_navbar
@@ -4096,12 +4118,12 @@ msgstr "Minőség"
 #. module: website
 #: model:ir.model,name:website.model_ir_qweb
 msgid "Qweb"
-msgstr ""
+msgstr "Qweb"
 
 #. module: website
 #: model:ir.model,name:website.model_ir_qweb_field_contact
 msgid "Qweb Field Contact"
-msgstr ""
+msgstr "Qweb Mező Kapcsolat"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_btn
@@ -4872,6 +4894,12 @@ msgid ""
 msgstr ""
 
 #. module: website
+#: code:addons/website/models/website_visitor.py:0
+#, python-format
+msgid "This operator is not supported"
+msgstr "Ez a művelet nem támogatott"
+
+#. module: website
 #: model_terms:ir.ui.view,arch_db:website.page_404
 msgid ""
 "This page does not exist, but you can create it as you are administrator of "
@@ -4887,6 +4915,15 @@ msgstr "Ez az oldal a (z) <b> %s</b> menüben található"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.one_page_line
 msgid "This page will be visible on {{ date_formatted }}"
+msgstr ""
+
+#. module: website
+#. openerp-web
+#: code:addons/website/static/src/xml/website.backend.xml:0
+#, python-format
+msgid ""
+"Those accounts should now check their Analytics dashboard in the Google "
+"platform directly."
 msgstr ""
 
 #. module: website
@@ -5949,11 +5986,6 @@ msgstr "url"
 #: model_terms:ir.ui.view,arch_db:website.menu_search
 msgid "website"
 msgstr "weboldal"
-
-#. module: website
-#: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
-msgid "www.odoo.com"
-msgstr "www.odoo.com"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.qweb_500

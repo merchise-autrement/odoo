@@ -149,8 +149,7 @@ var StatementModel = BasicModel.extend({
 
         return Promise.all([
             this._computeLine(line),
-            this._performMoveLine(handle, 'match_rp', line.mode == 'match_rp'? 1 : 0),
-            this._performMoveLine(handle, 'match_other', line.mode == 'match_other'? 1 : 0)
+            this._performMoveLine(handle, line.mode, 1)
         ]);
     },
     /**
@@ -752,6 +751,8 @@ var StatementModel = BasicModel.extend({
                         prop.tax_ids = _.filter(prop.tax_ids, function (val) {
                             return val.id !== id;
                         });
+                        // Remove all tax tags, they will be recomputed in case of remaining taxes
+                        prop.tag_ids = [];
                         break;
                 }
             }
@@ -1208,7 +1209,7 @@ var StatementModel = BasicModel.extend({
         line['mv_lines_'+mode] = _.uniq(line['mv_lines_'+mode].concat(mv_lines), l => l.id);
         if (mv_lines[0]){
             line['remaining_'+mode] = mv_lines[0].recs_count - mv_lines.length;
-        } else if (line['mv_lines_'+mode].lenght == 0) {
+        } else if (line['mv_lines_'+mode].length == 0) {
             line['remaining_'+mode] = 0;
         }
         this._formatLineProposition(line, mv_lines);
@@ -1884,6 +1885,11 @@ var ManualModel = StatementModel.extend({
         var self = this;
         var line = this.getLine(handle);
         line.mv_lines_match = _.uniq((line.mv_lines_match || []).concat(mv_lines), l => l.id);
+        if (mv_lines[0]){
+            line.remaining_match = mv_lines[0].recs_count - mv_lines.length;
+        } else if (line.mv_lines_match.length == 0) {
+            line.remaining_match = 0;
+        }
         this._formatLineProposition(line, mv_lines);
 
         if (line.mode !== 'create' && !line.mv_lines_match.length && !line.filter_match.length) {

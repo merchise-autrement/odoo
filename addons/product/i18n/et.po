@@ -18,6 +18,10 @@
 # Algo Kärp <algokarp@gmail.com>, 2021
 # Martin Talts <martin.t@avalah.ee>, 2021
 # Triine Aavik <triine@avalah.ee>, 2021
+# Oliver Ernest, 2022
+# Leaanika Randmets, 2022
+# Jana Jaakson, 2022
+# Anna, 2023
 # 
 msgid ""
 msgstr ""
@@ -25,7 +29,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-27 09:22+0000\n"
 "PO-Revision-Date: 2019-08-26 09:13+0000\n"
-"Last-Translator: Triine Aavik <triine@avalah.ee>, 2021\n"
+"Last-Translator: Anna, 2023\n"
 "Language-Team: Estonian (https://www.transifex.com/odoo/teams/41243/et/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -105,7 +109,7 @@ msgstr "1 aasta"
 #: model:product.product,description_sale:product.product_product_4d
 #: model:product.template,description_sale:product.product_product_4b_product_template
 msgid "160x80cm, with large legs."
-msgstr ""
+msgstr "160x80cm, with large legs."
 
 #. module: product
 #: model:product.attribute.value,name:product.product_attribute_value_6
@@ -141,6 +145,9 @@ msgid ""
 "                              <span attrs=\"{'invisible':[('base', '!=', 'standard_price')]}\">Cost  -  </span>\n"
 "                              <span attrs=\"{'invisible':[('base', '!=', 'pricelist')]}\">Other Pricelist  -  </span>"
 msgstr ""
+"<span attrs=\"{'invisible':[('base', '!=', 'list_price')]}\">Müügihind - </span>\n"
+"<span attrs=\"{'invisible':[('base', '!=', 'standard_price')]}\">Omahind - </span>\n"
+"<span attrs=\"{'invisible':[('base', '!=', 'pricelist')]}\">Muu hinnakiri - </span>"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_category_form_view
@@ -419,6 +426,10 @@ msgid ""
 "Cost Price : The base price will be the cost price.\n"
 "Other Pricelist : Computation of the base price based on another Pricelist."
 msgstr ""
+"Arvutamise baashind.\n"
+"Müügihind: baashinnaks on müügihind.\n"
+"Omahind: baashinnaks on omahind.\n"
+"Muu hinnakiri : baashinna arvutamine teise hinnakirja alusel."
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__base
@@ -440,7 +451,7 @@ msgstr "Must"
 #: model:product.product,name:product.product_product_10
 #: model:product.template,name:product.product_product_10_product_template
 msgid "Cabinet with Doors"
-msgstr ""
+msgstr "Ustega kabinet"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.view_product_price_list
@@ -609,7 +620,7 @@ msgstr ""
 #: model:product.product,name:product.product_product_5
 #: model:product.template,name:product.product_product_5_product_template
 msgid "Corner Desk Right Sit"
-msgstr ""
+msgstr "Nurgalaud"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__standard_price
@@ -728,7 +739,7 @@ msgstr "Päevad"
 #. module: product
 #: model:ir.model,name:product.model_decimal_precision
 msgid "Decimal Precision"
-msgstr ""
+msgstr "Kümnendkoha täpsus"
 
 #. module: product
 #: code:addons/product/models/res_company.py:0
@@ -775,7 +786,7 @@ msgstr "Kirjeldus"
 #: model:product.product,name:product.product_product_3
 #: model:product.template,name:product.product_product_3_product_template
 msgid "Desk Combination"
-msgstr ""
+msgstr "Lauakombinatsioon"
 
 #. module: product
 #: model:product.product,name:product.product_product_22
@@ -840,7 +851,7 @@ msgstr "Näidatav nimi"
 #: model:product.product,name:product.product_product_27
 #: model:product.template,name:product.product_product_27_product_template
 msgid "Drawer"
-msgstr ""
+msgstr "Sahtel"
 
 #. module: product
 #: model:product.product,name:product.product_product_16
@@ -1057,6 +1068,8 @@ msgstr "Kui valitud, on mõningate sõnumitel saatmiserror."
 msgid ""
 "If not set, the vendor price will apply to all variants of this product."
 msgstr ""
+"Kui seda pole määratud, rakendub tarnija hind selle toote kõikidele "
+"variantidele."
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist__active
@@ -1213,7 +1226,7 @@ msgstr ""
 #: model:product.product,name:product.product_product_8
 #: model:product.template,name:product.product_product_8_product_template
 msgid "Large Desk"
-msgstr ""
+msgstr "Suur laud"
 
 #. module: product
 #: model:product.product,name:product.consu_delivery_02
@@ -1292,7 +1305,7 @@ msgstr ""
 #. module: product
 #: model:product.attribute,name:product.product_attribute_1
 msgid "Legs"
-msgstr ""
+msgstr "Jalad"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute__attribute_line_ids
@@ -1377,6 +1390,8 @@ msgid ""
 "Multiple prices: Pricelists with fixed price rules by product,\n"
 "Advanced rules: enables advanced price rules for pricelists."
 msgstr ""
+"Mitu müügihinda: fikseeritud hinnareeglitega hinnakirjad toodete kaupa,\n"
+"Täpsemad hinnareeglid: lubab hinnakirjade jaoks määrata täpsemaid hinnareegleid."
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_category__name
@@ -1454,13 +1469,13 @@ msgstr "Lugemata sõnumite arv"
 #: model:product.product,name:product.product_delivery_01
 #: model:product.template,name:product.product_delivery_01_product_template
 msgid "Office Chair"
-msgstr ""
+msgstr "Kontoritool"
 
 #. module: product
 #: model:product.product,name:product.product_product_12
 #: model:product.template,name:product.product_product_12_product_template
 msgid "Office Chair Black"
-msgstr ""
+msgstr "Must kontoritool"
 
 #. module: product
 #: model:product.product,name:product.product_order_01
@@ -1667,7 +1682,7 @@ msgstr "Hinnakirja nimi"
 #. module: product
 #: model:ir.model,name:product.model_product_pricelist_item
 msgid "Pricelist Rule"
-msgstr ""
+msgstr "Hinnakirja reegel"
 
 #. module: product
 #: model:ir.actions.act_window,name:product.product_pricelist_action2
@@ -1838,7 +1853,7 @@ msgstr "Toote malli atribuutide rida"
 #. module: product
 #: model:ir.model,name:product.model_product_template_attribute_value
 msgid "Product Template Attribute Value"
-msgstr ""
+msgstr "Tootemalli atribuudi väärtus"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__type
@@ -2272,6 +2287,8 @@ msgid ""
 "expressed in the vendor Product Unit of Measure if not any, in the default "
 "unit of measure of the product otherwise."
 msgstr ""
+"Sellelt müüjalt ostetav kogus, et saada kasu hinnast, väljendatuna müüja "
+"toote mõõtühikus, kui mitte, siis toote vaikemõõtühikus."
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product__lst_price
@@ -2308,6 +2325,15 @@ msgstr ""
 #: model:ir.model.fields,help:product.field_product_supplierinfo__product_uom
 msgid "This comes from the product form."
 msgstr "See tuleneb toote vormist."
+
+#. module: product
+#: code:addons/product/models/product_template.py:0
+#, python-format
+msgid ""
+"This configuration of product attributes, values, and exclusions would lead "
+"to no possible variant. Please archive or delete your product directly if "
+"intended."
+msgstr ""
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product__price_extra
@@ -2791,6 +2817,14 @@ msgstr ""
 #, python-format
 msgid ""
 "You cannot move the attribute %s from the product %s to the product %s."
+msgstr ""
+
+#. module: product
+#: code:addons/product/models/product_pricelist.py:0
+#, python-format
+msgid ""
+"You cannot disable a pricelist rule, please delete it or archive its "
+"pricelist instead."
 msgstr ""
 
 #. module: product

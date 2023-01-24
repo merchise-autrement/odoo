@@ -9,7 +9,6 @@
 # Abdullah Onur Uğur <aonurugur@outlook.com>, 2019
 # Ramiz Deniz Öner <deniz@denizoner.com>, 2019
 # Kaya Zeren <kayazeren@gmail.com>, 2019
-# Ayhan KIZILTAN <akiziltan76@hotmail.com>, 2019
 # Ahmet Altinisik <aaltinisik@altinkaya.com.tr>, 2019
 # Güven YILMAZ <guvenyilmaz@outlook.com.tr>, 2019
 # Metin Akın <aknmetin@gmail.com>, 2019
@@ -20,10 +19,11 @@
 # abc Def <hdogan1974@gmail.com>, 2020
 # Martin Trigaux, 2020
 # Murat Kaplan <muratk@projetgrup.com>, 2020
-# Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2020
 # Nadir Gazioglu <nadirgazioglu@gmail.com>, 2021
 # Ediz Duman <neps1192@gmail.com>, 2021
 # Gökhan Erdoğdu <gokhan.erdogdu@mechsoft.com.tr>, 2021
+# Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2022
+# Ayhan KIZILTAN <akiziltan76@hotmail.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -31,7 +31,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-01 12:20+0000\n"
 "PO-Revision-Date: 2019-08-26 09:06+0000\n"
-"Last-Translator: Gökhan Erdoğdu <gokhan.erdogdu@mechsoft.com.tr>, 2021\n"
+"Last-Translator: Ayhan KIZILTAN <akiziltan76@hotmail.com>, 2022\n"
 "Language-Team: Turkish (https://www.transifex.com/odoo/teams/41243/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -735,6 +735,11 @@ msgstr "<strong>Şirket:</strong>"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.report_invoice_document
+msgid "<strong>Credit Note Date:</strong>"
+msgstr ""
+
+#. module: account
+#: model_terms:ir.ui.view,arch_db:account.report_invoice_document
 msgid "<strong>Customer Code:</strong>"
 msgstr "<strong>Müşteri Kodu</strong>"
 
@@ -742,6 +747,11 @@ msgstr "<strong>Müşteri Kodu</strong>"
 #: model_terms:ir.ui.view,arch_db:account.report_payment_receipt_document
 msgid "<strong>Customer: </strong>"
 msgstr "<strong>Müşteri: </strong>"
+
+#. module: account
+#: model_terms:ir.ui.view,arch_db:account.report_invoice_document
+msgid "<strong>Date:</strong>"
+msgstr "<strong>Tarih:</strong>"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.report_invoice_document
@@ -6112,6 +6122,16 @@ msgstr ""
 #: code:addons/account/models/account.py:0
 #, python-format
 msgid ""
+"Invoice and credit note repartition should have at least one tax repartition"
+" line."
+msgstr ""
+"Fatura ve alacak dekontu yeniden bölümü en az bir vergi yeniden bölümlenme "
+"satırına sahip olmalıdır."
+
+#. module: account
+#: code:addons/account/models/account.py:0
+#, python-format
+msgid ""
 "Invoice and credit note repartition should have the same number of lines."
 msgstr ""
 "Fatura ve İade/Fiyat Farkı bölümleri aynı sayıda satıra sahip olmalıdır."
@@ -8957,6 +8977,12 @@ msgstr "Uzlaştırma Parçaları"
 #: model:ir.actions.client,name:account.action_bank_reconcile
 msgid "Reconciliation on Bank Statements"
 msgstr "Banka Hesap Ekstrelerinin Uzlaştırılması"
+
+#. module: account
+#: code:addons/account/models/partner.py:0
+#, python-format
+msgid "Record cannot be deleted. Partner used in Accounting"
+msgstr ""
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.res_config_settings_view_form
@@ -11970,7 +11996,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account.view_account_move_line_filter
 #, python-format
 msgid "To Check"
-msgstr "Kontrol Etmek"
+msgstr "Kontrol Edilecek"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_invoice_report_search
@@ -12328,7 +12354,7 @@ msgstr ""
 #. module: account
 #: model:ir.model.fields,field_description:account.field_res_config_settings__module_account_batch_payment
 msgid "Use batch payments"
-msgstr "Toplu ödemeleri kullanma"
+msgstr "Toplu ödemeleri kullan"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.res_config_settings_view_form
@@ -13186,7 +13212,7 @@ msgstr "İlk önce bir açılış hareketini tanımlamanız gerekir."
 #: code:addons/account/models/account_move.py:0
 #, python-format
 msgid "The entry %s (id %s) is already posted."
-msgstr ""
+msgstr "Giriş %s (kimlik %s) deftere nakledilmiş."
 
 #. module: account
 #: code:addons/account/models/account_move.py:0
@@ -13424,7 +13450,7 @@ msgstr "ana şirket"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
 msgid "to check"
-msgstr "kontrol etmek"
+msgstr "kontrol edilecek"
 
 #. module: account
 #: code:addons/account/models/account_move.py:0
@@ -13434,6 +13460,9 @@ msgid ""
 " Sales operations should go to 'sale' journals, and purchase operations to "
 "'purchase' ones."
 msgstr ""
+"Seçilen günlüğün fatura türünüzle uyumlu olmayan bir türü var. Satış "
+"operasyonları 'satış' günlüklerine, satınalma işlemleri ise 'satınalma' "
+"günlüklerine gitmelidir."
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_move_form

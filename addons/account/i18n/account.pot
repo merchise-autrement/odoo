@@ -594,12 +594,22 @@ msgstr ""
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.report_invoice_document
+msgid "<strong>Credit Note Date:</strong>"
+msgstr ""
+
+#. module: account
+#: model_terms:ir.ui.view,arch_db:account.report_invoice_document
 msgid "<strong>Customer Code:</strong>"
 msgstr ""
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.report_payment_receipt_document
 msgid "<strong>Customer: </strong>"
+msgstr ""
+
+#. module: account
+#: model_terms:ir.ui.view,arch_db:account.report_invoice_document
+msgid "<strong>Date:</strong>"
 msgstr ""
 
 #. module: account
@@ -5763,6 +5773,14 @@ msgstr ""
 #: code:addons/account/models/account.py:0
 #, python-format
 msgid ""
+"Invoice and credit note repartition should have at least one tax repartition"
+" line."
+msgstr ""
+
+#. module: account
+#: code:addons/account/models/account.py:0
+#, python-format
+msgid ""
 "Invoice and credit note repartition should have the same number of lines."
 msgstr ""
 
@@ -8519,6 +8537,12 @@ msgstr ""
 #. module: account
 #: model:ir.actions.client,name:account.action_bank_reconcile
 msgid "Reconciliation on Bank Statements"
+msgstr ""
+
+#. module: account
+#: code:addons/account/models/partner.py:0
+#, python-format
+msgid "Record cannot be deleted. Partner used in Accounting"
 msgstr ""
 
 #. module: account

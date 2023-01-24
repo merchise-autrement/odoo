@@ -9,9 +9,12 @@
 # ExcaliberX <excaliberx@gmail.com>, 2019
 # Yihya Hugirat <hugirat@gmail.com>, 2019
 # שהאב חוסיין <shhab89@gmail.com>, 2019
-# hed shefetr <hed@laylinetech.com>, 2019
+# hed shefer <hed@laylinetech.com>, 2019
 # דודי מלכה <Dudimalka6@gmail.com>, 2019
 # ZVI BLONDER <ZVIBLONDER@gmail.com>, 2020
+# Netta Waizer, 2022
+# NoaFarkash, 2022
+# Ha Ketem <haketem@gmail.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -19,7 +22,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-27 09:22+0000\n"
 "PO-Revision-Date: 2019-08-26 09:15+0000\n"
-"Last-Translator: ZVI BLONDER <ZVIBLONDER@gmail.com>, 2020\n"
+"Last-Translator: Ha Ketem <haketem@gmail.com>, 2022\n"
 "Language-Team: Hebrew (https://www.transifex.com/odoo/teams/41243/he/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -62,28 +65,28 @@ msgstr ""
 #: code:addons/web_editor/static/src/xml/wysiwyg.xml:0
 #, python-format
 msgid "'Title tag' is shown as a tooltip when you hover the picture."
-msgstr ""
+msgstr "'תגית כותרת' מופיעה כחלונית כשמרחפים מעל התמונה עם העכבר."
 
 #. module: web_editor
 #. openerp-web
 #: code:addons/web_editor/static/src/xml/wysiwyg.xml:0
 #, python-format
 msgid "(ALT Tag)"
-msgstr ""
+msgstr "(תווית חלופית)"
 
 #. module: web_editor
 #. openerp-web
 #: code:addons/web_editor/static/src/xml/wysiwyg.xml:0
 #, python-format
 msgid "(TITLE Tag)"
-msgstr ""
+msgstr "(תווית כותרת)"
 
 #. module: web_editor
 #. openerp-web
 #: code:addons/web_editor/static/src/xml/wysiwyg.xml:0
 #, python-format
 msgid "(URL or Embed)"
-msgstr ""
+msgstr "(קישור URL או מוטמע)"
 
 #. module: web_editor
 #. openerp-web
@@ -112,7 +115,7 @@ msgstr ""
 #: code:addons/web_editor/static/src/xml/wysiwyg.xml:0
 #, python-format
 msgid "Accepts"
-msgstr ""
+msgstr "מתקבל"
 
 #. module: web_editor
 #. openerp-web
@@ -184,7 +187,7 @@ msgstr "יישר לימין"
 #: code:addons/web_editor/static/src/xml/ace.xml:0
 #, python-format
 msgid "All SCSS Files"
-msgstr ""
+msgstr "קבצי All SCSS"
 
 #. module: web_editor
 #. openerp-web
@@ -205,12 +208,12 @@ msgstr "האם אתה בטוח שברצונך למחוק קובץ זה?"
 #: code:addons/web_editor/static/src/xml/wysiwyg.xml:0
 #, python-format
 msgid "Aspect Ratio"
-msgstr ""
+msgstr "יחס גובה-רוחב"
 
 #. module: web_editor
 #: model:ir.model,name:web_editor.model_web_editor_assets
 msgid "Assets Utils"
-msgstr ""
+msgstr "נכסים שימושיים"
 
 #. module: web_editor
 #. openerp-web
@@ -316,7 +319,7 @@ msgstr "מודגש"
 #: code:addons/web_editor/static/src/js/common/ace.js:0
 #, python-format
 msgid "Careful !"
-msgstr ""
+msgstr "זהירות !"
 
 #. module: web_editor
 #. openerp-web
@@ -409,14 +412,14 @@ msgstr "מכיל"
 #: code:addons/web_editor/static/src/xml/wysiwyg.xml:0
 #, python-format
 msgid "Copy-paste your URL or embed code here"
-msgstr ""
+msgstr "כאן עושים העתקה-הדבקה של קישור URL או של קוד הטמעה "
 
 #. module: web_editor
 #. openerp-web
 #: code:addons/web_editor/static/src/xml/editor.xml:0
 #, python-format
 msgid "Cover"
-msgstr ""
+msgstr "שער"
 
 #. module: web_editor
 #: model:ir.model.fields,field_description:web_editor.field_web_editor_converter_test_sub__create_uid
@@ -565,7 +568,7 @@ msgstr "מסנן"
 #: code:addons/web_editor/static/src/xml/wysiwyg.xml:0
 #, python-format
 msgid "Flat"
-msgstr ""
+msgstr "שטוח"
 
 #. module: web_editor
 #. openerp-web
@@ -622,6 +625,13 @@ msgstr ""
 #, python-format
 msgid "Font Size"
 msgstr "גודל גופן"
+
+#. module: web_editor
+#. openerp-web
+#: code:addons/web_editor/static/src/js/editor/snippets.editor.js:0
+#, python-format
+msgid "For technical reasons, this block cannot be dropped here"
+msgstr ""
 
 #. module: web_editor
 #. openerp-web
@@ -759,7 +769,7 @@ msgstr "הסתר את כפתור השיתוף"
 #: code:addons/web_editor/static/src/xml/editor.xml:0
 #, python-format
 msgid "Horizontal"
-msgstr ""
+msgstr "אופקי"
 
 #. module: web_editor
 #. openerp-web
@@ -900,6 +910,12 @@ msgstr "הוסף סרטון"
 #, python-format
 msgid "Install"
 msgstr "התקן"
+
+#. module: web_editor
+#: code:addons/web_editor/models/ir_ui_view.py:0
+#, python-format
+msgid "Invalid field value for %s: %s"
+msgstr ""
 
 #. module: web_editor
 #. openerp-web
@@ -1227,7 +1243,7 @@ msgstr ""
 #. module: web_editor
 #: model:ir.model,name:web_editor.model_ir_qweb_field_contact
 msgid "Qweb Field Contact"
-msgstr ""
+msgstr "איש קשר בשדה Qweb"
 
 #. module: web_editor
 #: model:ir.model,name:web_editor.model_ir_qweb_field_date
@@ -1588,7 +1604,7 @@ msgstr "סיבוב"
 #: code:addons/web_editor/static/src/js/editor/rte.summernote.js:0
 #, python-format
 msgid "Strikethrough"
-msgstr ""
+msgstr "קו חוצה"
 
 #. module: web_editor
 #. openerp-web
@@ -1709,7 +1725,7 @@ msgstr ""
 #: code:addons/web_editor/static/src/js/editor/editor.js:0
 #, python-format
 msgid "This document is not saved!"
-msgstr ""
+msgstr "המסמך לא נשמר!"
 
 #. module: web_editor
 #. openerp-web
@@ -1730,7 +1746,7 @@ msgstr ""
 #: code:addons/web_editor/static/src/xml/wysiwyg.xml:0
 #, python-format
 msgid "This image is an external image"
-msgstr ""
+msgstr "המסמך לא נשמר!"
 
 #. module: web_editor
 #. openerp-web
@@ -1847,7 +1863,7 @@ msgstr "העלה תמונה"
 #: code:addons/web_editor/static/src/xml/editor.xml:0
 #, python-format
 msgid "Vertical"
-msgstr ""
+msgstr "אנכי"
 
 #. module: web_editor
 #. openerp-web
@@ -1952,6 +1968,7 @@ msgstr ""
 msgid ""
 "You can upload images with the button located in the top left of the screen."
 msgstr ""
+"ניתן להעלות תמונות באמצעות הכפתור הממוקם בפינה השמאלית העליונה של המסך."
 
 #. module: web_editor
 #: code:addons/web_editor/controllers/main.py:0
@@ -1985,14 +2002,14 @@ msgstr "Youtube"
 #: code:addons/web_editor/static/src/xml/wysiwyg.xml:0
 #, python-format
 msgid "Zoom In"
-msgstr ""
+msgstr "זום פנימה"
 
 #. module: web_editor
 #. openerp-web
 #: code:addons/web_editor/static/src/xml/wysiwyg.xml:0
 #, python-format
 msgid "Zoom Out"
-msgstr ""
+msgstr "להקטין את התצוגה(זום אאוט)"
 
 #. module: web_editor
 #. openerp-web
@@ -2038,4 +2055,4 @@ msgstr "פיקסל"
 #: code:addons/web_editor/static/src/xml/wysiwyg.xml:0
 #, python-format
 msgid "videos"
-msgstr ""
+msgstr "וידאות"

@@ -6,7 +6,7 @@ import logging
 
 from odoo import api, fields, models, _
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 from odoo.addons.base.models.res_partner import WARNING_MESSAGE, WARNING_HELP
 from psycopg2 import sql, DatabaseError
 
@@ -286,7 +286,7 @@ class ResPartner(models.Model):
               AND NOT acc.deprecated AND acc.company_id = %s
               AND move.state = 'posted'
             GROUP BY partner.id
-            HAVING %s * COALESCE(SUM(aml.amount_residual), 0) ''' + operator + ''' %s''', (account_type, self.env.user.company_id.id, sign, operand))
+            HAVING %s * COALESCE(SUM(aml.amount_residual), 0) ''' + operator + ''' %s''', (account_type, self.env.company.id, sign, operand))
         res = self._cr.fetchall()
         if not res:
             return [('id', '=', '0')]
@@ -437,8 +437,8 @@ class ResPartner(models.Model):
     invoice_warn_msg = fields.Text('Message for Invoice')
     # Computed fields to order the partners as suppliers/customers according to the
     # amount of their generated incoming/outgoing account moves
-    supplier_rank = fields.Integer(default=0)
-    customer_rank = fields.Integer(default=0)
+    supplier_rank = fields.Integer(default=0, copy=False)
+    customer_rank = fields.Integer(default=0, copy=False)
 
     def _get_name_search_order_by_fields(self):
         res = super()._get_name_search_order_by_fields()
@@ -473,9 +473,10 @@ class ResPartner(models.Model):
     def action_view_partner_invoices(self):
         self.ensure_one()
         action = self.env.ref('account.action_move_out_invoice_type').read()[0]
+        all_child = self.with_context(active_test=False).search([('id', 'child_of', self.ids)])
         action['domain'] = [
             ('type', 'in', ('out_invoice', 'out_refund')),
-            ('partner_id', 'child_of', self.id),
+            ('partner_id', 'in', all_child.ids)
         ]
         action['context'] = {'default_type':'out_invoice', 'type':'out_invoice', 'journal_type': 'sale', 'search_default_unpaid': 1}
         return action
@@ -513,6 +514,17 @@ class ResPartner(models.Model):
                 elif is_supplier and 'supplier_rank' not in vals:
                     vals['supplier_rank'] = 1
         return super().create(vals_list)
+
+    def unlink(self):
+        """
+        Prevent the deletion of a partner "Individual", child of a company if:
+        - partner in 'account.move'
+        - state: all states (draft and posted)
+        """
+        moves = self.sudo().env['account.move'].search_count([('partner_id', 'in', self.ids), ('state', 'in', ['draft', 'posted'])])
+        if moves:
+            raise UserError(_("Record cannot be deleted. Partner used in Accounting"))
+        return super(ResPartner, self).unlink()
 
     def _increase_rank(self, field):
         if self.ids and field in ['customer_rank', 'supplier_rank']:

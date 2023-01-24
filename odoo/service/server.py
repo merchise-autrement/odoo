@@ -20,7 +20,6 @@ import unittest
 import psutil
 import werkzeug.serving
 from werkzeug.debug import DebuggedApplication
-from odoo.tests.common import OdooSuite
 
 _signals = {getattr(signal, name): name for name in dir(signal) if name.startswith('SIG')}
 
@@ -516,6 +515,8 @@ class ThreadedServer(CommonServer):
                     # and would prevent the forced shutdown.
                     thread.join(0.05)
                     time.sleep(0.05)
+
+        odoo.sql_db.close_all()
 
         _logger.debug('--')
         logging.shutdown()
@@ -1233,6 +1234,7 @@ def _reexec(updated_modules=None):
     os.execve(sys.executable, args, os.environ)
 
 def load_test_file_py(registry, test_file):
+    from odoo.tests.common import OdooSuite
     threading.currentThread().testing = True
     try:
         test_path, _ = os.path.splitext(os.path.abspath(test_file))

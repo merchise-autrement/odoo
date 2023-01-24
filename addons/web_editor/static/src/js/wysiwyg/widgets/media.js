@@ -794,7 +794,7 @@ var ImageWidget = FileWidget.extend({
      */
     _clear: function (type) {
         // Not calling _super: we don't want to call the document widget's _clear method on images
-        var allImgClasses = /(^|\s+)(img|img-\S*|o_we_custom_image|rounded-circle|rounded|thumbnail|shadow)(?=\s|$)/g;
+        var allImgClasses = /(^|\s+)(img|img-\S*|o_we_custom_image|o_cropped_img_to_save|rounded-circle|rounded|thumbnail|shadow)(?=\s|$)/g;
         this.media.className = this.media.className && this.media.className.replace(allImgClasses, ' ');
     },
 });
@@ -939,7 +939,7 @@ var IconWidget = SearchableMediaWidget.extend({
      * @override
      */
     _clear: function () {
-        var allFaClasses = /(^|\s)(fa|(text-|bg-|fa-)\S*|rounded-circle|rounded|thumbnail|shadow)(?=\s|$)/g;
+        var allFaClasses = /(^|\s)(fa|(text-|bg-|fa-)\S*|rounded-circle|rounded|thumbnail|img-thumbnail|shadow)(?=\s|$)/g;
         this.media.className = this.media.className && this.media.className.replace(allFaClasses, ' ');
     },
     /**
@@ -1134,6 +1134,12 @@ var VideoWidget = MediaWidget.extend({
         var autoplay = options.autoplay ? '?autoplay=1&mute=1' : '?autoplay=0';
 
         if (ytMatch && ytMatch[2].length === 11) {
+            // The youtube js api is needed for autoplay on mobile. Note: this
+            // was added as a fix, old customers may have autoplay videos
+            // without this, which will make their video autoplay on desktop
+            // but not in mobile (so no behavior change was done in stable,
+            // this should not be migrated).
+            autoplay = autoplay + (options.autoplay ? '&enablejsapi=1' : '');
             $video.attr('src', '//www.youtube' + (ytMatch[1] || '') + '.com/embed/' + ytMatch[2] + autoplay);
         } else if (insMatch && insMatch[2].length) {
             $video.attr('src', '//www.instagram.com/p/' + insMatch[2] + '/embed/');
@@ -1163,7 +1169,7 @@ var VideoWidget = MediaWidget.extend({
             var videoSrc = _.str.sprintf('%s&loop=1', $video.attr('src'));
             $video.attr('src', ytMatch ? _.str.sprintf('%s&playlist=%s', videoSrc, ytMatch[2]) : videoSrc);
         }
-        if (options.hide_controls && (ytMatch || dmMatch)) {
+        if (options.hide_controls && (ytMatch || dmMatch || vimMatch)) {
             $video.attr('src', $video.attr('src') + '&controls=0');
         }
         if (options.hide_fullscreen && ytMatch) {

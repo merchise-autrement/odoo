@@ -410,7 +410,12 @@ class ProductProduct(models.Model):
         For convenience the template is copied instead and its first variant is
         returned.
         """
-        return self.product_tmpl_id.copy(default=default).product_variant_id
+        # copy variant is disabled in https://github.com/odoo/odoo/pull/38303
+        # this returns the first possible combination of variant to make it
+        # works for now, need to be fixed to return product_variant_id if it's
+        # possible in the future
+        template = self.product_tmpl_id.copy(default=default)
+        return template.product_variant_id or template._create_first_product_variant()
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
@@ -419,10 +424,10 @@ class ProductProduct(models.Model):
             args.append((('categ_id', 'child_of', self._context['search_default_categ_id'])))
         return super(ProductProduct, self)._search(args, offset=offset, limit=limit, order=order, count=count, access_rights_uid=access_rights_uid)
 
-    @api.depends_context('display_default_code')
+    @api.depends_context('display_default_code', 'seller_id')
     def _compute_display_name(self):
         # `display_name` is calling `name_get()`` which is overidden on product
-        # to depend on `display_default_code`
+        # to depend on `display_default_code` and `seller_id`
         return super()._compute_display_name()
 
     def name_get(self):
@@ -474,8 +479,8 @@ class ProductProduct(models.Model):
             variant = product.product_template_attribute_value_ids._get_combination_name()
 
             name = variant and "%s (%s)" % (product.name, variant) or product.name
-            sellers = []
-            if partner_ids:
+            sellers = self.env['product.supplierinfo'].sudo().browse(self.env.context.get('seller_id')) or []
+            if not sellers and partner_ids:
                 product_supplier_info = supplier_info_by_template.get(product.product_tmpl_id, [])
                 sellers = [x for x in product_supplier_info if x.product_id and x.product_id == product]
                 if not sellers:
@@ -591,8 +596,10 @@ class ProductProduct(models.Model):
 
     def _prepare_sellers(self, params):
         # This search is made to avoid retrieving seller_ids from the cache.
-        return self.env['product.supplierinfo'].search([('product_tmpl_id', '=', self.product_tmpl_id.id),
-                                                        ('name.active', '=', True)]).sorted(lambda s: (s.sequence, -s.min_qty, s.price, s.id))
+        return self.env['product.supplierinfo']\
+                   .search([('product_tmpl_id', '=', self.product_tmpl_id.id)])\
+                   .filtered(lambda r: r.name.active)\
+                   .sorted(lambda s: (s.sequence, -s.min_qty, s.price, s.id))
 
     def _select_seller(self, partner_id=False, quantity=0.0, date=None, uom_id=False, params=False):
         self.ensure_one()

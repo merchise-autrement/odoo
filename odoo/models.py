@@ -33,7 +33,8 @@ import operator
 import pytz
 import re
 import uuid
-from collections import defaultdict, MutableMapping, OrderedDict
+from collections import defaultdict, OrderedDict
+from collections.abc import MutableMapping
 from contextlib import closing
 from inspect import getmembers, currentframe
 from operator import attrgetter, itemgetter
@@ -3369,6 +3370,7 @@ Fields:
             return True
 
         self.check_access_rights('unlink')
+        self.check_access_rule('unlink')
         self._check_concurrency()
 
         # mark fields that depend on 'self' to recompute them after 'self' has
@@ -3377,8 +3379,6 @@ Fields:
         self.modified(self._fields, before=True)
 
         with self.env.norecompute():
-            self.check_access_rule('unlink')
-
             cr = self._cr
             Data = self.env['ir.model.data'].sudo().with_context({})
             Defaults = self.env['ir.default'].sudo()
@@ -4085,11 +4085,15 @@ Fields:
             FROM {0} node
             WHERE node.id IN %s
             AND child.parent_path LIKE concat(node.parent_path, '%%')
-            RETURNING child.id
+            RETURNING child.id, child.parent_path
         """
         cr.execute(query.format(self._table), [prefix, tuple(self.ids)])
-        modified_ids = {row[0] for row in cr.fetchall()}
-        self.browse(modified_ids).modified(['parent_path'])
+
+        # update the cache of updated nodes, and determine what to recompute
+        updated = dict(cr.fetchall())
+        records = self.browse(updated)
+        self.env.cache.update(records, self._fields['parent_path'], updated.values())
+        records.modified(['parent_path'])
 
     def _load_records_write(self, values):
         self.write(values)
@@ -4142,6 +4146,19 @@ Fields:
                 to_create.append(data)
                 continue
             d_id, d_module, d_name, d_model, d_res_id, d_noupdate, r_id = row
+            if self._name != d_model:
+                _logger.warning((
+                    "For external id %s "
+                    "when trying to create/update a record of model %s "
+                    "found record of different model %s (%s)"
+                    "\nUpdating record %s of target model %s"),
+                    xml_id, self._name, d_model, d_id, d_id, self._name
+                )
+                raise ValidationError(
+                    f"For external id {xml_id} "
+                    f"when trying to create/update a record of model {self._name} "
+                    f"found record of different model {d_model} ({d_id})"
+                )
             record = self.browse(d_res_id)
             if update and d_noupdate:
                 data['record'] = record
@@ -4781,11 +4798,14 @@ Fields:
                      { 'id': ['module.ext_id', 'module.ext_id_bis'],
                        'id2': [] }
         """
-        result = {record.id: [] for record in self}
+        result = defaultdict(list)
         domain = [('model', '=', self._name), ('res_id', 'in', self.ids)]
         for data in self.env['ir.model.data'].sudo().search_read(domain, ['module', 'name', 'res_id'], order='id'):
             result[data['res_id']].append('%(module)s.%(name)s' % data)
-        return result
+        return {
+            record.id: result[record._origin.id]
+            for record in self
+        }
 
     def get_external_id(self):
         """Retrieve the External ID of any database record, if there
@@ -6297,9 +6317,9 @@ Fields:
 
         return result
 
-collections.Set.register(BaseModel)
+collections.abc.Set.register(BaseModel)
 # not exactly true as BaseModel doesn't have __reversed__, index or count
-collections.Sequence.register(BaseModel)
+collections.abc.Sequence.register(BaseModel)
 
 class RecordCache(MutableMapping):
     """ A mapping from field names to values, to read and update the cache of a record. """

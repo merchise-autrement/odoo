@@ -3,9 +3,9 @@
 # OpenERP HTTP layer
 #----------------------------------------------------------
 import ast
+import cgi
 import collections
 import contextlib
-import datetime
 import functools
 import hashlib
 import hmac
@@ -25,6 +25,8 @@ from os.path import join as opj
 from zlib import adler32
 
 import babel.core
+from datetime import datetime
+import passlib.utils
 import psycopg2
 import json
 import werkzeug.datastructures
@@ -216,7 +218,7 @@ class WebRequest(object):
 
     .. attribute:: params
 
-        :class:`~collections.Mapping` of request parameters, not generally
+        :class:`~collections.abc.Mapping` of request parameters, not generally
         useful as they're provided directly to the handler method as keyword
         arguments
     """
@@ -268,7 +270,7 @@ class WebRequest(object):
 
     @property
     def context(self):
-        """ :class:`~collections.Mapping` of context values for the current request """
+        """ :class:`~collections.abc.Mapping` of context values for the current request """
         if self._context is None:
             self._context = frozendict(self.session.context)
         return self._context
@@ -858,7 +860,7 @@ more details.
         :param basestring data: response body
         :param headers: HTTP headers to set on the response
         :type headers: ``[(name, value)]``
-        :param collections.Mapping cookies: cookies to set on the client
+        :param collections.abc.Mapping cookies: cookies to set on the client
         """
         response = Response(data, headers=headers)
         if cookies:
@@ -938,7 +940,7 @@ class EndPoint(object):
     def __init__(self, method, routing):
         self.method = method
         self.original = getattr(method, 'original_func', method)
-        self.routing = routing
+        self.routing = frozendict(routing)
         self.arguments = {}
 
     @property
@@ -948,6 +950,29 @@ class EndPoint(object):
 
     def __call__(self, *args, **kw):
         return self.method(*args, **kw)
+
+    # werkzeug will use these EndPoint objects as keys of a dictionary
+    # (the RoutingMap._rules_by_endpoint mapping).
+    # When Odoo clears the routing map, new EndPoint objects are created,
+    # most of them with the same values.
+    # The __eq__ and __hash__ magic methods allow older EndPoint objects
+    # to be still valid keys of the RoutingMap.
+    # For example, website._get_canonical_url_localized may use
+    # such an old endpoint if the routing map was cleared.
+    def __eq__(self, other):
+        try:
+            return self._as_tuple() == other._as_tuple()
+        except AttributeError:
+            return False
+
+    def __hash__(self):
+        return hash(self._as_tuple())
+
+    def _as_tuple(self):
+        return (self.original, self.routing)
+
+    def __repr__(self):
+        return '<EndPoint method=%r routing=%r>' % (self.method, self.routing)
 
 
 def _generate_routing_rules(modules, nodb_only, converters=None):
@@ -1284,12 +1309,16 @@ class DisableCacheMiddleware(object):
             req = werkzeug.wrappers.Request(environ)
             root.setup_session(req)
             if req.session and req.session.debug and not 'wkhtmltopdf' in req.headers.get('User-Agent'):
-                new_headers = [('Cache-Control', 'no-cache')]
+                cache_control_value = 'no-cache'
+                new_headers = []
 
                 for k, v in headers:
                     if k.lower() != 'cache-control':
                         new_headers.append((k, v))
+                    elif 'no-cache' not in v:
+                        cache_control_value += ', %s' % v
 
+                new_headers.append(('Cache-Control', cache_control_value))
                 start_response(status, new_headers)
             else:
                 start_response(status, headers)
@@ -1433,6 +1462,7 @@ class Root(object):
             response = Response(result, mimetype='text/html')
         else:
             response = result
+            self.set_csp(response)
 
         save_session = (not request.endpoint) or request.endpoint.routing.get('save_session', True)
         if not save_session:
@@ -1467,6 +1497,7 @@ class Root(object):
     @staticmethod
     def _get_matching_domain(request, allowed_domains):
         from xotl.tools.string import cut_prefix
+
         if isinstance(allowed_domains, str):
             allowed_domains = allowed_domains.split(' ')
         host = request.host
@@ -1480,6 +1511,21 @@ class Root(object):
                 or cut_prefix(domain, '.') == host),
             None
         )
+
+    def set_csp(self, response):
+        # ignore HTTP errors
+        if not isinstance(response, werkzeug.wrappers.BaseResponse):
+            return
+
+        headers = response.headers
+        if 'Content-Security-Policy' in headers:
+            return
+
+        mime, _params = cgi.parse_header(headers.get('Content-Type', ''))
+        if not mime.startswith('image/'):
+            return
+
+        headers['Content-Security-Policy'] = "default-src 'none'"
 
     def dispatch(self, environ, start_response):
         """
@@ -1662,7 +1708,7 @@ def send_file(filepath_or_fp, mimetype=None, as_attachment=False, filename=None,
     if isinstance(mtime, str):
         try:
             server_format = odoo.tools.misc.DEFAULT_SERVER_DATETIME_FORMAT
-            mtime = datetime.datetime.strptime(mtime.split('.')[0], server_format)
+            mtime = datetime.strptime(mtime.split('.')[0], server_format)
         except Exception:
             mtime = None
     if mtime is not None:
@@ -1700,34 +1746,18 @@ def content_disposition(filename):
 def set_safe_image_headers(headers, content):
     """Return new headers based on `headers` but with `Content-Length` and
     `Content-Type` set appropriately depending on the given `content` only if it
-    is safe to do."""
-    content_type = guess_mimetype(content)
-    safe_types = ['image/jpeg', 'image/png', 'image/gif', 'image/x-icon']
-    if content_type in safe_types:
-        headers = set_header_field(headers, 'Content-Type', content_type)
-    set_header_field(headers, 'Content-Length', len(content))
-    return headers
-
-
-def set_header_field(headers, name, value):
-    """ Return new headers based on `headers` but with `value` set for the
-    header field `name`.
-
-    :param headers: the existing headers
-    :type headers: list of tuples (name, value)
-
-    :param name: the header field name
-    :type name: string
-
-    :param value: the value to set for the `name` header
-    :type value: string
-
-    :return: the updated headers
-    :rtype: list of tuples (name, value)
+    is safe to do, as well as `X-Content-Type-Options: nosniff` so that if the
+    file is of an unsafe type, it is not interpreted as that type if the
+    `Content-type` header was already set to a different mimetype
     """
-    dictheaders = dict(headers)
-    dictheaders[name] = value
-    return list(dictheaders.items())
+    headers = werkzeug.datastructures.Headers(headers)
+    safe_types = {'image/jpeg', 'image/png', 'image/gif', 'image/x-icon'}
+    content_type = guess_mimetype(content)
+    if content_type in safe_types:
+        headers['Content-Type'] = content_type
+    headers['X-Content-Type-Options'] = 'nosniff'
+    headers['Content-Length'] = len(content)
+    return list(headers)
 
 
 #  main wsgi handler

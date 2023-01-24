@@ -299,6 +299,15 @@ class TestStockValuationStandard(TestStockValuationCommon):
         self.assertTrue(product2.stock_valuation_layer_ids)
         self.assertFalse(product1.stock_valuation_layer_ids)
 
+    def test_currency_precision_and_standard_svl_value(self):
+        self.env.company.currency_id.rounding = 1
+        self.product1.standard_price = 3
+
+        self._make_in_move(self.product1, 0.5)
+        self._make_out_move(self.product1, 0.5)
+
+        self.assertEqual(self.product1.value_svl, 0.0)
+
 
 class TestStockValuationAVCO(TestStockValuationCommon):
     def setUp(self):
@@ -515,6 +524,16 @@ class TestStockValuationAVCO(TestStockValuationCommon):
         self.assertEqual(self.product1.quantity_svl, 0)
         self.assertEqual(self.product1.standard_price, 1.01)
 
+    def test_return_delivery_2(self):
+        self.product1.write({"standard_price": 1})
+        move1 = self._make_out_move(self.product1, 10, create_picking=True, force_assign=True)
+        move2 = self._make_in_move(self.product1, 10, unit_cost=2)
+        move3 = self._make_return(move1, 10)
+
+        self.assertEqual(self.product1.value_svl, 20)
+        self.assertEqual(self.product1.quantity_svl, 10)
+        self.assertEqual(self.product1.standard_price, 2)
+
 
 class TestStockValuationFIFO(TestStockValuationCommon):
     def setUp(self):
@@ -674,6 +693,33 @@ class TestStockValuationFIFO(TestStockValuationCommon):
         self.assertEqual(self.product1.value_svl, 30)
         self.assertEqual(self.product1.quantity_svl, 2)
         self.assertEqual(orig_standard_price, self.product1.standard_price)
+
+    def test_return_delivery_2(self):
+        self._make_in_move(self.product1, 1, unit_cost=10)
+        self._make_in_move(self.product1, 1, unit_cost=0)
+
+        self._make_out_move(self.product1, 1)
+        out_move02 = self._make_out_move(self.product1, 1, create_picking=True)
+
+        returned = self._make_return(out_move02, 1)
+        self.assertEqual(returned.stock_valuation_layer_ids.value, 0)
+
+    def test_return_delivery_3(self):
+        self.product1.write({"standard_price": 1})
+        move1 = self._make_out_move(self.product1, 10, create_picking=True, force_assign=True)
+        move2 = self._make_in_move(self.product1, 10, unit_cost=2)
+        move3 = self._make_return(move1, 10)
+
+        self.assertEqual(self.product1.value_svl, 20)
+        self.assertEqual(self.product1.quantity_svl, 10)
+
+    def test_currency_precision_and_fifo_svl_value(self):
+        self.env.company.currency_id.rounding = 1.0
+
+        self._make_in_move(self.product1, 0.5, unit_cost=3)
+        self._make_out_move(self.product1, 0.5)
+
+        self.assertEqual(self.product1.value_svl, 0.0)
 
 
 class TestStockValuationChangeCostMethod(TestStockValuationCommon):

@@ -7,6 +7,7 @@
 # Sergio Hevia <sah@talleresbernesga.com>, 2019
 # Luis González <lgonzalez@vauxoo.com>, 2019
 # Sergio Flores <vitavitae1@gmail.com>, 2019
+# David Sanchez <david.sanchez@jarsa.com.mx>, 2019
 # Gustavo Valverde, 2019
 # Nhomar Hernández [Vauxoo] <nhomar@vauxoo.com>, 2019
 # gabriumaa <gabriel.umana@delfixcr.com>, 2019
@@ -16,12 +17,10 @@
 # Jesús Alan Ramos Rodríguez <alan.ramos@jarsa.com.mx>, 2019
 # Alejandro Santana <alejandrosantana@anubia.es>, 2019
 # Andrés Felipe Casas Palomino <afcasas@nubark.com>, 2019
-# David Sanchez <david.sanchez@jarsa.com.mx>, 2019
 # Carlos rodriguez <carlosalbertor436@gmail.com>, 2019
 # RGB Consulting <odoo@rgbconsulting.com>, 2019
 # Cristopher Cravioto <ccr@odoo.com>, 2019
 # Pilar Marín <pilar@odooperu.pe>, 2019
-# Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2019
 # ced903afe967c2a46d1036224972db9d, 2019
 # Rick Hunter <rick_hunter_ec@yahoo.com>, 2019
 # Luis M. Ontalba <luis.martinez@tecnativa.com>, 2019
@@ -35,31 +34,34 @@
 # e2f <projects@e2f.com>, 2019
 # Alejandro Die Sanchis <marketing@domatix.com>, 2019
 # Antonio Trueba, 2019
-# Martin Trigaux, 2019
 # Rick Hunter <rick.hunter.ec@gmail.com>, 2019
 # Jose Alejandro Echeverri Valencia <josealejandroeche@gmail.com>, 2019
 # Cris Martin <cristina.marrod@gmail.com>, 2019
 # Jon Perez <jop@odoo.com>, 2019
 # Pablo Rojas <rojaspablo88@gmail.com>, 2019
-# Pedro M. Baeza <pedro.baeza@gmail.com>, 2020
 # gpi odoo <gpi@odoo.com>, 2020
-# Osiris Román <osiris.roman@yachaytech.edu.ec>, 2020
-# Jorge Alfonso <jlalfonso21@gmail.com>, 2020
-# jabelchi <jabelchi@gmail.com>, 2021
+# Osiris Anael Roman Eras <osiris.roman@yachaytech.edu.ec>, 2020
+# Jorge Luis Alfonso <jlalfonso21@gmail.com>, 2020
+# juankfj, 2022
+# Jonatan Gk, 2022
+# Pedro M. Baeza <pedro.baeza@tecnativa.com>, 2022
+# Martin Trigaux, 2022
+# jabelchi, 2022
+# Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2022
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 13.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-27 09:21+0000\n"
+"POT-Creation-Date: 2022-01-07 12:31+0000\n"
 "PO-Revision-Date: 2019-08-26 09:15+0000\n"
-"Last-Translator: jabelchi <jabelchi@gmail.com>, 2021\n"
+"Last-Translator: Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2022\n"
 "Language-Team: Spanish (https://www.transifex.com/odoo/teams/41243/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: es\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #. module: website
 #. openerp-web
@@ -83,6 +85,24 @@ msgstr "\"URL a\" no puede estar vacío."
 #. module: website
 #: code:addons/website/models/website_rewrite.py:0
 #, python-format
+msgid "\"URL to\" cannot contain parameter %s which is not used in \"URL from\"."
+msgstr "La \"URL to\" no puede contener un parámetro %s que no es usado en \"URL de\""
+
+#. module: website
+#: code:addons/website/models/website_rewrite.py:0
+#, python-format
+msgid "\"URL to\" is invalid: %s"
+msgstr "La \"URL a\" es inválida: %s"
+
+#. module: website
+#: code:addons/website/models/website_rewrite.py:0
+#, python-format
+msgid "\"URL to\" must contain parameter %s used in \"URL from\"."
+msgstr "\"URL to\" debe contener el parámetro %s utilizado en \"URL from\"."
+
+#. module: website
+#: code:addons/website/models/website_rewrite.py:0
+#, python-format
 msgid "\"URL to\" must start with a leading slash."
 msgstr "\"URL a\" debe comenzar con una barra diagonal"
 
@@ -102,17 +122,6 @@ msgstr "%s (id:%s)"
 #: model_terms:ir.ui.view,arch_db:website.show_website_info
 msgid "&amp;times;"
 msgstr "&amp;times;"
-
-#. module: website
-#: model_terms:ir.ui.view,arch_db:website.sitemap_index_xml
-#: model_terms:ir.ui.view,arch_db:website.sitemap_xml
-msgid "&lt;?xml version=\"1.0\" encoding=\"UTF-8\"?&gt;"
-msgstr "&lt;?xml version=\"1.0\" encoding=\"UTF-8\"?&gt;"
-
-#. module: website
-#: model_terms:ir.ui.view,arch_db:website.default_xml
-msgid "&lt;?xml version=\"1.0\" encoding=\"utf-8\"?&gt;"
-msgstr "&lt;?xml version=\"1.0\" encoding=\"utf-8\"?&gt;"
 
 #. module: website
 #. openerp-web
@@ -155,11 +164,6 @@ msgid ""
 msgstr ""
 ".\n"
 "            Cambiar su nombre romperá estas llamadas."
-
-#. module: website
-#: model_terms:ir.ui.view,arch_db:website.default_csv
-msgid "1,2,3"
-msgstr "1,2,3"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
@@ -1381,7 +1385,7 @@ msgstr "Archivado"
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_page_ir_ui_view
 #: model_terms:website.page,arch_db:website.bs_debug_page
 msgid "Breadcrumb"
-msgstr "Barra de migas"
+msgstr "Migas de pan"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_page_ir_ui_view
@@ -1818,7 +1822,7 @@ msgstr "Personalizar"
 #: model_terms:ir.ui.view,arch_db:website.user_navbar
 #, python-format
 msgid "Customize Theme"
-msgstr "Tema personalizado"
+msgstr "Personalizar tema"
 
 #. module: website
 #. openerp-web
@@ -1828,7 +1832,7 @@ msgid ""
 "Customize any block through this menu. Try to change the background color of"
 " this block."
 msgstr ""
-"Personaliza cualquier bloque a través de este menú. Intenta cambiar el color"
+"Personalice cualquier bloque a través de este menú. Intente cambiar el color"
 " de fondo de este bloque."
 
 #. module: website
@@ -2626,6 +2630,23 @@ msgid "Google Maps API Key"
 msgstr "Clave de la API de Google Maps"
 
 #. module: website
+#. openerp-web
+#: code:addons/website/static/src/xml/website.backend.xml:0
+#, python-format
+msgid ""
+"Google deprecated both its \"Universal Analytics\" and \"Google Sign-In\" "
+"API. It means that only accounts and keys created before 2020 will be able "
+"to integrate their Analytics dashboard in Odoo (or any other website). This "
+"will be possible only up to mid 2023. After that, those services won't work "
+"anymore, at all."
+msgstr ""
+"Google hizo obsoletos tanto a su \"Universal Analytics\" como su API "
+"\"Inicio de sesión en Google\". Esto significa que solo las cuentas y claves"
+" creadas antes de 2020 podrán integrar su tablero de Analytics en Odoo (o "
+"cualquier otro sitio web). Esto será posible solo hasta mediados de 2023. "
+"Después de eso, esos servicios ya no funcionarán, en absoluto."
+
+#. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_features_grid
 msgid "Great Value"
 msgstr "Gran valor"
@@ -3093,17 +3114,6 @@ msgstr "¿Está conectado?"
 #, python-format
 msgid "It looks like your file is being called by"
 msgstr "Parece que su archivo está siendo llamado por"
-
-#. module: website
-#. openerp-web
-#: code:addons/website/static/src/js/content/website_root.js:0
-#, python-format
-msgid ""
-"It might be possible to edit the relevant items or fix the issue in <a "
-"href=\"%s\">the classic Odoo interface</a>"
-msgstr ""
-"Es posible editar los elementos más relevantes o solucionar el problema en "
-"<a href=\"%s\">la interfaz clásica de Odoo</a>"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_page_ir_ui_view
@@ -3665,6 +3675,17 @@ msgstr "Nuevo evento"
 #: model_terms:ir.ui.view,arch_db:website.user_navbar
 msgid "New Forum"
 msgstr "Nuevo foro"
+
+#. module: website
+#. openerp-web
+#: code:addons/website/static/src/xml/website.backend.xml:0
+#, python-format
+msgid ""
+"New Google Analytics accounts and keys are now using Google Analytics 4 "
+"which, for now, can't be integrated/embed in external websites."
+msgstr ""
+"Las nuevas cuentas y claves de Google Analytics utilizan Google Analytics 4 "
+"que, por ahora, no se puede integrar/insertar en sitios web externos."
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.user_navbar
@@ -5046,6 +5067,12 @@ msgstr ""
 "información."
 
 #. module: website
+#: code:addons/website/models/website_visitor.py:0
+#, python-format
+msgid "This operator is not supported"
+msgstr "Este operador no es compatible"
+
+#. module: website
 #: model_terms:ir.ui.view,arch_db:website.page_404
 msgid ""
 "This page does not exist, but you can create it as you are administrator of "
@@ -5064,6 +5091,17 @@ msgstr "Ésta página se está en el menú <b>%s</b>"
 #: model_terms:ir.ui.view,arch_db:website.one_page_line
 msgid "This page will be visible on {{ date_formatted }}"
 msgstr "Esta página será visible el {{ date_formatted }}"
+
+#. module: website
+#. openerp-web
+#: code:addons/website/static/src/xml/website.backend.xml:0
+#, python-format
+msgid ""
+"Those accounts should now check their Analytics dashboard in the Google "
+"platform directly."
+msgstr ""
+"Esas cuentas ahora deben revisar su tablero de Analytics directamente en la "
+"plataforma de Google."
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
@@ -5904,6 +5942,8 @@ msgstr "Blanco"
 #: model:ir.model.fields,help:website.field_website__domain
 msgid "Will be prefixed by http in canonical URLs if no scheme is specified"
 msgstr ""
+"Se utilizará el prefijo http en las URLs canónicas si no se especifica otro "
+"esquema"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_quotes_carousel
@@ -6010,7 +6050,7 @@ msgstr ""
 #: code:addons/website/models/website.py:162
 #, python-format
 msgid "You must keep at least one website."
-msgstr ""
+msgstr "Usted debe mantener al menos un sitio web."
 
 #. module: website
 #. openerp-web
@@ -6093,7 +6133,7 @@ msgstr "y copie y pegue el código de inserción aquí."
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_page_ir_ui_view
 #: model_terms:website.page,arch_db:website.bs_debug_page
 msgid "breadcrumb"
-msgstr "barra de migas"
+msgstr "migas de pan"
 
 #. module: website
 #. openerp-web
@@ -6175,11 +6215,6 @@ msgstr "url"
 #: model_terms:ir.ui.view,arch_db:website.menu_search
 msgid "website"
 msgstr "sitio web"
-
-#. module: website
-#: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
-msgid "www.odoo.com"
-msgstr "www.odoo.com"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.qweb_500

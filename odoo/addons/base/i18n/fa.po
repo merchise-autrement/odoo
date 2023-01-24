@@ -17,10 +17,12 @@
 # Martin Trigaux, 2020
 # Seyed Abdulla Hosseini <seyed99@zaka.ir>, 2020
 # Hamed Mohammadi <hamed@dehongi.com>, 2021
-# Mohsen Mohammadi <iammohsen.123@gmail.com>, 2021
 # saeed raesi <saeed.raesi2020@gmail.com>, 2021
 # Far Har <fhari1234@gmail.com>, 2021
 # M.Hossein S.Farvashani <Farvashani@gmail.com>, 2021
+# Mohsen Mohammadi <iammohsen.123@gmail.com>, 2022
+# Hanna Kheradroosta, 2022
+# Mohammad Tahmasebi <hit.tah75@gmail.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -28,7 +30,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-23 15:12+0000\n"
 "PO-Revision-Date: 2019-08-26 09:06+0000\n"
-"Last-Translator: M.Hossein S.Farvashani <Farvashani@gmail.com>, 2021\n"
+"Last-Translator: Mohammad Tahmasebi <hit.tah75@gmail.com>, 2022\n"
 "Language-Team: Persian (https://www.transifex.com/odoo/teams/41243/fa/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -5895,7 +5897,7 @@ msgstr "%m - شماره ماه [01,12].\""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.res_lang_form
 msgid "%p - Equivalent of either AM or PM.\""
-msgstr ""
+msgstr "%p - معادل AM یا PM.\""
 
 #. module: base
 #: code:addons/base/models/ir_filters.py:0
@@ -5961,7 +5963,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_partner_form
 msgid "), are you sure to create a new one?"
-msgstr ""
+msgstr "), آیا مطمئن هستید که یک مورد جدید ایجاد می کنید؟"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.layout_preview
@@ -5998,6 +6000,8 @@ msgid ""
 "- Create/update: a mandatory field is not set.\n"
 "- Delete: another model requires the record being deleted. If possible, archive it instead."
 msgstr ""
+"- ایجاد/بروزرسانی: یک فیلد اجباری تنظیم نشده است.\n"
+"- حذف: مدل دیگری نیاز به حذف رکورد دارد. در صورت امکان، آن را بایگانی کنید."
 
 #. module: base
 #: code:addons/models.py:0
@@ -6318,6 +6322,8 @@ msgid ""
 "<span class=\"o_form_label\">Click on Update below to start the "
 "process...</span>"
 msgstr ""
+"<span class=\"o_form_label\">برای شروع فرآیند، روی بروزرسانی کلیک کنید "
+"...</span>"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_base_language_install
@@ -6405,7 +6411,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.report_irmodulereference
 msgid "<span>Name</span>"
-msgstr ""
+msgstr "<span> نام</span>"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.report_irmodulereference
@@ -6518,6 +6524,8 @@ msgid ""
 "<strong>This operation will permanently erase all data currently stored by "
 "the modules!</strong>"
 msgstr ""
+"<strong>این عمل داده‌های ذخیره شده توسط این ماژول‌ها را برای همیشه حذف خواهد"
+" کرد!</strong>"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.layout_preview
@@ -6666,6 +6674,12 @@ msgid ""
 "to see. Whether they can have a read, write, create and delete access right "
 "can be managed from here."
 msgstr ""
+"یک گروه مجموعه ای از مناطق کاربردی است که به کاربر اختصاص داده می شود تا به "
+"آنها دسترسی و حقوقی برای برنامه ها و وظایف خاص در سیستم بدهد. می‌توانید "
+"گروه‌های سفارشی ایجاد کنید یا گروه‌های موجود را به‌طور پیش‌فرض ویرایش کنید "
+"تا نمای منویی را که کاربران می‌توانند ببینند سفارشی کنید. اینکه آیا آنها می "
+"توانند حق دسترسی خواندن، نوشتن، ایجاد و حذف داشته باشند را می توان از اینجا "
+"مدیریت کرد."
 
 #. module: base
 #: model_terms:res.partner,website_description:base.res_partner_10
@@ -6893,7 +6907,7 @@ msgstr ""
 #. module: base
 #: model:res.groups,name:base.group_private_addresses
 msgid "Access to Private Addresses"
-msgstr ""
+msgstr "دسترسی به آدرس های خصوصی"
 
 #. module: base
 #: code:addons/api.py:0 code:addons/api.py:0
@@ -7150,12 +7164,12 @@ msgstr "کاربرد کنش"
 #. module: base
 #: model:ir.model,name:base.model_ir_actions_act_window
 msgid "Action Window"
-msgstr ""
+msgstr "پنجره اقدام"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_actions_act_window_close
 msgid "Action Window Close"
-msgstr ""
+msgstr "بستن پنجره اقدام"
 
 #. module: base
 #: model:ir.model,name:base.model_ir_actions_act_window_view
@@ -7179,7 +7193,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.res_lang_form
 msgid "Activate and Translate"
-msgstr ""
+msgstr "فعال و ترجمه کنید"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_cron__active
@@ -7213,12 +7227,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_ir_sequence__number_next_actual
 #: model:ir.model.fields,field_description:base.field_ir_sequence_date_range__number_next_actual
 msgid "Actual Next Number"
-msgstr ""
+msgstr "شماره بعدی واقعی"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_mail_bot
 msgid "Add OdooBot in discussions"
-msgstr ""
+msgstr "افزودن ربات اودوو به این بحث"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_sale_subscription_sepa_direct_debit
@@ -7333,7 +7347,7 @@ msgstr "نشانی"
 #. module: base
 #: model:ir.model,name:base.model_format_address_mixin
 msgid "Address Format"
-msgstr ""
+msgstr "فرمت آدرس"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_partner__type
@@ -7813,6 +7827,8 @@ msgid ""
 "Appears by default on the top right corner of your printed documents (report"
 " header)."
 msgstr ""
+"به طور پیش فرض در گوشه سمت راست بالای اسناد چاپی شما ظاهر می شود (سرصفحه "
+"گزارش)."
 
 #. module: base
 #: model:ir.model,name:base.model_ir_module_category
@@ -7838,7 +7854,7 @@ msgstr "اعمال"
 #: model_terms:ir.ui.view,arch_db:base.view_base_module_upgrade_install
 #, python-format
 msgid "Apply Schedule Upgrade"
-msgstr ""
+msgstr "اعمال برنامه ارتقا"
 
 #. module: base
 #: model:ir.ui.menu,name:base.menu_view_base_module_upgrade
@@ -7868,7 +7884,7 @@ msgstr "اعمال برای نوشتن"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_calendar
 msgid "Appointments"
-msgstr ""
+msgstr "قرارهای ملاقات"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_hr_appraisal
@@ -7957,7 +7973,7 @@ msgstr "آیا شما مطمئن به اجرای ادغام خودکار تما�
 #: model_terms:ir.ui.view,arch_db:base.base_partner_merge_automatic_wizard_form
 msgid ""
 "Are you sure to execute the list of automatic merges of your contacts ?"
-msgstr ""
+msgstr "آیا مطمئن هستید که لیست ادغام خودکار مخاطبین خود را اجرا می کنید؟"
 
 #. module: base
 #: model:res.country,name:base.ar
@@ -8018,12 +8034,12 @@ msgstr ""
 #: code:addons/base/models/res_lang.py:0
 #, python-format
 msgid "At least one language must be active."
-msgstr ""
+msgstr "حداقل یک زبان باید فعال باشد."
 
 #. module: base
 #: model_terms:ir.actions.act_window,help:base.action_attachment
 msgid "Attach a new document"
-msgstr ""
+msgstr "یک سند جدید ضمیمه کنید"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_attachment_form
@@ -8121,7 +8137,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_module_module_dependency__auto_install_required
 msgid "Auto Install Required"
-msgstr ""
+msgstr "نصب خودکار مورد نیاز است"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_partner_autocomplete
@@ -8167,7 +8183,7 @@ msgstr "خلاء اتوماتیک"
 #: code:addons/base/models/ir_module.py:0
 #, python-format
 msgid "Automatic install of downloaded Apps is currently disabled."
-msgstr ""
+msgstr "نصب خودکار برنامه های دانلود شده در حال حاضر غیرفعال است."
 
 #. module: base
 #: model:ir.module.module,summary:base.module_account_invoice_extract_purchase
@@ -8182,6 +8198,8 @@ msgid ""
 "Automatically set to let administators find new terms that might need to be "
 "translated"
 msgstr ""
+"به طور خودکار تنظیم می شود تا به مدیران اجازه دهد اصطلاحات جدیدی را که ممکن "
+"است نیاز به ترجمه داشته باشند پیدا کنند"
 
 #. module: base
 #: model:ir.ui.menu,name:base.menu_automation
@@ -8393,12 +8411,12 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_barcodes_mobile
 msgid "Barcode in Mobile"
-msgstr ""
+msgstr "بارکد در موبایل"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_barcodes_mobile
 msgid "Barcode scan in Mobile"
-msgstr ""
+msgstr "اسکن بارکد در موبایل"
 
 #. module: base
 #: code:addons/base/models/ir_qweb_fields.py:0
@@ -8502,7 +8520,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_batch_payment
 msgid "Batch Payment"
-msgstr ""
+msgstr "پرداخت دسته ای"
 
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__res_country__name_position__before
@@ -8875,6 +8893,8 @@ msgid ""
 "CSV format: you may edit it directly with your favorite spreadsheet software,\n"
 "                                the rightmost column (value) contains the translations"
 msgstr ""
+"فرمت CVS: میتوانید با هر ویرایشگری فایل را ویرایش کنید، توجه کنید ستون سمت "
+"راست (value) حاوی ترجمه است."
 
 #. module: base
 #: model:res.country,vat_label:base.ar
@@ -8920,7 +8940,7 @@ msgstr "نمی‌توانید پیمانه '%s' را ارتقا دهید زیر�
 #: code:addons/base/models/ir_model.py:0
 #, python-format
 msgid "Can only rename one field at a time!"
-msgstr ""
+msgstr "فقط می توانید نام یک فیلد را در یک زمان تغییر دهید!"
 
 #. module: base
 #: model:res.country,name:base.ca
@@ -9325,7 +9345,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_web_cohort
 msgid "Cohort View"
-msgstr ""
+msgstr "نمای کوهورت"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_pad
@@ -9522,7 +9542,7 @@ msgstr "خصوصیات شرکت"
 #. module: base
 #: model:ir.model,name:base.model_ir_property
 msgid "Company Property"
-msgstr ""
+msgstr "اموال شرکت"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_company__company_registry
@@ -9622,7 +9642,7 @@ msgstr "پیکربندی"
 #. module: base
 #: model:ir.model,name:base.model_res_config_installer
 msgid "Config Installer"
-msgstr ""
+msgstr "نصب کننده پیکربندی"
 
 #. module: base
 #: model:ir.model,name:base.model_res_config_settings
@@ -9666,7 +9686,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,summary:base.module_sale_timesheet_enterprise
 msgid "Configure timesheet invoicing"
-msgstr ""
+msgstr "صورتحساب برگه ساعت کارکرد را پیکربندی کنید"
 
 #. module: base
 #: model:ir.actions.act_window,name:base.action_base_document_layout_configurator
@@ -9676,7 +9696,7 @@ msgstr "طرح بندی سند خود را پیکربندی کنید"
 #. module: base
 #: model:ir.module.module,summary:base.module_sale_product_configurator
 msgid "Configure your products"
-msgstr ""
+msgstr "محصولات خود را پیکربندی کنید"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_base_module_uninstall
@@ -9722,7 +9742,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_consolidation
 msgid "Consolidation"
-msgstr ""
+msgstr "تلفیق"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_model_constraint__name
@@ -9821,7 +9841,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.constraint,message:base.constraint_res_partner_check_name
 msgid "Contacts require a name"
-msgstr ""
+msgstr "مخاطبین نیاز به نام دارند"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_filters__context
@@ -9844,7 +9864,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_hr_contract_sign
 msgid "Contract - Signature"
-msgstr ""
+msgstr "قرارداد - امضا"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_human_resources_contracts
@@ -9890,7 +9910,7 @@ msgstr "حسابداری - کاستاریکا"
 #: code:addons/base/models/res_partner.py:0
 #, python-format
 msgid "Couldn't create contact without email address!"
-msgstr ""
+msgstr "مخاطب بدون آدرس ایمیل ایجاد نشد!"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_model__count
@@ -9958,7 +9978,7 @@ msgstr "استان کشور"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_sale_coupon
 msgid "Coupons & Promotions for eCommerce"
-msgstr ""
+msgstr "کوپن ها و تبلیغات برای تجارت الکترونیک"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_slides_survey
@@ -9995,7 +10015,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,summary:base.module_crm_iap_lead_website
 msgid "Create Leads/Opportunities from your website's traffic"
-msgstr ""
+msgstr "از ترافیک وب سایت خود، سرنخ /فرصت ایجاد کنید"
 
 #. module: base
 #: model:ir.actions.act_window,name:base.act_menu_create
@@ -10051,7 +10071,7 @@ msgstr "ایجاد بانک جدید"
 #. module: base
 #: model_terms:ir.actions.act_window,help:base.action_res_company_form
 msgid "Create a new company"
-msgstr ""
+msgstr "یک شرکت جدید ایجاد کنید"
 
 #. module: base
 #: model_terms:ir.actions.act_window,help:base.action_partner_category_form
@@ -10072,12 +10092,12 @@ msgstr ""
 #. module: base
 #: model_terms:ir.actions.act_window,help:base.action_partner_supplier_form
 msgid "Create a new vendor in your address book"
-msgstr ""
+msgstr "یک فروشنده جدید در دفترچه آدرس خود ایجاد کنید"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_web_studio
 msgid "Create and customize your Odoo apps"
-msgstr ""
+msgstr "برنامه های Odoo خود را ایجاد و سفارشی کنید"
 
 #. module: base
 #: model_terms:ir.actions.act_window,help:base.action_res_company_form
@@ -10085,6 +10105,8 @@ msgid ""
 "Create and manage the companies that will be managed by Odoo from here. "
 "Shops or subsidiaries can be created and maintained from here."
 msgstr ""
+"شرکت هایی را که توسط Odoo مدیریت می شوند از اینجا ایجاد و مدیریت کنید. "
+"فروشگاه ها یا شرکت های تابعه می توانند از اینجا ایجاد و نگهداری شوند."
 
 #. module: base
 #: model_terms:ir.actions.act_window,help:base.action_res_users
@@ -10094,26 +10116,30 @@ msgid ""
 "not connect to the system. You can assign them groups in order to give them "
 "specific access to the applications they need to use in the system."
 msgstr ""
+"کاربرانی را ایجاد و مدیریت کنید که به سیستم متصل می شوند. کاربران می توانند "
+"غیرفعال شوند، در صورتی که دوره ای وجود داشته باشد که در طی آن به سیستم متصل "
+"نشده باشند. می‌توانید گروه‌هایی را به آنها اختصاص دهید تا به آنها دسترسی "
+"خاصی به برنامه‌هایی که باید در سیستم استفاده کنند، بدهید."
 
 #. module: base
 #: model:ir.module.module,summary:base.module_approvals
 msgid "Create and validate approvals requests"
-msgstr ""
+msgstr "درخواست های تأیید را ایجاد و تأیید کنید"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_crm_livechat
 msgid "Create lead from livechat conversation"
-msgstr ""
+msgstr "از مکالمه چت زنده سرنخ ایجاد کنید"
 
 #. module: base
 #: model:ir.module.module,description:base.module_crm_livechat
 msgid "Create new lead with using /lead command in the channel"
-msgstr ""
+msgstr "با استفاده از دستور /lead در کانال، سرنخ جدید ایجاد کنید"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_survey
 msgid "Create surveys and analyze answers"
-msgstr ""
+msgstr "ایجاد نظرسنجی و تجزیه و تحلیل پاسخ ها"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_actions_server__crud_model_id
@@ -10501,6 +10527,8 @@ msgid ""
 "Customized views are used when users reorganize the content of their "
 "dashboard views (via web client)"
 msgstr ""
+"نماهای سفارشی زمانی استفاده می شود که کاربران محتوای نماهای داشبورد خود را "
+"سازماندهی مجدد می کنند (از طریق سرویس گیرنده وب)"
 
 #. module: base
 #: model:res.country,name:base.cy
@@ -10610,7 +10638,7 @@ msgstr "قالب تاریخ"
 #: code:addons/base/models/ir_qweb_fields.py:0
 #, python-format
 msgid "Date format"
-msgstr ""
+msgstr "فرمت تاریخ"
 
 #. module: base
 #: code:addons/base/models/ir_qweb_fields.py:0
@@ -10703,7 +10731,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_users_form
 msgid "Default Company"
-msgstr ""
+msgstr "شرکت پیش‌فرض"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_filters__is_default
@@ -11536,7 +11564,7 @@ msgstr "بازاریابی ایمیل"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_users__signature
 msgid "Email Signature"
-msgstr ""
+msgstr "امضای ایمیل"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_partner__employee
@@ -12166,7 +12194,7 @@ msgstr "نام فیلد"
 #: model:ir.module.category,name:base.module_category_operations_field_service
 #: model:ir.module.module,shortdesc:base.module_industry_fsm
 msgid "Field Service"
-msgstr ""
+msgstr "سرویس در محل"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_industry_fsm_report
@@ -12773,7 +12801,7 @@ msgstr "تولید ترم‌های نا موجود"
 #. module: base
 #: model:ir.module.module,summary:base.module_website_crm
 msgid "Generate leads from a contact form"
-msgstr ""
+msgstr "سرنخ ها را از فرم تماس ایجاد کنید"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_sale_subscription
@@ -12814,13 +12842,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_res_partner__partner_latitude
 #: model:ir.model.fields,field_description:base.field_res_users__partner_latitude
 msgid "Geo Latitude"
-msgstr ""
+msgstr "عرض جغرافیایی"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_partner__partner_longitude
 #: model:ir.model.fields,field_description:base.field_res_users__partner_longitude
 msgid "Geo Longitude"
-msgstr ""
+msgstr "طول جغرافیایی"
 
 #. module: base
 #: model:res.country,name:base.ge
@@ -13421,7 +13449,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.wizard_lang_export
 msgid "Here is the exported translation file:"
-msgstr ""
+msgstr "فایل ترجمه‌ی صادر شده:"
 
 #. module: base
 #: code:addons/base/models/ir_qweb_fields.py:0
@@ -14090,7 +14118,7 @@ msgstr "فردی"
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_res_partner_filter
 msgid "Individuals"
-msgstr ""
+msgstr "افراد"
 
 #. module: base
 #: model:res.country,name:base.id
@@ -14200,7 +14228,7 @@ msgstr "نصب زبان"
 #. module: base
 #: model:ir.actions.server,name:base.action_server_module_immediate_install
 msgid "Install Modules"
-msgstr ""
+msgstr "ماژول ها را نصب کنید"
 
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__ir_module_module__state__installed
@@ -14225,6 +14253,8 @@ msgstr "نگارش نصب شده"
 #: model:ir.module.module,description:base.module_bus
 msgid "Instant Messaging Bus allow you to send messages to users, in live."
 msgstr ""
+"گذرگاه پیام‌رسانی فوری به شما امکان می‌دهد به صورت زنده برای کاربران پیام "
+"ارسال کنید."
 
 #. module: base
 #: code:addons/models.py:0
@@ -14780,7 +14810,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,summary:base.module_stock_landed_costs
 msgid "Landed Costs"
-msgstr ""
+msgstr "هزینه سربار"
 
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__report_paperformat__orientation__landscape
@@ -15161,7 +15191,7 @@ msgstr "طرح‌بندی در گزارشها"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_crm_iap_lead_enrich
 msgid "Lead Enrichment"
-msgstr ""
+msgstr "تکمیل اطلاعات سرنخ"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_crm_iap_lead
@@ -15881,7 +15911,7 @@ msgstr "تولید"
 #. module: base
 #: model:ir.module.module,summary:base.module_mrp
 msgid "Manufacturing Orders & BOMs"
-msgstr ""
+msgstr "سفارشات تولیدی و صورت مواد اولیه"
 
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__ir_property__type__many2one
@@ -16984,7 +17014,7 @@ msgstr ""
 #: code:addons/base/models/ir_rule.py:0
 #, python-format
 msgid "Note: this might be a multi-company issue."
-msgstr ""
+msgstr "توجه کنید: این خطا ممکن است به خاطر «چند شرکتی» بودن، باشد."
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_partner__comment
@@ -18218,7 +18248,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_mail_bot
 msgid "OdooBot"
-msgstr ""
+msgstr "ربات اودوو"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_im_livechat_mail_bot
@@ -18297,7 +18327,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.category,name:base.module_category_marketing_online_appointment
 msgid "Online Appointment"
-msgstr ""
+msgstr "ملاقات‌های آنلاین"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_event_sale
@@ -18378,7 +18408,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.demo_force_install_form
 msgid "Oops, no!"
-msgstr ""
+msgstr "اوه، نه!"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_base_module_update
@@ -18410,7 +18440,7 @@ msgstr "بازکردن یک پنجره"
 #: code:addons/base/models/ir_model.py:0 code:addons/models.py:0
 #, python-format
 msgid "Operation:"
-msgstr ""
+msgstr "عملیات:"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_operations
@@ -18672,7 +18702,7 @@ msgstr "سایر"
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__res_partner__type__other
 msgid "Other Address"
-msgstr ""
+msgstr "دیگر آدرس"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_extra
@@ -18777,7 +18807,7 @@ msgstr "پرونده PO"
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.wizard_lang_export
 msgid "PO(T) format: you should edit it with a PO editor such as"
-msgstr ""
+msgstr "فرمت PO(T): با هر نوع ویرایشگر فایل‌های PO مانند"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.wizard_lang_export
@@ -18970,7 +19000,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base.field_res_partner__same_vat_partner_id
 #: model:ir.model.fields,field_description:base.field_res_users__same_vat_partner_id
 msgid "Partner with same Tax ID"
-msgstr ""
+msgstr "شریک با همان شناسه مالیاتی"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_res_users__partner_id
@@ -19396,7 +19426,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,field_description:base.field_base_document_layout__preview_logo
 msgid "Preview logo"
-msgstr ""
+msgstr "پیش‌نمایش لوگو"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_report_layout__pdf
@@ -19497,7 +19527,7 @@ msgstr "در درسترس بودن محصول"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_sale_comparison
 msgid "Product Comparison"
-msgstr ""
+msgstr "مقایسه محصول"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_product_email_template
@@ -19789,7 +19819,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_purchase_stock
 msgid "Purchase Stock"
-msgstr ""
+msgstr "خرید موجودی"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_purchase_mrp
@@ -19895,7 +19925,7 @@ msgstr "سوالات و رویدادها"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_sale_quotation_builder
 msgid "Quotation Builder"
-msgstr ""
+msgstr "سازنده پیش‌فاکتور"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_sale_expense
@@ -20114,7 +20144,7 @@ msgstr "قواعد رکورد"
 #: code:addons/models.py:0 code:addons/models.py:0
 #, python-format
 msgid "Records:"
-msgstr ""
+msgstr "رکورد‌ها:"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_human_resources_recruitment
@@ -20560,7 +20590,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_server_action_form
 msgid "Run"
-msgstr ""
+msgstr "اجرا"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.ir_cron_view_form
@@ -20967,7 +20997,7 @@ msgstr "مرجع نمای جستجو"
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.base_partner_merge_automatic_wizard_form
 msgid "Search duplicates based on duplicated data in"
-msgstr ""
+msgstr "جستجوی تکراری بر اساس داده های تکراری در"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_module_filter
@@ -21306,7 +21336,7 @@ msgstr "داده های شرکت خود را وارد کنید"
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.onboarding_company_step
 msgid "Set your company's data for documents header/footer."
-msgstr ""
+msgstr "داده های شرکت خود را برای سرصفحه/پانویس اسناد تنظیم کنید."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_actions_act_url__binding_model_id
@@ -21321,6 +21351,7 @@ msgid ""
 "Setting a value makes this action available in the sidebar for the given "
 "model."
 msgstr ""
+"تنظیم یک مقدار این اقدام را در نوار کناری مدل داده شده در دسترس قرار می دهد."
 
 #. module: base
 #: code:addons/base/models/res_users.py:0
@@ -21573,7 +21604,7 @@ msgstr ""
 #: code:addons/base/models/ir_attachment.py:0
 #, python-format
 msgid "Sorry, you are not allowed to access these fields on attachments."
-msgstr ""
+msgstr "با عرض پوزش، شما مجاز به دسترسی به این فیلدها در پیوست ها نیستید."
 
 #. module: base
 #: code:addons/base/models/ir_attachment.py:0
@@ -21610,7 +21641,7 @@ msgstr ""
 #: code:addons/base/models/ir_attachment.py:0
 #, python-format
 msgid "Sorry, you must provide fields to read on attachments"
-msgstr ""
+msgstr "با عرض پوزش، باید فیلدهایی را برای خواندن در پیوست ها ارائه دهید"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_filters__sort
@@ -21684,12 +21715,17 @@ msgid ""
 "password, otherwise leave empty. After a change of password, the user has to"
 " login again."
 msgstr ""
+"فقط هنگام ایجاد یک کاربر یا اگر در حال تغییر رمز عبور کاربر هستید یک مقدار "
+"را مشخص کنید، در غیر این صورت خالی بگذارید. پس از تغییر رمز عبور، کاربر باید"
+" دوباره وارد سایت شود."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_cron__doall
 msgid ""
 "Specify if missed occurrences should be executed when the server restarts."
 msgstr ""
+"مشخص کنید که آیا موارد از دست رفته باید هنگام راه اندازی مجدد سرور اجرا "
+"شوند."
 
 #. module: base
 #: model:ir.module.module,summary:base.module_website_event_track
@@ -21939,7 +21975,7 @@ msgstr "اشتراک ها"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_sequence__date_range_ids
 msgid "Subsequences"
-msgstr ""
+msgstr "دنباله ها"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.layout_preview
@@ -22105,12 +22141,12 @@ msgstr "بایگانی TGZ"
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.wizard_lang_export
 msgid "TGZ format: bundles multiple PO(T) files as a single archive"
-msgstr ""
+msgstr "فرمتTGZ: مجموعه‌ای از فایل‌های PO(T) که در یک فایل فشرده شده‌اند"
 
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__ir_mail_server__smtp_encryption__starttls
 msgid "TLS (STARTTLS)"
-msgstr ""
+msgstr "TLS (STARTTLS)"
 
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__report_paperformat__format__tabloid
@@ -22157,7 +22193,7 @@ msgstr "تانزانیا"
 #: model:ir.model.fields,field_description:base.field_ir_actions_server__crud_model_name
 #: model:ir.model.fields,field_description:base.field_ir_cron__crud_model_name
 msgid "Target Model"
-msgstr ""
+msgstr "مدل هدف"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_actions_act_window__target
@@ -22168,7 +22204,7 @@ msgstr "پنجره هدف"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_hr_timesheet
 msgid "Task Logs"
-msgstr ""
+msgstr "لاگ‌های وظیفه"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_company__vat
@@ -22365,7 +22401,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,help:base.field_res_lang__url_code
 msgid "The Lang Code displayed in the URL"
-msgstr ""
+msgstr "کد زبان در URL نمایش داده می شود"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_res_lang__grouping
@@ -22394,11 +22430,13 @@ msgid ""
 "The Tax Identification Number. Complete it if the contact is subjected to "
 "government taxes. Used in some legal statements."
 msgstr ""
+"شماره شناسایی مالیاتی اگر مخاطب مشمول مالیات دولتی است، آن را تکمیل کنید. در"
+" برخی از بیانیه های حقوقی استفاده می شود."
 
 #. module: base
 #: model:ir.model.constraint,message:base.constraint_res_lang_url_code_uniq
 msgid "The URL code of the language must be unique !"
-msgstr ""
+msgstr "کد URL زبان باید منحصر به فرد باشد!"
 
 #. module: base
 #: code:addons/base/models/ir_module.py:0
@@ -22407,6 +22445,8 @@ msgid ""
 "The `%s` module appears to be unavailable at the moment, please try again "
 "later."
 msgstr ""
+"به نظر می رسد ماژول «%s» در حال حاضر در دسترس نیست، لطفاً بعداً دوباره "
+"امتحان کنید."
 
 #. module: base
 #: code:addons/base/models/ir_module.py:0
@@ -22438,7 +22478,7 @@ msgstr "کد زبان باید منحصر به فرد باشد!"
 #. module: base
 #: model:ir.model.constraint,message:base.constraint_res_country_state_name_code_uniq
 msgid "The code of the state must be unique by country !"
-msgstr ""
+msgstr "کد استان باید بر اساس کشور منحصر به فرد باشد!"
 
 #. module: base
 #: model:ir.model.constraint,message:base.constraint_res_company_name_uniq
@@ -22452,6 +22492,9 @@ msgid ""
 "Odoo. They are launched during the installation of new modules, but you can "
 "choose to restart some wizards manually from this menu."
 msgstr ""
+"ویزاردهای پیکربندی برای کمک به پیکربندی نمونه جدیدی از Odoo استفاده می شود. "
+"آنها در حین نصب ماژول های جدید راه اندازی می شوند، اما می توانید انتخاب کنید"
+" که برخی از ویزارد را به صورت دستی از این منو راه اندازی مجدد کنید."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_model_fields__related
@@ -22468,7 +22511,7 @@ msgstr "کد ارز باید یکتا باشد!"
 #. module: base
 #: model:ir.model.constraint,message:base.constraint_res_currency_rate_currency_rate_check
 msgid "The currency rate must be strictly positive."
-msgstr ""
+msgstr "نرخ ارز باید کاملا مثبت باشد."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_attachment__res_model
@@ -22581,6 +22624,8 @@ msgid ""
 "The menu action this filter applies to. When left empty the filter applies "
 "to all menus for this model."
 msgstr ""
+"عملکرد منو که این فیلتر برای آن اعمال می شود. وقتی خالی بماند، فیلتر روی همه"
+" منوهای این مدل اعمال می‌شود."
 
 #. module: base
 #: code:addons/base/models/res_company.py:0
@@ -22657,7 +22702,7 @@ msgstr "تنها متغیرهای از پیش تعریف شده عبارتند �
 #: code:addons/model.py:0
 #, python-format
 msgid "The operation cannot be completed:"
-msgstr ""
+msgstr "عملیات را نمی توان کامل کرد:"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_model_fields__domain
@@ -22666,6 +22711,9 @@ msgid ""
 "specified as a Python expression defining a list of triplets. For example: "
 "[('color','=','red')]"
 msgstr ""
+"دامنه اختیاری برای محدود کردن مقادیر ممکن برای فیلدهای رابطه، که به عنوان یک"
+" عبارت Python مشخص شده است که لیستی از سه گانه را تعریف می کند. به عنوان "
+"مثال: [('color','=','red')]"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_actions_report__report_file
@@ -22673,6 +22721,8 @@ msgid ""
 "The path to the main report file (depending on Report Type) or empty if the "
 "content is in another field"
 msgstr ""
+"مسیر فایل گزارش اصلی (بسته به نوع گزارش) یا اگر محتوا در فیلد دیگری باشد "
+"خالی شود"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_cron__priority
@@ -22680,6 +22730,8 @@ msgid ""
 "The priority of the job, as an integer: 0 means higher priority, 10 means "
 "lower priority."
 msgstr ""
+"اولویت کار، به عنوان یک عدد صحیح: 0 به معنای اولویت بالاتر، 10 به معنای "
+"اولویت کمتر است."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_res_currency_rate__rate
@@ -22727,6 +22779,13 @@ msgid ""
 "Fields:\n"
 "%(fields_list)s"
 msgstr ""
+"عملیات درخواستی به دلیل محدودیت های امنیتی نمی تواند تکمیل شود.\n"
+"\n"
+"نوع سند: %(document_kind)s (%(document_model)s)\n"
+"عملیات: %(operation)s\n"
+"کاربر: %(user)s\n"
+"زمینه ها:\n"
+"%(fields_list)s"
 
 #. module: base
 #: code:addons/base/models/ir_rule.py:0
@@ -22794,12 +22853,16 @@ msgid ""
 "browser PDF means the report will be rendered using Wkhtmltopdf and "
 "downloaded by the user."
 msgstr ""
+"نوع گزارشی که ارائه می شود، هر کدام روش رندر مخصوص به خود را دارند. HTML به "
+"این معنی است که گزارش مستقیماً در مرورگر شما به صورت PDF باز می شود به این "
+"معنی که گزارش با استفاده از Wkhtmltopdf ارائه می شود و توسط کاربر دانلود می "
+"شود."
 
 #. module: base
 #: code:addons/base/models/res_users.py:0
 #, python-format
 msgid "The user cannot have more than one user types."
-msgstr ""
+msgstr "کاربر نمی تواند بیش از یک نوع کاربری داشته باشد."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_filters__user_id
@@ -22807,6 +22870,8 @@ msgid ""
 "The user this filter is private to. When left empty the filter is public and"
 " available to all users."
 msgstr ""
+"کاربری که این فیلتر برای آن خصوصی است. وقتی فیلتر خالی بماند عمومی است و در "
+"دسترس همه کاربران است."
 
 #. module: base
 #: code:addons/models.py:0
@@ -22814,13 +22879,13 @@ msgstr ""
 msgid ""
 "The value for the field '%s' already exists (this is probably '%s' in the "
 "current model)."
-msgstr ""
+msgstr "مقدار فیلد '%s' از قبل وجود دارد (این احتمالاً '%s' در مدل فعلی است)."
 
 #. module: base
 #: code:addons/base/models/ir_qweb_fields.py:0
 #, python-format
 msgid "The value send to monetary field is not a number."
-msgstr ""
+msgstr "مقدار ارسال به فیلد پولی یک عدد نیست."
 
 #. module: base
 #: code:addons/models.py:0
@@ -22829,6 +22894,7 @@ msgid ""
 "The values for the fields '%s' already exist (they are probably '%s' in the "
 "current model)."
 msgstr ""
+"مقادیر فیلدهای '%s' از قبل وجود دارند (احتمالاً در مدل فعلی '%s' هستند)."
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_theme
@@ -22845,7 +22911,7 @@ msgstr "فروشگاه تم"
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.base_partner_merge_automatic_wizard_form
 msgid "There are no more contacts to merge for this request"
-msgstr ""
+msgstr "هیچ مخاطب دیگری برای ادغام برای این درخواست وجود ندارد"
 
 #. module: base
 #: code:addons/base/models/ir_filters.py:0
@@ -22854,12 +22920,14 @@ msgid ""
 "There is already a shared filter set as default for %(model)s, delete or "
 "change it before setting a new default"
 msgstr ""
+"قبلاً یک فیلتر مشترک به‌عنوان پیش‌فرض برای %(model)s تنظیم شده است، قبل از "
+"تنظیم یک پیش‌فرض جدید آن را حذف یا تغییر دهید."
 
 #. module: base
 #: model:ir.actions.act_url,name:base.action_third_party
 #: model:ir.ui.menu,name:base.menu_third_party
 msgid "Third-Party Apps"
-msgstr ""
+msgstr "برنامه های شخص ثالث"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_res_lang__iso_code
@@ -22882,6 +22950,8 @@ msgstr "این ستون حاوی داده های ماژول است و نمی ت�
 msgid ""
 "This field holds the image used to display a favicon for a given company."
 msgstr ""
+"این فیلد تصویر مورد استفاده برای نمایش فاویکون برای یک شرکت خاص را در خود "
+"نگه می دارد."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_ui_view__arch_base
@@ -22919,6 +22989,8 @@ msgid ""
 "This file could not be decoded as an image file. Please try with a different"
 " file."
 msgstr ""
+"این فایل را نمی توان به عنوان یک فایل تصویری رمزگشایی کرد. لطفا با فایل "
+"دیگری امتحان کنید."
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.wizard_lang_export
@@ -22926,6 +22998,8 @@ msgid ""
 "This file was generated using the universal <strong>Unicode/UTF-8</strong> file encoding, please be sure to view and edit\n"
 "                           using the same encoding."
 msgstr ""
+"این فایل توسط انکودینگ <strong>Unicode/UTF-8</strong> ساخته شده است؛ لطفا "
+"توجه نمایید با همین انکودینگ ویرایش‌ و ذخیره نمایید."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_actions_act_window__views
@@ -22935,6 +23009,9 @@ msgid ""
 " and reference view. The result is returned as an ordered list of pairs "
 "(view_id,view_mode)."
 msgstr ""
+"این فیلد تابع لیست مرتبی از نماها را محاسبه می‌کند که باید هنگام نمایش نتیجه"
+" یک عمل، حالت مشاهده پیوند، نماها و نمای مرجع فعال شوند. نتیجه به عنوان یک "
+"لیست مرتب شده از جفت ها (view_id، view_mode) برگردانده می شود."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_actions_report__attachment
@@ -22954,6 +23031,9 @@ msgid ""
 "change the report filename. You can use a python expression with the "
 "'object' and 'time' variables."
 msgstr ""
+"این نام فایل گزارشی است که قرار است دانلود شود. خالی نگه دارید تا نام فایل "
+"گزارش را تغییر ندهید. می توانید از یک عبارت پایتون با متغیرهای \"object\" و "
+"\"time\" استفاده کنید."
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_no
@@ -23048,7 +23128,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_base_module_upgrade
 msgid "This module will trigger the uninstallation of below modules."
-msgstr ""
+msgstr "این ماژول، برنامه‌های زیر را حذف خواهد کرد."
 
 #. module: base
 #: code:addons/base/models/ir_model.py:0
@@ -23197,6 +23277,8 @@ msgstr "برای ارتقا"
 msgid ""
 "To enable it, make sure this directory exists and is writable on the server:"
 msgstr ""
+"برای فعال کردن آن، مطمئن شوید که این دایرکتوری وجود دارد و روی سرور قابل "
+"نوشتن است:"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_server_action_form
@@ -23228,6 +23310,7 @@ msgstr "تونگا"
 #, python-format
 msgid "Too many login failures, please wait a bit before trying again."
 msgstr ""
+"خطاهای ورود به سیستم بسیار زیاد است، لطفاً قبل از تلاش مجدد کمی صبر کنید."
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_tools
@@ -23390,6 +23473,7 @@ msgstr "اجزای برگردان"
 msgid ""
 "Translation features are unavailable until you install an extra translation."
 msgstr ""
+"تا زمانی که ترجمه اضافی را نصب نکنید، ویژگی‌های ترجمه در دسترس نیستند."
 
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__ir_translation__state__inprogress
@@ -23511,6 +23595,14 @@ msgid ""
 "- 'Add Followers': add followers to a record (Discuss)\n"
 "- 'Create Next Activity': create an activity (Discuss)"
 msgstr ""
+"نوع عملکرد سرور مقادیر زیر در دسترس هستند:\n"
+"- 'Execute Python Code': بلوکی از کد پایتون که اجرا خواهد شد\n"
+"- \"ایجاد\": یک رکورد جدید با مقادیر جدید ایجاد کنید\n"
+"- 'به روز رسانی یک رکورد': مقادیر یک رکورد را به روز کنید\n"
+"- \"اجرای چندین اقدام\": اقدامی را تعریف کنید که چندین اقدام دیگر سرور را راه اندازی کند\n"
+"- \"ارسال ایمیل\": به طور خودکار یک ایمیل ارسال کنید (بحث)\n"
+"- \"افزودن فالوور\": اضافه کردن دنبال کنندگان به یک رکورد (بحث)\n"
+"- \"ایجاد فعالیت بعدی\": ایجاد یک فعالیت (بحث)"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_model_constraint__type
@@ -23637,6 +23729,7 @@ msgstr "اوکراین - حسابداری"
 msgid ""
 "Unable to delete this document because it is used as a default property"
 msgstr ""
+"نمی توان این سند را حذف کرد زیرا به عنوان یک ویژگی پیش فرض استفاده می شود"
 
 #. module: base
 #: code:addons/base/models/ir_actions_report.py:0
@@ -23658,7 +23751,7 @@ msgstr ""
 msgid ""
 "Unable to process module \"%s\" because an external dependency is not met: "
 "%s"
-msgstr ""
+msgstr "پردازش ماژول \"%s\" ممکن نیست زیرا یک وابستگی خارجی برآورده نشده است: %s"
 
 #. module: base
 #: code:addons/base/models/ir_module.py:0
@@ -23666,7 +23759,7 @@ msgstr ""
 msgid ""
 "Unable to upgrade module \"%s\" because an external dependency is not met: "
 "%s"
-msgstr ""
+msgstr "ارتقاء ماژول \"%s\" ممکن نیست زیرا یک وابستگی خارجی برآورده نشده است: %s"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_uncategorized
@@ -23907,7 +24000,7 @@ msgstr "از کما استفاده کن"
 #: code:addons/base/models/ir_qweb_fields.py:0
 #, python-format
 msgid "Use comma instead of the <br> tag to display the address"
-msgstr ""
+msgstr "برای نمایش آدرس به جای تگ <br> از کاما استفاده کنید"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_website_sale_coupon
@@ -23950,6 +24043,8 @@ msgstr "استفاده از قالب '%s'"
 #: model:ir.model.fields,help:base.field_res_country__vat_label
 msgid "Use this field if you want to change vat label."
 msgstr ""
+"اگر می خواهید برچسب مالیات بر ارزش افزوده را تغییر دهید از این قسمت استفاده "
+"کنید."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_res_country__address_view_id
@@ -23959,6 +24054,10 @@ msgid ""
 "display addresses (in reports for example), while this field is used to "
 "modify the input form for addresses."
 msgstr ""
+"اگر می خواهید روش معمول را برای رمزگذاری یک آدرس کامل جایگزین کنید، از این "
+"فیلد استفاده کنید. توجه داشته باشید که فیلد address_format برای تغییر نحوه "
+"نمایش آدرس ها (به عنوان مثال در گزارش ها) استفاده می شود، در حالی که این "
+"فیلد برای تغییر فرم ورودی آدرس ها استفاده می شود."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_model_fields__relation_table
@@ -23969,7 +24068,7 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_actions_act_window__usage
 msgid "Used to filter menu and home actions from the user form."
-msgstr ""
+msgstr "برای فیلتر کردن عملکردهای منو و خانه از فرم کاربر استفاده می شود."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_res_users__login
@@ -24626,6 +24725,8 @@ msgid ""
 "When dealing with multiple actions, the execution order is based on the "
 "sequence. Low number means high priority."
 msgstr ""
+"هنگامی که با اقدامات متعدد سروکار دارید، ترتیب اجرا بر اساس توالی است. تعداد"
+" کم یعنی اولویت بالا."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_mail_server__sequence
@@ -24633,6 +24734,8 @@ msgid ""
 "When no specific mail server is requested for a mail, the highest priority "
 "one is used. Default priority is 10 (smaller number = higher priority)"
 msgstr ""
+"هنگامی که هیچ سرور ایمیل خاصی برای ایمیل درخواست نمی شود، از بالاترین اولویت"
+" استفاده می شود. اولویت پیش فرض 10 است (تعداد کوچکتر = اولویت بیشتر)"
 
 #. module: base
 #: model:ir.model.fields,help:base.field_res_partner__tz
@@ -24642,6 +24745,9 @@ msgid ""
 "If the timezone is not set, UTC (Coordinated Universal Time) is used.\n"
 "Anywhere else, time values are computed according to the time offset of your web client."
 msgstr ""
+"هنگام چاپ اسناد و ورودی/خروجی گرفتن داده ها، مقادیر زمانی بر اساس این منطقه زمانی محاسبه می شود.\n"
+"اگر منطقه زمانی تنظیم نشده باشد، از UTC (زمان جهانی هماهنگ) استفاده می شود.\n"
+"در هر جای دیگر، مقادیر زمانی با توجه به افست زمانی مشتری وب شما محاسبه می شود."
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.sequence_view
@@ -24649,6 +24755,8 @@ msgid ""
 "When subsequences per date range are used, you can prefix variables with 'range_'\n"
 "                                to use the beginning of the range instead of the current date, e.g. %(range_year)s instead of %(year)s."
 msgstr ""
+"هنگامی که از دنباله های بعدی در محدوده تاریخ استفاده می شود، می توانید متغیرها را با 'range_' پیشوند کنید.\n"
+"                                 برای استفاده از ابتدای محدوده به جای تاریخ فعلی، به عنوان مثال. %(range_year)s به جای %(year)s."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_model_fields__copied
@@ -24764,6 +24872,8 @@ msgid ""
 "Write Python code that the action will execute. Some variables are available"
 " for use; help about python expression is given in the help tab."
 msgstr ""
+"کد پایتون را بنویسید که عمل اجرا شود. برخی از متغیرها برای استفاده در دسترس "
+"هستند. کمک در مورد بیان پایتون در تب help آورده شده است."
 
 #. module: base
 #: model:res.country,name:base.ye
@@ -24794,7 +24904,7 @@ msgstr "شما در حال دعوت یک کاربر جدید هستید."
 #: code:addons/base/models/ir_module.py:0
 #, python-format
 msgid "You are trying to install incompatible modules in category \"%s\":"
-msgstr ""
+msgstr "شما در حال تلاش برای نصب ماژول های ناسازگار در دسته \"%s\" هستید:"
 
 #. module: base
 #: code:addons/base/models/ir_module.py:0
@@ -24814,6 +24924,8 @@ msgid ""
 "You can either upload a file from your computer or copy/paste an internet "
 "link to your file."
 msgstr ""
+"می توانید یک فایل را از رایانه خود آپلود کنید یا یک پیوند اینترنتی را در "
+"فایل خود کپی/پیست کنید."
 
 #. module: base
 #: model_terms:ir.actions.act_window,help:base.action_country_state
@@ -24826,7 +24938,7 @@ msgstr ""
 #: code:addons/base/models/res_partner.py:0
 #, python-format
 msgid "You can not create recursive tags."
-msgstr ""
+msgstr "شما نمی توانید تگ های بازگشتی ایجاد کنید."
 
 #. module: base
 #: model:ir.model.constraint,message:base.constraint_res_users_login_key
@@ -24840,6 +24952,8 @@ msgid ""
 "You can not remove the admin user as it is used internally for resources "
 "created by Odoo (updates, module installation, ...)"
 msgstr ""
+"شما نمی توانید کاربر ادمین را حذف کنید زیرا به صورت داخلی برای منابع ایجاد "
+"شده توسط Odoo استفاده می شود (بروز رسانی، نصب ماژول، ...)"
 
 #. module: base
 #: code:addons/base/models/report_paperformat.py:0
@@ -24916,6 +25030,9 @@ msgid ""
 "\n"
 "(Operation: %(operation)s)"
 msgstr ""
+"شما حقوق کافی برای دسترسی به فیلدهای \"%(fields)s\" در %(document_kind)s (%(document_model)s) ندارید. لطفا با سرپرست سیستم خود تماس بگیرید.\n"
+"\n"
+"(Operation: %(operation)s)"
 
 #. module: base
 #: code:addons/base/models/ir_actions.py:0
@@ -24927,7 +25044,7 @@ msgstr "شما حق دسترسی کافی برای اجرای این عمل را
 #: code:addons/base/wizard/base_partner_merge.py:0
 #, python-format
 msgid "You have to specify a filter for your selection."
-msgstr ""
+msgstr "شما باید یک فیلتر برای انتخاب خود مشخص کنید."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_reset_view_arch_wizard__reset_mode
@@ -25232,7 +25349,7 @@ msgstr ""
 #: code:addons/models.py:0
 #, python-format
 msgid "forbidden for groups %s"
-msgstr ""
+msgstr "برای گروه های %s ممنوع است"
 
 #. module: base
 #: code:addons/base/models/res_lang.py:0
@@ -25314,7 +25431,7 @@ msgstr ""
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.demo_failures_dialog
 msgid "module(s) failed to install and were disabled"
-msgstr ""
+msgstr "ماژول(ها) نصب نشدند و غیرفعال شدند"
 
 #. module: base
 #: model:ir.model.fields.selection,name:base.selection__ir_model_fields__ttype__monetary
@@ -25330,7 +25447,7 @@ msgstr ""
 #: code:addons/base/models/ir_ui_view.py:0
 #, python-format
 msgid "n/a"
-msgstr ""
+msgstr "تعریف نشده"
 
 #. module: base
 #: code:addons/base/models/ir_fields.py:0
@@ -25432,7 +25549,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_test_impex
 msgid "test-import-export"
-msgstr ""
+msgstr "تست-ورودی-خروجی"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_test_inherit

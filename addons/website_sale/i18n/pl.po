@@ -4,15 +4,13 @@
 # 
 # Translators:
 # Wiktor Kaźmierczak <wik92tor@wp.pl>, 2019
-# Grzegorz Grzelak <grzegorz.grzelak@openglobe.pl>, 2019
 # Judyta Kaźmierczak <judyta.kazmierczak@openglobe.pl>, 2019
 # Tadeusz Karpiński <tadeuszkarpinski@gmail.com>, 2019
-# Tomasz Leppich <t.leppich@gmail.com>, 2019
 # Mariusz, 2019
 # Slawomir Adamus <melthalion@gmail.com>, 2019
 # Marcin Młynarczyk <mlynarczyk@gmail.com>, 2019
 # Bartłomiej Maliński <bartlomiej.malinski@gmail.com>, 2019
-# Andrzej Donczew <a.donczew@hadron.eu.com>, 2019
+# Andrzej Wiśniewski <a.wisniewski@hadron.eu.com>, 2019
 # Grzegorz Krukar <grzegorzgk1@gmail.com>, 2019
 # Radosław Biegalski <radoslaw.biegalski@openglobe.pl>, 2019
 # Natalia Gros <nag@odoo.com>, 2019
@@ -21,11 +19,15 @@
 # Dariusz Żbikowski <darek@krokus.com.pl>, 2019
 # Piotr Szlązak <szlazakpiotr@gmail.com>, 2019
 # Monika Grzelak <m.e.grzelak@gmail.com>, 2019
-# Paweł Wodyński <pw@myodoo.pl>, 2020
 # Piotr Cierkosz <piotr.w.cierkosz@gmail.com>, 2020
 # Maksym <ms@myodoo.pl>, 2020
 # Piotr Strębski <strebski@gmail.com>, 2021
-# Daniel Demedziuk <daniel.demedziuk@gmail.com>, 2021
+# DanielDemedziuk <daniel.demedziuk@gmail.com>, 2021
+# Tomasz Leppich <t.leppich@gmail.com>, 2022
+# Anita Kosobucka, 2022
+# Grzegorz Grzelak <grzegorz.grzelak@openglobe.pl>, 2022
+# Paweł Wodyński <pw@myodoo.pl>, 2022
+# Łukasz Grzenkowicz <lukasz.grzenkowicz@gmail.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -33,7 +35,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-27 09:21+0000\n"
 "PO-Revision-Date: 2019-08-26 09:16+0000\n"
-"Last-Translator: Daniel Demedziuk <daniel.demedziuk@gmail.com>, 2021\n"
+"Last-Translator: Łukasz Grzenkowicz <lukasz.grzenkowicz@gmail.com>, 2022\n"
 "Language-Team: Polish (https://www.transifex.com/odoo/teams/41243/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -224,6 +226,8 @@ msgid ""
 "<i class=\"fa fa-chevron-left\"/>\n"
 "                                            <span>Back</span>"
 msgstr ""
+"<i class=\"fa fa-chevron-left\"/>\n"
+"                                            <span>Powrót</span>"
 
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.checkout
@@ -242,7 +246,7 @@ msgstr ""
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.payment
 msgid "<i class=\"fa fa-edit\"/> Edit"
-msgstr ""
+msgstr "<i class=\"fa fa-edit\"/> Edycja"
 
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.checkout
@@ -332,6 +336,8 @@ msgid ""
 "<span class=\"fa fa-chevron-left\"/>\n"
 "                                        <span class=\"\">Continue Shopping</span>"
 msgstr ""
+"<span class=\"fa fa-chevron-left\"/>\n"
+"                                        <span class=\"\">Wróć do zakupów</span>"
 
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.cart
@@ -339,6 +345,8 @@ msgid ""
 "<span class=\"fa fa-chevron-left\"/>\n"
 "                                    Continue<span class=\"d-none d-md-inline\"> Shopping</span>"
 msgstr ""
+"<span class=\"fa fa-chevron-left\"/>\n"
+"                                    Kontynuuj<span class=\"d-none d-md-inline\"> Zakupy</span>"
 
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.extra_info
@@ -382,6 +390,8 @@ msgid ""
 "<span>Confirm</span>\n"
 "                                    <i class=\"fa fa-chevron-right\"/>"
 msgstr ""
+"<span>Potwierdź</span>\n"
+"                                    <i class=\"fa fa-chevron-right\"/>"
 
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.confirmation
@@ -394,6 +404,8 @@ msgid ""
 "<span>Next</span>\n"
 "                                            <i class=\"fa fa-chevron-right\"/>"
 msgstr ""
+"<span>Dalej</span>\n"
+"                                            <i class=\"fa fa-chevron-right\"/>"
 
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.confirmation
@@ -403,7 +415,7 @@ msgstr "<span>Zamówienie</span>"
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.short_cart_summary
 msgid "<span>Process Checkout</span>"
-msgstr ""
+msgstr "<span>Przejdź do podsumowania</span>"
 
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.view_product_image_form
@@ -413,7 +425,7 @@ msgstr ""
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.payment_confirmation_status
 msgid "<span>Your payment has been authorized.</span>"
-msgstr ""
+msgstr "<span>Twoja płatność została zautoryzowana.</span>"
 
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.suggested_products_list
@@ -613,7 +625,7 @@ msgstr ""
 #: code:addons/website_sale/static/src/xml/website_sale_utils.xml:0
 #, python-format
 msgid "All results"
-msgstr ""
+msgstr "Wszystkie wyniki"
 
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.res_config_settings_view_form
@@ -833,6 +845,16 @@ msgid "Chairs"
 msgstr ""
 
 #. module: website_sale
+#: code:addons/website_sale/controllers/main.py:0
+#, python-format
+msgid ""
+"Changing your name is not allowed once invoices have been issued for your "
+"account. Please contact us directly for this operation."
+msgstr ""
+"Zmiana imienia i nazwiska jest niedozwolona po wystawieniu faktury na Twoim "
+"koncie. Skontaktuj się z nami bezpośrednio, aby wykonać tę operację."
+
+#. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_product_public_category__child_id
 msgid "Children Categories"
 msgstr "Kategorie podrzędne"
@@ -840,7 +862,7 @@ msgstr "Kategorie podrzędne"
 #. module: website_sale
 #: model:ir.actions.act_window,name:website_sale.action_open_website_sale_onboarding_payment_acquirer_wizard
 msgid "Choose a payment method"
-msgstr ""
+msgstr "Wybierz metodę płatności"
 
 #. module: website_sale
 #. openerp-web
@@ -1356,7 +1378,7 @@ msgstr "Zgadzam się z"
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.reduction_code
 msgid "I have a promo code"
-msgstr ""
+msgstr "Mam kod promocyjny"
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_product_image__id
@@ -1652,7 +1674,7 @@ msgstr "Następny"
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.extra_info
 msgid "Next <span class=\"fa fa-chevron-right\"/>"
-msgstr ""
+msgstr "Dalej <span class=\"fa fa-chevron-right\"/>"
 
 #. module: website_sale
 #: model_terms:ir.actions.act_window,help:website_sale.action_abandoned_orders_ecommerce
@@ -1690,7 +1712,7 @@ msgstr ""
 #: code:addons/website_sale/static/src/xml/website_sale_utils.xml:0
 #, python-format
 msgid "No results found. Please try another search."
-msgstr ""
+msgstr "Brak wyników. Spróbuj innego wyszukiwania."
 
 #. module: website_sale
 #: model:ir.model.fields.selection,name:website_sale.selection__res_config_settings__sale_delivery_settings__none
@@ -2299,7 +2321,7 @@ msgstr "Powrót do listy produktów."
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.wizard_checkout
 msgid "Review Order"
-msgstr ""
+msgstr "Przegląd zamówienia"
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_product_public_category__is_seo_optimized
@@ -2624,7 +2646,7 @@ msgstr "Ulica 2"
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.address
 msgid "Street <span class=\"d-none d-md-inline\"> and Number</span>"
-msgstr ""
+msgstr "Ulica <span class=\"d-none d-md-inline\"> i numer</span>"
 
 #. module: website_sale
 #: model:ir.model.fields,field_description:website_sale.field_website_sale_payment_acquirer_onboarding_wizard__stripe_publishable_key
@@ -2820,12 +2842,12 @@ msgstr ""
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.products_item
 msgid "This product is unpublished."
-msgstr ""
+msgstr "Ten produkt nie został opublikowany."
 
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.coupon_form
 msgid "This promo code is not available."
-msgstr ""
+msgstr "Kod promocyjny nie jest dostępny"
 
 #. module: website_sale
 #: model:ir.model.fields,help:website_sale.field_website_visitor__product_count
@@ -3285,6 +3307,8 @@ msgid ""
 "Changing company name is not allowed once document(s) have been issued for "
 "your account. Please contact us directly for this operation."
 msgstr ""
+"Zmiana nazwy firmy jest niedozwolona po wystawieniu dokumentów dla Twojego "
+"konta. Prosimy o bezpośredni kontakt w sprawie tej operacji."
 
 #. module: website_sale
 #: model_terms:ir.ui.view,arch_db:website_sale.address_b2b
@@ -3292,3 +3316,5 @@ msgid ""
 "Changing VAT number is not allowed once document(s) have been issued for "
 "your account. Please contact us directly for this operation."
 msgstr ""
+"Zmiana numeru VAT nie jest dozwolona po wystawieniu dokumentu(ów) dla "
+"Twojego konta. Prosimy o bezpośredni kontakt w sprawie tej operacji."

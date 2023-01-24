@@ -59,7 +59,11 @@ class TestWebsiteSaleCheckoutAddress(odoo.tests.TransactionCase):
             'partner_id': partner_id,
             'website_id': self.website.id,
             'order_line': [(0, 0, {
-                'product_id': self.env['product.product'].create({'name': 'Product A', 'list_price': 100}).id,
+                'product_id': self.env['product.product'].create({
+                    'name': 'Product A',
+                    'list_price': 100,
+                    'website_published': True,
+                    'sale_ok': True}).id,
                 'name': 'Product A',
             })]
         })
@@ -130,6 +134,8 @@ class TestWebsiteSaleCheckoutAddress(odoo.tests.TransactionCase):
 
             # 2. Logged in user, edit billing
             self.default_address_values['partner_id'] = self.demo_partner.id
+            # Name cannot be changed if there are issued invoices
+            self.default_address_values['name'] = self.demo_partner.name
             self.WebsiteSaleController.address(**self.default_address_values)
             self.assertEqual(self.demo_partner.company_id, self.company_c, "Logged in user edited billing (the partner itself) should not get its company modified.")
 

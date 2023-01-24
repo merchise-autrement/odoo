@@ -101,6 +101,18 @@ class MrpBom(models.Model):
                             (ptav.display_name, ptav.product_tmpl_id.display_name, bom_line.parent_product_tmpl_id.display_name)
                         )
 
+    @api.onchange('bom_line_ids', 'product_qty')
+    def onchange_bom_structure(self):
+        if self.type == 'phantom' and self._origin and self.env['stock.move'].search([('bom_line_id', 'in', self._origin.bom_line_ids.ids)], limit=1):
+            return {
+                'warning': {
+                    'title': _('Warning'),
+                    'message': _(
+                        'The product has already been used at least once, editing its structure may lead to undesirable behaviours. '
+                        'You should rather archive the product and create a new one with a new bill of materials.'),
+                }
+            }
+
     @api.onchange('product_uom_id')
     def onchange_product_uom_id(self):
         res = {}
@@ -201,7 +213,7 @@ class MrpBom(models.Model):
         if not products:
             return bom_by_product
         product_templates = products.mapped('product_tmpl_id')
-        domain = ['|', ('product_id', 'in', products.ids), '&', ('product_id', '=', False), ('product_tmpl_id', 'in', product_templates.ids)]
+        domain = ['|', ('product_id', 'in', products.ids), '&', ('product_id', '=', False), ('product_tmpl_id', 'in', product_templates.ids), ('active', '=', True)]
         if picking_type:
             domain += ['|', ('picking_type_id', '=', picking_type.id), ('picking_type_id', '=', False)]
         if company_id or self.env.context.get('company_id'):

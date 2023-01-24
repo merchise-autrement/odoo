@@ -8,7 +8,7 @@
 # Judyta Kaźmierczak <judyta.kazmierczak@openglobe.pl>, 2019
 # Jaroslaw Kaczmarski, 2019
 # zieloo <zieloo@gmail.com>, 2019
-# Andrzej Donczew <a.donczew@hadron.eu.com>, 2019
+# Andrzej Wiśniewski <a.wisniewski@hadron.eu.com>, 2019
 # Dariusz Żbikowski <darek@krokus.com.pl>, 2019
 # Zdzisław Krajewski <zdzichucb@gmail.com>, 2019
 # Piotr Szlązak <szlazakpiotr@gmail.com>, 2019
@@ -24,8 +24,8 @@
 # Tomasz Leppich <t.leppich@gmail.com>, 2019
 # Maja Stawicka <mjstwck@wp.pl>, 2019
 # Karol Rybak <karolrybak85@gmail.com>, 2019
-# Maksym <ms@myodoo.pl>, 2020
-# Wojciech Warczakowski <w.warczakowski@gmail.com>, 2021
+# Krzysztof Przygoda, 2022
+# Maksym <ms@myodoo.pl>, 2023
 # 
 msgid ""
 msgstr ""
@@ -33,7 +33,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-27 09:21+0000\n"
 "PO-Revision-Date: 2019-08-26 09:13+0000\n"
-"Last-Translator: Wojciech Warczakowski <w.warczakowski@gmail.com>, 2021\n"
+"Last-Translator: Maksym <ms@myodoo.pl>, 2023\n"
 "Language-Team: Polish (https://www.transifex.com/odoo/teams/41243/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -513,8 +513,8 @@ msgstr "Zadania"
 
 #. module: project
 #: model:ir.model.fields.selection,name:project.selection__project_project__privacy_visibility__employees
-msgid "All employees"
-msgstr ""
+msgid "All internal users"
+msgstr "Wszyscy użytkownicy wewnętrzni"
 
 #. module: project
 #. openerp-web
@@ -1024,11 +1024,17 @@ msgstr ""
 #. module: project
 #: model:ir.model.fields,help:project.field_project_project__privacy_visibility
 msgid ""
-"Defines the visibility of the tasks of the project:\n"
-"- Invited employees: employees may only see the followed project and tasks.\n"
-"- All employees: employees may see all project and tasks.\n"
-"- Portal users and all employees: employees may see everything.   Portal users may see project and tasks followed by.\n"
-"   them or by someone of their company."
+"People to whom this project and its tasks will be visible.\n"
+"\n"
+"- Invited internal users: when following a project, internal users will get access to all of its tasks without distinction. Otherwise, they will only get access to the specific tasks they are following.\n"
+" A user with the project > administrator access right level can still access this project and its tasks, even if they are not explicitly part of the followers.\n"
+"\n"
+"- All internal users: all internal users can access the project and all of its tasks without distinction.\n"
+"\n"
+"- Invited portal users and all internal users: all internal users can access the project and all of its tasks without distinction.\n"
+"When following a project, portal users will get access to all of its tasks without distinction. Otherwise, they will only get access to the specific tasks they are following.\n"
+"\n"
+"In any case, an internal user with no project access rights can still access a task, provided that they are given the corresponding URL (and that they are part of the followers if the project is private)."
 msgstr ""
 
 #. module: project
@@ -1564,8 +1570,8 @@ msgstr ""
 
 #. module: project
 #: model:ir.model.fields.selection,name:project.selection__project_project__privacy_visibility__followers
-msgid "Invited employees"
-msgstr "Zaproszenie pracownicy"
+msgid "Invited internal users"
+msgstr "Zaproś użytkowników wewnętrznych"
 
 #. module: project
 #: model:ir.model.fields,field_description:project.field_project_project__message_is_follower
@@ -2121,7 +2127,7 @@ msgstr ""
 #. module: project
 #: model:ir.model.fields,help:project.field_project_project__rating_percentage_satisfaction
 msgid "Percentage of happy ratings"
-msgstr ""
+msgstr "Procent zadowolonych ocen"
 
 #. module: project
 #: model_terms:ir.ui.view,arch_db:project.view_project_kanban
@@ -2179,8 +2185,8 @@ msgstr "Adres URL dostępu do portalu"
 
 #. module: project
 #: model:ir.model.fields.selection,name:project.selection__project_project__privacy_visibility__portal
-msgid "Portal users and all employees"
-msgstr ""
+msgid "Invited portal users and all internal users"
+msgstr "Zaproszeni użytkownicy portalu i wszyscy wewnętrzni"
 
 #. module: project
 #. openerp-web

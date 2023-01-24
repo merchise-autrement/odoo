@@ -282,6 +282,7 @@ class WebsiteSale(http.Controller):
 
         values = {
             'search': search,
+            'order': post.get('order', ''),
             'category': category,
             'attrib_values': attrib_values,
             'attrib_set': attrib_set,
@@ -538,6 +539,13 @@ class WebsiteSale(http.Controller):
         # data: values after preprocess
         error = dict()
         error_message = []
+
+        # prevent name change if invoices exist
+        if data.get('partner_id'):
+            partner = request.env['res.partner'].browse(int(data['partner_id']))
+            if partner.exists() and not partner.sudo().can_edit_vat() and 'name' in data and (data['name'] or False) != (partner.name or False):
+                error['name'] = 'error'
+                error_message.append(_('Changing your name is not allowed once invoices have been issued for your account. Please contact us directly for this operation.'))
 
         # Required fields from form
         required_fields = [f for f in (all_form_values.get('field_required') or '').split(',') if f]
@@ -1227,7 +1235,7 @@ class WebsiteSale(http.Controller):
                 ['product_id', 'visit_datetime:max'], ['product_id'], limit=max_number_of_product_for_carousel, orderby='visit_datetime DESC')
             products_ids = [product['product_id'][0] for product in products]
             if products_ids:
-                viewed_products = request.env['product.product'].with_context(display_default_code=False).browse(products_ids)
+                viewed_products = request.env['product.product'].with_context(display_default_code=False).search([('id', 'in', products_ids)])
 
                 FieldMonetary = request.env['ir.qweb.field.monetary']
                 monetary_options = {
