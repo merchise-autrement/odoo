@@ -104,6 +104,7 @@ class ImDispatch(object):
     def __init__(self):
         self.channels = {}
         self.started = False
+        self.Event = None
 
     def poll(self, dbname, channels, last, options=None, timeout=TIMEOUT):
         if options is None:
@@ -190,7 +191,7 @@ class ImDispatch(object):
     def start(self):
         if odoo.evented:
             # gevent mode
-            import gevent.event
+            import gevent.event  # pylint: disable=import-outside-toplevel
             self.Event = gevent.event.Event
             gevent.spawn(self.run)
         else:

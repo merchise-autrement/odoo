@@ -13,7 +13,6 @@ options.registry.SnippetPopup = options.Class.extend({
         this.$target.on('click.SnippetPopup', '.js_close_popup:not(a, .btn)', ev => {
             ev.stopPropagation();
             this.onTargetHide();
-            this.trigger_up('snippet_option_visibility_update', {show: false});
         });
         this.$target.on('shown.bs.modal.SnippetPopup', () => {
             this.trigger_up('snippet_option_visibility_update', {show: true});
@@ -24,7 +23,7 @@ options.registry.SnippetPopup = options.Class.extend({
                 iframe.src = media.dataset.oeExpression || media.dataset.src; // TODO still oeExpression to remove someday
             });
         });
-        this.$target.on('hidden.bs.modal.SnippetPopup', () => {
+        this.$target.on('hide.bs.modal.SnippetPopup', () => {
             this.trigger_up('snippet_option_visibility_update', {show: false});
             this._removeIframeSrc();
         });
