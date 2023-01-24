@@ -50,7 +50,6 @@ setup(
         'reportlab',  # windows binary pypi.python.org/pypi/reportlab
         'requests',
         'zeep',
-        'vatnumber',
         'vobject',
         'werkzeug',
         'xlsxwriter',
@@ -60,7 +59,7 @@ setup(
         'celery>=4,<5',
         'flower',
         'redis',
-        'xotl.tools>=2.1.9,<2.2',
+        'xotl.tools>=2.1.9,<2.3',
         'raven>=6.9.0',
         'raven-sanitize-openerp',
         'rjsmin>=1.0.12,<1.1',
