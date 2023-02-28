@@ -1415,7 +1415,7 @@ class MrpProduction(models.Model):
                 move.product_uom_qty = move.quantity_done
             # MRP do not merge move, catch the result of _action_done in order
             # to get extra moves.
-            moves_to_do = moves_to_do._action_done()
+            moves_to_do = moves_to_do._action_done(cancel_backorder=cancel_backorder)
             moves_to_do = order.move_raw_ids.filtered(lambda x: x.state == 'done') - moves_not_to_do
 
             finish_moves = order.move_finished_ids.filtered(lambda m: m.product_id == order.product_id and m.state not in ('done', 'cancel'))
@@ -1501,8 +1501,19 @@ class MrpProduction(models.Model):
 
         # As we have split the moves before validating them, we need to 'remove' the excess reservation
         if not close_mo:
-            self.move_raw_ids.filtered(lambda m: not m.additional)._do_unreserve()
-            self.move_raw_ids.filtered(lambda m: not m.additional)._action_assign()
+            raw_moves = self.move_raw_ids.filtered(lambda m: not m.additional)
+            raw_moves._do_unreserve()
+            for sml in raw_moves.move_line_ids:
+                try:
+                    q = self.env['stock.quant']._update_reserved_quantity(sml.product_id, sml.location_id, sml.qty_done,
+                                                                          lot_id=sml.lot_id, package_id=sml.package_id,
+                                                                          owner_id=sml.owner_id, strict=True)
+                    reserved_qty = sum([x[1] for x in q])
+                    reserved_qty = sml.product_id.uom_id._compute_quantity(reserved_qty, sml.product_uom_id)
+                except UserError:
+                    reserved_qty = 0
+                sml.with_context(bypass_reservation_update=True).product_uom_qty = reserved_qty
+            raw_moves._recompute_state()
         # Confirm only productions with remaining components
         backorders.filtered(lambda mo: mo.move_raw_ids).action_confirm()
         backorders.filtered(lambda mo: mo.move_raw_ids).action_assign()
@@ -1549,7 +1560,7 @@ class MrpProduction(models.Model):
 
         backorders = productions_to_backorder._generate_backorder_productions(close_mo=close_mo)
         productions_not_to_backorder._post_inventory(cancel_backorder=True)
-        productions_to_backorder._post_inventory(cancel_backorder=False)
+        productions_to_backorder._post_inventory(cancel_backorder=True)
 
         # if completed products make other confirmed/partially_available moves available, assign them
         done_move_finished_ids = (productions_to_backorder.move_finished_ids | productions_not_to_backorder.move_finished_ids).filtered(lambda m: m.state == 'done')

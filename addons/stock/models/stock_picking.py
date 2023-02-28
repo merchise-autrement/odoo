@@ -83,8 +83,8 @@ class PickingType(models.Model):
 
     @api.model
     def create(self, vals):
-        if 'sequence_id' not in vals or not vals['sequence_id']:
-            if vals['warehouse_id']:
+        if not vals.get('sequence_id') and vals.get('sequence_code'):
+            if vals.get('warehouse_id'):
                 wh = self.env['stock.warehouse'].browse(vals['warehouse_id'])
                 vals['sequence_id'] = self.env['ir.sequence'].sudo().create({
                     'name': wh.name + ' ' + _('Sequence') + ' ' + vals['sequence_code'],
@@ -771,6 +771,7 @@ class Picking(models.Model):
     def action_cancel(self):
         self.mapped('move_lines')._action_cancel()
         self.write({'is_locked': True})
+        self.filtered(lambda x: not x.move_lines).state = 'cancel'
         return True
 
     def _action_done(self):

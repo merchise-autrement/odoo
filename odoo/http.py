@@ -763,14 +763,8 @@ class HttpRequest(WebRequest):
         try:
             return super(HttpRequest, self)._handle_exception(exception)
         except SessionExpiredException:
-            redirect = None
-            req = request.httprequest
-            if req.method == 'POST':
-                request.session.save_request_data()
-                redirect = '/web/proxy/post{r.full_path}'.format(r=req)
-            elif not request.params.get('noredirect'):
-                redirect = req.url
-            if redirect:
+            if not request.params.get('noredirect'):
+                redirect = request.httprequest.url
                 query = werkzeug.urls.url_encode({
                     'redirect': redirect,
                 })
@@ -1153,50 +1147,6 @@ class OpenERPSession(sessions.Session):
         """
         saved_actions = self.get('saved_actions', {})
         return saved_actions.get("actions", {}).get(key)
-
-    def save_request_data(self):
-        # TODO: Analyze this with our SessionStore below.  Why do we even need
-        # to make request `files` part of the session.  I assume this is
-        # because several parallel AJAX calls from the same client may try to
-        # access such data... Hum!
-        import uuid
-        req = request.httprequest
-        files = werkzeug.datastructures.MultiDict()
-        # NOTE we do not store files in the session itself to avoid loading them in memory.
-        #      By storing them in the session store, we ensure every worker (even ones on other
-        #      servers) can access them. It also allow stale files to be deleted by `session_gc`.
-        for f in req.files.values():
-            storename = 'werkzeug_%s_%s.file' % (self.sid, uuid.uuid4().hex)
-            path = os.path.join(root.session_store.path, storename)
-            with open(path, 'w') as fp:
-                f.save(fp)
-            files.add(f.name, (storename, f.filename, f.content_type))
-        self['serialized_request_data'] = {
-            'form': req.form,
-            'files': files,
-        }
-
-    @contextlib.contextmanager
-    def load_request_data(self):
-        data = self.pop('serialized_request_data', None)
-        files = werkzeug.datastructures.MultiDict()
-        try:
-            if data:
-                # regenerate files filenames with the current session store
-                for name, (storename, filename, content_type) in data['files'].items():
-                    path = os.path.join(root.session_store.path, storename)
-                    files.add(name, (path, filename, content_type))
-                yield werkzeug.datastructures.CombinedMultiDict([data['form'], files])
-            else:
-                yield None
-        finally:
-            # cleanup files
-            for f, _, _ in files.values():
-                try:
-                    os.unlink(f)
-                except IOError:
-                    pass
-
 
 def session_gc(session_store):
     # This method is called for every HTTP request (called by setup_session,

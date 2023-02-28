@@ -10648,7 +10648,7 @@ msgstr "Chercher des taxes"
 msgid ""
 "Search in the Statement's Label to find the Invoice/Payment's reference"
 msgstr ""
-"Rechercher dans l'étiquette du relevé pour trouver la référence de la "
+"Rechercher dans le libellé du relevé pour trouver la référence de la "
 "facture/du paiement"
 
 #. module: account
@@ -14004,6 +14004,12 @@ msgid "Unposted"
 msgstr "Non validé"
 
 #. module: account
+#: code:addons/account/models/company.py:0
+#, python-format
+msgid "Unposted Entries"
+msgstr "Écritures non comptabilisées"
+
+#. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_move_filter
 msgid "Unposted Journal Entries"
 msgstr "Écritures Non Comptabilisées"
@@ -14831,6 +14837,14 @@ msgstr ""
 "comptables existent déjà"
 
 #. module: account
+#: code:addons/account/models/company.py:0
+#, python-format
+msgid "Please contact your accountant to print the Hash integrity result."
+msgstr ""
+"Veuillez contacter votre comptable pour imprimer les résultats de "
+"l'intégrité de hachage."
+
+#. module: account
 #: code:addons/account/models/account_account.py:0
 #, python-format
 msgid ""
@@ -14888,11 +14902,13 @@ msgstr ""
 #: code:addons/account/models/account_move.py:0
 #, python-format
 msgid ""
-"You cannot edit the following fields due to restrict mode being activated on"
-" the journal: %s."
+"You cannot edit the following fields: %s.\n"
+"The following entries are already hashed:\n"
+"%s"
 msgstr ""
-"Vous ne pouvez pas modifier les champs suivants car le mode restreint est "
-"activé sur le journal : %s."
+"Vous ne pouvez pas éditer les champs suivants : %s.\n"
+"Les écritures suivantes sont déjà hashées :\n"
+"%s"
 
 #. module: account
 #: code:addons/account/models/account_move.py:0

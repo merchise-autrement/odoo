@@ -588,7 +588,7 @@ msgstr ""
 #. module: website_forum
 #: model_terms:ir.ui.view,arch_db:website_forum.moderation_queue
 msgid "<span aria-label=\"Close\">×</span>"
-msgstr ""
+msgstr "<span aria-label=\"Close\">×</span>"
 
 #. module: website_forum
 #: model_terms:ir.ui.view,arch_db:website_forum.post_description_full
@@ -997,7 +997,7 @@ msgstr "Tagasi küsimuste juurde"
 #: code:addons/website_forum/controllers/main.py:0
 #, python-format
 msgid "Bad Request"
-msgstr "Halb päring"
+msgstr "Vale päring"
 
 #. module: website_forum
 #: model:ir.ui.menu,name:website_forum.menu_forum_badges
@@ -2644,6 +2644,9 @@ msgid ""
 "Signed In: Forum is visible for signed in users\n"
 "Some users: Forum and their content are hidden for non members of selected group"
 msgstr ""
+"Avalik: Foorum on nähtav kõigile\n"
+"Sisse logitud: Foorum on nähtav ainult sisse logitud kasutajatele\n"
+"Mõned kasutajad: Ainult valitud grupi liikmed saavad foorumit näha"
 
 #. module: website_forum
 #. openerp-web
@@ -2780,6 +2783,8 @@ msgid ""
 "Questions mode: only one answer allowed\n"
 " Discussions mode: multiple answers allowed"
 msgstr ""
+"Valik \"küsimused\": ainult üks vastus on lubatud\n"
+"Valik \"arutelud\": mitu vastust on lubatud"
 
 #. module: website_forum
 #: model:forum.post.reason,name:website_forum.reason_15

@@ -171,7 +171,7 @@ msgstr "(횟수)"
 #: code:addons/web/static/src/js/control_panel/search_bar.js:0
 #, python-format
 msgid "(no result)"
-msgstr ""
+msgstr "(결과 없음)"
 
 #. module: web
 #. openerp-web
@@ -385,7 +385,7 @@ msgstr "<strong>합계</strong>"
 #: code:addons/web/static/src/js/control_panel/custom_favorite_item.js:0
 #, python-format
 msgid "A name for your favorite filter is required."
-msgstr ""
+msgstr "즐겨찾기할 필터의 이름이 필요합니다."
 
 #. module: web
 #. openerp-web
@@ -2181,7 +2181,7 @@ msgstr ""
 #: code:addons/web/static/src/js/widgets/attach_document.js:0
 #, python-format
 msgid "Invalid fields:"
-msgstr ""
+msgstr "필드 입력 오류:"
 
 #. module: web
 #: code:addons/web/controllers/main.py:0

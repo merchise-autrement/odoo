@@ -42,12 +42,19 @@ def update_taxes_from_templates(cr, chart_template_xmlid):
             module, name = xml_id.split(".", 1)
             env['ir.model.data'].search([('module', '=', module), ('name', '=', name)]).unlink()
 
+        def _avoid_name_conflict():
+            conflict_tax = env['account.tax'].search([('name', '=', template.name), ('company_id', '=', company.id),
+                                                      ('type_tax_use', '=', template.type_tax_use), ('tax_scope', '=', template.tax_scope)])
+            if conflict_tax:
+                conflict_tax.name = "[old] " + conflict_tax.name
+
         template_vals = template._get_tax_vals_complete(company)
         chart_template = env["account.chart.template"].with_context(default_company_id=company.id)
         if old_tax:
             xml_id = old_tax.get_xml_id().get(old_tax.id)
             if xml_id:
                 _remove_xml_id(xml_id)
+        _avoid_name_conflict()
         chart_template.create_record_with_xmlid(company, template, "account.tax", template_vals)
 
     def _update_tax_from_template(template, tax):
@@ -128,7 +135,9 @@ def update_taxes_from_templates(cr, chart_template_xmlid):
             if not fp:
                 continue
             for position_tax in position_template.tax_ids:
-                if position_tax.tax_src_id in new_taxes_template or position_tax.tax_dest_id in new_taxes_template:
+                position_tax_template_exist = fp.tax_ids.filtered_domain([('tax_src_id', '=', tax_template_ref[position_tax.tax_src_id.id]),
+                                                                 ('tax_dest_id', '=', position_tax.tax_dest_id and tax_template_ref[position_tax.tax_dest_id.id] or False)])
+                if not position_tax_template_exist and (position_tax.tax_src_id in new_taxes_template or position_tax.tax_dest_id in new_taxes_template):
                     tax_template_vals.append((position_tax, {
                         'tax_src_id': tax_template_ref[position_tax.tax_src_id.id],
                         'tax_dest_id': position_tax.tax_dest_id and tax_template_ref[position_tax.tax_dest_id.id] or False,

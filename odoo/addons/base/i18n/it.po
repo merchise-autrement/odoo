@@ -24,10 +24,12 @@
 # Léonie Bouchat <lbo@odoo.com>, 2020
 # Martin Trigaux, 2020
 # BigBlu <paolo.moroni@air-srl.com>, 2021
-# Francesco Foresti <francesco.foresti@ooops404.com>, 2022
+# francesco.foresti <francesco.foresti@ooops404.com>, 2022
 # Stefano Consolaro <stefano.consolaro@mymage.it>, 2022
-# Sergio Zanchetta <primes2h@gmail.com>, 2022
 # Friederike Fasterling-Nesselbosch, 2022
+# Luca Carlo, 2023
+# Sergio Zanchetta <primes2h@gmail.com>, 2023
+# Marianna Ciofani, 2023
 # 
 msgid ""
 msgstr ""
@@ -35,7 +37,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-27 13:50+0000\n"
 "PO-Revision-Date: 2020-09-07 08:09+0000\n"
-"Last-Translator: Friederike Fasterling-Nesselbosch, 2022\n"
+"Last-Translator: Marianna Ciofani, 2023\n"
 "Language-Team: Italian (https://www.transifex.com/odoo/teams/41243/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -915,7 +917,7 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"        Dati spese non autorizzate per il Belgio\n"
+"        Dati spese non deducibili per il Belgio\n"
 "    "
 
 #. module: base
@@ -2830,7 +2832,7 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"Criterio di cassa per resoconti contabili\n"
+"Criterio di cassa per rendiconti contabili\n"
 "=====================================\n"
 "    "
 
@@ -4076,7 +4078,7 @@ msgstr ""
 "\n"
 "In molte nazioni la nota di debito viene utilizzata come incremento degli importi di una fattura esistente \n"
 "o, in alcuni casi specifici, per annullare una nota di credito. \n"
-"È come una normale fattura, ma è necessario tenere traccia del collegamento con la fattura originale.  \n"
+"È come una normale fattura, ma è necessario tenere traccia del collegamento con la fattura di origine.  \n"
 "Utilizza una procedura guidata simile a quella della nota di credito.\n"
 "    "
 
@@ -4255,15 +4257,16 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"Homepage dell'IoT Box\n"
-"================\n"
+"Pagina iniziale del box IoT\n"
+"======================\n"
 "\n"
-"Questo modulo sovrascrive l'interfaccia web di Odoo per visualizzare una semplice\n"
-"Homepage che spiega cos'è la IoT box e mostra lo stato,\n"
-"e dove trovare la documentazione.\n"
+"Il modulo sovrascrive l'interfaccia web di Odoo per\n"
+"visualizzare una pagina iniziale semplice che spiega cos'è il\n"
+"box IoT, mostrandone lo stato, e dove trovare la documentazione.\n"
 "\n"
-"Se attivato, non sarai in grado di accedere all'interfaccia \n"
-"regolare di Odoo.\n"
+"Se il modulo viene attivato non sarà più possibile accedere alla\n"
+"normale interfaccia web di Odoo.\n"
+"\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_stock_landed_costs
@@ -7431,6 +7434,8 @@ msgid ""
 "\n"
 "This module provides the link between quality steps and IoT devices. \n"
 msgstr ""
+"\n"
+"Modulo che fornisce il collegamento tra fasi della qualità e dispositivi IoT. \n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_note_pad
@@ -8004,7 +8009,7 @@ msgid ""
 " another model requires the record being deleted. If possible, archive it "
 "instead."
 msgstr ""
-" un'altro modello richiede l'eliminazione del record. Se possibile, "
+" un altro modello richiede l'eliminazione del record. Se possibile, "
 "procedere invece all'archiviazione."
 
 #. module: base
@@ -9142,7 +9147,7 @@ msgstr "Bonifico ABA"
 #. module: base
 #: model:ir.actions.act_window,name:base.action_res_users_keys_description
 msgid "API Key: description input wizard"
-msgstr "API Key: procedura guidata di inserimento della descrizione"
+msgstr "Chiave API: procedura inserimento descrizione"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_users__api_key_ids
@@ -10634,7 +10639,7 @@ msgstr "Austria - Rendiconti contabili"
 #. module: base
 #: model:ir.module.module,summary:base.module_l10n_at_reports
 msgid "Austrian Financial Reports"
-msgstr ""
+msgstr "Rendiconti finanziari austriaci"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_l10n_at
@@ -11140,7 +11145,7 @@ msgstr "Belgio - Rendiconti contabili"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_be_disallowed_expenses
 msgid "Belgium - Disallowed Expenses Data"
-msgstr "Belgio - Dati spese non autorizzate"
+msgstr "Belgio - Dati spese non deducibili"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_be_edi
@@ -11366,7 +11371,7 @@ msgstr "Modulo Bridge per configurare un Twitter Wall sul tuo evento"
 #. module: base
 #: model:ir.module.module,summary:base.module_website_event_social
 msgid "Bridge module to push notifications to event attendees"
-msgstr "Modulo ponte per inviare notifiche ai partecipanti di un evento"
+msgstr "Modulo ponte per inviare notifiche push ai partecipanti di un evento"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_website_event_track_live_quiz
@@ -11663,7 +11668,7 @@ msgstr "A cascata"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_reports_cash_basis
 msgid "Cash Basis Accounting Reports"
-msgstr "Resoconti contabili criterio di cassa"
+msgstr "Rendiconti contabili criterio di cassa"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_module_filter
@@ -11704,7 +11709,7 @@ msgstr "Ciad"
 #. module: base
 #: model:ir.actions.act_window,name:base.action_res_users_my
 msgid "Change My Preferences"
-msgstr "Modifica preferenze personali"
+msgstr "Cambia preferenze personali"
 
 #. module: base
 #: model:ir.actions.act_window,name:base.change_password_wizard_action
@@ -11898,9 +11903,8 @@ msgid ""
 "Choose a subview of partners that includes only address fields, to change "
 "the way users can input addresses."
 msgstr ""
-"Scegliere una sottovisualizzazione dei partner che include solo i campi "
-"indirizzo, per cambiare il modo in cui gli utenti possono inserire gli "
-"indirizzi."
+"Scegliere una sottovista dei partner che includa solo i campi indirizzo, per"
+" cambiare il modo in cui gli utenti possono inserire gli indirizzi."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_mail_server__smtp_encryption
@@ -11910,6 +11914,10 @@ msgid ""
 "- TLS (STARTTLS): TLS encryption is requested at start of SMTP session (Recommended)\n"
 "- SSL/TLS: SMTP sessions are encrypted with SSL/TLS through a dedicated port (default: 465)"
 msgstr ""
+"Scegli lo schema di crittografia della connessione:\n"
+"- Nessuna: le sessioni SMTP vengono effettuate in chiaro.\n"
+"- TILS (STARTTLS): viene richiesta la crittografia TLS all'inizio della sessione SMTP (consigliata)\n"
+"- SSL/TLS: le sessioni SMTP vengono crittografate con SSL/TLS tramite una porta dedicata (predefinita: 465)"
 
 #. module: base
 #: model:res.country,name:base.cx
@@ -13395,7 +13403,7 @@ msgstr ""
 #: code:addons/base/models/ir_qweb_fields.py:0
 #, python-format
 msgid "Date unit"
-msgstr "Unità data"
+msgstr "Unità di data"
 
 #. module: base
 #: code:addons/base/models/ir_qweb_fields.py:0
@@ -13410,8 +13418,8 @@ msgid ""
 "Date unit used for the rounding. The value must be smaller than 'hour' if "
 "you use the digital formatting."
 msgstr ""
-"Unità di data utilizzata per l'arrotondamento. Il valore deve essere "
-"inferiore a 'ora' se usate la formattazione digitale."
+"Unità di data utilizzata per l'arrotondamento. Se viene utilizzata la "
+"formattazione digitale, il valore deve essere inferiore a \"ora\"."
 
 #. module: base
 #: code:addons/base/models/ir_qweb_fields.py:0
@@ -13721,8 +13729,8 @@ msgid ""
 "Determines where the currency symbol should be placed after or before the "
 "amount."
 msgstr ""
-"Determina dove il simbolo di valuta dovrebbe essere posizionato: prima o "
-"dopo l'ammontare."
+"Determina se il simbolo di valuta deve essere posizionato prima o dopo "
+"l'importo."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_res_country__name_position
@@ -13730,8 +13738,8 @@ msgid ""
 "Determines where the customer/company name should be placed, i.e. after or "
 "before the address."
 msgstr ""
-"Determina dove il nome del cliente o dell'azienda deve essere posizionato, "
-"ossia prima o dopo l'indirizzo."
+"Determina dove deve essere posizionato il nome cliente/azienda, es. prima o "
+"dopo l'indirizzo."
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_users_form_simple_modif
@@ -13777,12 +13785,12 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_disallowed_expenses
 msgid "Disallowed Expenses"
-msgstr "Spese non autorizzate"
+msgstr "Spese non deducibili"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_account_disallowed_expenses_fleet
 msgid "Disallowed Expenses on Fleets"
-msgstr "Spese non autorizzate nei parchi veicoli"
+msgstr "Spese non deducibili nei parchi veicoli"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.onboarding_container
@@ -13809,7 +13817,7 @@ msgstr "Comunicazioni"
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_currency_form
 msgid "Display"
-msgstr "Visualizza"
+msgstr "Visualizzazione"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field__unknown__display_name
@@ -14436,7 +14444,7 @@ msgstr "Fatturazione elettronica per la Colombia con Carvajal"
 #: code:addons/template_inheritance.py:0 code:addons/template_inheritance.py:0
 #, python-format
 msgid "Element '%s' cannot be located in parent view"
-msgstr "Impossibile localizzare l'elemento \"%s\" nella vista primaria"
+msgstr "Impossibile localizzare l'elemento \"%s\" nella vista originaria"
 
 #. module: base
 #: code:addons/base/models/ir_qweb_fields.py:0
@@ -14781,8 +14789,8 @@ msgid ""
 "Example: GLOBAL_RULE_1 AND GLOBAL_RULE_2 AND ( (GROUP_A_RULE_1 OR "
 "GROUP_A_RULE_2) OR (GROUP_B_RULE_1 OR GROUP_B_RULE_2) )"
 msgstr ""
-"Esempio: GLOBAL_RULE_1 AND GLOBAL_RULE_2 AND ( (GROUP_A_RULE_1 OR "
-"GROUP_A_RULE_2) OR (GROUP_B_RULE_1 OR GROUP_B_RULE_2) )"
+"Esempio: REGOLA_GLOBALE_1 AND REGOLA_GLOBALE_2 AND ( (GRUPPO_A_REGOLA_1 OR "
+"GRUPPO_A_REGOLA_2) OR (GRUPPO_B_REGOLA_1 OR GRUPPO_B_REGOLA_2) )"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.res_lang_form
@@ -15281,7 +15289,7 @@ msgstr ""
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_industry_fsm_sale_report
 msgid "Field Service Reports - Sale"
-msgstr ""
+msgstr "Rendiconti assistenza sul campo - Vendita"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_industry_fsm_stock
@@ -15569,12 +15577,12 @@ msgstr ""
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_country__image_url
 msgid "Flag"
-msgstr "Segnala"
+msgstr "Bandiera"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_lang__flag_image_url
 msgid "Flag Image Url"
-msgstr ""
+msgstr "URL immagine bandiera"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_human_resources_fleet
@@ -16257,7 +16265,9 @@ msgstr "Gruppo di contatti"
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_rule_form
 msgid "Group-specific rules are combined together with a logical OR operator"
-msgstr "Le regole specifiche del gruppo vengono unite con un operatore OR"
+msgstr ""
+"Le regole specifiche per un gruppo vengono unite insieme con un operatore "
+"logico OR"
 
 #. module: base
 #: code:addons/base/models/res_users.py:0
@@ -16397,7 +16407,7 @@ msgstr "Has Diff"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_module_module__has_iap
 msgid "Has Iap"
-msgstr "Has Iap"
+msgstr "Contiene IAP"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_report_paperformat__header_spacing
@@ -17061,9 +17071,10 @@ msgid ""
 "* if False, the view currently does not extend its parent but can be enabled\n"
 "         "
 msgstr ""
-"Se questa è una vista ereditata,\n"
-"* se True, la vista estende sempre la vista genitore\n"
-"* se False, la vista attualmente non estende la vista genitore ma si può abilitare"
+"Se la vista è ereditata:\n"
+"* se True, la vista estende sempre quella originaria\n"
+"* se False, la vista non estende di base quella originaria ma può essere abilitata\n"
+"         "
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.view_rule_form
@@ -17480,7 +17491,7 @@ msgstr "Modifica in linea"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_country__address_view_id
 msgid "Input View"
-msgstr "Vista Input"
+msgstr "Vista inserimento"
 
 #. module: base
 #: code:addons/base/models/ir_module.py:0
@@ -17611,7 +17622,7 @@ msgstr "Note interne"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_translation__src
 msgid "Internal Source"
-msgstr "Riferimento interno"
+msgstr "Sorgente interna"
 
 #. module: base
 #: model:res.groups,name:base.group_user
@@ -18139,7 +18150,7 @@ msgstr "LGPL versione 3"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_lt_reports
 msgid "Lithuania - Accounting Reports"
-msgstr ""
+msgstr "Lituania - Rendiconti contabili"
 
 #. module: base
 #: code:addons/base/models/ir_ui_view.py:0
@@ -19217,12 +19228,12 @@ msgstr ""
 #: model:ir.module.module,description:base.module_account_disallowed_expenses
 #: model:ir.module.module,summary:base.module_account_disallowed_expenses
 msgid "Manage disallowed expenses"
-msgstr "Gestione spese non autorizzate"
+msgstr "Gestione spese non deducibili"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_account_disallowed_expenses_fleet
 msgid "Manage disallowed expenses with fleets"
-msgstr "Gestione spese non autorizzate nei parchi veicoli"
+msgstr "Gestione spese non deducibili nei parchi veicoli"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_sale_coupon_taxcloud_delivery
@@ -22299,14 +22310,14 @@ msgid ""
 "(<xpath/>) are applied, and the result is used as if it were this view's\n"
 "actual arch.\n"
 msgstr ""
-"Viene impiegato solo se la vista eredita da un'altra vista (inherit_id non è falso/nullo).\n"
+"Viene impiegato solo se la vista eredita da un'altra (inherit_id non è falso/nullo).\n"
 "\n"
-"* Se estensione (predefinito), ed è richiesta la vista, viene cercata la\n"
-"primaria più vicina (via inherit_id). Quindi vengono applicate, con il\n"
+"* Se Estensione (predefinito), ed è richiesta la vista, viene cercata la\n"
+"vista primaria più vicina (via inherit_id). Quindi vengono applicate, con il\n"
 "suo modello, tutte quelle che ereditano dalla vista stessa\n"
-"* Se primario, viene pienamente risolta la vista primaria più vicina (anche\n"
+"* Se Primaria, la vista primaria più vicina viene completamente risolta (anche\n"
 "se usa un modello diverso), quindi vengono applicate le specifiche\n"
-"di ereditarietà della vista stessa (<xpath/>) usando il risultato come fosse\n"
+"di ereditarietà di questa vista (<xpath/>) usando il risultato come fosse\n"
 "l'attuale architettura.\n"
 
 #. module: base
@@ -22930,7 +22941,7 @@ msgstr "Applicazione madre"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_partner_category__parent_id
 msgid "Parent Category"
-msgstr "Categoria principale"
+msgstr "Categoria primaria"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_base_partner_merge_automatic_wizard__group_by_parent_id
@@ -23853,7 +23864,7 @@ msgstr "Ordini di acquisto, offerte e contratti"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_event_track_social
 msgid "Push notification to track listeners"
-msgstr "Invio notifiche a chi ascolta le sessioni"
+msgstr "Invio notifiche push a chi ascolta le sessioni"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_actions_server__code
@@ -24096,13 +24107,13 @@ msgstr "Raleway"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_currency_rate__rate
 msgid "Rate"
-msgstr "Valore"
+msgstr "Tasso"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_currency__rate_ids
 #: model_terms:ir.ui.view,arch_db:base.view_currency_form
 msgid "Rates"
-msgstr "Tariffe"
+msgstr "Tassi"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_model_access__perm_read
@@ -24447,18 +24458,18 @@ msgstr "Tipo report"
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.act_report_xml_search_view
 msgid "Report Xml"
-msgstr "XML del report"
+msgstr "XML resoconto"
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.act_report_xml_view_tree
 msgid "Report xml"
-msgstr "XML del report"
+msgstr "XML resoconto"
 
 #. module: base
 #: model:ir.module.category,name:base.module_category_accounting_localizations_reporting
 #: model:ir.ui.menu,name:base.reporting_menuitem
 msgid "Reporting"
-msgstr "Rendicontazione"
+msgstr "Rendiconto"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_l10n_ar_reports
@@ -25037,7 +25048,7 @@ msgstr "Programma gli incontri dei dipendenti"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_website_event_social
 msgid "Schedule push notifications on attendees"
-msgstr "Programma l'invio di notifiche ai partecipanti"
+msgstr "Programma l'invio di notifiche push ai partecipanti"
 
 #. module: base
 #: model:ir.module.module,summary:base.module_project_timesheet_holidays
@@ -25881,7 +25892,7 @@ msgstr ""
 msgid ""
 "Specify if missed occurrences should be executed when the server restarts."
 msgstr ""
-"Specifica se le occorrenze mancate devono essere eseguite al riavvio del "
+"Specifica se le occorrenze mancanti devono essere eseguite al riavvio del "
 "server."
 
 #. module: base
@@ -25960,7 +25971,7 @@ msgstr "Nome stato/provincia"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_country__state_required
 msgid "State Required"
-msgstr ""
+msgstr "Provincia richiesta"
 
 #. module: base
 #: model:res.country,name:base.ps
@@ -26877,7 +26888,7 @@ msgstr "Il nome completo della nazione."
 #: model:ir.model.fields,help:base.field_res_partner__user_id
 #: model:ir.model.fields,help:base.field_res_users__user_id
 msgid "The internal user in charge of this contact."
-msgstr "L'utente interno responsabile di questo contatto. "
+msgstr "L'utente interno responsabile del contatto."
 
 #. module: base
 #: code:addons/base/models/res_country.py:106
@@ -27571,7 +27582,7 @@ msgstr "Ferie"
 #: model:ir.module.module,shortdesc:base.module_hr_payroll_holidays
 #: model:ir.module.module,shortdesc:base.module_hr_work_entry_holidays
 msgid "Time Off in Payslips"
-msgstr "Ferie nelle buste paga"
+msgstr "Ferie in busta paga"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_hr_holidays_gantt
@@ -28431,7 +28442,7 @@ msgstr "URL"
 #. module: base
 #: model:ir.model.fields,help:base.field_res_country__image_url
 msgid "Url of static flag image"
-msgstr "Url of static flag image"
+msgstr "URL di un'immagine bandiera statica"
 
 #. module: base
 #: model:res.country,name:base.uy
@@ -28552,11 +28563,10 @@ msgid ""
 "display addresses (in reports for example), while this field is used to "
 "modify the input form for addresses."
 msgstr ""
-"Usa questo campo per sostituire il metodo consueto di codifica di un "
-"indirizzo completo. Si noti che il campo adress_format consente di "
-"modificare il modo di visualizzazione degli indirizzi (ad esempio nei "
-"report), mentre questo campo consente di modificare il modo di input per gli"
-" indirizzi."
+"Utilizzare questo campo per sostituire il metodo consueto di codifica di un "
+"indirizzo completo. Nota: il campo address_format è usato per modificare la "
+"modalità di visualizzazione degli indirizzi (ad esempio nei report), mentre "
+"questo viene utilizzato per modificarne la forma nell'inserimento."
 
 #. module: base
 #: model:ir.model.fields,help:base.field_ir_model_fields__relation_table
@@ -29314,9 +29324,9 @@ msgid ""
 "If the timezone is not set, UTC (Coordinated Universal Time) is used.\n"
 "Anywhere else, time values are computed according to the time offset of your web client."
 msgstr ""
-"Quando si stampano i documenti e si esportano/importano dati, gli orari sono calcolati in base a questo fuso orario.\n"
-"Se questo non è impostato, viene usato il GMT (Ora Media Di Greenwich).\n"
-"In qualunque altra parte, l'orario è calcolato in base regolazione dell'ora del client web."
+"Nella stampa di documenti e nell'esportazione/importazione di dati, gli orari vengono calcolati in base a questo fuso orario.\n"
+"Se non impostato, viene usato UTC (tempo coordinato universale).\n"
+"In tutte le altre parti, i valori temporali sono calcolati in base alla differenza di fuso orario del client web."
 
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.sequence_view

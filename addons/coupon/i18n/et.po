@@ -16,6 +16,7 @@
 # Algo Kärp <algokarp@gmail.com>, 2021
 # Eneli Õigus <enelioigus@gmail.com>, 2021
 # Oliver Ernest, 2022
+# Anna, 2023
 # Leaanika Randmets, 2023
 # 
 msgid ""
@@ -115,7 +116,7 @@ msgstr "<span>Minimaalne ostusumma</span>"
 #. module: coupon
 #: model_terms:ir.ui.view,arch_db:coupon.report_coupon
 msgid "<span>Valid for purchase above</span>"
-msgstr ""
+msgstr "<span>Kehtib ülaltoodud ostu puhul</span>"
 
 #. module: coupon
 #: model_terms:ir.ui.view,arch_db:coupon.report_coupon
@@ -328,7 +329,7 @@ msgstr ""
 #. module: coupon
 #: model:coupon.program,name:coupon.3_cabinets_plus_1_free
 msgid "Buy 3 large cabinets, get one for free"
-msgstr ""
+msgstr "Ostke 3 suurt kappi, saate ühe tasuta"
 
 #. module: coupon
 #: model_terms:ir.ui.view,arch_db:coupon.coupon_generate_view_form
@@ -349,7 +350,7 @@ msgstr "Kood"
 #. module: coupon
 #: model:coupon.program,name:coupon.10_percent_auto_applied
 msgid "Code for 10% on orders"
-msgstr ""
+msgstr "Sooduskood 10% tellimustele"
 
 #. module: coupon
 #: model:ir.model.fields,field_description:coupon.field_coupon_program__company_id
@@ -385,7 +386,7 @@ msgstr "Kupongikood"
 #. module: coupon
 #: model:ir.model.fields,field_description:coupon.field_coupon_program__coupon_count
 msgid "Coupon Count"
-msgstr ""
+msgstr "Kupongide arv"
 
 #. module: coupon
 #: model:ir.model,name:coupon.model_coupon_program
@@ -616,7 +617,7 @@ msgstr "Tasuta toode - %s"
 #: model:product.product,name:coupon.product_product_free_large_cabinet
 #: model:product.template,name:coupon.product_product_free_large_cabinet_product_template
 msgid "Free Product - Large Cabinet"
-msgstr ""
+msgstr "Tasuta toode – suur kapp"
 
 #. module: coupon
 #: model_terms:ir.ui.view,arch_db:coupon.coupon_generate_view_form
@@ -910,7 +911,7 @@ msgstr "Kampaaniaprogrammid"
 #. module: coupon
 #: model:ir.model.fields.selection,name:coupon.selection__coupon_program__program_type__promotion_program
 msgid "Promotional Program"
-msgstr ""
+msgstr "Kampaaniad"
 
 #. module: coupon
 #: model:ir.model.fields,field_description:coupon.field_coupon_program__reward_product_quantity
@@ -1145,7 +1146,7 @@ msgstr ""
 #. module: coupon
 #: model:mail.template,report_name:coupon.mail_template_sale_coupon
 msgid "Your Coupon Code"
-msgstr ""
+msgstr "Sinu kupongikood"
 
 #. module: coupon
 #: model:mail.template,subject:coupon.mail_template_sale_coupon
@@ -1175,4 +1176,4 @@ msgstr ""
 #. module: coupon
 #: model_terms:ir.ui.view,arch_db:coupon.report_coupon
 msgid "on your next order"
-msgstr ""
+msgstr "järgmisel tellimusel"
