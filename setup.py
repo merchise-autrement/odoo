@@ -55,12 +55,12 @@ setup(
         'xlwt',
 
         # Merchise
-        'celery~=5.0',
-        'flower==0.9.5',
-        'redis',
-        'xotl.tools~=2.2.0',
-        'rjsmin>=1.1.0,<1.2',
-        'sentry-sdk~=1.3.0',
+        "celery>=5.3.0,<6",
+        "flower==2.0.1",
+        "redis",
+        "xotl.tools",
+        "rjsmin>=1.1.0,<1.2",
+        "sentry-sdk~=1.3.0",
     ],
     python_requires='>=3.5',
     extras_require={
