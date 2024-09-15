@@ -44,6 +44,7 @@ setup(
         'pypdf2',
         'pyserial',
         'python-dateutil',
+        'python-stdnum',
         'pytz',
         'pyusb >= 1.0.0b1',
         'qrcode',

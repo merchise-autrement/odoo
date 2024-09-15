@@ -27,6 +27,10 @@ from zlib import adler32
 import babel.core
 import psycopg2
 import json
+try:
+    import werkzeug.contrib.sessions as sessions
+except ImportError:
+    from .tools._vendor import sessions
 import werkzeug.datastructures
 import werkzeug.exceptions
 import werkzeug.local
@@ -36,12 +40,10 @@ import werkzeug.wsgi
 
 from werkzeug import urls
 from werkzeug.wsgi import wrap_file
-from werkzeug.middleware.shared_data import SharedDataMiddleware
-
 try:
-    import werkzeug.contrib.sessions as werkzeug_sessions
+    from werkzeug.middleware.shared_data import SharedDataMiddleware
 except ImportError:
-    import secure_cookie.session as werkzeug_sessions
+    from werkzeug.wsgi import SharedDataMiddleware
 
 try:
     import psutil
@@ -1062,14 +1064,22 @@ def routing_map(modules, nodb_only, converters=None):
 
                             xtra_keys = 'defaults subdomain build_only strict_slashes redirect_to alias host'.split()
                             kw = {k: routing[k] for k in xtra_keys if k in routing}
-                            routing_map.add(werkzeug.routing.Rule(url, endpoint=endpoint, methods=routing['methods'], **kw))
+                            rule = werkzeug.routing.Rule(url, endpoint=endpoint, methods=routing['methods'], **kw)
+                            rule.merge_slashes = False
+                            routing_map.add(rule)
     return routing_map
 
 
 # ---------------------------------------------------------
 # HTTP Sessions
-# ---------------------------------------------------------
-class OpenERPSession(werkzeug_sessions.Session):
+#----------------------------------------------------------
+class AuthenticationError(Exception):
+    pass
+
+class SessionExpiredException(Exception):
+    pass
+
+class OpenERPSession(sessions.Session):
     def __init__(self, *args, **kwargs):
         self.inited = False
         self.modified = False
@@ -1381,7 +1391,7 @@ def SessionStore(path):
     if path.startswith('redis://'):
         raise NotImplemented
     else:
-        return werkzeug_sessions.FilesystemSessionStore(
+        return sessions.FilesystemSessionStore(
             path,
             session_class=OpenERPSession,
             renew_missing=True,
